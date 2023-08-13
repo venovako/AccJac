@@ -13,3 +13,7 @@ d2m[e_]:=((1-e)^b)/(1+e); (* \delta_2^- *)
 d2p[e_]:=((1+e)^b)/(1-e); (* \delta_2^+ *)
 "d2m["<>ToString[p1]<>","<>ToString[n]<>","<>ToString[b]<>"]=1- "<>ToString[N[FullSimplify[(1-d2m[p2])/p2],n]]<>ToString[\[Epsilon]]
 "d2p["<>ToString[p1]<>","<>ToString[n]<>","<>ToString[b]<>"]=1+ "<>ToString[N[FullSimplify[(d2p[p2]-1)/p2],n]]<>ToString[\[Epsilon]]
+dtm[e_]:=((1-e)^(b+2))/((1+e)^(b+3)); (* \delta_{\varphi}^- *)
+dtp[e_]:=((1+e)^(b+2))/((1-e)^(b+3)); (* \delta_{\varphi}^+ *)
+"dtm["<>ToString[p1]<>","<>ToString[n]<>","<>ToString[b]<>"]=1- "<>ToString[N[FullSimplify[(1-dtm[p2])/p2],n]]<>ToString[\[Epsilon]]
+"dtp["<>ToString[p1]<>","<>ToString[n]<>","<>ToString[b]<>"]=1+ "<>ToString[N[FullSimplify[(dtp[p2]-1)/p2],n]]<>ToString[\[Epsilon]]
