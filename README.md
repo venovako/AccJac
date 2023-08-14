@@ -6,6 +6,7 @@ Accurate complex Jacobi rotations
 ## Prerequisites
 
 A recent x86_64 machine with Linux or macOS is needed, and the oneAPI Intel Math Kernel Library (MKL) is assumed to be installed.
+Intel Fortran compilers and gfortran (13+) are supported.
 
 First, clone [libpvn](https://github.com/venovako/libpvn) repository, with the same parent directory as this one has (e.g., ``venovako/libpvn`` and ``venovako/KogAcc``).
 Then, build the ``pvn`` library, with the same family of compilers and (no-)debug mode as it is meant to be used here.
