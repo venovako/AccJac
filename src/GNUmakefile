@@ -26,6 +26,13 @@ wtest.exe\
 xtest.exe\
 ztest.exe
 
+LDFLAGS=-rdynamic -L. -ljaev2 -L../../libpvn/src -lpvn $(CR_OBJS) $(LAPACK)
+ifneq ($(COMPILER),gfortran)
+ifeq ($(OS),Linux)
+LDFLAGS += -static-libgcc
+endif # Linux
+endif # !gfortran
+
 .PHONY: all help clean
 
 all: libjaev2.a $(EXES)
@@ -40,7 +47,7 @@ help:
 	$(FC) $(FCFLAGS) -c $< -o $@
 
 %.exe : %.F90
-	$(FC) $(FCFLAGS) $< -o $@ -L. -ljaev2 -L../../libpvn/src -lpvn $(LAPACK) $(LDFLAGS)
+	$(FC) $(FCFLAGS) $< -o $@ $(LDFLAGS)
 
 clean:
 	-$(DEL) $(OBJS)
