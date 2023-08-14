@@ -1,5 +1,8 @@
 PROGRAM DTEST
   IMPLICIT NONE
+9 FORMAT(A,ES25.17E3)
 CONTAINS
+#include "orfile.F90"
+#include "drsafe.F90"
 #include "qdetm1.F90"
 END PROGRAM DTEST

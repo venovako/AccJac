@@ -1,5 +1,13 @@
 PROGRAM STEST
   IMPLICIT NONE
+  INTEGER :: U
+  U = ORFILE()
+  PRINT *, U
+  WRITE (*,9) 'SRSAFE=', SRSAFE(U)
+  CLOSE(U)
+9 FORMAT(A,ES16.9E2)
 CONTAINS
+#include "orfile.F90"
+#include "srsafe.F90"
 #include "qdetm1.F90"
 END PROGRAM STEST
