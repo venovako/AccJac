@@ -19,7 +19,7 @@ SUBROUTINE DJAEV2(A, B, C, RT1, RT2, CS1, SN1)
   INTEGER(c_int), TARGET :: ES
 
   ES = 0_c_int
-  IF (DLJEV2(A, C, B, CS1, SN1, RT1, RT2, ES) .NE. 0_c_int) THEN
+  IF (DLJEV2(A, C, B, CS1, SN1, RT1, RT2, ES) .LT. 0_c_int) THEN
      CS1 = ONE
      SN1 = ZERO
      RT1 = ZERO

@@ -28,7 +28,7 @@ SUBROUTINE ZJAEV2(A, B, C, RT1, RT2, CS1, SN1)
   A21I = -AIMAG(B)
   ES = 0_c_int
 
-  IF ((SNR .NE. ZERO) .OR. (SNI .NE. ZERO) .OR. (ZLJEV2(A11, A22, A21R, A21I, CS1, SNR, SNI, RT1, RT2, ES) .NE. 0_c_int)) THEN
+  IF ((SNR .NE. ZERO) .OR. (SNI .NE. ZERO) .OR. (ZLJEV2(A11, A22, A21R, A21I, CS1, SNR, SNI, RT1, RT2, ES) .LT. 0_c_int)) THEN
      CS1 = ONE
      SN1 = CMPLX(ZERO, ZERO, c_double)
      RT1 = ZERO
