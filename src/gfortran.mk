@@ -4,11 +4,11 @@ FC=$(COMPILER_PREFIX)gfortran$(COMPILER_SUFFIX)
 ifdef NDEBUG
 FCFLAGS=-O$(NDEBUG)
 else # !NDEBUG
-FCFLAGS=-Og -g
+FCFLAGS=-Og -ggdb3
 endif # ?NDEBUG
-FCFLAGS += -march=native -fPIC -fopenmp -fexceptions -fno-omit-frame-pointer -ffp-contract=fast -fprotect-parens -fstack-arrays -fvect-cost-model=unlimited
+FCFLAGS += -march=native -fPIC -fexceptions -fno-omit-frame-pointer -frecursive -fstack-arrays -fvect-cost-model=unlimited -ffp-contract=fast -fprotect-parens
 ifdef NDEBUG
-FCFLAGS += -fopt-info-optimized-vec
+FCFLAGS += -fno-math-errno
 else # !NDEBUG
 FCFLAGS += -fcheck=all -finit-local-zero -finit-real=snan -finit-derived
 endif # ?NDEBUG
