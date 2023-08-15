@@ -16,7 +16,8 @@ djaev2.o\
 sjaev2.o\
 wjaev2.o\
 xjaev2.o\
-zjaev2.o
+zjaev2.o\
+sjiev2.o
 
 EXES=\
 ctest.exe\
@@ -27,7 +28,13 @@ xtest.exe\
 ztest.exe
 
 LDFLAGS=-rdynamic -L. -ljaev2 -L../../libpvn/src -lpvn $(CR_OBJS) $(LAPACK)
-ifneq ($(COMPILER),gfortran)
+ifeq ($(COMPILER),gfortran)
+ifeq ($(OS),Linux)
+LDFLAGS += -L${ONEAPI_ROOT}/compiler/latest/linux/compiler/lib/intel64 -limf
+else # Darwin
+LDFLAGS += -L${ONEAPI_ROOT}/compiler/latest/mac/compiler/lib -limf
+endif # ?Linux
+else # Intel Fortran
 ifeq ($(OS),Linux)
 LDFLAGS += -static-libgcc
 endif # Linux
