@@ -17,7 +17,12 @@ sjaev2.o\
 wjaev2.o\
 xjaev2.o\
 zjaev2.o\
-sjiev2.o
+cjiev2.o\
+djiev2.o\
+sjiev2.o\
+wjiev2.o\
+xjiev2.o\
+zjiev2.o
 
 EXES=\
 ctest.exe\
