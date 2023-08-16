@@ -13,37 +13,39 @@ endif # local.mk
 OBJS=\
 cjaev2.o\
 djaev2.o\
+qjaev2.o\
 sjaev2.o\
-wjaev2.o\
-xjaev2.o\
+yjaev2.o\
 zjaev2.o\
 cjiev2.o\
 djiev2.o\
+qjiev2.o\
 sjiev2.o\
-wjiev2.o\
-xjiev2.o\
+yjiev2.o\
 zjiev2.o
 
 EXES=\
 ctest.exe\
 dtest.exe\
 stest.exe\
-wtest.exe\
-xtest.exe\
 ztest.exe
 
-LDFLAGS=-rdynamic -L. -ljaev2 -L../../libpvn/src -lpvn $(CR_OBJS) $(LAPACK)
+LDFLAGS=-rdynamic
 ifeq ($(COMPILER),gfortran)
-ifeq ($(OS),Linux)
-LDFLAGS += -L${ONEAPI_ROOT}/compiler/latest/linux/compiler/lib/intel64 -limf
-else # Darwin
-LDFLAGS += -L${ONEAPI_ROOT}/compiler/latest/mac/compiler/lib -limf
-endif # ?Linux
-else # Intel Fortran
+OBJS += \
+wjaev2.o\
+xjaev2.o\
+wjiev2.o\
+xjiev2.o
+EXES += \
+wtest.exe\
+xtest.exe
+else # !gfortran
 ifeq ($(OS),Linux)
 LDFLAGS += -static-libgcc
 endif # Linux
-endif # !gfortran
+endif # ?gfortran
+LDFLAGS += -L. -ljaev2 -L../../libpvn/src -lpvn $(CR_OBJS) $(LAPACK)
 
 .PHONY: all help clean
 
