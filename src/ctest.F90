@@ -150,8 +150,8 @@ PROGRAM CTEST
   WRITE (*,9) '     max(relerr(cosφ)/ε)=', XREC
   WRITE (*,9) 'min(relerr(cosα*sinφ)/ε)=', MRESR
   WRITE (*,9) 'max(relerr(cosα*sinφ)/ε)=', XRESR
-  WRITE (*,9) 'min(relerr(sinα*sinφ)/ε)=', MRESR
-  WRITE (*,9) 'max(relerr(sinα*sinφ)/ε)=', XRESR
+  WRITE (*,9) 'min(relerr(sinα*sinφ)/ε)=', MRESI
+  WRITE (*,9) 'max(relerr(sinα*sinφ)/ε)=', XRESI
 9 FORMAT(A,ES16.9E2)
 CONTAINS
 #include "orfile.F90"

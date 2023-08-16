@@ -64,9 +64,9 @@ help:
 	$(FC) $(FCFLAGS) $< -o $@ $(LDFLAGS)
 
 clean:
-	-$(DEL) $(OBJS)
-	-$(DEL) libjaev2.a
-	-$(DEL) $(EXES)
+	-$(DEL) *.o
+	-$(DEL) *.a
+	-$(DEL) *.exe
 	-$(DEL) *.dSYM
 	-$(DEL) *.optrpt
 	-$(DEL) *.opt.yaml
