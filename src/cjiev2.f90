@@ -42,8 +42,11 @@ SUBROUTINE CJIEV2(A, B, C, RT1, RT2, CS1, SN1, INFO)
      SN1 = CMPLX(ZERO, ZERO, c_float)
      RT1 = ZERO
      RT2 = ZERO
-  ELSE IF (ES .NE. 0_c_int) THEN
-     RT1 = SCALE(RT1, ES)
-     RT2 = SCALE(RT2, ES)
+  ELSE ! all OK
+     SN1 = CMPLX(SNR, SNI, c_float)
+     IF (ES .NE. 0_c_int) THEN
+        RT1 = SCALE(RT1, ES)
+        RT2 = SCALE(RT2, ES)
+     END IF
   END IF
 END SUBROUTINE CJIEV2
