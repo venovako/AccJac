@@ -22,7 +22,6 @@ PROGRAM STEST
   IF (INFO .NE. 0) STOP 'argv[1]'
   READ (CLA,*) N
   IF (N .LE. 0) STOP 'N < 0'
-  U = ORFILE()
   E_2 = QZERO
   E_2 = QONE / E_2
   MJD = E_2
@@ -35,6 +34,7 @@ PROGRAM STEST
   XREC = E_2
   XRES = E_2
   E_2 = EPSILON(HALF) * HALF
+  U = ORFILE()
   I = 1
   DO WHILE (I .LE. N)
      A = SRSAFE(U)
