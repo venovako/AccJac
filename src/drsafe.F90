@@ -3,12 +3,13 @@ FUNCTION DRSAFE(U)
   IMPLICIT NONE
   INTEGER, INTENT(IN) :: U
   REAL(KIND=c_double) :: DRSAFE
-  REAL(KIND=c_double) :: RMIN, RMAX, R
-  RMIN = TINY(R)
-  R = HUGE(R)
-  RMAX = SCALE(R, -2)
-  DO WHILE ((.NOT. (R .GE. RMIN)) .OR. (.NOT. (R .LE. RMAX)))
+  REAL(KIND=c_double) :: RMIN, RMAX, R, A
+  RMIN = TINY(A)
+  A = HUGE(A)
+  RMAX = SCALE(A, -2)
+  DO WHILE ((.NOT. (A .GE. RMIN)) .OR. (.NOT. (A .LE. RMAX)))
      READ (U) R
+     A = ABS(R)
   END DO
   DRSAFE = R
 END FUNCTION DRSAFE
