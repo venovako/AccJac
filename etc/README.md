@@ -6,12 +6,12 @@ Usage:
 ```bash
 ./thm1.wls p n β d
 ```
-where `p`, `n`, and `β` are described in the paper, and `d` is the number of digits after the decimal point to round the result to (e.g., `d=8`).
+where `p`, `n`, and `β` are described in the paper, and `d` is the number of digits after the decimal point to round the results to (e.g., `d=8`).
 
-## xdet.pdf
+## tdet.pdf
 
-For `x=c,d,s,z`, …
+For `t=c,d,s,z`, …
 
-## xrot.pdf
+## trot.pdf
 
-For `x=c,d,s,z`, …
+For `t=c,d,s,z`, …
