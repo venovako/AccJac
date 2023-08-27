@@ -21,7 +21,7 @@ gcc -O3 -march=native -frounding-math -fno-math-errno -W -Wall -c hypot_noerrno.
 gcc -O3 -march=native -frounding-math -fno-math-errno -W -Wall -c rsqrt_noerrno.c
 ```
 
-Next, clone [libpvn](https://github.com/venovako/libpvn) repository, with the same parent directory as this one has (e.g., `venovako/libpvn` and `venovako/KogAcc`), and build it, with the `COMPILER` make option set to a C compiler from the same vendor and with the same (no-)debug mode as it is meant to be used here, and with the `CR_MATH` and `QUADMATH` options set appropriately.
+Next, clone [libpvn](https://github.com/venovako/libpvn) repository, with the same parent directory as this one has (e.g., `venovako/libpvn` and `venovako/AccJac`), and build it, with the `COMPILER` make option set to a C compiler from the same vendor and with the same (no-)debug mode as it is meant to be used here, and with the `CR_MATH` and `QUADMATH` options set appropriately.
 
 ## Building
 
@@ -37,11 +37,12 @@ Other variables should not normally be set.
 
 ## Running
 
-With `N>0` being a desired number of random Hermitian matrices of order two to be generated, run
+With `N>0` being a desired number of random Hermitian/symmetric matrices of order two to be generated, run
 ```bash
 ./src/ttest.exe N
 ```
-where `t=c,d,s,z`, and optionally (only with GNU Fortran) `t=x`.
+where `t=c,d,s,z`, and optionally (only with GNU Fortran) `t=w,x`.
+Here, `c` stands for `COMPLEX(4)`, `d` for `REAL(8)`, `s` for `REAL(4)`, `z` for `COMPLEX(8)`, `w` for `COMPLEX(10)`, and `x` for `REAL(10)`.
 
 ## Other
 
