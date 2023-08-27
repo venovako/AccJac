@@ -7,3 +7,4 @@ do
 		./thm1.wls $P 100 $B 8 > thm1-$P-$B.txt
 	done
 done
+unset B P

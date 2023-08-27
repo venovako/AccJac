@@ -8,9 +8,13 @@ Usage:
 ```
 where `p` and `β` are described in the paper, `n` is the number of digits of precision (e.g., `n=100`), and `d` is the number of digits after the decimal point to round the results to (e.g., `d=8`).
 
+## thm1.sh
+
+Calls `thm1.wls` for all combinations of `p` and `β`, producing `thm1-p-β.txt`.
+
 ## thm1tβ.txt
 
-The outputs of `thm1.wls` for `t=s,d,q` (i.e., `p=23,52,112`) and `β=1,2`.
+The outputs of `thm1.wls` for `t=s,d,q` (i.e., `p=23,52,112`) and `β=1,2`, named differently than the outputs of `thm1.sh` for safety.
 
 ## tdet.pdf
 
