@@ -3,6 +3,9 @@ Accurate complex Jacobi rotations
 
 (... work in progress ...)
 
+This software is a supplementary material for the preprint
+arXiv:[2308.14222](https://arxiv.org/abs/2308.14222 "Accurate complex Jacobi rotations") \[math.NA\].
+
 ## Prerequisites
 
 A recent x86_64 machine with Linux or macOS is needed, and the oneAPI Intel Math Kernel Library (MKL) is assumed to be installed.
