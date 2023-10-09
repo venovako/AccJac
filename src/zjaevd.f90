@@ -10,6 +10,20 @@ SUBROUTINE ZJAEVD(JOB, N, A, LDA, U, LDU, S, INFO)
      END FUNCTION CR_HYPOT
   END INTERFACE
   INTERFACE
+     SUBROUTINE DJAEV2(A, B, C, RT1, RT2, CS1, SN1)
+       USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_double
+       REAL(c_double), INTENT(IN), TARGET :: A, B, C
+       REAL(c_double), INTENT(OUT), TARGET :: RT1, RT2, CS1, SN1
+     END SUBROUTINE DJAEV2
+  END INTERFACE
+  INTERFACE
+     SUBROUTINE DLAEV2(A, B, C, RT1, RT2, CS1, SN1)
+       USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_double
+       REAL(c_double), INTENT(IN), TARGET :: A, B, C
+       REAL(c_double), INTENT(OUT), TARGET :: RT1, RT2, CS1, SN1
+     END SUBROUTINE DLAEV2
+  END INTERFACE
+  INTERFACE
      SUBROUTINE ZJAEV2(A, B, C, RT1, RT2, CS1, SN1)
        USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_double
        COMPLEX(c_double), INTENT(IN) :: A, B, C
@@ -35,8 +49,7 @@ SUBROUTINE ZJAEVD(JOB, N, A, LDA, U, LDU, S, INFO)
   INTEGER, INTENT(INOUT) :: S, INFO
 
   COMPLEX(c_double) :: SN1, AP, AQ
-  REAL(c_double), TARGET :: RT1, RT2, CS1
-  REAL(c_double) :: AR, AI, AA, XA
+  REAL(c_double), TARGET :: AR, AI, AA, XA, RT1, RT2, CS1
   LOGICAL :: UPPER, ACCVEC, LAPACK, IDENT
   INTEGER :: MAXSTP, I, J, K, L, M, P, Q, DBGU
 
@@ -342,16 +355,46 @@ SUBROUTINE ZJAEVD(JOB, N, A, LDA, U, LDU, S, INFO)
            EXIT
         END IF
      ELSE IF (UPPER) THEN
-        IF (LAPACK) THEN
-           CALL ZLAEV2(A(P,P), A(P,Q), A(Q,Q), RT1, RT2, CS1, SN1)
-        ELSE ! CJAEV2
-           CALL ZJAEV2(A(P,P), A(P,Q), A(Q,Q), RT1, RT2, CS1, SN1)
+        IF (AIMAG(A(P,Q)) .EQ. ZERO) THEN
+           AR = REAL(A(P,P))
+           AI = REAL(A(P,Q))
+           AA = REAL(A(Q,Q))
+           AP = CMPLX(XA, ZERO, c_double)
+           IF (LAPACK) THEN
+              CALL DLAEV2(AR, AI, AA, RT1, RT2, CS1, XA)
+           ELSE ! DJAEV2
+              CALL DJAEV2(AR, AI, AA, RT1, RT2, CS1, XA)
+           END IF
+           SN1 = CMPLX(XA, ZERO, c_double)
+           XA = REAL(AP)
+        ELSE ! complex
+           AP = CMPLX(XA, ONE, c_double)
+           IF (LAPACK) THEN
+              CALL ZLAEV2(A(P,P), A(P,Q), A(Q,Q), RT1, RT2, CS1, SN1)
+           ELSE ! CJAEV2
+              CALL ZJAEV2(A(P,P), A(P,Q), A(Q,Q), RT1, RT2, CS1, SN1)
+           END IF
         END IF
      ELSE ! LOWER
-        IF (LAPACK) THEN
-           CALL ZLAEV2(A(P,P), CONJG(A(Q,P)), A(Q,Q), RT1, RT2, CS1, SN1)
-        ELSE ! ZJAEV2
-           CALL ZJAEV2(A(P,P), CONJG(A(Q,P)), A(Q,Q), RT1, RT2, CS1, SN1)
+        IF (AIMAG(A(Q,P)) .EQ. ZERO) THEN
+           AR = REAL(A(P,P))
+           AI = REAL(A(Q,P))
+           AA = REAL(A(Q,Q))
+           AP = CMPLX(XA, ZERO, c_double)
+           IF (LAPACK) THEN
+              CALL DLAEV2(AR, AI, AA, RT1, RT2, CS1, XA)
+           ELSE ! DJAEV2
+              CALL DJAEV2(AR, AI, AA, RT1, RT2, CS1, XA)
+           END IF
+           SN1 = CMPLX(XA, ZERO, c_double)
+           XA = REAL(AP)
+        ELSE ! complex
+           AP = CMPLX(XA, ONE, c_double)
+           IF (LAPACK) THEN
+              CALL ZLAEV2(A(P,P), CONJG(A(Q,P)), A(Q,Q), RT1, RT2, CS1, SN1)
+           ELSE ! ZJAEV2
+              CALL ZJAEV2(A(P,P), CONJG(A(Q,P)), A(Q,Q), RT1, RT2, CS1, SN1)
+           END IF
         END IF
      END IF
      IF (UPPER) THEN
@@ -366,8 +409,9 @@ SUBROUTINE ZJAEVD(JOB, N, A, LDA, U, LDU, S, INFO)
      ! IDENT = .FALSE.
      ! U = [ -CONJG(SN1) CS1 ]
      !     [     CS1     SN1 ]
-     IF (DBGU .NE. MININT) WRITE (DBGU,'(I6,2(A,I2),A,ES25.17E3,A,L1,5(A,ES25.17E3),A)') &
-          K, ',', P, ',', Q, ',', XA, ',', IDENT, ',', RT1, ',', RT2, ',', CS1, ',(', REAL(SN1), ',', AIMAG(SN1), ')'
+     IF (DBGU .NE. MININT) WRITE (DBGU,'(I6,2(A,I2),A,ES25.17E3,2(A,L1),5(A,ES25.17E3),A)') &
+          K, ',', P, ',', Q, ',', XA, ',', IDENT, ',', (AIMAG(AP) .EQ. ZERO), ',', &
+          RT1, ',', RT2, ',', CS1, ',(', REAL(SN1), ',', AIMAG(SN1), ')'
      IF (IDENT) THEN
         A(P,P) = CMPLX(RT1, ZERO, c_double)
         A(Q,Q) = CMPLX(RT2, ZERO, c_double)
