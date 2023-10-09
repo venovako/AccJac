@@ -4,7 +4,8 @@ Accurate complex Jacobi rotations
 (... work in progress ...)
 
 This software is a supplementary material for the preprint
-arXiv:[2308.14222](https://arxiv.org/abs/2308.14222 "Accurate complex Jacobi rotations") \[math.NA\].
+doi:[10.48550/arXiv.2308.14222](https://doi.org/10.48550/arXiv.2308.14222 "Accurate complex Jacobi rotations"),
+i.e., arXiv:[2308.14222](https://arxiv.org/abs/2308.14222 "Accurate complex Jacobi rotations") \[math.NA\].
 
 ## Prerequisites
 

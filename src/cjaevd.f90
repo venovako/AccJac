@@ -1,3 +1,4 @@
+! TODO: not tested
 SUBROUTINE CJAEVD(JOB, N, A, LDA, U, LDU, S, INFO)
   USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_float
   IMPLICIT NONE
@@ -298,6 +299,7 @@ SUBROUTINE CJAEVD(JOB, N, A, LDA, U, LDU, S, INFO)
            END DO
         END DO
      END IF
+     ! TODO: a more standard convergence criterion
      IF (XA .EQ. ZERO) THEN
         AR = REAL(A(P,P))
         AI = REAL(A(Q,Q))
