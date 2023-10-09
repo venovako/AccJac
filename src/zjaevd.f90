@@ -299,10 +299,15 @@ SUBROUTINE ZJAEVD(JOB, N, A, LDA, U, LDU, S, INFO)
            END DO
         END DO
      END IF
-     ! TODO: a more standard convergence criterion
-     IF (XA .EQ. ZERO) THEN
-        AR = REAL(A(P,P))
-        AI = REAL(A(Q,Q))
+     AR = REAL(A(P,P))
+     AI = REAL(A(Q,Q))
+     AA = ABS(AR - AI)
+     IF (.NOT. ((SCALE(XA, 1) / AA) .GT. ZERO)) THEN
+        IF (UPPER) THEN
+           A(P,Q) = CZERO
+        ELSE ! LOWER
+           A(Q,P) = CZERO
+        END IF
         IF ((AR .LT. AI) .OR. ((AR .EQ. ZERO) .AND. (AI .EQ. ZERO) .AND. (SIGN(ONE, AR) .LT. SIGN(ONE, AI)))) THEN
            IF (DBGU .NE. MININT) WRITE (DBGU,'(2(A,I2))') '[INFO] Swapping ', P, ' and ', Q
            A(P,P) = CMPLX(AI, ZERO, c_double)
@@ -347,11 +352,8 @@ SUBROUTINE ZJAEVD(JOB, N, A, LDA, U, LDU, S, INFO)
                  U(I,Q) = SN1
               END DO
            END IF
-           IF (UPPER) THEN
-              A(P,Q) = CZERO
-           ELSE ! LOWER
-              A(Q,P) = CZERO
-           END IF
+           CYCLE
+        ELSE IF (XA .GT. ZERO) THEN
            CYCLE
         ELSE ! the eigenvalues are in the non-ascending order
            EXIT
