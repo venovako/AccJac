@@ -9,7 +9,6 @@
 !!@param S [INOUT]; on input, set to 0 unless debugging (see the example in cevdj.F90); on output, the scaling parameter such that 2**S * A = Lambda.
 !!@param INFO [INOUT]; on input, set to 0 unless special processing is desired (see the code); on output, the number of steps on success, or -i if the i-th argument had an illegal value.
 SUBROUTINE CJAEVD(JOB, N, A, LDA, U, LDU, S, INFO)
-  ! TODO: not tested
   USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_float
   IMPLICIT NONE
 
@@ -62,7 +61,7 @@ SUBROUTINE CJAEVD(JOB, N, A, LDA, U, LDU, S, INFO)
   COMPLEX(c_float) :: SN1, AP, AQ
   REAL(c_float), TARGET :: AR, AI, AA, XA, RT1, RT2, CS1
   LOGICAL :: ACCVEC, LAPACK, IDENT
-  INTEGER :: MAXSTP, I, J, K, L, M, P, Q, DBGU
+  INTEGER :: MAXSTP, I, J, K, L, M, P, Q, D
 
   IF (INFO .GE. 0) THEN
      IDENT = .TRUE.
@@ -72,11 +71,11 @@ SUBROUTINE CJAEVD(JOB, N, A, LDA, U, LDU, S, INFO)
      MAXSTP = -(INFO + 1)
   END IF
   IF (S .GT. 0) THEN
-     DBGU = -S
+     D = -S
   ELSE IF (S .LT. 0) THEN
-     DBGU = -(S + 1)
+     D = -(S + 1)
   ELSE ! S = 0
-     DBGU = MININT
+     D = MININT
   END IF
 
   IF (LDU .LT. N) THEN
@@ -103,7 +102,7 @@ SUBROUTINE CJAEVD(JOB, N, A, LDA, U, LDU, S, INFO)
            AR = ABS(REAL(A(I,J)))
            AI = ABS(AIMAG(A(I,J)))
            IF ((.NOT. (AR .LE. HUGE(ZERO))) .OR. (.NOT. (AI .LE. HUGE(ZERO)))) THEN
-              IF (DBGU .NE. MININT) WRITE (DBGU,*) I, ',', J, ',', A(I,J)
+              IF (D .NE. MININT) WRITE (D,*) I, ',', J, ',', A(I,J)
               INFO = -3
               RETURN
            END IF
@@ -113,7 +112,7 @@ SUBROUTINE CJAEVD(JOB, N, A, LDA, U, LDU, S, INFO)
         AR = ABS(REAL(A(J,J)))
         AI = AIMAG(A(J,J))
         IF ((.NOT. (AR .LE. HUGE(ZERO))) .OR. (.NOT. (AI .EQ. ZERO))) THEN
-           IF (DBGU .NE. MININT) WRITE (DBGU,*) J, ',', A(J,J)
+           IF (D .NE. MININT) WRITE (D,*) J, ',', A(J,J)
            INFO = -3
            RETURN
         END IF
@@ -121,7 +120,7 @@ SUBROUTINE CJAEVD(JOB, N, A, LDA, U, LDU, S, INFO)
      END DO
   ELSE ! N = 1
      IF (AIMAG(A(1,1)) .NE. ZERO) THEN
-        IF (DBGU .NE. MININT) WRITE (DBGU,*) A(J,J)
+        IF (D .NE. MININT) WRITE (D,*) A(J,J)
         INFO = -3
      ELSE ! A OK
         A(1,1) = CMPLX(REAL(A(1,1)), ZERO, c_float)
@@ -165,12 +164,12 @@ SUBROUTINE CJAEVD(JOB, N, A, LDA, U, LDU, S, INFO)
   END IF
 
   IF (L .EQ. M) THEN
-     IF (DBGU .NE. MININT) WRITE (DBGU,'(A)') '[INFO] A is a nul-matrix'
+     IF (D .NE. MININT) WRITE (D,'(A)') '[INFO] A is a nul-matrix'
      S = 0
      RETURN
   END IF
   S = EXPONENT(HUGE(ZERO)) - L - ESHFT
-  IF (DBGU .NE. MININT) WRITE (DBGU,'(A,I4)') '[INFO] Scaling A by 2**', S
+  IF (D .NE. MININT) WRITE (D,'(A,I4)') '[INFO] Scaling A by 2**', S
   L = 0
   M = 0
   IF (S .EQ. 0) THEN
@@ -200,13 +199,13 @@ SUBROUTINE CJAEVD(JOB, N, A, LDA, U, LDU, S, INFO)
   IF (M .EQ. 0) THEN
      IF (L .EQ. 0) THEN
         ! diagonal A, only the sorting required
-        IF (DBGU .NE. MININT) WRITE (DBGU,'(A)') '[INFO] A is diagonal'
+        IF (D .NE. MININT) WRITE (D,'(A)') '[INFO] A is diagonal'
      ELSE ! real A
-        IF (DBGU .NE. MININT) WRITE (DBGU,'(A)') '[INFO] A is real'
+        IF (D .NE. MININT) WRITE (D,'(A)') '[INFO] A is real'
      END IF
   ELSE IF (L .EQ. 0) THEN
      ! imaginary off-A
-     IF (DBGU .NE. MININT) WRITE (DBGU,'(A)') '[INFO] off-diagonal of A is imaginary'
+     IF (D .NE. MININT) WRITE (D,'(A)') '[INFO] off-diagonal of A is imaginary'
   END IF
 
   K = 0
@@ -245,7 +244,7 @@ SUBROUTINE CJAEVD(JOB, N, A, LDA, U, LDU, S, INFO)
      IF (.NOT. ((SCALE(XA, 1) / AA) .GT. ZERO)) THEN
         A(P,Q) = CZERO
         IF ((AR .LT. AI) .OR. ((AR .EQ. ZERO) .AND. (AI .EQ. ZERO) .AND. (SIGN(ONE, AR) .LT. SIGN(ONE, AI)))) THEN
-           IF (DBGU .NE. MININT) WRITE (DBGU,'(2(A,I2))') '[INFO] Swapping ', P, ' and ', Q
+           IF (D .NE. MININT) WRITE (D,'(2(A,I2))') '[INFO] Swapping ', P, ' and ', Q
            A(P,P) = CMPLX(AI, ZERO, c_float)
            A(Q,Q) = CMPLX(AR, ZERO, c_float)
            DO I = 1, P-1
@@ -306,7 +305,7 @@ SUBROUTINE CJAEVD(JOB, N, A, LDA, U, LDU, S, INFO)
      ! IDENT = .FALSE.
      ! U = [ -CONJG(SN1) CS1 ]
      !     [     CS1     SN1 ]
-     IF (DBGU .NE. MININT) WRITE (DBGU,'(I6,2(A,I2),A,ES16.9E2,2(A,L1),5(A,ES16.9E2),A)') &
+     IF (D .NE. MININT) WRITE (D,'(I6,2(A,I2),A,ES16.9E2,2(A,L1),5(A,ES16.9E2),A)') &
           K, ',', P, ',', Q, ',', XA, ',', IDENT, ',', (AIMAG(AP) .EQ. ZERO), ',', &
           RT1, ',', RT2, ',', CS1, ',(', REAL(SN1), ',', AIMAG(SN1), ')'
      IF (IDENT) THEN
@@ -430,7 +429,7 @@ SUBROUTINE CJAEVD(JOB, N, A, LDA, U, LDU, S, INFO)
         M = EXPONENT(HUGE(ZERO)) - L - ESHFT
      END IF
      IF (M .LT. 0) THEN
-        IF (DBGU .NE. MININT) WRITE (DBGU,'(A,I4)') '[INFO] Rescaling A by 2**', M
+        IF (D .NE. MININT) WRITE (D,'(A,I4)') '[INFO] Rescaling A by 2**', M
         DO J = 1, N
            DO I = 1, J-1
               AR = SCALE(REAL(A(I,J)), M)
