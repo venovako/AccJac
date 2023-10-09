@@ -1,4 +1,13 @@
-! TODO: LOWER not tested
+!>@brief \b ZJAEVD computes the EVD of a double precision Hermitian NxN matrix A by the Jacobi method.
+!!
+!!@param JOB [IN]; bit 0: accumulate the eigenvectors U, bit 1: use the LAPACK's ZLAEV2 instead of ZJAEV2.
+!!@param N [IN]; the order of A.
+!!@param A [INOUT]; a double precision complex NxN array (only its UPPER triangle is accessed).
+!!@param LDA [IN]; the leading dimension of A.
+!!@param U [INOUT]; a double precision complex NxN array to which the eigenvectors of A should be accumulated.
+!!@param LDU [IN]; the leading dimension of U.
+!!@param S [INOUT]; on input, set to 0 unless debugging (see the example in zevdj.F90); on output, the scaling parameter such that 2**S * A = Lambda.
+!!@param INFO [INOUT]; on input, set to 0 unless special processing is desired (see the code); on output, the number of steps on success, or -i if the i-th argument had an illegal value.
 SUBROUTINE ZJAEVD(JOB, N, A, LDA, U, LDU, S, INFO)
   USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_double
   IMPLICIT NONE
@@ -51,7 +60,7 @@ SUBROUTINE ZJAEVD(JOB, N, A, LDA, U, LDU, S, INFO)
 
   COMPLEX(c_double) :: SN1, AP, AQ
   REAL(c_double), TARGET :: AR, AI, AA, XA, RT1, RT2, CS1
-  LOGICAL :: UPPER, ACCVEC, LAPACK, IDENT
+  LOGICAL :: ACCVEC, LAPACK, IDENT
   INTEGER :: MAXSTP, I, J, K, L, M, P, Q, DBGU
 
   IF (INFO .GE. 0) THEN
@@ -75,65 +84,40 @@ SUBROUTINE ZJAEVD(JOB, N, A, LDA, U, LDU, S, INFO)
      INFO = -4
   ELSE IF (N .LT. 0) THEN
      INFO = -2
-  ELSE IF ((JOB .LT. 0) .OR. (JOB .GT. 7)) THEN
+  ELSE IF ((JOB .LT. 0) .OR. (JOB .GT. 3)) THEN
      INFO = -1
   ELSE ! dimensions OK
      INFO = 0
   END IF
   IF (INFO .NE. 0) RETURN
-  UPPER = (IAND(JOB, 1) .NE. 0)
-  ACCVEC = (IAND(JOB, 2) .NE. 0)
-  LAPACK = (IAND(JOB, 4) .NE. 0)
+  ACCVEC = (IAND(JOB, 1) .NE. 0)
+  LAPACK = (IAND(JOB, 2) .NE. 0)
   IF (N .EQ. 0) RETURN
 
   IF (N .GE. 2) THEN
      L = MININT
      M = L
-     IF (UPPER) THEN
-        DO J = 1, N
-           DO I = 1, J-1
-              AR = ABS(REAL(A(I,J)))
-              AI = ABS(AIMAG(A(I,J)))
-              IF ((.NOT. (AR .LE. HUGE(ZERO))) .OR. (.NOT. (AI .LE. HUGE(ZERO)))) THEN
-                 IF (DBGU .NE. MININT) WRITE (DBGU,*) I, ',', J, ',', A(I,J)
-                 INFO = -3
-                 RETURN
-              END IF
-              IF (AR .NE. ZERO) L = MAX(L, EXPONENT(AR))
-              IF (AI .NE. ZERO) L = MAX(L, EXPONENT(AI))
-           END DO
-           AR = ABS(REAL(A(J,J)))
-           AI = AIMAG(A(J,J))
-           IF ((.NOT. (AR .LE. HUGE(ZERO))) .OR. (.NOT. (AI .EQ. ZERO))) THEN
-              IF (DBGU .NE. MININT) WRITE (DBGU,*) J, ',', A(J,J)
+     DO J = 1, N
+        DO I = 1, J-1
+           AR = ABS(REAL(A(I,J)))
+           AI = ABS(AIMAG(A(I,J)))
+           IF ((.NOT. (AR .LE. HUGE(ZERO))) .OR. (.NOT. (AI .LE. HUGE(ZERO)))) THEN
+              IF (DBGU .NE. MININT) WRITE (DBGU,*) I, ',', J, ',', A(I,J)
               INFO = -3
               RETURN
            END IF
            IF (AR .NE. ZERO) L = MAX(L, EXPONENT(AR))
+           IF (AI .NE. ZERO) L = MAX(L, EXPONENT(AI))
         END DO
-     ELSE ! LOWER
-        DO J = 1, N
-           AR = ABS(REAL(A(J,J)))
-           AI = AIMAG(A(J,J))
-           IF ((.NOT. (AR .LE. HUGE(ZERO))) .OR. (.NOT. (AI .EQ. ZERO))) THEN
-              IF (DBGU .NE. MININT) WRITE (DBGU,*) J, ',', A(J,J)
-              INFO = -3
-              RETURN
-           END IF
-           IF (AR .NE. ZERO) L = MAX(L, EXPONENT(AR))
-           DO I = J+1, N
-              AR = ABS(REAL(A(I,J)))
-              AI = ABS(AIMAG(A(I,J)))
-              IF ((.NOT. (AR .LE. HUGE(ZERO))) .OR. (.NOT. (AI .LE. HUGE(ZERO)))) THEN
-                 IF (DBGU .NE. MININT) WRITE (DBGU,*) I, ',', J, ',', A(I,J)
-                 INFO = -3
-                 RETURN
-              END IF
-              IF (AR .NE. ZERO) L = MAX(L, EXPONENT(AR))
-              IF (AI .NE. ZERO) L = MAX(L, EXPONENT(AI))
-           END DO
-        END DO
-     END IF
+        AR = ABS(REAL(A(J,J)))
+        AI = AIMAG(A(J,J))
+        IF ((.NOT. (AR .LE. HUGE(ZERO))) .OR. (.NOT. (AI .EQ. ZERO))) THEN
+           IF (DBGU .NE. MININT) WRITE (DBGU,*) J, ',', A(J,J)
+           INFO = -3
+           RETURN
+        END IF
+        IF (AR .NE. ZERO) L = MAX(L, EXPONENT(AR))
+     END DO
   ELSE ! N = 1
      IF (AIMAG(A(1,1)) .NE. ZERO) THEN
         IF (DBGU .NE. MININT) WRITE (DBGU,*) A(J,J)
@@ -189,55 +173,28 @@ SUBROUTINE ZJAEVD(JOB, N, A, LDA, U, LDU, S, INFO)
   L = 0
   M = 0
   IF (S .EQ. 0) THEN
-     IF (UPPER) THEN
-        DO J = 1, N
-           DO I = 1, J-1
-              AR = REAL(A(I,J))
-              AI = AIMAG(A(I,J))
-              IF (AR .NE. ZERO) L = L + 1
-              IF (AI .NE. ZERO) M = M + 1
-           END DO
-           AR = REAL(A(J,J))
-           A(J,J) = CMPLX(AR, ZERO, c_double)
+     DO J = 1, N
+        DO I = 1, J-1
+           AR = REAL(A(I,J))
+           AI = AIMAG(A(I,J))
+           IF (AR .NE. ZERO) L = L + 1
+           IF (AI .NE. ZERO) M = M + 1
         END DO
-     ELSE ! LOWER
-        DO J = 1, N
-           AR = REAL(A(J,J))
-           A(J,J) = CMPLX(AR, ZERO, c_double)
-           DO I = J+1, N
-              AR = REAL(A(I,J))
-              AI = AIMAG(A(I,J))
-              IF (AR .NE. ZERO) L = L + 1
-              IF (AI .NE. ZERO) M = M + 1
-           END DO
-        END DO
-     END IF
+        AR = REAL(A(J,J))
+        A(J,J) = CMPLX(AR, ZERO, c_double)
+     END DO
   ELSE ! S .NE. 0
-     IF (UPPER) THEN
-        DO J = 1, N
-           DO I = 1, J-1
-              AR = SCALE(REAL(A(I,J)), S)
-              AI = SCALE(AIMAG(A(I,J)), S)
-              IF (AR .NE. ZERO) L = L + 1
-              IF (AI .NE. ZERO) M = M + 1
-              A(I,J) = CMPLX(AR, AI, c_double)
-           END DO
-           AR = SCALE(REAL(A(J,J)), S)
-           A(J,J) = CMPLX(AR, ZERO, c_double)
+     DO J = 1, N
+        DO I = 1, J-1
+           AR = SCALE(REAL(A(I,J)), S)
+           AI = SCALE(AIMAG(A(I,J)), S)
+           IF (AR .NE. ZERO) L = L + 1
+           IF (AI .NE. ZERO) M = M + 1
+           A(I,J) = CMPLX(AR, AI, c_double)
         END DO
-     ELSE ! LOWER
-        DO J = 1, N
-           AR = SCALE(REAL(A(J,J)), S)
-           A(J,J) = CMPLX(AR, ZERO, c_double)
-           DO I = J+1, N
-              AR = SCALE(REAL(A(I,J)), S)
-              AI = SCALE(AIMAG(A(I,J)), S)
-              IF (AR .NE. ZERO) L = L + 1
-              IF (AI .NE. ZERO) M = M + 1
-              A(I,J) = CMPLX(AR, AI, c_double)
-           END DO
-        END DO
-     END IF
+        AR = SCALE(REAL(A(J,J)), S)
+        A(J,J) = CMPLX(AR, ZERO, c_double)
+     END DO
   END IF
   IF (M .EQ. 0) THEN
      IF (L .EQ. 0) THEN
@@ -266,85 +223,45 @@ SUBROUTINE ZJAEVD(JOB, N, A, LDA, U, LDU, S, INFO)
         RETURN
      END IF
      XA = -ONE
-     IF (UPPER) THEN
-        DO J = 2, N
-           DO I = 1, J-1
-              AR = ABS(REAL(A(I,J)))
-              AI = ABS(AIMAG(A(I,J)))
-              AA = CR_HYPOT(AR, AI)
-              AR = REAL(A(I,I))
-              AI = REAL(A(J,J))
-              IF ((AA .GT. XA) .OR. ((AA .EQ. XA) .AND. &
-                   ((AR .LT. AI) .OR. ((AR .EQ. ZERO) .AND. (AI .EQ. ZERO) .AND. (SIGN(ONE, AR) .LT. SIGN(ONE, AI)))))) THEN
-                 XA = AA
-                 P = I
-                 Q = J
-              END IF
-           END DO
+     DO J = 2, N
+        DO I = 1, J-1
+           AR = ABS(REAL(A(I,J)))
+           AI = ABS(AIMAG(A(I,J)))
+           AA = CR_HYPOT(AR, AI)
+           AR = REAL(A(I,I))
+           AI = REAL(A(J,J))
+           IF ((AA .GT. XA) .OR. ((AA .EQ. XA) .AND. &
+                ((AR .LT. AI) .OR. ((AR .EQ. ZERO) .AND. (AI .EQ. ZERO) .AND. (SIGN(ONE, AR) .LT. SIGN(ONE, AI)))))) THEN
+              XA = AA
+              P = I
+              Q = J
+           END IF
         END DO
-     ELSE ! LOWER
-        DO J = 1, N-1
-           DO I = J+1, N
-              AR = ABS(REAL(A(I,J)))
-              AI = ABS(AIMAG(A(I,J)))
-              AA = CR_HYPOT(AR, AI)
-              AR = REAL(A(J,J))
-              AI = REAL(A(I,I))
-              IF ((AA .GT. XA) .OR. ((AA .EQ. XA) .AND. &
-                   ((AR .LT. AI) .OR. ((AR .EQ. ZERO) .AND. (AI .EQ. ZERO) .AND. (SIGN(ONE, AR) .LT. SIGN(ONE, AI)))))) THEN
-                 XA = AA
-                 P = J
-                 Q = I
-              END IF
-           END DO
-        END DO
-     END IF
+     END DO
      AR = REAL(A(P,P))
      AI = REAL(A(Q,Q))
      AA = ABS(AR - AI)
      IF (.NOT. ((SCALE(XA, 1) / AA) .GT. ZERO)) THEN
-        IF (UPPER) THEN
-           A(P,Q) = CZERO
-        ELSE ! LOWER
-           A(Q,P) = CZERO
-        END IF
+        A(P,Q) = CZERO
         IF ((AR .LT. AI) .OR. ((AR .EQ. ZERO) .AND. (AI .EQ. ZERO) .AND. (SIGN(ONE, AR) .LT. SIGN(ONE, AI)))) THEN
            IF (DBGU .NE. MININT) WRITE (DBGU,'(2(A,I2))') '[INFO] Swapping ', P, ' and ', Q
            A(P,P) = CMPLX(AI, ZERO, c_double)
            A(Q,Q) = CMPLX(AR, ZERO, c_double)
-           IF (UPPER) THEN
-              DO I = 1, P-1
-                 SN1 = A(I,P)
-                 A(I,P) = A(I,Q)
-                 A(I,Q) = SN1
-              END DO
-              DO I = P+1, Q-1
-                 SN1 = CONJG(A(I,Q))
-                 A(I,Q) = CONJG(A(P,I))
-                 A(P,I) = SN1
-              END DO
-              DO J = Q+1, N
-                 SN1 = A(P,J)
-                 A(P,J) = A(Q,J)
-                 A(Q,J) = SN1
-              END DO
-           ELSE ! LOWER
-              DO I = Q+1, N
-                 SN1 = A(I,P)
-                 A(I,P) = A(I,Q)
-                 A(I,Q) = SN1
-              END DO
-              DO I = P+1, Q-1
-                 SN1 = CONJG(A(I,P))
-                 A(I,P) = CONJG(A(Q,I))
-                 A(Q,I) = SN1
-              END DO
-              DO J = 1, P-1
-                 SN1 = A(P,J)
-                 A(P,J) = A(Q,J)
-                 A(Q,J) = SN1
-              END DO
-           END IF
+           DO I = 1, P-1
+              SN1 = A(I,P)
+              A(I,P) = A(I,Q)
+              A(I,Q) = SN1
+           END DO
+           DO I = P+1, Q-1
+              SN1 = CONJG(A(I,Q))
+              A(I,Q) = CONJG(A(P,I))
+              A(P,I) = SN1
+           END DO
+           DO J = Q+1, N
+              SN1 = A(P,J)
+              A(P,J) = A(Q,J)
+              A(Q,J) = SN1
+           END DO
            IF (ACCVEC) THEN
               DO I = 1, N
                  SN1 = U(I,P)
@@ -358,7 +275,7 @@ SUBROUTINE ZJAEVD(JOB, N, A, LDA, U, LDU, S, INFO)
         ELSE ! the eigenvalues are in the non-ascending order
            EXIT
         END IF
-     ELSE IF (UPPER) THEN
+     ELSE ! transform
         IF (AIMAG(A(P,Q)) .EQ. ZERO) THEN
            AR = REAL(A(P,P))
            AI = REAL(A(P,Q))
@@ -379,33 +296,8 @@ SUBROUTINE ZJAEVD(JOB, N, A, LDA, U, LDU, S, INFO)
               CALL ZJAEV2(A(P,P), A(P,Q), A(Q,Q), RT1, RT2, CS1, SN1)
            END IF
         END IF
-     ELSE ! LOWER
-        IF (AIMAG(A(Q,P)) .EQ. ZERO) THEN
-           AR = REAL(A(P,P))
-           AI = REAL(A(Q,P))
-           AA = REAL(A(Q,Q))
-           AP = CMPLX(XA, ZERO, c_double)
-           IF (LAPACK) THEN
-              CALL DLAEV2(AR, AI, AA, RT1, RT2, CS1, XA)
-           ELSE ! DJAEV2
-              CALL DJAEV2(AR, AI, AA, RT1, RT2, CS1, XA)
-           END IF
-           SN1 = CMPLX(XA, ZERO, c_double)
-           XA = REAL(AP)
-        ELSE ! complex
-           AP = CMPLX(XA, ONE, c_double)
-           IF (LAPACK) THEN
-              CALL ZLAEV2(A(P,P), CONJG(A(Q,P)), A(Q,Q), RT1, RT2, CS1, SN1)
-           ELSE ! ZJAEV2
-              CALL ZJAEV2(A(P,P), CONJG(A(Q,P)), A(Q,Q), RT1, RT2, CS1, SN1)
-           END IF
-        END IF
      END IF
-     IF (UPPER) THEN
-        A(P,Q) = CZERO
-     ELSE ! LOWER
-        A(Q,P) = CZERO
-     END IF
+     A(P,Q) = CZERO
      IDENT = ((RT1 .GE. RT2) .OR. ((RT1 .EQ. ZERO) .AND. (RT2 .EQ. ZERO) .AND. (SIGN(ONE, RT1) .GE. SIGN(ONE, RT2))))
      ! IDENT = .TRUE.
      ! U = [ CS1 -CONJG(SN1) ]
@@ -427,182 +319,92 @@ SUBROUTINE ZJAEVD(JOB, N, A, LDA, U, LDU, S, INFO)
      M = L
      IF (RT1 .NE. ZERO) L = MAX(L, EXPONENT(RT1))
      IF (RT2 .NE. ZERO) L = MAX(L, EXPONENT(RT2))
-     IF (UPPER) THEN
-        IF (IDENT) THEN
-           DO I = 1, P-1
-              AP = A(I,P) * CS1 + A(I,Q) * SN1
-              AQ = A(I,Q) * CS1 - A(I,P) * CONJG(SN1)
-              A(I,P) = AP
-              AR = REAL(AP)
-              AI = AIMAG(AP)
-              IF (AR .NE. ZERO) L = MAX(L, EXPONENT(AR))
-              IF (AI .NE. ZERO) L = MAX(L, EXPONENT(AI))
-              A(I,Q) = AQ
-              AR = REAL(AQ)
-              AI = AIMAG(AQ)
-              IF (AR .NE. ZERO) L = MAX(L, EXPONENT(AR))
-              IF (AI .NE. ZERO) L = MAX(L, EXPONENT(AI))
-           END DO
-           DO I = P+1, Q-1
-              AP = CONJG(A(P,I)) * CS1 + A(I,Q) * SN1
-              AQ = A(I,Q) * CS1 - CONJG(A(P,I)) * CONJG(SN1)
-              A(P,I) = CONJG(AP)
-              AR = REAL(AP)
-              AI = AIMAG(AP)
-              IF (AR .NE. ZERO) L = MAX(L, EXPONENT(AR))
-              IF (AI .NE. ZERO) L = MAX(L, EXPONENT(AI))
-              A(I,Q) = AQ
-              AR = REAL(AQ)
-              AI = AIMAG(AQ)
-              IF (AR .NE. ZERO) L = MAX(L, EXPONENT(AR))
-              IF (AI .NE. ZERO) L = MAX(L, EXPONENT(AI))
-           END DO
-           DO J = Q+1, N
-              AP = CS1 * A(P,J) + CONJG(SN1) * A(Q,J)
-              AQ = CS1 * A(Q,J) - SN1 * A(P,J)
-              A(P,J) = AP
-              AR = REAL(AP)
-              AI = AIMAG(AP)
-              IF (AR .NE. ZERO) L = MAX(L, EXPONENT(AR))
-              IF (AI .NE. ZERO) L = MAX(L, EXPONENT(AI))
-              A(Q,J) = AQ
-              AR = REAL(AQ)
-              AI = AIMAG(AQ)
-              IF (AR .NE. ZERO) L = MAX(L, EXPONENT(AR))
-              IF (AI .NE. ZERO) L = MAX(L, EXPONENT(AI))
-           END DO
-        ELSE ! PERM
-           DO I = 1, P-1
-              AP = A(I,P) * CS1 + A(I,Q) * SN1
-              AQ = A(I,Q) * CS1 - A(I,P) * CONJG(SN1)
-              A(I,P) = AQ
-              AR = REAL(AQ)
-              AI = AIMAG(AQ)
-              IF (AR .NE. ZERO) L = MAX(L, EXPONENT(AR))
-              IF (AI .NE. ZERO) L = MAX(L, EXPONENT(AI))
-              A(I,Q) = AP
-              AR = REAL(AP)
-              AI = AIMAG(AP)
-              IF (AR .NE. ZERO) L = MAX(L, EXPONENT(AR))
-              IF (AI .NE. ZERO) L = MAX(L, EXPONENT(AI))
-           END DO
-           DO I = P+1, Q-1
-              AP = CONJG(A(P,I)) * CS1 + A(I,Q) * SN1
-              AQ = A(I,Q) * CS1 - CONJG(A(P,I)) * CONJG(SN1)
-              A(P,I) = CONJG(AQ)
-              AR = REAL(AQ)
-              AI = AIMAG(AQ)
-              IF (AR .NE. ZERO) L = MAX(L, EXPONENT(AR))
-              IF (AI .NE. ZERO) L = MAX(L, EXPONENT(AI))
-              A(I,Q) = AP
-              AR = REAL(AP)
-              AI = AIMAG(AP)
-              IF (AR .NE. ZERO) L = MAX(L, EXPONENT(AR))
-              IF (AI .NE. ZERO) L = MAX(L, EXPONENT(AI))
-           END DO
-           DO J = Q+1, N
-              AP = CS1 * A(P,J) + CONJG(SN1) * A(Q,J)
-              AQ = CS1 * A(Q,J) - SN1 * A(P,J)
-              A(P,J) = AQ
-              AR = REAL(AQ)
-              AI = AIMAG(AQ)
-              IF (AR .NE. ZERO) L = MAX(L, EXPONENT(AR))
-              IF (AI .NE. ZERO) L = MAX(L, EXPONENT(AI))
-              A(Q,J) = AP
-              AR = REAL(AP)
-              AI = AIMAG(AP)
-              IF (AR .NE. ZERO) L = MAX(L, EXPONENT(AR))
-              IF (AI .NE. ZERO) L = MAX(L, EXPONENT(AI))
-           END DO
-        END IF
-     ELSE ! LOWER
-        IF (IDENT) THEN
-           DO I = Q+1, N
-              AP = A(I,P) * CS1 + A(I,Q) * SN1
-              AQ = A(I,Q) * CS1 - A(I,P) * CONJG(SN1)
-              A(I,P) = AP
-              AR = REAL(AP)
-              AI = AIMAG(AP)
-              IF (AR .NE. ZERO) L = MAX(L, EXPONENT(AR))
-              IF (AI .NE. ZERO) L = MAX(L, EXPONENT(AI))
-              A(I,Q) = AQ
-              AR = REAL(AQ)
-              AI = AIMAG(AQ)
-              IF (AR .NE. ZERO) L = MAX(L, EXPONENT(AR))
-              IF (AI .NE. ZERO) L = MAX(L, EXPONENT(AI))
-           END DO
-           DO I = P+1, Q-1
-              AP = A(I,P) * CS1 + CONJG(A(Q,I)) * SN1
-              AQ = CONJG(A(Q,I)) * CS1 - A(I,P) * CONJG(SN1)
-              A(I,P) = AQ
-              AR = REAL(AQ)
-              AI = AIMAG(AQ)
-              IF (AR .NE. ZERO) L = MAX(L, EXPONENT(AR))
-              IF (AI .NE. ZERO) L = MAX(L, EXPONENT(AI))
-              A(Q,I) = CONJG(AP)
-              AR = REAL(AP)
-              AI = AIMAG(AP)
-              IF (AR .NE. ZERO) L = MAX(L, EXPONENT(AR))
-              IF (AI .NE. ZERO) L = MAX(L, EXPONENT(AI))
-           END DO
-           DO J = 1, P-1
-              AP = CS1 * A(P,J) + CONJG(SN1) * A(Q,J)
-              AQ = CS1 * A(Q,J) - SN1 * A(P,J)
-              A(P,J) = AP
-              AR = REAL(AP)
-              AI = AIMAG(AP)
-              IF (AR .NE. ZERO) L = MAX(L, EXPONENT(AR))
-              IF (AI .NE. ZERO) L = MAX(L, EXPONENT(AI))
-              A(Q,J) = AQ
-              AR = REAL(AQ)
-              AI = AIMAG(AQ)
-              IF (AR .NE. ZERO) L = MAX(L, EXPONENT(AR))
-              IF (AI .NE. ZERO) L = MAX(L, EXPONENT(AI))
-           END DO
-        ELSE ! PERM
-           DO I = Q+1, N
-              AP = A(I,P) * CS1 + A(I,Q) * SN1
-              AQ = A(I,Q) * CS1 - A(I,P) * CONJG(SN1)
-              A(I,P) = AQ
-              AR = REAL(AQ)
-              AI = AIMAG(AQ)
-              IF (AR .NE. ZERO) L = MAX(L, EXPONENT(AR))
-              IF (AI .NE. ZERO) L = MAX(L, EXPONENT(AI))
-              A(I,Q) = AP
-              AR = REAL(AP)
-              AI = AIMAG(AP)
-              IF (AR .NE. ZERO) L = MAX(L, EXPONENT(AR))
-              IF (AI .NE. ZERO) L = MAX(L, EXPONENT(AI))
-           END DO
-           DO I = P+1, Q-1
-              AP = A(I,P) * CS1 + CONJG(A(Q,I)) * SN1
-              AQ = CONJG(A(Q,I)) * CS1 - A(I,P) * CONJG(SN1)
-              A(I,P) = AP
-              AR = REAL(AP)
-              AI = AIMAG(AP)
-              IF (AR .NE. ZERO) L = MAX(L, EXPONENT(AR))
-              IF (AI .NE. ZERO) L = MAX(L, EXPONENT(AI))
-              A(Q,I) = CONJG(AQ)
-              AR = REAL(AQ)
-              AI = AIMAG(AQ)
-              IF (AR .NE. ZERO) L = MAX(L, EXPONENT(AR))
-              IF (AI .NE. ZERO) L = MAX(L, EXPONENT(AI))
-           END DO
-           DO J = 1, P-1
-              AP = CS1 * A(P,J) + CONJG(SN1) * A(Q,J)
-              AQ = CS1 * A(Q,J) - SN1 * A(P,J)
-              A(P,J) = AQ
-              AR = REAL(AQ)
-              AI = AIMAG(AQ)
-              IF (AR .NE. ZERO) L = MAX(L, EXPONENT(AR))
-              IF (AI .NE. ZERO) L = MAX(L, EXPONENT(AI))
-              A(Q,J) = AP
-              AR = REAL(AP)
-              AI = AIMAG(AP)
-              IF (AR .NE. ZERO) L = MAX(L, EXPONENT(AR))
-              IF (AI .NE. ZERO) L = MAX(L, EXPONENT(AI))
-           END DO
-        END IF
+     IF (IDENT) THEN
+        DO I = 1, P-1
+           AP = A(I,P) * CS1 + A(I,Q) * SN1
+           AQ = A(I,Q) * CS1 - A(I,P) * CONJG(SN1)
+           A(I,P) = AP
+           AR = REAL(AP)
+           AI = AIMAG(AP)
+           IF (AR .NE. ZERO) L = MAX(L, EXPONENT(AR))
+           IF (AI .NE. ZERO) L = MAX(L, EXPONENT(AI))
+           A(I,Q) = AQ
+           AR = REAL(AQ)
+           AI = AIMAG(AQ)
+           IF (AR .NE. ZERO) L = MAX(L, EXPONENT(AR))
+           IF (AI .NE. ZERO) L = MAX(L, EXPONENT(AI))
+        END DO
+        DO I = P+1, Q-1
+           AP = CONJG(A(P,I)) * CS1 + A(I,Q) * SN1
+           AQ = A(I,Q) * CS1 - CONJG(A(P,I)) * CONJG(SN1)
+           A(P,I) = CONJG(AP)
+           AR = REAL(AP)
+           AI = AIMAG(AP)
+           IF (AR .NE. ZERO) L = MAX(L, EXPONENT(AR))
+           IF (AI .NE. ZERO) L = MAX(L, EXPONENT(AI))
+           A(I,Q) = AQ
+           AR = REAL(AQ)
+           AI = AIMAG(AQ)
+           IF (AR .NE. ZERO) L = MAX(L, EXPONENT(AR))
+           IF (AI .NE. ZERO) L = MAX(L, EXPONENT(AI))
+        END DO
+        DO J = Q+1, N
+           AP = CS1 * A(P,J) + CONJG(SN1) * A(Q,J)
+           AQ = CS1 * A(Q,J) - SN1 * A(P,J)
+           A(P,J) = AP
+           AR = REAL(AP)
+           AI = AIMAG(AP)
+           IF (AR .NE. ZERO) L = MAX(L, EXPONENT(AR))
+           IF (AI .NE. ZERO) L = MAX(L, EXPONENT(AI))
+           A(Q,J) = AQ
+           AR = REAL(AQ)
+           AI = AIMAG(AQ)
+           IF (AR .NE. ZERO) L = MAX(L, EXPONENT(AR))
+           IF (AI .NE. ZERO) L = MAX(L, EXPONENT(AI))
+        END DO
+     ELSE ! PERM
+        DO I = 1, P-1
+           AP = A(I,P) * CS1 + A(I,Q) * SN1
+           AQ = A(I,Q) * CS1 - A(I,P) * CONJG(SN1)
+           A(I,P) = AQ
+           AR = REAL(AQ)
+           AI = AIMAG(AQ)
+           IF (AR .NE. ZERO) L = MAX(L, EXPONENT(AR))
+           IF (AI .NE. ZERO) L = MAX(L, EXPONENT(AI))
+           A(I,Q) = AP
+           AR = REAL(AP)
+           AI = AIMAG(AP)
+           IF (AR .NE. ZERO) L = MAX(L, EXPONENT(AR))
+           IF (AI .NE. ZERO) L = MAX(L, EXPONENT(AI))
+        END DO
+        DO I = P+1, Q-1
+           AP = CONJG(A(P,I)) * CS1 + A(I,Q) * SN1
+           AQ = A(I,Q) * CS1 - CONJG(A(P,I)) * CONJG(SN1)
+           A(P,I) = CONJG(AQ)
+           AR = REAL(AQ)
+           AI = AIMAG(AQ)
+           IF (AR .NE. ZERO) L = MAX(L, EXPONENT(AR))
+           IF (AI .NE. ZERO) L = MAX(L, EXPONENT(AI))
+           A(I,Q) = AP
+           AR = REAL(AP)
+           AI = AIMAG(AP)
+           IF (AR .NE. ZERO) L = MAX(L, EXPONENT(AR))
+           IF (AI .NE. ZERO) L = MAX(L, EXPONENT(AI))
+        END DO
+        DO J = Q+1, N
+           AP = CS1 * A(P,J) + CONJG(SN1) * A(Q,J)
+           AQ = CS1 * A(Q,J) - SN1 * A(P,J)
+           A(P,J) = AQ
+           AR = REAL(AQ)
+           AI = AIMAG(AQ)
+           IF (AR .NE. ZERO) L = MAX(L, EXPONENT(AR))
+           IF (AI .NE. ZERO) L = MAX(L, EXPONENT(AI))
+           A(Q,J) = AP
+           AR = REAL(AP)
+           AI = AIMAG(AP)
+           IF (AR .NE. ZERO) L = MAX(L, EXPONENT(AR))
+           IF (AI .NE. ZERO) L = MAX(L, EXPONENT(AI))
+        END DO
      END IF
      IF (ACCVEC) THEN
         IF (IDENT) THEN
@@ -628,7 +430,6 @@ SUBROUTINE ZJAEVD(JOB, N, A, LDA, U, LDU, S, INFO)
      END IF
      IF (M .LT. 0) THEN
         IF (DBGU .NE. MININT) WRITE (DBGU,'(A,I4)') '[INFO] Rescaling A by 2**', M
-        IF (UPPER) THEN
            DO J = 1, N
               DO I = 1, J-1
                  AR = SCALE(REAL(A(I,J)), M)
@@ -638,17 +439,6 @@ SUBROUTINE ZJAEVD(JOB, N, A, LDA, U, LDU, S, INFO)
               AR = SCALE(REAL(A(J,J)), M)
               A(J,J) = CMPLX(AR, ZERO, c_double)
            END DO
-        ELSE ! LOWER
-           DO J = 1, N
-              AR = SCALE(REAL(A(J,J)), M)
-              A(J,J) = CMPLX(AR, ZERO, c_double)
-              DO I = J+1, N
-                 AR = SCALE(REAL(A(I,J)), M)
-                 AI = SCALE(AIMAG(A(I,J)), M)
-                 A(I,J) = CMPLX(AR, AI, c_double)
-              END DO
-           END DO
-        END IF
         S = S + M
      END IF
   END DO
