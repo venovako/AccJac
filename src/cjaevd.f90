@@ -404,7 +404,7 @@ SUBROUTINE CJAEVD(JOB, N, A, LDA, U, LDU, S, INFO)
      ELSE ! LOWER
         A(Q,P) = CZERO
      END IF
-     IDENT = ((RT1 .GE. RT2) .OR. ((RT1 .EQ. ZERO) .AND. (RT2 .EQ. ZERO) .AND. (SIGN(ONE, RT1) .LT. SIGN(ONE, RT2))))
+     IDENT = ((RT1 .GE. RT2) .OR. ((RT1 .EQ. ZERO) .AND. (RT2 .EQ. ZERO) .AND. (SIGN(ONE, RT1) .GE. SIGN(ONE, RT2))))
      ! IDENT = .TRUE.
      ! U = [ CS1 -CONJG(SN1) ]
      !     [ SN1     CS1     ]
