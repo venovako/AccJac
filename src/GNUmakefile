@@ -10,7 +10,7 @@ include local.mk
 MKFS += local.mk
 endif # local.mk
 
-OBJS=\
+OBJ2=\
 cjaev2.o\
 djaev2.o\
 qjaev2.o\
@@ -24,20 +24,31 @@ sjiev2.o\
 yjiev2.o\
 zjiev2.o
 
-EXES=\
+OBJD=\
+cjaevd.o\
+zjaevd.o
+
+LIB2=libjaev2.a
+LIBD=libjaevd.a
+
+EXE2=\
 ctest.exe\
 dtest.exe\
 stest.exe\
 ztest.exe
 
+EXED=\
+cevdj.exe\
+zevdj.exe
+
 LDFLAGS=-rdynamic
 ifeq ($(COMPILER),gfortran)
-OBJS += \
+OBJ2 += \
 wjaev2.o\
 xjaev2.o\
 wjiev2.o\
 xjiev2.o
-EXES += \
+EXE2 += \
 wtest.exe\
 xtest.exe
 else # !gfortran
@@ -45,14 +56,17 @@ ifeq ($(OS),Linux)
 LDFLAGS += -static-libgcc
 endif # Linux
 endif # ?gfortran
-LDFLAGS += -L. -ljaev2 -L../../libpvn/src -lpvn $(CR_OBJS) $(LAPACK)
+LDFLAGS += -L. -ljaevd -ljaev2 -L../../libpvn/src -lpvn $(CR_OBJS) $(LAPACK)
 
 .PHONY: all help clean
 
-all: libjaev2.a $(EXES)
+all: $(LIB2) $(LIBD) $(EXE2) $(EXED)
 
-libjaev2.a: $(OBJS)
-	$(AR) $(ARFLAGS) $@ $(OBJS)
+$(LIB2): $(OBJ2)
+	$(AR) $(ARFLAGS) $@ $(OBJ2)
+
+$(LIBD): $(OBJD)
+	$(AR) $(ARFLAGS) $@ $(OBJD)
 
 help:
 	@echo $(MAKE) "[COMPILER=gfortran|ifort|ifx] [COMPILER_PREFIX=...] [COMPILER_SUFFIX=...] [ABI=lp64|ilp64] [NDEBUG=optimization_level] [CR_MATH=dir] [all|help|clean]"
