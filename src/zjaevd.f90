@@ -50,7 +50,7 @@ SUBROUTINE ZJAEVD(JOB, N, A, LDA, U, LDU, S, INFO)
      END SUBROUTINE ZLAEV2
   END INTERFACE
 
-  REAL(c_double), PARAMETER :: ZERO = 0.0_c_double, ONE = 1.0_c_double
+  REAL(c_double), PARAMETER :: ZERO = 0.0_c_double, ONE = 1.0_c_double, MINFLT = 4.94065645841246544E-324_c_double
   COMPLEX(c_double), PARAMETER :: CZERO = CMPLX(ZERO, ZERO, c_double), CONE = CMPLX(ONE, ZERO, c_double)
   INTEGER, PARAMETER :: ESHFT = 4, MININT = -HUGE(0) - 1
 
@@ -238,10 +238,27 @@ SUBROUTINE ZJAEVD(JOB, N, A, LDA, U, LDU, S, INFO)
            END IF
         END DO
      END DO
-     AR = REAL(A(P,P))
-     AI = REAL(A(Q,Q))
-     AA = ABS(AR - AI)
-     IF (.NOT. ((SCALE(XA, 1) / AA) .GT. ZERO)) THEN
+     IF ((XA .LT. ZERO) .OR. (.NOT. (XA .LE. HUGE(ZERO)))) THEN
+        ! should never happen
+        IF (D .NE. MININT) WRITE (D,*) XA
+        INFO = -7
+        RETURN
+     END IF
+
+     IF (LAPACK) THEN
+        ! orthogonality issues for small angles
+        AR = REAL(A(P,P))
+        AI = REAL(A(Q,Q))
+        AA = ABS(AR - AI)
+        IDENT = (.NOT. ((SCALE(XA, 1) / AA) .GT. ZERO))
+     ELSE ! ZJAEV2
+        AR = ABS(REAL(A(P,Q)))
+        AI = ABS(AIMAG(A(P,Q)))
+        IDENT = ((XA .EQ. ZERO) .OR. ((XA .EQ. MINFLT) .AND. (AR .EQ. MINFLT) .AND. (AI .EQ. MINFLT))) 
+     END IF
+     IF (IDENT) THEN
+        AR = REAL(A(P,P))
+        AI = REAL(A(Q,Q))
         A(P,Q) = CZERO
         IF ((AR .LT. AI) .OR. ((AR .EQ. ZERO) .AND. (AI .EQ. ZERO) .AND. (SIGN(ONE, AR) .LT. SIGN(ONE, AI)))) THEN
            IF (D .NE. MININT) WRITE (D,'(2(A,I2))') '[INFO] Swapping ', P, ' and ', Q
@@ -271,6 +288,7 @@ SUBROUTINE ZJAEVD(JOB, N, A, LDA, U, LDU, S, INFO)
            END IF
            CYCLE
         ELSE IF (XA .GT. ZERO) THEN
+           IF (D .NE. MININT) WRITE (D,'(2(A,I2),A)') '[INFO] Clearing A(', P, ',', Q, ')'
            CYCLE
         ELSE ! the eigenvalues are in the non-ascending order
            EXIT
@@ -311,6 +329,7 @@ SUBROUTINE ZJAEVD(JOB, N, A, LDA, U, LDU, S, INFO)
      IF (IDENT) THEN
         A(P,P) = CMPLX(RT1, ZERO, c_double)
         A(Q,Q) = CMPLX(RT2, ZERO, c_double)
+        IF ((CS1 .EQ. ONE) .AND. (SN1 .EQ. CZERO)) CYCLE
      ELSE ! PERM
         A(P,P) = CMPLX(RT2, ZERO, c_double)
         A(Q,Q) = CMPLX(RT1, ZERO, c_double)
