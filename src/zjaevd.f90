@@ -263,7 +263,7 @@ SUBROUTINE ZJAEVD(JOB, N, A, LDA, U, LDU, S, INFO)
         AI = REAL(A(Q,Q))
         A(P,Q) = CZERO
         IF ((AR .LT. AI) .OR. ((AR .EQ. ZERO) .AND. (AI .EQ. ZERO) .AND. (SIGN(ONE, AR) .LT. SIGN(ONE, AI)))) THEN
-           IF (D .NE. MININT) WRITE (D,'(2(A,I3))') '[INFO] Swapping ', P, ' and ', Q
+           IF (D .NE. MININT) WRITE (D,'(2(A,I4))') '[INFO] Swapping ', P, ' and ', Q
            A(P,P) = CMPLX(AI, ZERO, c_double)
            A(Q,Q) = CMPLX(AR, ZERO, c_double)
            DO I = 1, P-1
@@ -290,7 +290,7 @@ SUBROUTINE ZJAEVD(JOB, N, A, LDA, U, LDU, S, INFO)
            END IF
            CYCLE
         ELSE IF (XA .GT. ZERO) THEN
-           IF (D .NE. MININT) WRITE (D,'(2(A,I3),A)') '[INFO] Clearing A(', P, ',', Q, ')'
+           IF (D .NE. MININT) WRITE (D,'(2(A,I4),A)') '[INFO] Clearing A(', P, ',', Q, ')'
            CYCLE
         ELSE ! the eigenvalues are in the non-ascending order
            EXIT
@@ -325,7 +325,7 @@ SUBROUTINE ZJAEVD(JOB, N, A, LDA, U, LDU, S, INFO)
      ! IDENT = .FALSE.
      ! U = [ -CONJG(SN1) CS1 ]
      !     [     CS1     SN1 ]
-     IF (D .NE. MININT) WRITE (D,'(I6,2(A,I3),A,ES25.17E3,2(A,L1),5(A,ES25.17E3),A)') &
+     IF (D .NE. MININT) WRITE (D,'(I8,2(A,I4),A,ES25.17E3,2(A,L1),5(A,ES25.17E3),A)') &
           K, ',', P, ',', Q, ',', XA, ',', IDENT, ',', (AIMAG(AP) .EQ. ZERO), ',', &
           RT1, ',', RT2, ',', CS1, ',(', REAL(SN1), ',', AIMAG(SN1), ')'
      IF (IDENT) THEN
