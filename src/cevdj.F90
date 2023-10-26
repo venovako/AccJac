@@ -51,7 +51,7 @@ PROGRAM CEVDJ
   READ (UNIT=J, IOSTAT=INFO) A
   IF (INFO .NE. 0) STOP 'error reading a'
   CLOSE(J)
-  IF (S .NE. 0) THEN
+  IF ((S .NE. 0) .AND. (N .LT. 10)) THEN
      DO I = 1, N
         DO J = 1, N
            WRITE (ERROR_UNIT,'(2(A,ES16.9E2))',ADVANCE='NO') '(', REAL(A(I,J)), ',', AIMAG(A(I,J))
