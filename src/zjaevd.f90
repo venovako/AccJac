@@ -1,6 +1,6 @@
 !>@brief \b ZJAEVD computes the EVD of a double precision Hermitian NxN matrix A by the Jacobi method.
 !!
-!!@param JOB [IN]; bit 0: accumulate the eigenvectors U, bit 1: use the LAPACK's ZLAEV2 instead of ZJAEV2.
+!!@param JOB [IN]; bit 0: accumulate the eigenvectors U, bit 1: use the LAPACK's ZLAEV2 instead of ZJAEV2, bit 2: the alternative convergence criterion.
 !!@param N [IN]; the order of A.
 !!@param A [INOUT]; a double precision complex NxN array (only its UPPER triangle is accessed).
 !!@param LDA [IN]; the leading dimension of A.
@@ -60,7 +60,7 @@ SUBROUTINE ZJAEVD(JOB, N, A, LDA, U, LDU, S, INFO)
 
   COMPLEX(c_double) :: SN1, AP, AQ
   REAL(c_double), TARGET :: AR, AI, AA, XA, RT1, RT2, CS1
-  LOGICAL :: ACCVEC, LAPACK, IDENT
+  LOGICAL :: IDENT, ACCVEC, LAPACK, ALTCVG
   INTEGER :: MAXSTP, I, J, K, L, M, P, Q, D
 
   IF (INFO .GE. 0) THEN
@@ -84,7 +84,7 @@ SUBROUTINE ZJAEVD(JOB, N, A, LDA, U, LDU, S, INFO)
      INFO = -4
   ELSE IF (N .LT. 0) THEN
      INFO = -2
-  ELSE IF ((JOB .LT. 0) .OR. (JOB .GT. 3)) THEN
+  ELSE IF ((JOB .LT. 0) .OR. (JOB .GT. 7)) THEN
      INFO = -1
   ELSE ! dimensions OK
      INFO = 0
@@ -92,6 +92,7 @@ SUBROUTINE ZJAEVD(JOB, N, A, LDA, U, LDU, S, INFO)
   IF (INFO .NE. 0) RETURN
   ACCVEC = (IAND(JOB, 1) .NE. 0)
   LAPACK = (IAND(JOB, 2) .NE. 0)
+  ALTCVG = (IAND(JOB, 4) .NE. 0)
   IF (N .EQ. 0) RETURN
 
   IF (N .GE. 2) THEN
@@ -245,7 +246,8 @@ SUBROUTINE ZJAEVD(JOB, N, A, LDA, U, LDU, S, INFO)
         RETURN
      END IF
 
-     IF (LAPACK) THEN
+     IDENT = ((LAPACK .AND. (.NOT. ALTCVG)) .OR. ((.NOT. LAPACK) .AND. ALTCVG))
+     IF (IDENT) THEN
         ! orthogonality issues for small angles
         AR = REAL(A(P,P))
         AI = REAL(A(Q,Q))
@@ -254,7 +256,7 @@ SUBROUTINE ZJAEVD(JOB, N, A, LDA, U, LDU, S, INFO)
      ELSE ! ZJAEV2
         AR = ABS(REAL(A(P,Q)))
         AI = ABS(AIMAG(A(P,Q)))
-        IDENT = ((XA .EQ. ZERO) .OR. ((XA .EQ. MINFLT) .AND. (AR .EQ. MINFLT) .AND. (AI .EQ. MINFLT))) 
+        IDENT = ((XA .EQ. ZERO) .OR. ((XA .EQ. MINFLT) .AND. (AR .EQ. MINFLT) .AND. (AI .EQ. MINFLT)))
      END IF
      IF (IDENT) THEN
         AR = REAL(A(P,P))
