@@ -209,6 +209,8 @@ SUBROUTINE CJAEVD(JOB, N, A, LDA, U, LDU, S, INFO)
      IF (D .NE. MININT) WRITE (D,'(A)') '[INFO] off-diagonal of A is imaginary'
   END IF
 
+  P = 0
+  Q = 0
   K = 0
   DO WHILE (.TRUE.)
      IF (MAXSTP .GT. 0) THEN
@@ -224,6 +226,8 @@ SUBROUTINE CJAEVD(JOB, N, A, LDA, U, LDU, S, INFO)
         RETURN
      END IF
      XA = -ONE
+     L = 0
+     M = 0
      DO J = 2, N
         DO I = 1, J-1
            AR = ABS(REAL(A(I,J)))
@@ -234,17 +238,19 @@ SUBROUTINE CJAEVD(JOB, N, A, LDA, U, LDU, S, INFO)
            IF ((AA .GT. XA) .OR. ((AA .EQ. XA) .AND. &
                 ((AR .LT. AI) .OR. ((AR .EQ. ZERO) .AND. (AI .EQ. ZERO) .AND. (SIGN(ONE, AR) .LT. SIGN(ONE, AI)))))) THEN
               XA = AA
-              P = I
-              Q = J
+              L = I
+              M = J
            END IF
         END DO
      END DO
-     IF ((XA .LT. ZERO) .OR. (.NOT. (XA .LE. HUGE(ZERO)))) THEN
+     IF ((SIGN(ONE, XA) .LT. ZERO) .OR. (.NOT. (XA .LE. HUGE(ZERO)))) THEN
         ! should never happen
         IF (D .NE. MININT) WRITE (D,*) XA
         INFO = -7
         RETURN
      END IF
+     P = L
+     Q = M
 
      IDENT = ((LAPACK .AND. (.NOT. ALTCVG)) .OR. ((.NOT. LAPACK) .AND. ALTCVG))
      IF (IDENT) THEN
@@ -263,7 +269,7 @@ SUBROUTINE CJAEVD(JOB, N, A, LDA, U, LDU, S, INFO)
         AI = REAL(A(Q,Q))
         A(P,Q) = CZERO
         IF ((AR .LT. AI) .OR. ((AR .EQ. ZERO) .AND. (AI .EQ. ZERO) .AND. (SIGN(ONE, AR) .LT. SIGN(ONE, AI)))) THEN
-           IF (D .NE. MININT) WRITE (D,'(2(A,I4))') '[INFO] Swapping ', P, ' and ', Q
+           IF (D .NE. MININT) WRITE (D,'(2(A,I3))') '[INFO] Swapping ', P, ' and ', Q
            A(P,P) = CMPLX(AI, ZERO, c_float)
            A(Q,Q) = CMPLX(AR, ZERO, c_float)
            DO I = 1, P-1
@@ -290,7 +296,7 @@ SUBROUTINE CJAEVD(JOB, N, A, LDA, U, LDU, S, INFO)
            END IF
            CYCLE
         ELSE IF (XA .GT. ZERO) THEN
-           IF (D .NE. MININT) WRITE (D,'(2(A,I4),A)') '[INFO] Clearing A(', P, ',', Q, ')'
+           IF (D .NE. MININT) WRITE (D,'(2(A,I3),A)') '[INFO] Clearing A(', P, ',', Q, ')'
            CYCLE
         ELSE ! the eigenvalues are in the non-ascending order
            EXIT
@@ -325,9 +331,9 @@ SUBROUTINE CJAEVD(JOB, N, A, LDA, U, LDU, S, INFO)
      ! IDENT = .FALSE.
      ! U = [ -CONJG(SN1) CS1 ]
      !     [     CS1     SN1 ]
-     IF (D .NE. MININT) WRITE (D,'(I8,2(A,I4),A,ES16.9E2,2(A,L1),5(A,ES16.9E2),A)') &
+     IF (D .NE. MININT) WRITE (D,'(I8,2(A,I3),A,ES15.9E2,2(A,L1),5(A,ES16.9E2))') &
           K, ',', P, ',', Q, ',', XA, ',', IDENT, ',', (AIMAG(AP) .EQ. ZERO), ',', &
-          RT1, ',', RT2, ',', CS1, ',(', REAL(SN1), ',', AIMAG(SN1), ')'
+          RT1, ',', RT2, ',', CS1, ',', REAL(SN1), ',', AIMAG(SN1)
      IF (IDENT) THEN
         A(P,P) = CMPLX(RT1, ZERO, c_float)
         A(Q,Q) = CMPLX(RT2, ZERO, c_float)
