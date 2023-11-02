@@ -252,14 +252,12 @@ SUBROUTINE CJAEVD(JOB, N, A, LDA, U, LDU, S, INFO)
      P = L
      Q = M
 
-     IDENT = ((LAPACK .AND. (.NOT. ALTCVG)) .OR. ((.NOT. LAPACK) .AND. ALTCVG))
-     IF (IDENT) THEN
-        ! orthogonality issues for small angles
+     IF (ALTCVG) THEN
         AR = REAL(A(P,P))
         AI = REAL(A(Q,Q))
         AA = ABS(AR - AI)
         IDENT = (.NOT. ((SCALE(XA, 1) / AA) .GT. ZERO))
-     ELSE ! CJAEV2
+     ELSE ! ordinary convergence
         AR = ABS(REAL(A(P,Q)))
         AI = ABS(AIMAG(A(P,Q)))
         IDENT = ((XA .EQ. ZERO) .OR. ((XA .EQ. MINFLT) .AND. (AR .EQ. MINFLT) .AND. (AI .EQ. MINFLT)))
