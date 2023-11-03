@@ -2,8 +2,8 @@ FUNCTION DRSAFE(U)
   USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_double
   IMPLICIT NONE
   INTEGER, INTENT(IN) :: U
-  REAL(KIND=c_double) :: DRSAFE
-  REAL(KIND=c_double) :: RMIN, RMAX, R, A
+  REAL(c_double) :: DRSAFE
+  REAL(c_double) :: RMIN, RMAX, R, A
   RMIN = TINY(A)
   A = HUGE(A)
   RMAX = SCALE(A, -2)

@@ -2,8 +2,8 @@ FUNCTION SRSAFE(U)
   USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_float
   IMPLICIT NONE
   INTEGER, INTENT(IN) :: U
-  REAL(KIND=c_float) :: SRSAFE
-  REAL(KIND=c_float) :: RMIN, RMAX, R, A
+  REAL(c_float) :: SRSAFE
+  REAL(c_float) :: RMIN, RMAX, R, A
   RMIN = TINY(A)
   A = HUGE(A)
   RMAX = SCALE(A, -2)
