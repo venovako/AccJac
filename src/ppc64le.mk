@@ -1,5 +1,3 @@
-# for gfortran on an x86_64 Solaris
-FCFLAGS += -m64
 ifdef CR_MATH
 FCFLAGS += -DCR_MATH=$(CR_MATH)
 ifdef NDEBUG

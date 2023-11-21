@@ -1,6 +1,3 @@
 ifdef NDEBUG
-DEBUG=
 FCFLAGS += -DNDEBUG=$(NDEBUG)
-else # !NDEBUG
-DEBUG=g
-endif # ?NDEBUG
+endif # NDEBUG

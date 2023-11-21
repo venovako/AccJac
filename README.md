@@ -9,7 +9,7 @@ i.e., arXiv:[2308.14222](https://arxiv.org/abs/2308.14222 "Accurate complex Jaco
 
 ## Prerequisites
 
-A recent x86_64 machine with Linux or macOS is needed, and the oneAPI Intel Math Kernel Library (MKL) is assumed to be installed.
+A recent machine with Linux or macOS is needed, and the oneAPI Intel Math Kernel Library (MKL) or the reference BLAS and LAPACK libraries are assumed to be installed.
 The GNU C (`gcc`), optionally the Intel C (`icc` or `icx`), and the Intel or GNU Fortran (`gfortran` 13+) compilers are required.
 
 The correctly-rounded `cr_hypot[f]` and `cr_rsqrt[f]` functions have to be provided by, e.g., the [CORE-MATH](https://core-math.gitlabpages.inria.fr) project.

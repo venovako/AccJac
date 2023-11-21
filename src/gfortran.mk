@@ -6,7 +6,12 @@ FCFLAGS=-O$(NDEBUG)
 else # !NDEBUG
 FCFLAGS=-Og -ggdb3
 endif # ?NDEBUG
-FCFLAGS += -march=native -fPIC -fexceptions -fno-omit-frame-pointer -frecursive -fstack-arrays -fvect-cost-model=unlimited -ffp-contract=fast -fprotect-parens
+ifeq ($(ARCH),ppc64le)
+FCFLAGS += -mcpu=native -mtraceback=full
+else # !ppc64le
+FCFLAGS += -march=native
+endif # ?ppc64le
+FCFLAGS += -fPIC -fexceptions -fno-omit-frame-pointer -frecursive -fstack-arrays -fvect-cost-model=unlimited -ffp-contract=fast -fprotect-parens
 ifdef NDEBUG
 FCFLAGS += -fno-math-errno
 else # !NDEBUG

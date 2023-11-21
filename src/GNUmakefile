@@ -43,6 +43,7 @@ zevdj.exe
 
 LDFLAGS=-rdynamic
 ifeq ($(COMPILER),gfortran)
+ifneq ($(ARCH),ppc64le)
 OBJ2 += \
 wjaev2.o\
 xjaev2.o\
@@ -51,12 +52,16 @@ xjiev2.o
 EXE2 += \
 wtest.exe\
 xtest.exe
+endif # !ppc64le
 else # !gfortran
 ifeq ($(OS),Linux)
 LDFLAGS += -static-libgcc
 endif # Linux
 endif # ?gfortran
 LDFLAGS += -L. -ljaevd -ljaev2 -L../../libpvn/src -lpvn $(CR_OBJS) $(LAPACK)
+ifeq ($(ARCH),ppc64le)
+LDFLAGS += -Wl,--defsym=pvn_qljev2_=pvn_xljev2_ -Wl,--defsym=pvn_yljev2_=pvn_wljev2_
+endif # ppc64le
 
 .PHONY: all help clean
 
