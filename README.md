@@ -19,9 +19,9 @@ The same holds for `rsqrt*_noerrno.c` and `rsqrt*.c` files and `src/binary32/rsq
 
 This is one possible choice of flags for compiling the `noerrno` object files (meant to be used in no-debug builds):
 ```bash
-gcc -O3 -march=native -ffinite-math-only -fno-math-errno -W -Wall -c hypotf_noerrno.c
+gcc -O3 -march=native -fno-math-errno -W -Wall -c hypotf_noerrno.c
 gcc -O3 -march=native -fno-math-errno -W -Wall -c rsqrtf_noerrno.c
-gcc -O3 -march=native -ffinite-math-only -fno-math-errno -W -Wall -c hypot_noerrno.c
+gcc -O3 -march=native -fno-math-errno -W -Wall -c hypot_noerrno.c
 gcc -O3 -march=native -fno-math-errno -W -Wall -c rsqrt_noerrno.c
 ```
 
