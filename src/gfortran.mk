@@ -6,6 +6,7 @@ FCFLAGS=-O$(NDEBUG)
 else # !NDEBUG
 FCFLAGS=-Og -ggdb3
 endif # ?NDEBUG
+FCFLAGS += -pedantic -Wall -Wextra -Wno-c-binding-type -Wno-compare-reals -Wno-uninitialized
 ifeq ($(ARCH),ppc64le)
 FCFLAGS += -mcpu=native -mtraceback=full
 else # !ppc64le
