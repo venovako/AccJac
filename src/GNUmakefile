@@ -22,7 +22,9 @@ djiev2.o\
 qjiev2.o\
 sjiev2.o\
 yjiev2.o\
-zjiev2.o
+zjiev2.o\
+qlaev2.o\
+ylaev2.o
 
 OBJD=\
 cjaevd.o\
@@ -48,7 +50,9 @@ OBJ2 += \
 wjaev2.o\
 xjaev2.o\
 wjiev2.o\
-xjiev2.o
+xjiev2.o\
+wlaev2.o\
+xlaev2.o
 EXE2 += \
 wtest.exe\
 xtest.exe
