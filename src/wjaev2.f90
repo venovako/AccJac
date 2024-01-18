@@ -1,23 +1,23 @@
 SUBROUTINE WJAEV2(A, B, C, RT1, RT2, CS1, SN1)
-  USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double, c_int
+  USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_int
   IMPLICIT NONE
 
   INTERFACE
      FUNCTION WLJEV2(A11, A22, A21R, A21I, CS, SNR, SNI, L1, L2, ES) BIND(C,NAME='pvn_wljev2_')
-       USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double, c_int
+       USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_int
        IMPLICIT NONE
-       REAL(c_long_double), INTENT(IN), TARGET :: A11, A22, A21R, A21I
-       REAL(c_long_double), INTENT(OUT), TARGET :: CS, SNR, SNI, L1, L2
+       REAL(10), INTENT(IN), TARGET :: A11, A22, A21R, A21I
+       REAL(10), INTENT(OUT), TARGET :: CS, SNR, SNI, L1, L2
        INTEGER(c_int), INTENT(INOUT), TARGET :: ES
        INTEGER(c_int) :: WLJEV2
      END FUNCTION WLJEV2
   END INTERFACE
 
-  REAL(c_long_double), PARAMETER :: ZERO = 0.0_c_long_double, ONE = 1.0_c_long_double
-  COMPLEX(c_long_double), INTENT(IN) :: A, B, C
-  REAL(c_long_double), INTENT(OUT), TARGET :: RT1, RT2, CS1
-  COMPLEX(c_long_double), INTENT(OUT) :: SN1
-  REAL(c_long_double), TARGET :: A11, A22, A21R, A21I, SNR, SNI
+  REAL(10), PARAMETER :: ZERO = 0.0_10, ONE = 1.0_10
+  COMPLEX(10), INTENT(IN) :: A, B, C
+  REAL(10), INTENT(OUT), TARGET :: RT1, RT2, CS1
+  COMPLEX(10), INTENT(OUT) :: SN1
+  REAL(10), TARGET :: A11, A22, A21R, A21I, SNR, SNI
   INTEGER(c_int), TARGET :: ES
 
   A11 = REAL(A)
@@ -30,11 +30,11 @@ SUBROUTINE WJAEV2(A, B, C, RT1, RT2, CS1, SN1)
 
   IF ((SNR .NE. ZERO) .OR. (SNI .NE. ZERO) .OR. (WLJEV2(A11, A22, A21R, A21I, CS1, SNR, SNI, RT1, RT2, ES) .LT. 0_c_int)) THEN
      CS1 = ONE
-     SN1 = CMPLX(ZERO, ZERO, c_long_double)
+     SN1 = CMPLX(ZERO, ZERO, 10)
      RT1 = ZERO
      RT2 = ZERO
   ELSE ! all OK
-     SN1 = CMPLX(SNR, SNI, c_long_double)
+     SN1 = CMPLX(SNR, SNI, 10)
      IF (ES .NE. 0_c_int) THEN
         RT1 = SCALE(RT1, ES)
         RT2 = SCALE(RT2, ES)

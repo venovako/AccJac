@@ -1,18 +1,17 @@
 PROGRAM WTEST
-  USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
   USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL128
   IMPLICIT NONE
   INTEGER, PARAMETER :: CLAL = 256
-  REAL(c_long_double), PARAMETER :: HALF = 0.5_c_long_double
+  REAL(10), PARAMETER :: HALF = 0.5_10
   REAL(REAL128), PARAMETER :: QZERO = 0.0_REAL128, QONE = 1.0_REAL128
   CHARACTER(LEN=CLAL) :: CLA
-  COMPLEX(c_long_double), TARGET :: A, B, C, SN1
-  REAL(c_long_double), TARGET :: RT1, RT2, CS1
+  COMPLEX(10), TARGET :: A, B, C, SN1
+  REAL(10), TARGET :: RT1, RT2, CS1
   COMPLEX(REAL128), TARGET :: QA, QB, QC, QSN1
   REAL(REAL128), TARGET :: QRT1, QRT2, QCS1
-  REAL(REAL128) :: QJD, QREC, QRESR, QRESI, MJD, XJD, MREC, XREC, MRESR, XRESR, MRESI, XRESI, E_2
+  REAL(REAL128) :: QJD, QLD, QREC, QRESR, QRESI, MJD, XJD, MLD, XLD, MREC, XREC, MRESR, XRESR, MRESI, XRESI, E_2
   INTEGER :: I, N, U, INFO
-  EXTERNAL :: XJIEV2, YJIEV2
+  EXTERNAL :: WJIEV2, WLAEV2, YJIEV2
 
   I = CLAL
   CALL GET_COMMAND_ARGUMENT(0, CLA, I, INFO)
@@ -27,11 +26,13 @@ PROGRAM WTEST
   E_2 = QZERO
   E_2 = QONE / E_2
   MJD = E_2
+  MLD = E_2
   MREC = E_2
   MRESR = E_2
   MRESI = E_2
   E_2 = -E_2
   XJD = E_2
+  XLD = E_2
   XREC = E_2
   XRESR = E_2
   XRESI = E_2
@@ -40,7 +41,7 @@ PROGRAM WTEST
   I = 1
   DO WHILE (I .LE. N)
      A = XRSAFE(U)
-     B = CMPLX(XRSAFE(U), XRSAFE(U), c_long_double)
+     B = CMPLX(XRSAFE(U), XRSAFE(U), 10)
      C = XRSAFE(U)
 #ifndef NDEBUG
      WRITE (*,9,ADVANCE='NO') 'A(1,:):(', REAL(A)
@@ -55,10 +56,10 @@ PROGRAM WTEST
      WRITE (*,'(A)') ')'
 #endif
      INFO = 0
-     CALL XJIEV2(A, B, C, RT1, RT2, CS1, SN1, INFO)
+     CALL WJIEV2(A, B, C, RT1, RT2, CS1, SN1, INFO)
      IF (INFO .NE. 0) THEN
 #ifndef NDEBUG
-        WRITE (*,'(A,I2)') 'XJIEV2=', INFO
+        WRITE (*,'(A,I2)') 'WJIEV2=', INFO
 #endif
         CYCLE
      END IF
@@ -120,11 +121,30 @@ PROGRAM WTEST
 #ifndef NDEBUG
      WRITE (*,9) ' QJD=', QJD
 #endif
+     CALL WLAEV2(A, B, C, RT1, RT2, CS1, SN1)
+#ifndef NDEBUG
+     WRITE (*,9) 'LCS1=', CS1
+     WRITE (*,9,ADVANCE='NO') 'LSN1=(', REAL(SN1)
+     WRITE (*,9,ADVANCE='NO') ',', AIMAG(SN1)
+     WRITE (*,'(A)') ')'
+     WRITE (*,9) 'LRT1=', RT1
+     WRITE (*,9) 'LRT2=', RT2
+#endif
+     QCS1 = CS1
+     QSN1 = SN1
+     QLD = YDETM1(QCS1, QSN1, E_2)
+     IF (QLD .LT. MLD) MLD = QLD
+     IF (QLD .GT. XLD) XLD = QLD
+#ifndef NDEBUG
+     WRITE (*,9) ' QLD=', QLD
+#endif
      I = I + 1
   END DO
   CLOSE(U)
-  WRITE (*,9) 'ZJAEV2:min((det(U)-1)/ε)=', MJD
-  WRITE (*,9) 'ZJAEV2:max((det(U)-1)/ε)=', XJD
+  WRITE (*,9) 'WJAEV2:min((det(U)-1)/ε)=', MJD
+  WRITE (*,9) 'WJAEV2:max((det(U)-1)/ε)=', XJD
+  WRITE (*,9) 'WLAEV2:min((det(U)-1)/ε)=', MLD
+  WRITE (*,9) 'WLAEV2:max((det(U)-1)/ε)=', XLD
   WRITE (*,9) '     min(relerr(cosφ)/ε)=', MREC
   WRITE (*,9) '     max(relerr(cosφ)/ε)=', XREC
   WRITE (*,9) 'min(relerr(cosα*sinφ)/ε)=', MRESR

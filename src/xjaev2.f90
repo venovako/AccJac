@@ -1,21 +1,21 @@
 SUBROUTINE XJAEV2(A, B, C, RT1, RT2, CS1, SN1)
-  USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double, c_int
+  USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_int
   IMPLICIT NONE
 
   INTERFACE
      FUNCTION XLJEV2(A11, A22, A21, CS, SN, L1, L2, ES) BIND(C,NAME='pvn_xljev2_')
-       USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double, c_int
+       USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_int
        IMPLICIT NONE
-       REAL(c_long_double), INTENT(IN), TARGET :: A11, A22, A21
-       REAL(c_long_double), INTENT(OUT), TARGET :: CS, SN, L1, L2
+       REAL(10), INTENT(IN), TARGET :: A11, A22, A21
+       REAL(10), INTENT(OUT), TARGET :: CS, SN, L1, L2
        INTEGER(c_int), INTENT(INOUT), TARGET :: ES
        INTEGER(c_int) :: XLJEV2
      END FUNCTION XLJEV2
   END INTERFACE
 
-  REAL(c_long_double), PARAMETER :: ZERO = 0.0_c_long_double, ONE = 1.0_c_long_double
-  REAL(c_long_double), INTENT(IN), TARGET :: A, B, C
-  REAL(c_long_double), INTENT(OUT), TARGET :: RT1, RT2, CS1, SN1
+  REAL(10), PARAMETER :: ZERO = 0.0_10, ONE = 1.0_10
+  REAL(10), INTENT(IN), TARGET :: A, B, C
+  REAL(10), INTENT(OUT), TARGET :: RT1, RT2, CS1, SN1
   INTEGER(c_int), TARGET :: ES
 
   ES = 0_c_int

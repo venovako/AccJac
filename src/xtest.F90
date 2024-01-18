@@ -1,16 +1,15 @@
 PROGRAM XTEST
-  USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
   USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL128
   IMPLICIT NONE
   INTEGER, PARAMETER :: CLAL = 256
-  REAL(c_long_double), PARAMETER :: HALF = 0.5_c_long_double
+  REAL(10), PARAMETER :: HALF = 0.5_10
   REAL(REAL128), PARAMETER :: QZERO = 0.0_REAL128, QONE = 1.0_REAL128
   CHARACTER(LEN=CLAL) :: CLA
-  REAL(c_long_double), TARGET :: A, B, C, RT1, RT2, CS1, SN1
+  REAL(10), TARGET :: A, B, C, RT1, RT2, CS1, SN1
   REAL(REAL128), TARGET :: QA, QB, QC, QRT1, QRT2, QCS1, QSN1
-  REAL(REAL128) :: QJD, QREC, QRES, MJD, XJD, MREC, XREC, MRES, XRES, E_2
+  REAL(REAL128) :: QJD, QLD, QREC, QRES, MJD, XJD, MLD, XLD, MREC, XREC, MRES, XRES, E_2
   INTEGER :: I, N, U, INFO
-  EXTERNAL :: XJIEV2, QJIEV2
+  EXTERNAL :: XJIEV2, XLAEV2, QJIEV2
 
   I = CLAL
   CALL GET_COMMAND_ARGUMENT(0, CLA, I, INFO)
@@ -25,10 +24,12 @@ PROGRAM XTEST
   E_2 = QZERO
   E_2 = QONE / E_2
   MJD = E_2
+  MLD = E_2
   MREC = E_2
   MRES = E_2
   E_2 = -E_2
   XJD = E_2
+  XLD = E_2
   XREC = E_2
   XRES = E_2
   E_2 = EPSILON(HALF) * HALF
@@ -99,11 +100,28 @@ PROGRAM XTEST
 #endif
      IF (QJD .LT. MJD) MJD = QJD
      IF (QJD .GT. XJD) XJD = QJD
+     CALL XLAEV2(A, B, C, RT1, RT2, CS1, SN1)
+#ifndef NDEBUG
+     WRITE (*,9) 'LCS1=', CS1
+     WRITE (*,9) 'LSN1=', SN1
+     WRITE (*,9) 'LRT1=', RT1
+     WRITE (*,9) 'LRT2=', RT2
+#endif
+     QREC = CS1
+     QRES = SN1
+     QLD = QDETM1(QREC, QRES, E_2)
+#ifndef NDEBUG
+     WRITE (*,9) ' QLD=', QLD
+#endif
+     IF (QLD .LT. MLD) MLD = QLD
+     IF (QLD .GT. XLD) XLD = QLD
      I = I + 1
   END DO
   CLOSE(U)
   WRITE (*,9) 'XJAEV2:min((det(U)-1)/ε)=', MJD
   WRITE (*,9) 'XJAEV2:max((det(U)-1)/ε)=', XJD
+  WRITE (*,9) 'XLAEV2:min((det(U)-1)/ε)=', MLD
+  WRITE (*,9) 'XLAEV2:max((det(U)-1)/ε)=', XLD
   WRITE (*,9) '     min(relerr(cosφ)/ε)=', MREC
   WRITE (*,9) '     max(relerr(cosφ)/ε)=', XREC
   WRITE (*,9) '     min(relerr(sinφ)/ε)=', MRES
