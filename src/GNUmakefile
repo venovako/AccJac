@@ -36,7 +36,9 @@ LIBD=libjaevd.a
 EXE2=\
 ctest.exe\
 dtest.exe\
+qtest.exe\
 stest.exe\
+ytest.exe\
 ztest.exe
 
 EXED=\
