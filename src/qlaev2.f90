@@ -115,6 +115,7 @@ PURE SUBROUTINE QLAEV2(A, B, C, RT1, RT2, CS1, SN1)
   !  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
   !
   USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL128
+  USE, INTRINSIC :: IEEE_ARITHMETIC, ONLY: IEEE_FMA
   IMPLICIT NONE
   INTEGER, PARAMETER :: K = REAL128
   !     .. Scalar Arguments ..
@@ -152,10 +153,10 @@ PURE SUBROUTINE QLAEV2(A, B, C, RT1, RT2, CS1, SN1)
   END IF
   IF (ADF .GT. AB) THEN
      TN = AB / ADF
-     RT = ADF * SQRT(ONE + TN * TN) !!!
+     RT = ADF * SQRT(IEEE_FMA(TN, TN, ONE))
   ELSE IF (ADF .LT. AB) THEN
      TN = ADF / AB
-     RT = AB * SQRT(ONE + TN * TN) !!!
+     RT = AB * SQRT(IEEE_FMA(TN, TN, ONE))
   ELSE
      !
      !        Includes case AB=ADF=0
@@ -201,7 +202,7 @@ PURE SUBROUTINE QLAEV2(A, B, C, RT1, RT2, CS1, SN1)
   ACS = ABS(CS)
   IF (ACS .GT. AB) THEN
      CT = -TB / CS
-     SN1 = ONE / SQRT(ONE + CT * CT) !!!
+     SN1 = ONE / SQRT(IEEE_FMA(CT, CT, ONE))
      CS1 = CT * SN1
   ELSE
      IF (AB .EQ. ZERO) THEN
@@ -209,7 +210,7 @@ PURE SUBROUTINE QLAEV2(A, B, C, RT1, RT2, CS1, SN1)
         SN1 = ZERO
      ELSE
         TN = -CS / TB
-        CS1 = ONE / SQRT(ONE + TN * TN) !!!
+        CS1 = ONE / SQRT(IEEE_FMA(TN, TN, ONE))
         SN1 = TN * CS1
      END IF
   END IF
