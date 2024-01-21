@@ -9,7 +9,7 @@ i.e., arXiv:[2308.14222](https://arxiv.org/abs/2308.14222 "Accurate complex Jaco
 
 ## Prerequisites
 
-A recent machine with Linux or macOS is needed, and the oneAPI Intel Math Kernel Library (MKL) or the reference BLAS and LAPACK libraries are assumed to be installed.
+A recent machine with Linux or macOS is needed.
 The GNU C (`gcc`), optionally the Intel C (`icx` or `icc`), and the Intel or GNU Fortran (`gfortran` 13+) compilers are required.
 
 The correctly-rounded `cr_hypot[f]` and `cr_rsqrt[f]` functions have to be provided by, e.g., the [CORE-MATH](https://core-math.gitlabpages.inria.fr) project.
@@ -31,7 +31,7 @@ Next, clone [libpvn](https://github.com/venovako/libpvn) repository, with the sa
 
 In the `src` subdirectory, run
 ```bash
-make [COMPILER=gfortran|ifx|ifort] [COMPILER_PREFIX=...] [COMPILER_SUFFIX=...] [ABI=lp64|ilp64] [NDEBUG=optimization_level] [CR_MATH=dir] [all|help|clean]
+make [COMPILER=gfortran|ifx|ifort] [COMPILER_PREFIX=...] [COMPILER_SUFFIX=...] [ABI=lp64|ilp64] [NDEBUG=optimization_level] [CR_MATH=dir] [MKL=...] [all|help|clean]
 ```
 
 Set the `CR_MATH` variable in a `make` invocation to the cloned `core-math` source code directory path.

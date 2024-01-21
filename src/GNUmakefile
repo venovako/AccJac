@@ -2,29 +2,36 @@ include system.mk
 include $(COMPILER).mk
 include $(ARCH).mk
 include $(ABI).mk
-include $(OS).mk
 include debug.mk
-MKFS=GNUmakefile system.mk $(COMPILER).mk $(ARCH).mk $(ABI).mk $(OS).mk debug.mk
+MKFS=GNUmakefile system.mk $(COMPILER).mk $(ARCH).mk $(ABI).mk debug.mk
 ifneq ($(wildcard local.mk),)
 include local.mk
 MKFS += local.mk
 endif # local.mk
 
+ifndef MKL
+OBJL=\
+claev2.o\
+dlaev2.o\
+slaev2.o\
+zlaev2.o
+endif # !MKL
+
 OBJ2=\
 cjaev2.o\
 djaev2.o\
 qjaev2.o\
+qlaev2.o\
 sjaev2.o\
 yjaev2.o\
+ylaev2.o\
 zjaev2.o\
 cjiev2.o\
 djiev2.o\
 qjiev2.o\
 sjiev2.o\
 yjiev2.o\
-zjiev2.o\
-qlaev2.o\
-ylaev2.o
+zjiev2.o
 
 OBJD=\
 cjaevd.o\
@@ -50,11 +57,12 @@ ifeq ($(COMPILER),gfortran)
 ifneq ($(ARCH),ppc64le)
 OBJ2 += \
 wjaev2.o\
-xjaev2.o\
-wjiev2.o\
-xjiev2.o\
 wlaev2.o\
-xlaev2.o
+xjaev2.o\
+xlaev2.o\
+wjiev2.o\
+xjiev2.o
+
 EXE2 += \
 wtest.exe\
 xtest.exe
@@ -64,7 +72,7 @@ ifeq ($(OS),Linux)
 LDFLAGS += -static-libgcc
 endif # Linux
 endif # ?gfortran
-LDFLAGS += -L. -ljaevd -ljaev2 -L../../libpvn/src -lpvn $(CR_OBJS) $(LAPACK)
+LDFLAGS += -L. -ljaevd -ljaev2 -L../../libpvn/src -lpvn $(CR_OBJS) $(MKL)
 ifeq ($(ARCH),ppc64le)
 LDFLAGS += -Wl,--defsym=pvn_qljev2_=pvn_xljev2_ -Wl,--defsym=pvn_yljev2_=pvn_wljev2_
 endif # ppc64le
@@ -73,14 +81,14 @@ endif # ppc64le
 
 all: $(LIB2) $(LIBD) $(EXE2) $(EXED)
 
-$(LIB2): $(OBJ2)
-	$(AR) $(ARFLAGS) $@ $(OBJ2)
+$(LIB2): $(OBJ2) $(OBJL)
+	$(AR) $(ARFLAGS) $@ $(OBJ2) $(OBJL)
 
 $(LIBD): $(OBJD)
 	$(AR) $(ARFLAGS) $@ $(OBJD)
 
 help:
-	@echo $(MAKE) "[COMPILER=gfortran|ifx|ifort] [COMPILER_PREFIX=...] [COMPILER_SUFFIX=...] [ABI=lp64|ilp64] [NDEBUG=optimization_level] [CR_MATH=dir] [LAPACK=...] [all|help|clean]"
+	@echo $(MAKE) "[COMPILER=gfortran|ifx|ifort] [COMPILER_PREFIX=...] [COMPILER_SUFFIX=...] [ABI=lp64|ilp64] [NDEBUG=optimization_level] [CR_MATH=dir] [MKL=...] [all|help|clean]"
 
 %.o : %.f90
 	$(FC) $(FCFLAGS) -c $< -o $@
