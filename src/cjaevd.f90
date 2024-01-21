@@ -314,6 +314,8 @@ SUBROUTINE CJAEVD(JOB, N, A, LDA, U, LDU, S, INFO)
            XA = REAL(AP)
         ELSE ! complex
            AP = CMPLX(XA, ONE, c_float)
+           A(P,P) = CMPLX(REAL(A(P,P)), ZERO, c_float)
+           A(Q,Q) = CMPLX(REAL(A(Q,Q)), ZERO, c_float)
            IF (LAPACK) THEN
               CALL CLAEV2(A(P,P), A(P,Q), A(Q,Q), RT1, RT2, CS1, SN1)
            ELSE ! CJAEV2
