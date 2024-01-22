@@ -29,10 +29,14 @@ int init_mpfr(const mpfr_prec_t *const p)
   const mpfr_exp_t emax = mpfr_get_emax_max();
   if ((emax > mpfr_get_emax()) && mpfr_set_emax(emax))
     return 2;
-  (void)mpfr_init_set_d(c, 1.0, MPFR_RNDN);
-  (void)mpfr_init_set_d(sr, 0.0, MPFR_RNDN);
-  (void)mpfr_init_set_d(si, 0.0, MPFR_RNDN);
-  (void)mpfr_init_set_d(mo, -1.0, MPFR_RNDN);
+  if (mpfr_init_set_d(c, 1.0, MPFR_RNDN))
+    return 3;
+  if (mpfr_init_set_d(sr, 0.0, MPFR_RNDN))
+    return 4;
+  if (mpfr_init_set_d(si, 0.0, MPFR_RNDN))
+    return 5;
+  if (mpfr_init_set_d(mo, -1.0, MPFR_RNDN))
+    return 6;
   return 0;
 }
 
