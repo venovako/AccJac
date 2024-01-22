@@ -314,8 +314,8 @@ SUBROUTINE ZJAEVD(JOB, N, A, LDA, U, LDU, S, INFO)
            XA = REAL(AP)
         ELSE ! complex
            AP = CMPLX(XA, ONE, c_double)
-           A(P,P) = CMPLX(REAL(A(P,P)), ZERO, c_double)
-           A(Q,Q) = CMPLX(REAL(A(Q,Q)), ZERO, c_double)
+           ! A(P,P) = CMPLX(REAL(A(P,P)), ZERO, c_double)
+           ! A(Q,Q) = CMPLX(REAL(A(Q,Q)), ZERO, c_double)
            IF (LAPACK) THEN
               CALL ZLAEV2(A(P,P), A(P,Q), A(Q,Q), RT1, RT2, CS1, SN1)
            ELSE ! ZJAEV2
