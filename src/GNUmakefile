@@ -53,12 +53,14 @@ cevdj.exe\
 zevdj.exe
 
 ifeq ($(COMPILER),gfortran)
+ifdef MPFR
 OBJ2 += \
 mtest.obj
 
 EXE2 += \
 qtest.exe\
 ytest.exe
+endif # MPFR
 ifneq ($(ARCH),ppc64le)
 OBJ2 += \
 wjaev2.o\
