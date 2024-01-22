@@ -74,19 +74,6 @@ EXE2 += \
 qtest.exe\
 ytest.exe
 endif # MPFR
-ifneq ($(ARCH),ppc64le)
-OBJ2 += \
-wjaev2.o\
-wlaev2.o\
-xjaev2.o\
-xlaev2.o\
-wjiev2.o\
-xjiev2.o
-
-EXE2 += \
-wtest.exe\
-xtest.exe
-endif # !ppc64le
 endif # gfortran
 
 LDFLAGS=-rdynamic
