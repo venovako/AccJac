@@ -33,12 +33,7 @@ sjiev2.o\
 yjiev2.o\
 zjiev2.o
 
-OBJD=\
-cjaevd.o\
-zjaevd.o
-
 LIB2=libjaev2.a
-LIBD=libjaevd.a
 
 EXE2=\
 ctest.exe\
@@ -48,11 +43,6 @@ stest.exe\
 ytest.exe\
 ztest.exe
 
-EXED=\
-cevdj.exe\
-zevdj.exe
-
-LDFLAGS=-rdynamic
 ifeq ($(COMPILER),gfortran)
 ifneq ($(ARCH),ppc64le)
 OBJ2 += \
@@ -68,11 +58,29 @@ wtest.exe\
 xtest.exe
 endif # !ppc64le
 else # !gfortran
+
+ifneq ($(COMPILER),gfortran)
+OBJD=\
+cjaevd.o\
+zjaevd.o
+
+LIBD=libjaevd.a
+
+EXED=\
+cevdj.exe\
+zevdj.exe
+endif # !gfortran
+
+LDFLAGS=-rdynamic
 ifeq ($(OS),Linux)
 LDFLAGS += -static-libgcc
 endif # Linux
 endif # ?gfortran
-LDFLAGS += -L. -ljaevd -ljaev2 -L../../libpvn/src -lpvn $(CR_OBJS) $(MKL)
+LDFLAGS += -L.
+ifneq ($(COMPILER),gfortran)
+LDFLAGS += -ljaevd
+endif # !gfortran
+LDFLAGS += -ljaev2 -L../../libpvn/src -lpvn $(CR_OBJS) $(MKL)
 ifeq ($(ARCH),ppc64le)
 LDFLAGS += -Wl,--defsym=pvn_qljev2_=pvn_xljev2_ -Wl,--defsym=pvn_yljev2_=pvn_wljev2_
 endif # ppc64le
