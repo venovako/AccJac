@@ -7,7 +7,8 @@ PROGRAM QTEST
   CHARACTER(LEN=CLAL) :: CLA
   REAL(REAL128) :: A, B, C, RT1, RT2, CS1, SN1, QCS1, QSN1, QJD, QLD, MJD, XJD, MLD, XLD, E_2
   INTEGER :: I, N, U, INFO
-  EXTERNAL :: QJIEV2, QLAEV2
+  REAL(REAL128), EXTERNAL :: NDETM1
+  EXTERNAL :: QJIEV2, QLAEV2, INIT_MPFR, FINI_MPFR
 
   I = CLAL
   CALL GET_COMMAND_ARGUMENT(0, CLA, I, INFO)
@@ -28,6 +29,8 @@ PROGRAM QTEST
   XLD = E_2
   E_2 = EPSILON(HALF) * HALF
   U = ORFILE()
+  CALL INIT_MPFR(INFO)
+  IF (INFO .NE. 0) STOP 'INIT_MPFR'
   I = 1
   DO WHILE (I .LE. N)
      A = QRSAFE(U)
@@ -55,7 +58,7 @@ PROGRAM QTEST
      WRITE (*,9) 'QRT1=', RT1
      WRITE (*,9) 'QRT2=', RT2
 #endif
-     QJD = QDETM1(CS1, SN1, E_2)
+     QJD = NDETM1(CS1, SN1, E_2)
      IF (QJD .LT. MJD) MJD = QJD
      IF (QJD .GT. XJD) XJD = QJD
 #ifndef NDEBUG
@@ -68,7 +71,7 @@ PROGRAM QTEST
      WRITE (*,9) 'LRT1=', RT1
      WRITE (*,9) 'LRT2=', RT2
 #endif
-     QLD = QDETM1(CS1, SN1, E_2)
+     QLD = NDETM1(CS1, SN1, E_2)
      IF (QLD .LT. MLD) MLD = QLD
      IF (QLD .GT. XLD) XLD = QLD
 #ifndef NDEBUG
@@ -76,6 +79,7 @@ PROGRAM QTEST
 #endif
      I = I + 1
   END DO
+  CALL FINI_MPFR()
   CLOSE(U)
   WRITE (*,9) 'QJAEV2:min((det(U)-1)/ε)=', MJD
   WRITE (*,9) 'QJAEV2:max((det(U)-1)/ε)=', XJD
@@ -85,6 +89,4 @@ PROGRAM QTEST
 CONTAINS
 #include "orfile.F90"
 #include "qrsafe.F90"
-#include "qdetm1.F90"
-#include "qre.F90"
 END PROGRAM QTEST

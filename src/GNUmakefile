@@ -9,8 +9,11 @@ include local.mk
 MKFS += local.mk
 endif # local.mk
 
-ifndef MKL
 OBJL=\
+qlaev2.o\
+ylaev2.o
+ifndef MKL
+OBJL += \
 claev2.o\
 dlaev2.o\
 slaev2.o\
@@ -21,10 +24,8 @@ OBJ2=\
 cjaev2.o\
 djaev2.o\
 qjaev2.o\
-qlaev2.o\
 sjaev2.o\
 yjaev2.o\
-ylaev2.o\
 zjaev2.o\
 cjiev2.o\
 djiev2.o\
@@ -38,9 +39,7 @@ LIB2=libjaev2.a
 EXE2=\
 ctest.exe\
 dtest.exe\
-qtest.exe\
 stest.exe\
-ytest.exe\
 ztest.exe
 
 OBJD=\
@@ -54,6 +53,12 @@ cevdj.exe\
 zevdj.exe
 
 ifeq ($(COMPILER),gfortran)
+OBJ2 += \
+mtest.obj
+
+EXE2 += \
+qtest.exe\
+ytest.exe
 ifneq ($(ARCH),ppc64le)
 OBJ2 += \
 wjaev2.o\
@@ -74,6 +79,12 @@ ifeq ($(OS),Linux)
 LDFLAGS += -static-libgcc
 endif # Linux
 LDFLAGS += -L. -ljaevd -ljaev2 -L../../libpvn/src -lpvn $(CR_OBJS) $(MKL)
+ifdef MPFR
+LDFLAGS += -L$(MPFR)/lib -lmpfr
+endif # MPFR
+ifdef GMP
+LDFLAGS += -L$(GMP)/lib -lgmp
+endif # GMP
 ifeq ($(ARCH),ppc64le)
 LDFLAGS += -Wl,--defsym=pvn_qljev2_=pvn_xljev2_ -Wl,--defsym=pvn_yljev2_=pvn_wljev2_
 endif # ppc64le
@@ -89,7 +100,10 @@ $(LIBD): $(OBJD)
 	$(AR) $(ARFLAGS) $@ $(OBJD)
 
 help:
-	@echo $(MAKE) "[COMPILER=gfortran|ifx|ifort] [COMPILER_PREFIX=...] [COMPILER_SUFFIX=...] [ABI=lp64|ilp64] [NDEBUG=optimization_level] [CR_MATH=dir] [MKL=...] [all|help|clean]"
+	@echo $(MAKE) "[COMPILER=gfortran|ifx|ifort] [COMPILER_PREFIX=...] [COMPILER_SUFFIX=...] [ABI=lp64|ilp64] [NDEBUG=optimization_level] [CR_MATH=dir] [MKL=...] [MPFR=...] [GMP=...] [all|help|clean]"
+
+mtest.obj: mtest.c $(MKFS)
+	$(CC) $(CFLAGS) -c $< -o $@
 
 %.o : %.f90
 	$(FC) $(FCFLAGS) -c $< -o $@
@@ -101,6 +115,7 @@ clean:
 	-$(DEL) *.o
 	-$(DEL) *.a
 	-$(DEL) *.exe
+	-$(DEL) *.obj
 	-$(DEL) *.dSYM
 	-$(DEL) *.optrpt
 	-$(DEL) *.opt.yaml

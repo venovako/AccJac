@@ -8,7 +8,8 @@ PROGRAM YTEST
   COMPLEX(REAL128) :: A, B, C, SN1, QSN1
   REAL(REAL128) :: RT1, RT2, CS1, QCS1, QJD, QLD, MJD, XJD, MLD, XLD, E_2
   INTEGER :: I, N, U, INFO
-  EXTERNAL :: YJIEV2, YLAEV2
+  REAL(REAL128), EXTERNAL :: MDETM1
+  EXTERNAL :: YJIEV2, YLAEV2, INIT_MPFR, FINI_MPFR
 
   I = CLAL
   CALL GET_COMMAND_ARGUMENT(0, CLA, I, INFO)
@@ -29,6 +30,8 @@ PROGRAM YTEST
   XLD = E_2
   E_2 = EPSILON(HALF) * HALF
   U = ORFILE()
+  CALL INIT_MPFR(INFO)
+  IF (INFO .NE. 0) STOP 'INIT_MPFR'
   I = 1
   DO WHILE (I .LE. N)
      A = QRSAFE(U)
@@ -64,7 +67,7 @@ PROGRAM YTEST
      WRITE (*,9) 'QRT1=', RT1
      WRITE (*,9) 'QRT2=', RT2
 #endif
-     QJD = YDETM1(CS1, SN1, E_2)
+     QJD = MDETM1(CS1, SN1, E_2)
      IF (QJD .LT. MJD) MJD = QJD
      IF (QJD .GT. XJD) XJD = QJD
 #ifndef NDEBUG
@@ -79,7 +82,7 @@ PROGRAM YTEST
      WRITE (*,9) 'LRT1=', RT1
      WRITE (*,9) 'LRT2=', RT2
 #endif
-     QLD = YDETM1(CS1, SN1, E_2)
+     QLD = MDETM1(CS1, SN1, E_2)
      IF (QLD .LT. MLD) MLD = QLD
      IF (QLD .GT. XLD) XLD = QLD
 #ifndef NDEBUG
@@ -87,6 +90,7 @@ PROGRAM YTEST
 #endif
      I = I + 1
   END DO
+  CALL FINI_MPFR()
   CLOSE(U)
   WRITE (*,9) 'YJAEV2:min((det(U)-1)/ε)=', MJD
   WRITE (*,9) 'YJAEV2:max((det(U)-1)/ε)=', XJD
@@ -96,6 +100,4 @@ PROGRAM YTEST
 CONTAINS
 #include "orfile.F90"
 #include "qrsafe.F90"
-#include "ydetm1.F90"
-#include "qre.F90"
 END PROGRAM YTEST

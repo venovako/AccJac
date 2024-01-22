@@ -31,7 +31,7 @@ Next, clone [libpvn](https://github.com/venovako/libpvn) repository, with the sa
 
 In the `src` subdirectory, run
 ```bash
-make [COMPILER=gfortran|ifx|ifort] [COMPILER_PREFIX=...] [COMPILER_SUFFIX=...] [ABI=lp64|ilp64] [NDEBUG=optimization_level] [CR_MATH=dir] [MKL=...] [all|help|clean]
+make [COMPILER=gfortran|ifx|ifort] [COMPILER_PREFIX=...] [COMPILER_SUFFIX=...] [ABI=lp64|ilp64] [NDEBUG=optimization_level] [CR_MATH=dir] [MKL=...] [MPFR=...] [GMP=...] [all|help|clean]
 ```
 
 Set the `CR_MATH` variable in a `make` invocation to the cloned `core-math` source code directory path.
