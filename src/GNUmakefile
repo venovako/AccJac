@@ -36,16 +36,16 @@ endif # !MKL
 
 OBJ2=\
 cjaev2.o\
-djaev2.o\
-qjaev2.o\
-sjaev2.o\
-yjaev2.o\
-zjaev2.o\
 cjiev2.o\
+djaev2.o\
 djiev2.o\
+qjaev2.o\
 qjiev2.o\
+sjaev2.o\
 sjiev2.o\
+yjaev2.o\
 yjiev2.o\
+zjaev2.o\
 zjiev2.o
 
 ifdef MPFR
@@ -62,6 +62,24 @@ qtest.exe\
 stest.exe\
 ytest.exe\
 ztest.exe
+
+ifeq ($(COMPILER),gfortran)
+ifeq ($(findstring 86,$(ARCH)),86)
+OBJL += \
+wlaev2.o\
+xlaev2.o
+
+OBJ2 += \
+wjaev2.o\
+wjiev2.o\
+xjaev2.o\
+xjiev2.o
+
+EXE2 += \
+wtest.exe\
+xtest.exe
+endif # x86_64 or i86pc
+endif # gfortran
 
 OBJD=\
 cjaevd.o\
