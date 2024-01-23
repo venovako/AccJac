@@ -1,5 +1,4 @@
 include system.mk
-ifeq ($(COMPILER),gfortran)
 ifdef MPFR
 ifndef GMP
 GMP=/usr
@@ -9,14 +8,16 @@ ifdef GMP
 MPFR=/usr
 endif # GMP
 endif # ?MPFR
-endif # gfortran
 include $(COMPILER).mk
 include $(ARCH).mk
+include debug.mk
 ifneq ($(ABI),lp64)
 include $(ABI).mk
 endif # !lp64
-include debug.mk
-MKFS=GNUmakefile system.mk $(COMPILER).mk $(ARCH).mk $(ABI).mk debug.mk
+MKFS=GNUmakefile system.mk $(COMPILER).mk $(ARCH).mk debug.mk
+ifneq ($(ABI),lp64)
+MKFS += $(ABI).mk
+endif # !lp64
 ifneq ($(wildcard local.mk),)
 include local.mk
 MKFS += local.mk
@@ -55,6 +56,15 @@ dtest.exe\
 stest.exe\
 ztest.exe
 
+ifdef MPFR
+OBJ2 += \
+mtest.obj
+
+EXE2 += \
+qtest.exe\
+ytest.exe
+endif # MPFR
+
 OBJD=\
 cjaevd.o\
 zjaevd.o
@@ -64,17 +74,6 @@ LIBD=libjaevd.a
 EXED=\
 cevdj.exe\
 zevdj.exe
-
-ifeq ($(COMPILER),gfortran)
-ifdef MPFR
-OBJ2 += \
-mtest.obj
-
-EXE2 += \
-qtest.exe\
-ytest.exe
-endif # MPFR
-endif # gfortran
 
 LDFLAGS=-rdynamic
 ifeq ($(OS),Linux)
