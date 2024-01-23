@@ -20,3 +20,11 @@ CFLAGS += -debug extended -debug inline-debug-info -debug pubnames
 endif # ?NDEBUG
 FCFLAGS += -diag-disable=8293
 CFLAGS += -diag-disable=10441
+ifdef MPFR
+FCFLAGS += -DMPFR="\"$(MPFR)\""
+CFLAGS += -I$(MPFR)/include
+endif # MPFR
+ifdef GMP
+FCFLAGS += -DGMP="\"$(GMP)\""
+CFLAGS += -I$(GMP)/include
+endif # GMP

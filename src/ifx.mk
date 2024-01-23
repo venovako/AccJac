@@ -18,3 +18,11 @@ else # !NDEBUG
 FCFLAGS += -debug emit_column -debug extended -debug inline-debug-info -debug pubnames -check all
 CFLAGS += -debug extended -debug inline-debug-info -debug pubnames
 endif # ?NDEBUG
+ifdef MPFR
+FCFLAGS += -DMPFR="\"$(MPFR)\""
+CFLAGS += -I$(MPFR)/include
+endif # MPFR
+ifdef GMP
+FCFLAGS += -DGMP="\"$(GMP)\""
+CFLAGS += -I$(GMP)/include
+endif # GMP

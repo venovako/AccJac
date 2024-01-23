@@ -26,8 +26,10 @@ FCFLAGS += -fcheck=all -finit-local-zero -finit-real=snan -finit-derived
 endif # ?NDEBUG
 FCFLAGS += -fprotect-parens -frecursive -fstack-arrays -pedantic -Wall -Wextra -Wno-c-binding-type -Wno-compare-reals -Wno-uninitialized
 ifdef MPFR
+FCFLAGS += -DMPFR="\"$(MPFR)\""
 CFLAGS += -I$(MPFR)/include
 endif # MPFR
 ifdef GMP
+FCFLAGS += -DGMP="\"$(GMP)\""
 CFLAGS += -I$(GMP)/include
 endif # GMP

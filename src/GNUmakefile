@@ -48,22 +48,20 @@ sjiev2.o\
 yjiev2.o\
 zjiev2.o
 
+ifdef MPFR
+OBJ2 += \
+mtest.obj
+endif # MPFR
+
 LIB2=libjaev2.a
 
 EXE2=\
 ctest.exe\
 dtest.exe\
-stest.exe\
-ztest.exe
-
-ifdef MPFR
-OBJ2 += \
-mtest.obj
-
-EXE2 += \
 qtest.exe\
-ytest.exe
-endif # MPFR
+stest.exe\
+ytest.exe\
+ztest.exe
 
 OBJD=\
 cjaevd.o\
