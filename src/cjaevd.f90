@@ -9,7 +9,7 @@
 !!@param S [INOUT]; on input, set to 0 unless debugging (see the example in cevdj.F90); on output, the scaling parameter such that 2**S * A = Lambda.
 !!@param INFO [INOUT]; on input, set to 0 unless special processing is desired (see the code); on output, the number of steps on success, or -i if the i-th argument had an illegal value.
 SUBROUTINE CJAEVD(JOB, N, A, LDA, U, LDU, S, INFO)
-  USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_float
+  USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL32
   IMPLICIT NONE
 
   INTERFACE
@@ -20,16 +20,16 @@ SUBROUTINE CJAEVD(JOB, N, A, LDA, U, LDU, S, INFO)
      END FUNCTION CR_HYPOT
   END INTERFACE
 
-  REAL(c_float), PARAMETER :: ZERO = 0.0_c_float, ONE = 1.0_c_float, MINFLT = 1.401298464E-45_c_float
-  COMPLEX(c_float), PARAMETER :: CZERO = CMPLX(ZERO, ZERO, c_float), CONE = CMPLX(ONE, ZERO, c_float)
+  REAL(REAL32), PARAMETER :: ZERO = 0.0_REAL32, ONE = 1.0_REAL32, MINFLT = 1.401298464E-45_REAL32
+  COMPLEX(REAL32), PARAMETER :: CZERO = CMPLX(ZERO, ZERO, REAL32), CONE = CMPLX(ONE, ZERO, REAL32)
   INTEGER, PARAMETER :: ESHFT = 4, MININT = -HUGE(0) - 1
 
   INTEGER, INTENT(IN) :: JOB, N, LDA, LDU
-  COMPLEX(c_float), INTENT(INOUT) :: A(LDA,N), U(LDU,N)
+  COMPLEX(REAL32), INTENT(INOUT) :: A(LDA,N), U(LDU,N)
   INTEGER, INTENT(INOUT) :: S, INFO
 
-  COMPLEX(c_float) :: SN1, AP, AQ
-  REAL(c_float) :: AR, AI, AA, XA, RT1, RT2, CS1
+  COMPLEX(REAL32) :: SN1, AP, AQ
+  REAL(REAL32) :: AR, AI, AA, XA, RT1, RT2, CS1
   LOGICAL :: IDENT, ACCVEC, LAPACK, ALTCVG
   INTEGER :: MAXSTP, I, J, K, L, M, P, Q, D
 
@@ -96,7 +96,7 @@ SUBROUTINE CJAEVD(JOB, N, A, LDA, U, LDU, S, INFO)
         IF (D .NE. MININT) WRITE (D,*) A(J,J)
         INFO = -3
      ELSE ! A OK
-        A(1,1) = CMPLX(REAL(A(1,1)), ZERO, c_float)
+        A(1,1) = CMPLX(REAL(A(1,1)), ZERO, REAL32)
         IF (ACCVEC) THEN
            IF (IDENT) THEN
               U(1,1) = CONE
@@ -154,7 +154,7 @@ SUBROUTINE CJAEVD(JOB, N, A, LDA, U, LDU, S, INFO)
            IF (AI .NE. ZERO) M = M + 1
         END DO
         AR = REAL(A(J,J))
-        A(J,J) = CMPLX(AR, ZERO, c_float)
+        A(J,J) = CMPLX(AR, ZERO, REAL32)
      END DO
   ELSE ! S .NE. 0
      DO J = 1, N
@@ -163,10 +163,10 @@ SUBROUTINE CJAEVD(JOB, N, A, LDA, U, LDU, S, INFO)
            AI = SCALE(AIMAG(A(I,J)), S)
            IF (AR .NE. ZERO) L = L + 1
            IF (AI .NE. ZERO) M = M + 1
-           A(I,J) = CMPLX(AR, AI, c_float)
+           A(I,J) = CMPLX(AR, AI, REAL32)
         END DO
         AR = SCALE(REAL(A(J,J)), S)
-        A(J,J) = CMPLX(AR, ZERO, c_float)
+        A(J,J) = CMPLX(AR, ZERO, REAL32)
      END DO
   END IF
   IF (M .EQ. 0) THEN
@@ -240,8 +240,8 @@ SUBROUTINE CJAEVD(JOB, N, A, LDA, U, LDU, S, INFO)
         A(P,Q) = CZERO
         IF ((AR .LT. AI) .OR. ((AR .EQ. ZERO) .AND. (AI .EQ. ZERO) .AND. (SIGN(ONE, AR) .LT. SIGN(ONE, AI)))) THEN
            IF (D .NE. MININT) WRITE (D,'(2(A,I3))') '[INFO] Swapping ', P, ' and ', Q
-           A(P,P) = CMPLX(AI, ZERO, c_float)
-           A(Q,Q) = CMPLX(AR, ZERO, c_float)
+           A(P,P) = CMPLX(AI, ZERO, REAL32)
+           A(Q,Q) = CMPLX(AR, ZERO, REAL32)
            DO I = 1, P-1
               SN1 = A(I,P)
               A(I,P) = A(I,Q)
@@ -276,18 +276,18 @@ SUBROUTINE CJAEVD(JOB, N, A, LDA, U, LDU, S, INFO)
            AR = REAL(A(P,P))
            AI = REAL(A(P,Q))
            AA = REAL(A(Q,Q))
-           AP = CMPLX(XA, ZERO, c_float)
+           AP = CMPLX(XA, ZERO, REAL32)
            IF (LAPACK) THEN
               CALL SLAEV2(AR, AI, AA, RT1, RT2, CS1, XA)
            ELSE ! SJAEV2
               CALL SJAEV2(AR, AI, AA, RT1, RT2, CS1, XA)
            END IF
-           SN1 = CMPLX(XA, ZERO, c_float)
+           SN1 = CMPLX(XA, ZERO, REAL32)
            XA = REAL(AP)
         ELSE ! complex
-           AP = CMPLX(XA, ONE, c_float)
-           ! A(P,P) = CMPLX(REAL(A(P,P)), ZERO, c_float)
-           ! A(Q,Q) = CMPLX(REAL(A(Q,Q)), ZERO, c_float)
+           AP = CMPLX(XA, ONE, REAL32)
+           ! A(P,P) = CMPLX(REAL(A(P,P)), ZERO, REAL32)
+           ! A(Q,Q) = CMPLX(REAL(A(Q,Q)), ZERO, REAL32)
            IF (LAPACK) THEN
               CALL CLAEV2(A(P,P), A(P,Q), A(Q,Q), RT1, RT2, CS1, SN1)
            ELSE ! CJAEV2
@@ -307,12 +307,12 @@ SUBROUTINE CJAEVD(JOB, N, A, LDA, U, LDU, S, INFO)
           K, ',', P, ',', Q, ',', XA, ',', IDENT, ',', (AIMAG(AP) .EQ. ZERO), ',', &
           RT1, ',', RT2, ',', CS1, ',', REAL(SN1), ',', AIMAG(SN1)
      IF (IDENT) THEN
-        A(P,P) = CMPLX(RT1, ZERO, c_float)
-        A(Q,Q) = CMPLX(RT2, ZERO, c_float)
+        A(P,P) = CMPLX(RT1, ZERO, REAL32)
+        A(Q,Q) = CMPLX(RT2, ZERO, REAL32)
         IF ((CS1 .EQ. ONE) .AND. (SN1 .EQ. CZERO)) CYCLE
      ELSE ! PERM
-        A(P,P) = CMPLX(RT2, ZERO, c_float)
-        A(Q,Q) = CMPLX(RT1, ZERO, c_float)
+        A(P,P) = CMPLX(RT2, ZERO, REAL32)
+        A(Q,Q) = CMPLX(RT1, ZERO, REAL32)
      END IF
      L = MININT
      M = L
@@ -433,10 +433,10 @@ SUBROUTINE CJAEVD(JOB, N, A, LDA, U, LDU, S, INFO)
            DO I = 1, J-1
               AR = SCALE(REAL(A(I,J)), M)
               AI = SCALE(AIMAG(A(I,J)), M)
-              A(I,J) = CMPLX(AR, AI, c_float)
+              A(I,J) = CMPLX(AR, AI, REAL32)
            END DO
            AR = SCALE(REAL(A(J,J)), M)
-           A(J,J) = CMPLX(AR, ZERO, c_float)
+           A(J,J) = CMPLX(AR, ZERO, REAL32)
         END DO
         S = S + M
      END IF

@@ -9,7 +9,7 @@
 !!@param S [INOUT]; on input, set to 0 unless debugging (see the example in zevdj.F90); on output, the scaling parameter such that 2**S * A = Lambda.
 !!@param INFO [INOUT]; on input, set to 0 unless special processing is desired (see the code); on output, the number of steps on success, or -i if the i-th argument had an illegal value.
 SUBROUTINE ZJAEVD(JOB, N, A, LDA, U, LDU, S, INFO)
-  USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_double
+  USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL64
   IMPLICIT NONE
 
   INTERFACE
@@ -20,16 +20,16 @@ SUBROUTINE ZJAEVD(JOB, N, A, LDA, U, LDU, S, INFO)
      END FUNCTION CR_HYPOT
   END INTERFACE
 
-  REAL(c_double), PARAMETER :: ZERO = 0.0_c_double, ONE = 1.0_c_double, MINFLT = 4.94065645841246544E-324_c_double
-  COMPLEX(c_double), PARAMETER :: CZERO = CMPLX(ZERO, ZERO, c_double), CONE = CMPLX(ONE, ZERO, c_double)
+  REAL(REAL64), PARAMETER :: ZERO = 0.0_REAL64, ONE = 1.0_REAL64, MINFLT = 4.94065645841246544E-324_REAL64
+  COMPLEX(REAL64), PARAMETER :: CZERO = CMPLX(ZERO, ZERO, REAL64), CONE = CMPLX(ONE, ZERO, REAL64)
   INTEGER, PARAMETER :: ESHFT = 4, MININT = -HUGE(0) - 1
 
   INTEGER, INTENT(IN) :: JOB, N, LDA, LDU
-  COMPLEX(c_double), INTENT(INOUT) :: A(LDA,N), U(LDU,N)
+  COMPLEX(REAL64), INTENT(INOUT) :: A(LDA,N), U(LDU,N)
   INTEGER, INTENT(INOUT) :: S, INFO
 
-  COMPLEX(c_double) :: SN1, AP, AQ
-  REAL(c_double) :: AR, AI, AA, XA, RT1, RT2, CS1
+  COMPLEX(REAL64) :: SN1, AP, AQ
+  REAL(REAL64) :: AR, AI, AA, XA, RT1, RT2, CS1
   LOGICAL :: IDENT, ACCVEC, LAPACK, ALTCVG
   INTEGER :: MAXSTP, I, J, K, L, M, P, Q, D
 
@@ -96,7 +96,7 @@ SUBROUTINE ZJAEVD(JOB, N, A, LDA, U, LDU, S, INFO)
         IF (D .NE. MININT) WRITE (D,*) A(J,J)
         INFO = -3
      ELSE ! A OK
-        A(1,1) = CMPLX(REAL(A(1,1)), ZERO, c_double)
+        A(1,1) = CMPLX(REAL(A(1,1)), ZERO, REAL64)
         IF (ACCVEC) THEN
            IF (IDENT) THEN
               U(1,1) = CONE
@@ -154,7 +154,7 @@ SUBROUTINE ZJAEVD(JOB, N, A, LDA, U, LDU, S, INFO)
            IF (AI .NE. ZERO) M = M + 1
         END DO
         AR = REAL(A(J,J))
-        A(J,J) = CMPLX(AR, ZERO, c_double)
+        A(J,J) = CMPLX(AR, ZERO, REAL64)
      END DO
   ELSE ! S .NE. 0
      DO J = 1, N
@@ -163,10 +163,10 @@ SUBROUTINE ZJAEVD(JOB, N, A, LDA, U, LDU, S, INFO)
            AI = SCALE(AIMAG(A(I,J)), S)
            IF (AR .NE. ZERO) L = L + 1
            IF (AI .NE. ZERO) M = M + 1
-           A(I,J) = CMPLX(AR, AI, c_double)
+           A(I,J) = CMPLX(AR, AI, REAL64)
         END DO
         AR = SCALE(REAL(A(J,J)), S)
-        A(J,J) = CMPLX(AR, ZERO, c_double)
+        A(J,J) = CMPLX(AR, ZERO, REAL64)
      END DO
   END IF
   IF (M .EQ. 0) THEN
@@ -240,8 +240,8 @@ SUBROUTINE ZJAEVD(JOB, N, A, LDA, U, LDU, S, INFO)
         A(P,Q) = CZERO
         IF ((AR .LT. AI) .OR. ((AR .EQ. ZERO) .AND. (AI .EQ. ZERO) .AND. (SIGN(ONE, AR) .LT. SIGN(ONE, AI)))) THEN
            IF (D .NE. MININT) WRITE (D,'(2(A,I3))') '[INFO] Swapping ', P, ' and ', Q
-           A(P,P) = CMPLX(AI, ZERO, c_double)
-           A(Q,Q) = CMPLX(AR, ZERO, c_double)
+           A(P,P) = CMPLX(AI, ZERO, REAL64)
+           A(Q,Q) = CMPLX(AR, ZERO, REAL64)
            DO I = 1, P-1
               SN1 = A(I,P)
               A(I,P) = A(I,Q)
@@ -276,18 +276,18 @@ SUBROUTINE ZJAEVD(JOB, N, A, LDA, U, LDU, S, INFO)
            AR = REAL(A(P,P))
            AI = REAL(A(P,Q))
            AA = REAL(A(Q,Q))
-           AP = CMPLX(XA, ZERO, c_double)
+           AP = CMPLX(XA, ZERO, REAL64)
            IF (LAPACK) THEN
               CALL DLAEV2(AR, AI, AA, RT1, RT2, CS1, XA)
            ELSE ! DJAEV2
               CALL DJAEV2(AR, AI, AA, RT1, RT2, CS1, XA)
            END IF
-           SN1 = CMPLX(XA, ZERO, c_double)
+           SN1 = CMPLX(XA, ZERO, REAL64)
            XA = REAL(AP)
         ELSE ! complex
-           AP = CMPLX(XA, ONE, c_double)
-           ! A(P,P) = CMPLX(REAL(A(P,P)), ZERO, c_double)
-           ! A(Q,Q) = CMPLX(REAL(A(Q,Q)), ZERO, c_double)
+           AP = CMPLX(XA, ONE, REAL64)
+           ! A(P,P) = CMPLX(REAL(A(P,P)), ZERO, REAL64)
+           ! A(Q,Q) = CMPLX(REAL(A(Q,Q)), ZERO, REAL64)
            IF (LAPACK) THEN
               CALL ZLAEV2(A(P,P), A(P,Q), A(Q,Q), RT1, RT2, CS1, SN1)
            ELSE ! ZJAEV2
@@ -307,12 +307,12 @@ SUBROUTINE ZJAEVD(JOB, N, A, LDA, U, LDU, S, INFO)
           K, ',', P, ',', Q, ',', XA, ',', IDENT, ',', (AIMAG(AP) .EQ. ZERO), ',', &
           RT1, ',', RT2, ',', CS1, ',', REAL(SN1), ',', AIMAG(SN1)
      IF (IDENT) THEN
-        A(P,P) = CMPLX(RT1, ZERO, c_double)
-        A(Q,Q) = CMPLX(RT2, ZERO, c_double)
+        A(P,P) = CMPLX(RT1, ZERO, REAL64)
+        A(Q,Q) = CMPLX(RT2, ZERO, REAL64)
         IF ((CS1 .EQ. ONE) .AND. (SN1 .EQ. CZERO)) CYCLE
      ELSE ! PERM
-        A(P,P) = CMPLX(RT2, ZERO, c_double)
-        A(Q,Q) = CMPLX(RT1, ZERO, c_double)
+        A(P,P) = CMPLX(RT2, ZERO, REAL64)
+        A(Q,Q) = CMPLX(RT1, ZERO, REAL64)
      END IF
      L = MININT
      M = L
@@ -433,10 +433,10 @@ SUBROUTINE ZJAEVD(JOB, N, A, LDA, U, LDU, S, INFO)
               DO I = 1, J-1
                  AR = SCALE(REAL(A(I,J)), M)
                  AI = SCALE(AIMAG(A(I,J)), M)
-                 A(I,J) = CMPLX(AR, AI, c_double)
+                 A(I,J) = CMPLX(AR, AI, REAL64)
               END DO
               AR = SCALE(REAL(A(J,J)), M)
-              A(J,J) = CMPLX(AR, ZERO, c_double)
+              A(J,J) = CMPLX(AR, ZERO, REAL64)
            END DO
         S = S + M
      END IF
