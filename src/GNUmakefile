@@ -102,9 +102,6 @@ endif # MPFR
 ifdef GMP
 LDFLAGS += -L$(GMP)/lib -lgmp
 endif # GMP
-ifeq ($(ARCH),ppc64le)
-LDFLAGS += -Wl,--defsym=pvn_qljev2_=pvn_xljev2_ -Wl,--defsym=pvn_yljev2_=pvn_wljev2_
-endif # ppc64le
 
 .PHONY: all help clean
 
