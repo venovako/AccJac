@@ -37,7 +37,7 @@ make [COMPILER=gfortran|ifx|ifort] [COMPILER_PREFIX=...] [COMPILER_SUFFIX=...] [
 Set the `CR_MATH` variable in a `make` invocation to the cloned `core-math` source code directory path.
 The `COMPILER` and `NDEBUG` variables have to be compatible with those for building the `libpvn` repository; e.g., if `COMPILER=icc` for `libpvn`, then `COMPILER=ifort` or `COMPILER=ifx` here.
 It is recommended to set `NDEBUG=3` for both repositories, unless debugging.
-Other variables should not normally be set.
+Other variables should not be set unless their effects are fully understood.
 
 ## Running
 
@@ -45,8 +45,13 @@ With `N>0` being a desired number of random Hermitian/symmetric matrices of orde
 ```bash
 ./src/ttest.exe N
 ```
-where `t=c,d,s,z`, and optionally (only with GNU Fortran) `t=w,x`.
-Here, `c` stands for `COMPLEX(4)`, `d` for `REAL(8)`, `s` for `REAL(4)`, `z` for `COMPLEX(8)`, `w` for `COMPLEX(10)`, and `x` for `REAL(10)`.
+where `t=c,d,s,z`.
+
+Here, `c` stands for `COMPLEX(REAL32)`, `d` for `REAL(REAL64)`, `s` for `REAL(REAL32)`, and `z` for `COMPLEX(REAL64)`.
+The executables with other values of `t` are of special purpose and have specific requirements to be built and run.
+Since there are no CORE-MATH `cr_*` functions for these other datatypes yet, the testing results are not quite relevant to the proposed algorithm.
+With GNU Fortran on Intel-compatible platforms, `t=w` stands for `COMPLEX(10)`, and `t=x` for `REAL(10)` (the 80-bit extended floating-point datatype).
+With the [MPFR](https://www.mpfr.org) and [GMP](https://gmplib.org) libraries, and `MPFR` and `GMP` set to their respective installation prefixes, `t=y` stands for `COMPLEX(REAL128)` and `t=q` for `REAL(REAL128)`.
 
 ## Other
 
