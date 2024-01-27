@@ -91,11 +91,7 @@ EXED=\
 cevdj.exe\
 zevdj.exe
 
-LDFLAGS=-rdynamic
-ifeq ($(OS),Linux)
-LDFLAGS += -static-libgcc
-endif # Linux
-LDFLAGS += -L. -ljaevd -ljaev2 -L../../libpvn/src -lpvn $(CR_OBJS) $(MKL)
+LDFLAGS=-rdynamic -static-libgcc -L. -ljaevd -ljaev2 -L../../libpvn/src -lpvn $(CR_OBJS) $(MKL)
 ifdef MPFR
 LDFLAGS += -L$(MPFR)/lib -lmpfr
 endif # MPFR
