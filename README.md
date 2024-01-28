@@ -53,7 +53,7 @@ Since there are no CORE-MATH `cr_*` functions for these other datatypes yet, the
 With GNU Fortran on Intel-compatible platforms, `t=w` stands for `COMPLEX(10)`, and `t=x` for `REAL(10)` (the 80-bit extended floating-point datatype).
 With the [MPFR](https://www.mpfr.org) and [GMP](https://gmplib.org) libraries, and `MPFR` and `GMP` set to their respective installation prefixes, `t=y` stands for `COMPLEX(REAL128)` and `t=q` for `REAL(REAL128)`.
 
-Statically linked executables for Linux on AVX-512 compatible CPUs will be updated [here](https://venovako.eu/AccJac.tar.xz) from time to time.
+Statically linked Linux executables for AVX-512 compatible CPUs can be found [here](https://venovako.eu/bin/AccJac.tar.xz).
 
 ## Other
 
