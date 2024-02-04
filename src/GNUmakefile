@@ -9,12 +9,11 @@ MPFR=/usr
 endif # GMP
 endif # ?MPFR
 include $(COMPILER).mk
-include $(ARCH).mk
 include debug.mk
 ifneq ($(ABI),lp64)
 include $(ABI).mk
 endif # !lp64
-MKFS=GNUmakefile system.mk $(COMPILER).mk $(ARCH).mk debug.mk
+MKFS=GNUmakefile system.mk $(COMPILER).mk debug.mk
 ifneq ($(ABI),lp64)
 MKFS += $(ABI).mk
 endif # !lp64
@@ -91,7 +90,7 @@ EXED=\
 cevdj.exe\
 zevdj.exe
 
-LDFLAGS=-rdynamic -static-libgcc -L. -ljaevd -ljaev2 -L../../libpvn/src -lpvn $(CR_OBJS) $(MKL)
+LDFLAGS=-rdynamic -static-libgcc -L. -ljaevd -ljaev2 -L../../libpvn/src -lpvn $(MKL)
 ifdef MPFR
 LDFLAGS += -L$(MPFR)/lib -lmpfr
 endif # MPFR
@@ -110,7 +109,7 @@ $(LIBD): $(OBJD)
 	$(AR) $(ARFLAGS) $@ $(OBJD)
 
 help:
-	@echo $(MAKE) "[COMPILER=gfortran|ifx|ifort] [COMPILER_PREFIX=...] [COMPILER_SUFFIX=...] [ABI=lp64|ilp64] [NDEBUG=optimization_level] [CR_MATH=dir] [MKL=...] [MPFR=...] [GMP=...] [all|help|clean]"
+	@echo $(MAKE) "[COMPILER=gfortran|ifx|ifort] [COMPILER_PREFIX=...] [COMPILER_SUFFIX=...] [ABI=lp64|ilp64] [NDEBUG=optimization_level] [MKL=...] [MPFR=...] [GMP=...] [all|help|clean]"
 
 mtest.obj: mtest.c $(MKFS)
 	$(CC) $(CFLAGS) -c $< -o $@
