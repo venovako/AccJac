@@ -25,7 +25,7 @@ gcc -O3 -march=native -fno-math-errno -W -Wall -c hypot_noerrno.c
 gcc -O3 -march=native -fno-math-errno -W -Wall -c rsqrt_noerrno.c
 ```
 
-Next, clone [libpvn](https://github.com/venovako/libpvn) repository, with the same parent directory as this one has (e.g., `venovako/libpvn` and `venovako/AccJac`), and build it, with the `COMPILER` make option set to a C compiler from the same vendor and with the same (no-)debug mode as it is meant to be used here, and with the `CR_MATH` and `QUADMATH` options set appropriately.
+Next, clone [libpvn](https://github.com/venovako/libpvn) repository, with the same parent directory as this one has (e.g., `venovako/libpvn` and `venovako/AccJac`), and build it, with the `COMPILER` make option set to a C compiler from the same vendor and with the same (no-)debug mode as it is meant to be used here, and with the `CR_MATH` option set appropriately.
 
 ## Building
 
