@@ -10,7 +10,7 @@ i.e., arXiv:[2308.14222](https://arxiv.org/abs/2308.14222 "Accurate complex Jaco
 ## Prerequisites
 
 A recent machine with Linux or macOS is needed.
-The GNU C (`gcc`), optionally the Intel C (`icx` or `icc`), and the Intel or GNU Fortran (`gfortran` 13+) compilers are required.
+The GNU C (`gcc`), optionally the Intel C (`icx`), and the Intel or GNU Fortran (`gfortran` 13+) compilers are required.
 
 First, clone [libpvn](https://github.com/venovako/libpvn) repository, with the same parent directory as this one has (e.g., `venovako/libpvn` and `venovako/AccJac`), and build it, with the `COMPILER` make option set to a C compiler from the same vendor and with the same (no-)debug mode as it is meant to be used here.
 Please, read the repository's notes *carefully*!
