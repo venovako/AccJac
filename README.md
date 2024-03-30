@@ -10,7 +10,7 @@ i.e., arXiv:[2308.14222](https://arxiv.org/abs/2308.14222 "Accurate complex Jaco
 ## Prerequisites
 
 A recent machine with Linux or macOS is needed.
-The GNU C (`gcc`), optionally the Intel C (`icx`), and the Intel or GNU Fortran (`gfortran` 13+) compilers are required.
+The Intel (`icx`) or GNU (`gcc`) C compiler, and the Intel (`ifx`) or GNU (`gfortran` 13+) Fortran compiler are required.
 
 First, clone [libpvn](https://github.com/venovako/libpvn) repository, with the same parent directory as this one has (e.g., `venovako/libpvn` and `venovako/AccJac`), and build it, with the `COMPILER` make option set to a C compiler from the same vendor and with the same (no-)debug mode as it is meant to be used here.
 Please, read the repository's notes *carefully*!
@@ -20,7 +20,7 @@ The correctly-rounded `cr_hypot[f]` and `cr_rsqrt[f]` functions have to be provi
 
 In the `src` subdirectory, run
 ```bash
-make [COMPILER=gfortran|ifx|ifort] [COMPILER_PREFIX=...] [COMPILER_SUFFIX=...] [ABI=lp64|ilp64] [NDEBUG=optimization_level] [MKL=...] [MPFR=...] [GMP=...] [all|help|clean]
+make [COMPILER=gfortran|ifx] [COMPILER_PREFIX=...] [COMPILER_SUFFIX=...] [ABI=lp64|ilp64] [NDEBUG=optimization_level] [MKL=...] [MPFR=...] [GMP=...] [PROFILE=...] [all|help|clean]
 ```
 
 The `COMPILER` and `NDEBUG` variables have to be compatible with those for building the `libpvn` repository; e.g., if `COMPILER=gcc` for `libpvn`, then `COMPILER=gfortran` here.
@@ -40,8 +40,6 @@ The executables with other values of `t` are of special purpose and have specifi
 Since there are no CORE-MATH `cr_*` functions for these other datatypes yet, the testing results are not quite relevant to the proposed algorithm.
 With GNU Fortran on Intel-compatible platforms, `t=w` stands for `COMPLEX(10)`, and `t=x` for `REAL(10)` (the 80-bit extended floating-point datatype).
 With the [MPFR](https://www.mpfr.org) and [GMP](https://gmplib.org) libraries, and `MPFR` and `GMP` set to their respective installation prefixes, `t=y` stands for `COMPLEX(REAL128)` and `t=q` for `REAL(REAL128)`.
-
-Statically linked Linux executables for AVX-512 compatible CPUs can be found [here](https://venovako.eu/bin/AccJac.tar.xz).
 
 ## Other
 

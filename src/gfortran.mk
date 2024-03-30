@@ -16,15 +16,15 @@ else # !ppc64le
 FCFLAGS += -march=native
 CFLAGS += -march=native
 endif # ?ppc64le
-FCFLAGS += -fPIC -fexceptions -fno-omit-frame-pointer -fvect-cost-model=unlimited -ffp-contract=fast
-CFLAGS += -fPIC -fexceptions -fno-omit-frame-pointer -fvect-cost-model=unlimited -ffp-contract=fast
+FCFLAGS += -fPIC -fexceptions -fno-omit-frame-pointer -fvect-cost-model=unlimited -ffp-contract=fast -rdynamic
+CFLAGS += -fPIC -fexceptions -fno-omit-frame-pointer -fvect-cost-model=unlimited -ffp-contract=fast -rdynamic
 ifdef NDEBUG
 FCFLAGS += -fno-math-errno
 CFLAGS += -fno-math-errno
 else # !NDEBUG
 FCFLAGS += -fcheck=all -finit-local-zero -finit-real=snan -finit-derived
 endif # ?NDEBUG
-FCFLAGS += -fprotect-parens -frecursive -fstack-arrays -pedantic -Wall -Wextra -Wno-c-binding-type -Wno-compare-reals -Wno-uninitialized
+FCFLAGS += -ffree-line-length-none -fprotect-parens -frecursive -fstack-arrays -pedantic -Wall -Wextra -Wno-c-binding-type -Wno-compare-reals -Wno-uninitialized
 ifdef MPFR
 FCFLAGS += -DMPFR="\"$(MPFR)\""
 CFLAGS += -I$(MPFR)/include

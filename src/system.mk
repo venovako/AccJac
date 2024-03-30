@@ -13,9 +13,3 @@ endif # !OS
 ifndef DEL
 DEL=rm -frv
 endif # !DEL
-ifndef MKD
-MKD=mkdir -pv
-endif # !MKD
-ifndef MOV
-MOV=mv -fv
-endif # !MOV
