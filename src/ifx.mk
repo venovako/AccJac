@@ -9,8 +9,8 @@ else # !NDEBUG
 FCFLAGS=-O0 -g
 CFLAGS=-O0 -g
 endif # ?NDEBUG
-FCFLAGS += -xHost -mprefer-vector-width=512 -fPIC -fexceptions -fno-omit-frame-pointer -fp-model=precise -fp-speculation=safe -fimf-precision=high -fma -fprotect-parens -no-ftz -recursive -standard-semantics -traceback -vec-threshold0 -rdynamic -static-libgcc
-CFLAGS += -xHost -mprefer-vector-width=512 -fPIC -fexceptions -fno-omit-frame-pointer -fp-model=precise -fp-speculation=safe -fimf-precision=high -fma -fprotect-parens -no-ftz -traceback -vec-threshold0 -rdynamic -static-libgcc
+FCFLAGS += -xHost -mprefer-vector-width=512 -fPIC -fexceptions -fasynchronous-unwind-tables -fno-omit-frame-pointer -fp-model=precise -fp-speculation=safe -fimf-precision=high -fma -fprotect-parens -no-ftz -recursive -standard-semantics -traceback -vec-threshold0 -rdynamic -static-libgcc
+CFLAGS += -xHost -mprefer-vector-width=512 -fPIC -fexceptions -fasynchronous-unwind-tables -fno-omit-frame-pointer -fp-model=precise -fp-speculation=safe -fimf-precision=high -fma -fprotect-parens -no-ftz -traceback -vec-threshold0 -rdynamic -static-libgcc
 ifdef NDEBUG
 FCFLAGS += -inline-level=2 -qopt-report=3
 CFLAGS += -fno-math-errno -inline-level=2 -qopt-report=3
