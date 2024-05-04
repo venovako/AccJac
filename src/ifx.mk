@@ -26,3 +26,6 @@ ifdef GMP
 FCFLAGS += -DGMP="\"$(GMP)\""
 CFLAGS += -I$(GMP)/include
 endif # GMP
+ifdef LAPACK
+FCFLAGS += -DLAPACK="\"$(LAPACK)\""
+endif # LAPACK

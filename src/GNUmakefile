@@ -25,13 +25,13 @@ endif # local.mk
 OBJL=\
 qlaev2.o\
 ylaev2.o
-ifndef MKL
+ifndef LAPACK
 OBJL += \
 claev2.o\
 dlaev2.o\
 slaev2.o\
 zlaev2.o
-endif # !MKL
+endif # !LAPACK
 
 OBJ2=\
 cjaev2.o\
@@ -90,13 +90,14 @@ EXED=\
 cevdj.exe\
 zevdj.exe
 
-LDFLAGS=-rdynamic -static-libgcc -L. -ljaevd -ljaev2 -L../../libpvn/src -lpvn $(MKL)
+LDFLAGS=-rdynamic -static-libgcc -L. -ljaevd -ljaev2 -L../../libpvn/src -lpvn $(LAPACK)
 ifdef MPFR
 LDFLAGS += -L$(MPFR)/lib -lmpfr
 endif # MPFR
 ifdef GMP
 LDFLAGS += -L$(GMP)/lib -lgmp
 endif # GMP
+LDFLAGS += -ldl -lm
 
 .PHONY: all help clean
 
@@ -109,7 +110,7 @@ $(LIBD): $(OBJD)
 	$(AR) $(ARFLAGS) $@ $(OBJD)
 
 help:
-	@echo $(MAKE) "[COMPILER=gfortran|ifx|ifort] [COMPILER_PREFIX=...] [COMPILER_SUFFIX=...] [ABI=lp64|ilp64] [NDEBUG=optimization_level] [MKL=...] [MPFR=...] [GMP=...] [all|help|clean]"
+	@echo $(MAKE) "[COMPILER=gfortran|ifx|ifort] [COMPILER_PREFIX=...] [COMPILER_SUFFIX=...] [ABI=lp64|ilp64] [NDEBUG=optimization_level] [LAPACK=...] [MPFR=...] [GMP=...] [all|help|clean]"
 
 mtest.obj: mtest.c $(MKFS)
 	$(CC) $(CFLAGS) -c $< -o $@
