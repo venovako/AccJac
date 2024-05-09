@@ -115,10 +115,10 @@ help:
 mtest.obj: mtest.c $(MKFS)
 	$(CC) $(CFLAGS) -c $< -o $@
 
-%.o : %.f90
+%.o : %.f90 $(MKFS)
 	$(FC) $(FCFLAGS) -c $< -o $@
 
-%.exe : %.F90
+%.exe : %.F90 $(MKFS)
 	$(FC) $(FCFLAGS) $< -o $@ $(LDFLAGS)
 
 clean:
