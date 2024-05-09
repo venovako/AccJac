@@ -45,11 +45,6 @@ With the [MPFR](https://www.mpfr.org) and [GMP](https://gmplib.org) libraries, a
 
 Additional material is available in the `etc` subdirectory.
 
-## TODO
-
-Lower-triangular variants of `CJAEVD` and `ZJAEVD` remain to be written.
-For now these routines assume the Hermitian input matrix is implicitly defined by its *upper* triangle.
-
-Real variants of these routines, i.e., `SJAEVD` and `DJAEVD`, also have to be written.
+*TODO*: lower-triangular, as well as real, variants of `CJAEVD` and `ZJAEVD` remain to be written.
 
 This work has been supported in part by Croatian Science Foundation under the project IP-2014-09-3670 ([MFBDA](https://web.math.pmf.unizg.hr/mfbda/)).

@@ -1,8 +1,8 @@
 !>@brief \b ZJAEVD computes the EVD of a double precision Hermitian NxN matrix A by the Jacobi method.
 !!
-!!@param JOB [IN]; bit 0: accumulate the eigenvectors U, bit 1: use the LAPACK's ZLAEV2 instead of ZJAEV2, bit 2: the alternative convergence criterion.
+!!@param JOB [IN]; bit 0: accumulate the eigenvectors U, bit 1: use the LAPACK's ZLAEV2 instead of ZJAEV2, bit 2: the alternative convergence criterion, bit 3: reflect the lower triangle.
 !!@param N [IN]; the order of A.
-!!@param A [INOUT]; a double precision complex NxN array (only its UPPER triangle is accessed).
+!!@param A [INOUT]; a double precision complex NxN array (its UPPER triangle is referenced).
 !!@param LDA [IN]; the leading dimension of A.
 !!@param U [INOUT]; a double precision complex NxN array to which the eigenvectors of A should be accumulated.
 !!@param LDU [IN]; the leading dimension of U.
@@ -30,7 +30,7 @@ SUBROUTINE ZJAEVD(JOB, N, A, LDA, U, LDU, S, INFO)
 
   COMPLEX(REAL64) :: SN1, AP, AQ
   REAL(REAL64) :: AR, AI, AA, XA, RT1, RT2, CS1
-  LOGICAL :: IDENT, ACCVEC, LAPACK, ALTCVG
+  LOGICAL :: IDENT, ACCVEC, LAPACK, ALTCVG, LOWERA
   INTEGER :: MAXSTP, I, J, K, L, M, P, Q, D
 
   EXTERNAL :: DJAEV2, DLAEV2, ZJAEV2, ZLAEV2
@@ -56,7 +56,7 @@ SUBROUTINE ZJAEVD(JOB, N, A, LDA, U, LDU, S, INFO)
      INFO = -4
   ELSE IF (N .LT. 0) THEN
      INFO = -2
-  ELSE IF ((JOB .LT. 0) .OR. (JOB .GT. 7)) THEN
+  ELSE IF ((JOB .LT. 0) .OR. (JOB .GT. 15)) THEN
      INFO = -1
   ELSE ! dimensions OK
      INFO = 0
@@ -65,7 +65,17 @@ SUBROUTINE ZJAEVD(JOB, N, A, LDA, U, LDU, S, INFO)
   ACCVEC = (IAND(JOB, 1) .NE. 0)
   LAPACK = (IAND(JOB, 2) .NE. 0)
   ALTCVG = (IAND(JOB, 4) .NE. 0)
+  LOWERA = (IAND(JOB, 8) .NE. 0)
   IF (N .EQ. 0) RETURN
+
+  ! TODO: reference directly the lower triangle instead of the conjugate-transpose
+  IF (LOWERA) THEN
+     DO J = 1, N-1
+        DO I = J+1, N
+           A(J,I) = CONJG(A(I,J))
+        END DO
+     END DO
+  END IF
 
   IF (N .GE. 2) THEN
      L = MININT
