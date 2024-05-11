@@ -1,9 +1,9 @@
 # AccJac
 Accurate complex Jacobi rotations
 
-(... work in progress ...)
-
-This software is a supplementary material for the preprint
+This software is a supplementary material for the paper
+doi:[10.1016/j.cam.2024.116003](https://doi.org/10.1016/j.cam.2024.116003 "Accurate complex Jacobi rotations"),
+with the preprint
 doi:[10.48550/arXiv.2308.14222](https://doi.org/10.48550/arXiv.2308.14222 "Accurate complex Jacobi rotations"),
 i.e., arXiv:[2308.14222](https://arxiv.org/abs/2308.14222 "Accurate complex Jacobi rotations") \[math.NA\].
 
@@ -45,6 +45,6 @@ With the [MPFR](https://www.mpfr.org) and [GMP](https://gmplib.org) libraries, a
 
 Additional material is available in the `etc` subdirectory.
 
-*TODO*: lower-triangular, as well as real, variants of `CJAEVD` and `ZJAEVD` remain to be written.
+TODO: lower-triangular, as well as real, variants of `CJAEVD` and `ZJAEVD` remain to be written.
 
 This work has been supported in part by Croatian Science Foundation under the project IP-2014-09-3670 ([MFBDA](https://web.math.pmf.unizg.hr/mfbda/)).
