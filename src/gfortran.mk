@@ -10,8 +10,8 @@ FCFLAGS=-Og -ggdb3
 CFLAGS=-Og -ggdb3
 endif # ?NDEBUG
 ifeq ($(ARCH),ppc64le)
-FCFLAGS += -mcpu=native -mtraceback=full
-CFLAGS += -mcpu=native -mtraceback=full
+FCFLAGS += -mcpu=native -mpower8-fusion -mtraceback=full
+CFLAGS += -mcpu=native -mpower8-fusion -mtraceback=full
 else # !ppc64le
 FCFLAGS += -march=native
 CFLAGS += -march=native
@@ -24,7 +24,7 @@ CFLAGS += -fno-math-errno
 else # !NDEBUG
 FCFLAGS += -fcheck=all -finit-local-zero -finit-real=snan -finit-derived
 endif # ?NDEBUG
-FCFLAGS += -ffree-line-length-none -fprotect-parens -frecursive -fstack-arrays -pedantic -Wall -Wextra -Wno-c-binding-type -Wno-compare-reals -Wno-function-elimination -Wno-uninitialized
+FCFLAGS += -ffree-line-length-none -fprotect-parens -frecursive -fstack-arrays -Wall -Wextra -Wno-c-binding-type -Wno-compare-reals -Wno-function-elimination -Wno-uninitialized
 ifdef MPFR
 FCFLAGS += -DMPFR="\"$(MPFR)\""
 CFLAGS += -I$(MPFR)/include

@@ -14,7 +14,7 @@ The Intel (`icx`) or GNU (`gcc`) C compiler, and the Intel (`ifx`) or GNU (`gfor
 
 First, clone [libpvn](https://github.com/venovako/libpvn) repository, with the same parent directory as this one has (e.g., `venovako/libpvn` and `venovako/AccJac`), and build it, with the `COMPILER` make option set to a C compiler from the same vendor and with the same (no-)debug mode as it is meant to be used here.
 Please, read the repository's notes *carefully*!
-The correctly-rounded `cr_hypot[f]` and `cr_rsqrt[f]` functions have to be provided by, e.g., the [CORE-MATH](https://core-math.gitlabpages.inria.fr) project.
+The correctly-rounded `cr_hypot[f]` and `cr_rsqrt[f]` functions are assumed to be provided by the [CORE-MATH](https://core-math.gitlabpages.inria.fr) project.
 
 ## Building
 
@@ -45,6 +45,6 @@ With the [MPFR](https://www.mpfr.org) and [GMP](https://gmplib.org) libraries, a
 
 Additional material is available in the `etc` subdirectory.
 
-TODO: lower-triangular, as well as real, variants of `CJAEVD` and `ZJAEVD` remain to be written.
+TODO: direct lower-triangular, as well as real, variants of `CJAEVD` and `ZJAEVD` remain to be written.
 
 This work has been supported in part by Croatian Science Foundation under the project IP-2014-09-3670 ([MFBDA](https://web.math.pmf.unizg.hr/mfbda/)).
