@@ -16,7 +16,7 @@ FCFLAGS += -static-libgcc
 CFLAGS += -static-libgcc
 endif # Linux
 ifdef NDEBUG
-FCFLAGS += -qopt-report=5 -diag-disable=10397 -inline-level=2
+FCFLAGS += -fno-math-errno -qopt-report=5 -diag-disable=10397 -inline-level=2
 CFLAGS += -fno-math-errno -qopt-report=5 -diag-disable=10397 -inline-level=2
 else # !NDEBUG
 FCFLAGS += -debug emit_column -debug extended -debug inline-debug-info -debug pubnames -check all -fp-stack-check

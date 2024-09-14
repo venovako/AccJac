@@ -9,10 +9,14 @@ else # !NDEBUG
 FCFLAGS=-O0 -g
 CFLAGS=-O0 -g
 endif # ?NDEBUG
-FCFLAGS += -xHost -mprefer-vector-width=512 -fPIC -fexceptions -fasynchronous-unwind-tables -fno-omit-frame-pointer -fp-model=precise -fp-speculation=safe -fimf-precision=high -fma -fprotect-parens -no-ftz -recursive -standard-semantics -traceback -vec-threshold0 -rdynamic -static-libgcc
-CFLAGS += -xHost -mprefer-vector-width=512 -fPIC -fexceptions -fasynchronous-unwind-tables -fno-omit-frame-pointer -fp-model=precise -fp-speculation=safe -fimf-precision=high -fma -fprotect-parens -no-ftz -traceback -vec-threshold0 -rdynamic -static-libgcc
+ifndef CPU
+CPU=Host
+# for x200: common-avx512
+endif # !CPU
+FCFLAGS += -x$(CPU) -mprefer-vector-width=512 -fPIC -fexceptions -fasynchronous-unwind-tables -fno-omit-frame-pointer -fp-model=precise -fp-speculation=safe -fimf-precision=high -fma -fprotect-parens -no-ftz -recursive -standard-semantics -traceback -vec-threshold0 -rdynamic -static-libgcc
+CFLAGS += -x$(CPU) -mprefer-vector-width=512 -fPIC -fexceptions -fasynchronous-unwind-tables -fno-omit-frame-pointer -fp-model=precise -fp-speculation=safe -fimf-precision=high -fma -fprotect-parens -no-ftz -traceback -vec-threshold0 -rdynamic -static-libgcc
 ifdef NDEBUG
-FCFLAGS += -inline-level=2 -qopt-report=3
+FCFLAGS += -fno-math-errno -inline-level=2 -qopt-report=3
 CFLAGS += -fno-math-errno -inline-level=2 -qopt-report=3
 else # !NDEBUG
 FCFLAGS += -debug emit_column -debug extended -debug inline-debug-info -debug pubnames -check all

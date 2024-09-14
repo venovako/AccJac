@@ -16,8 +16,8 @@ else # !ppc64le
 FCFLAGS += -march=native
 CFLAGS += -march=native
 endif # ?ppc64le
-FCFLAGS += -fPIC -fexceptions -fasynchronous-unwind-tables -fno-omit-frame-pointer -fvect-cost-model=unlimited -ffp-contract=fast -rdynamic
-CFLAGS += -fPIC -fexceptions -fasynchronous-unwind-tables -fno-omit-frame-pointer -fvect-cost-model=unlimited -ffp-contract=fast -rdynamic
+FCFLAGS += -fPIC -fexceptions -fasynchronous-unwind-tables -fno-omit-frame-pointer -fvect-cost-model=unlimited -ffp-contract=fast -rdynamic -static-libgcc
+CFLAGS += -fPIC -fexceptions -fasynchronous-unwind-tables -fno-omit-frame-pointer -fvect-cost-model=unlimited -ffp-contract=fast -rdynamic -static-libgcc
 ifdef NDEBUG
 FCFLAGS += -fno-math-errno
 CFLAGS += -fno-math-errno
