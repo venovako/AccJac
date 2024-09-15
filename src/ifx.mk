@@ -11,7 +11,7 @@ CFLAGS=-O0 -g
 endif # ?NDEBUG
 ifndef CPU
 CPU=Host
-# for x200: common-avx512
+# common-avx512 for KNLs
 endif # !CPU
 FCFLAGS += -x$(CPU) -mprefer-vector-width=512 -fPIC -fexceptions -fasynchronous-unwind-tables -fno-omit-frame-pointer -fp-model=precise -fp-speculation=safe -fimf-precision=high -fma -fprotect-parens -no-ftz -recursive -standard-semantics -traceback -vec-threshold0 -rdynamic -static-libgcc
 CFLAGS += -x$(CPU) -mprefer-vector-width=512 -fPIC -fexceptions -fasynchronous-unwind-tables -fno-omit-frame-pointer -fp-model=precise -fp-speculation=safe -fimf-precision=high -fma -fprotect-parens -no-ftz -traceback -vec-threshold0 -rdynamic -static-libgcc

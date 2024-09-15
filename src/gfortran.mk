@@ -9,12 +9,15 @@ else # !NDEBUG
 FCFLAGS=-Og -ggdb3
 CFLAGS=-Og -ggdb3
 endif # ?NDEBUG
+ifndef CPU
+CPU=native
+endif # !CPU
 ifeq ($(ARCH),ppc64le)
-FCFLAGS += -mcpu=native -mpower8-fusion -mtraceback=full
-CFLAGS += -mcpu=native -mpower8-fusion -mtraceback=full
+FCFLAGS += -mcpu=$(CPU) -mpower8-fusion -mtraceback=full
+CFLAGS += -mcpu=$(CPU) -mpower8-fusion -mtraceback=full
 else # !ppc64le
-FCFLAGS += -march=native
-CFLAGS += -march=native
+FCFLAGS += -march=$(CPU)
+CFLAGS += -march=$(CPU)
 endif # ?ppc64le
 FCFLAGS += -fPIC -fexceptions -fasynchronous-unwind-tables -fno-omit-frame-pointer -fvect-cost-model=unlimited -ffp-contract=fast -rdynamic -static-libgcc
 CFLAGS += -fPIC -fexceptions -fasynchronous-unwind-tables -fno-omit-frame-pointer -fvect-cost-model=unlimited -ffp-contract=fast -rdynamic -static-libgcc
