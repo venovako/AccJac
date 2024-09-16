@@ -2,12 +2,14 @@ AR=ar
 ARFLAGS=rsv
 FC=$(COMPILER_PREFIX)gfortran$(COMPILER_SUFFIX)
 CC=$(COMPILER_PREFIX)gcc$(COMPILER_SUFFIX)
+FCFLAGS=-cpp
+CFLAGS=-std=gnu$(shell if [ `$(CC) -dumpversion | cut -f1 -d.` -ge 14 ]; then echo 23; else echo 18; fi)
 ifdef NDEBUG
-FCFLAGS=-O$(NDEBUG)
-CFLAGS=-O$(NDEBUG)
+FCFLAGS += -O$(NDEBUG)
+CFLAGS += -O$(NDEBUG)
 else # !NDEBUG
-FCFLAGS=-Og -ggdb3
-CFLAGS=-Og -ggdb3
+FCFLAGS += -Og -ggdb3
+CFLAGS += -Og -ggdb3
 endif # ?NDEBUG
 ifndef CPU
 CPU=native
@@ -19,8 +21,8 @@ else # !ppc64le
 FCFLAGS += -march=$(CPU)
 CFLAGS += -march=$(CPU)
 endif # ?ppc64le
-FCFLAGS += -fPIC -fexceptions -fasynchronous-unwind-tables -fno-omit-frame-pointer -fvect-cost-model=unlimited -ffp-contract=fast -rdynamic -static-libgcc
-CFLAGS += -fPIC -fexceptions -fasynchronous-unwind-tables -fno-omit-frame-pointer -fvect-cost-model=unlimited -ffp-contract=fast -rdynamic -static-libgcc
+FCFLAGS += -fPIC -fexceptions -fasynchronous-unwind-tables -fno-omit-frame-pointer -fvect-cost-model=unlimited -ffp-contract=fast
+CFLAGS += -fPIC -fexceptions -fasynchronous-unwind-tables -fno-omit-frame-pointer -fvect-cost-model=unlimited -ffp-contract=fast
 ifdef NDEBUG
 FCFLAGS += -fno-math-errno
 CFLAGS += -fno-math-errno
