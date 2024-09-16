@@ -9,6 +9,9 @@
 !!@param S [INOUT]; on input, set to 0 unless debugging (see the example in zevdj.F90); on output, the scaling parameter such that 2**S * A = Lambda.
 !!@param INFO [INOUT]; on input, set to 0 unless special processing is desired (see the code); on output, the number of steps on success, or -i if the i-th argument had an illegal value.
 SUBROUTINE ZJAEVD(JOB, N, A, LDA, U, LDU, S, INFO)
+#ifdef ANIMATE
+  USE, INTRINSIC :: ISO_C_BINDING
+#endif
   USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL64
   IMPLICIT NONE
 
@@ -32,7 +35,15 @@ SUBROUTINE ZJAEVD(JOB, N, A, LDA, U, LDU, S, INFO)
   REAL(REAL64) :: AR, AI, AA, XA, RT1, RT2, CS1
   LOGICAL :: IDENT, ACCVEC, LAPACK, ALTCVG, LOWERA
   INTEGER :: MAXSTP, I, J, K, L, M, P, Q, D
-
+#ifdef ANIMATE
+  CHARACTER(LEN=11,KIND=c_char), PARAMETER :: GNAME = c_char_'zjaevd_mag'//C_NULL_CHAR, FNAME = c_char_'zjaevd_arg'//C_NULL_CHAR
+  INTEGER(KIND=c_int), PARAMETER :: ACT = 2, SX = ANIMATE, SY = ANIMATE, BPP = 8
+  INTEGER(KIND=c_intptr_t) :: CTX
+  INTEGER(KIND=c_int) :: NF
+  INTEGER(KIND=c_size_t) :: LDF
+  INTEGER(KIND=c_intptr_t), EXTERNAL :: PVN_CVIS_START
+  INTEGER(KIND=c_int), EXTERNAL :: PVN_CVIS_FRAME, PVN_CVIS_STOP
+#endif
   EXTERNAL :: DJAEV2, DLAEV2, ZJAEV2, ZLAEV2
 
   IF (INFO .GE. 0) THEN
@@ -68,7 +79,7 @@ SUBROUTINE ZJAEVD(JOB, N, A, LDA, U, LDU, S, INFO)
   LOWERA = (IAND(JOB, 8) .NE. 0)
   IF (N .EQ. 0) RETURN
 
-  ! TODO: reference directly the lower triangle instead of the conjugate-transpose
+  ! conjugate-transpose the lower triangle if requested
   IF (LOWERA) THEN
      DO J = 1, N-1
         DO I = J+1, N
@@ -194,7 +205,23 @@ SUBROUTINE ZJAEVD(JOB, N, A, LDA, U, LDU, S, INFO)
   P = 0
   Q = 0
   K = 0
+#ifdef ANIMATE
+  LDF = INT(LDA,c_size_t)
+  NF = INT(N,c_int)
+  CTX = PVN_CVIS_START(NF, NF, ACT, GNAME, FNAME)
+  IF (CTX .EQ. 0_c_intptr_t) ERROR STOP 'PVN_CVIS_START'
+#endif
   DO WHILE (.TRUE.)
+#ifdef ANIMATE
+     ! conjugate-transpose the upper triangle
+     DO J = 1, N-1
+        DO I = J+1, N
+           A(I,J) = CONJG(A(J,I))
+        END DO
+     END DO
+     NF = PVN_CVIS_FRAME(CTX, A, LDF)
+     IF (NF .NE. 0_c_int) ERROR STOP 'PVN_CVIS_FRAME'
+#endif
      IF (MAXSTP .GT. 0) THEN
         IF (K .LT. MAXSTP) THEN
            K = K + 1
@@ -451,6 +478,11 @@ SUBROUTINE ZJAEVD(JOB, N, A, LDA, U, LDU, S, INFO)
         S = S + M
      END IF
   END DO
+#ifdef ANIMATE
+  NF = PVN_CVIS_STOP(CTX, SX, SY, BPP, GNAME, BPP, FNAME)
+  IF (NF .NE. 0_c_int) ERROR STOP 'PVN_CVIS_STOP'
+  CTX = 0_c_intptr_t
+#endif
   INFO = K
   S = -S
 END SUBROUTINE ZJAEVD

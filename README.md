@@ -20,7 +20,7 @@ The correctly-rounded `cr_hypot[f]` and `cr_rsqrt[fl]` functions are assumed to 
 
 In the `src` subdirectory, run
 ```bash
-make [COMPILER=gfortran|ifx] [COMPILER_PREFIX=...] [COMPILER_SUFFIX=...] [CPU=...] [ABI=lp64|ilp64] [NDEBUG=optimization_level] [LAPACK=...] [MPFR=...] [GMP=...] [PROFILE=...] [all|help|clean]
+make [COMPILER=gfortran|ifx] [COMPILER_PREFIX=...] [COMPILER_SUFFIX=...] [CPU=...] [ABI=lp64|ilp64] [NDEBUG=optimization_level] [LAPACK=...] [MPFR=...] [GMP=...] [ANIMATE=ppe] [all|help|clean]
 ```
 
 The `COMPILER` and `NDEBUG` variables have to be compatible with those for building the `libpvn` repository; e.g., if `COMPILER=gcc` for `libpvn`, then `COMPILER=gfortran` here.
@@ -45,6 +45,6 @@ With the [MPFR](https://www.mpfr.org) and [GMP](https://gmplib.org) libraries, a
 
 Additional material is available in the `etc` subdirectory.
 
-TODO: direct lower-triangular, as well as real, variants of `CJAEVD` and `ZJAEVD` remain to be written.
+TODO: the real variants of `CJAEVD` and `ZJAEVD` remain to be written.
 
 This work has been supported in part by Croatian Science Foundation under the project IP-2014-09-3670 ([MFBDA](https://web.math.pmf.unizg.hr/mfbda/)).

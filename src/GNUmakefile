@@ -97,6 +97,12 @@ endif # MPFR
 ifdef GMP
 LDFLAGS += -L$(GMP)/lib -lgmp
 endif # GMP
+ifdef ANIMATE
+FCFLAGS += -DANIMATE=$(ANIMATE)
+ifneq ($(COMPILER),gfortran)
+LDFLAGS += $(realpath $(shell gcc -print-file-name=libquadmath.a))
+endif # !gfortran
+endif # ANIMATE
 LDFLAGS += -ldl -lm
 
 .PHONY: all help clean
@@ -110,7 +116,7 @@ $(LIBD): $(OBJD)
 	$(AR) $(ARFLAGS) $@ $(OBJD)
 
 help:
-	@echo $(MAKE) "[COMPILER=gfortran|ifx] [COMPILER_PREFIX=...] [COMPILER_SUFFIX=...] [CPU=...] [ABI=lp64|ilp64] [NDEBUG=optimization_level] [LAPACK=...] [MPFR=...] [GMP=...] [all|help|clean]"
+	@echo $(MAKE) "[COMPILER=gfortran|ifx] [COMPILER_PREFIX=...] [COMPILER_SUFFIX=...] [CPU=...] [ABI=lp64|ilp64] [NDEBUG=optimization_level] [LAPACK=...] [MPFR=...] [GMP=...] [ANIMATE=ppe] [all|help|clean]"
 
 mtest.obj: mtest.c $(MKFS)
 	$(CC) $(CFLAGS) -c $< -o $@
