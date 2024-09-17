@@ -15,12 +15,8 @@ ifndef CPU
 CPU=Host
 # COMMON-AVX512 for KNLs
 endif # !CPU
-FCFLAGS += -x$(CPU) -fPIC -fexceptions -fno-omit-frame-pointer -qopt-multi-version-aggressive -qopt-zmm-usage=high -fp-model precise -fma -fprotect-parens -no-ftz -no-complex-limited-range -no-fast-transcendentals -prec-div -prec-sqrt -qsimd-honor-fp-model -qsimd-serialize-fp-reduction -recursive -standard-semantics -traceback -vec-threshold0 -rdynamic
-CFLAGS += -x$(CPU) -fPIC -fexceptions -fno-omit-frame-pointer -qopt-multi-version-aggressive -qopt-zmm-usage=high -fp-model precise -fma -fprotect-parens -no-ftz -no-complex-limited-range -no-fast-transcendentals -prec-div -prec-sqrt -qsimd-honor-fp-model -qsimd-serialize-fp-reduction -traceback -vec-threshold0 -rdynamic
-ifeq ($(OS),Linux)
-FCFLAGS += -static-libgcc
-CFLAGS += -static-libgcc
-endif # Linux
+FCFLAGS += -x$(CPU) -fPIC -fexceptions -fno-omit-frame-pointer -qopt-multi-version-aggressive -qopt-zmm-usage=high -fp-model precise -fma -fprotect-parens -no-ftz -no-complex-limited-range -no-fast-transcendentals -prec-div -prec-sqrt -qsimd-honor-fp-model -qsimd-serialize-fp-reduction -recursive -standard-semantics -traceback -vec-threshold0
+CFLAGS += -x$(CPU) -fPIC -fexceptions -fno-omit-frame-pointer -qopt-multi-version-aggressive -qopt-zmm-usage=high -fp-model precise -fma -fprotect-parens -no-ftz -no-complex-limited-range -no-fast-transcendentals -prec-div -prec-sqrt -qsimd-honor-fp-model -qsimd-serialize-fp-reduction -traceback -vec-threshold0
 ifdef NDEBUG
 FCFLAGS += -fno-math-errno -qopt-report=5 -diag-disable=10397
 CFLAGS += -fno-math-errno -qopt-report=5 -diag-disable=10397
