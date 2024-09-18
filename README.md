@@ -20,7 +20,7 @@ The correctly-rounded `cr_hypot[f]` and `cr_rsqrt[fl]` functions are assumed to 
 
 In the `src` subdirectory, run
 ```bash
-make [COMPILER=gfortran|ifx|ifort] [COMPILER_PREFIX=...] [COMPILER_SUFFIX=...] [CPU=...] [ABI=lp64|ilp64] [NDEBUG=optimization_level] [LAPACK=...] [MPFR=...] [GMP=...] [PROFILE=...] [ANIMATE=ppe] [all|help|clean]
+make [COMPILER=gfortran|ifx|ifort] [COMPILER_PREFIX=...] [COMPILER_SUFFIX=...] [MARCH=...] [ABI=lp64|ilp64] [NDEBUG=optimization_level] [LAPACK=...] [MPFR=...] [GMP=...] [PROFILE=...] [ANIMATE=ppe] [all|help|clean]
 ```
 
 The `COMPILER` and `NDEBUG` variables have to be compatible with those for building the `libpvn` repository; e.g., if `COMPILER=gcc` for `libpvn`, then `COMPILER=gfortran` here.

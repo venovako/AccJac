@@ -11,12 +11,12 @@ else # !NDEBUG
 FCFLAGS += -O0 -g
 CFLAGS += -O0 -g
 endif # ?NDEBUG
-ifndef CPU
-CPU=Host
+ifndef MARCH
+MARCH=Host
 # common-avx512 for KNLs
-endif # !CPU
-FCFLAGS += -x$(CPU) -mprefer-vector-width=512 -fPIC -fexceptions -fasynchronous-unwind-tables -fno-omit-frame-pointer -fp-model=precise -fp-speculation=safe -fimf-precision=high -fma -fprotect-parens -no-ftz -recursive -standard-semantics -traceback -vec-threshold0
-CFLAGS += -x$(CPU) -mprefer-vector-width=512 -fPIC -fexceptions -fasynchronous-unwind-tables -fno-omit-frame-pointer -fp-model=precise -fp-speculation=safe -fimf-precision=high -fma -fprotect-parens -no-ftz -traceback -vec-threshold0
+endif # !MARCH
+FCFLAGS += -x$(MARCH) -mprefer-vector-width=512 -fPIC -fexceptions -fasynchronous-unwind-tables -fno-omit-frame-pointer -fp-model=precise -fp-speculation=safe -fimf-precision=high -fma -fprotect-parens -no-ftz -recursive -standard-semantics -traceback -vec-threshold0
+CFLAGS += -x$(MARCH) -mprefer-vector-width=512 -fPIC -fexceptions -fasynchronous-unwind-tables -fno-omit-frame-pointer -fp-model=precise -fp-speculation=safe -fimf-precision=high -fma -fprotect-parens -no-ftz -traceback -vec-threshold0
 ifdef NDEBUG
 FCFLAGS += -fno-math-errno -qopt-report=3
 CFLAGS += -fno-math-errno -qopt-report=3
