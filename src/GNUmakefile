@@ -90,7 +90,11 @@ EXED=\
 cevdj.exe\
 zevdj.exe
 
-LDFLAGS=-rdynamic -static-libgcc -L. -ljaevd -ljaev2 -L../../libpvn/src -lpvn $(LAPACK)
+LDFLAGS=-rdynamic -static-libgcc
+ifeq ($(COMPILER),gfortran)
+LDFLAGS += -static-libgfortran -static-libquadmath
+endif # gfortran
+LDFLAGS += -L. -ljaevd -ljaev2 -L../../libpvn/src -lpvn $(LAPACK)
 ifdef MPFR
 LDFLAGS += -L$(MPFR)/lib -lmpfr
 endif # MPFR
