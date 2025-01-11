@@ -340,7 +340,7 @@ SUBROUTINE CJAEVD(JOB, N, A, LDA, U, LDU, S, INFO)
      ! IDENT = .FALSE.
      ! U = [ -CONJG(SN1) CS1 ]
      !     [     CS1     SN1 ]
-     IF (D .NE. MININT) WRITE (D,'(I8,2(A,I3),A,ES15.9E2,2(A,L1),5(A,ES16.9E2))') &
+     IF (D .NE. MININT) WRITE (D,'(I8,2(A,I3),A,ES16.9E2,2(A,L1),5(A,ES16.9E2))') &
           K, ',', P, ',', Q, ',', XA, ',', IDENT, ',', (AIMAG(AP) .EQ. ZERO), ',', &
           RT1, ',', RT2, ',', CS1, ',', REAL(SN1), ',', AIMAG(SN1)
      IF (IDENT) THEN

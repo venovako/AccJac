@@ -28,7 +28,6 @@ else # !NDEBUG
 FCFLAGS += -debug emit_column -debug extended -debug inline-debug-info -debug pubnames -check all -fp-stack-check
 CFLAGS += -debug extended -debug inline-debug-info -debug pubnames
 endif # ?NDEBUG
-FCFLAGS += -diag-disable=8293
 CFLAGS += -diag-disable=10441
 ifdef MPFR
 FCFLAGS += -DMPFR="\"$(MPFR)\""
