@@ -88,7 +88,8 @@ LIBD=libjaevd.a
 
 EXED=\
 cevdj.exe\
-zevdj.exe
+zevdj.exe\
+djv2t.exe
 
 LDFLAGS=-rdynamic -static-libgcc
 ifeq ($(COMPILER),gfortran)
@@ -120,7 +121,7 @@ $(LIBD): $(OBJD)
 	$(AR) $(ARFLAGS) $@ $(OBJD)
 
 help:
-	@echo $(MAKE) "[COMPILER=gfortran|ifx|ifort] [COMPILER_PREFIX=...] [COMPILER_SUFFIX=...] [MARCH=...] [ABI=lp64|ilp64] [NDEBUG=optimization_level] [LAPACK=...] [MPFR=...] [GMP=...] [PROFILE=...] [ANIMATE=ppe] [all|help|clean]"
+	@echo $(MAKE) "[COMPILER=gfortran|ifx] [COMPILER_PREFIX=...] [COMPILER_SUFFIX=...] [MARCH=...] [ABI=lp64|ilp64] [NDEBUG=optimization_level] [LAPACK=...] [MPFR=...] [GMP=...] [PROFILE=...] [ANIMATE=ppe] [all|help|clean]"
 
 mtest.obj: mtest.c $(MKFS)
 	$(CC) $(CFLAGS) -c $< -o $@
