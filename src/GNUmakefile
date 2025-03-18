@@ -60,7 +60,9 @@ dtest.exe\
 qtest.exe\
 stest.exe\
 ytest.exe\
-ztest.exe
+ztest.exe\
+djv2t.exe\
+zjv2t.exe
 
 ifeq ($(COMPILER),gfortran)
 ifeq ($(findstring 86,$(ARCH)),86)
@@ -88,8 +90,7 @@ LIBD=libjaevd.a
 
 EXED=\
 cevdj.exe\
-zevdj.exe\
-djv2t.exe
+zevdj.exe
 
 LDFLAGS=-rdynamic -static-libgcc
 ifeq ($(COMPILER),gfortran)
