@@ -86,6 +86,6 @@ PROGRAM DJV2T
      IF ((Q(7) .NE. QZERO) .OR. (Q(5) .NE. QZERO)) Q(5) = Q(5) / Q(7)
      Q(3) = MAX(Q(3), Q(5))
   END DO
-  WRITE (OUTPUT_UNIT,'(2(I11,A),3ES25.17E3)') ISEED(1), '/', N, ',', Q(1), Q(2), Q(3)
+  WRITE (OUTPUT_UNIT,'(I11,A,I11,3(A,ES25.17E3))') ISEED(1), ',', N, ',', Q(1), ',', Q(2), ',', Q(3)
 2 DEALLOCATE(ISEED)
 END PROGRAM DJV2T

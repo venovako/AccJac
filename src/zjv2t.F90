@@ -101,6 +101,6 @@ PROGRAM ZJV2T
      IF ((Q(10) .NE. QZERO) .OR. (Q(7) .NE. QZERO)) Q(7) = Q(7) / Q(10)
      Q(4) = MAX(Q(4), Q(7))
   END DO
-  WRITE (OUTPUT_UNIT,'(2(I11,A),4ES25.17E3)') ISEED(1), '/', N, ',', Q(1), Q(2), Q(3), Q(4)
+  WRITE (OUTPUT_UNIT,'(I11,A,I11,4(A,ES25.17E3))') ISEED(1), ',', N, ',', Q(1), ',', Q(2), ',', Q(3), ',', Q(4)
 2 DEALLOCATE(ISEED)
 END PROGRAM ZJV2T
