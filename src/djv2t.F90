@@ -43,9 +43,10 @@ PROGRAM DJV2T
   ELSE ! a wrong SEED
      STOP 'invalid number of SEED arguments'
   END IF
-  DO I = 1, SSIZE
-     WRITE (ERROR_UNIT,*) ISEED(I)
+  DO I = 1, SSIZE-1
+     WRITE (ERROR_UNIT,'(I12)',ADVANCE='NO') ISEED(I)
   END DO
+  WRITE (ERROR_UNIT,'(I12)') ISEED(SSIZE)
   Q = QZERO
   D = ZERO
   ISEED = 0

@@ -3,10 +3,10 @@ PROGRAM ZJV2T
   USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: ERROR_UNIT, OUTPUT_UNIT, REAL64, REAL128
   IMPLICIT NONE
   REAL(KIND=REAL128), PARAMETER :: QZERO = 0.0_REAL128, QONE = 1.0_REAL128
-  REAL(KIND=REAL64), PARAMETER :: ZERO = 0.0_REAL64, HALF = 0.5_REAL64, CUTOFF = 0.8_REAL64
+  REAL(KIND=REAL64), PARAMETER :: ZERO = 0.0_REAL64, CUTOFF = 0.8_REAL64
   CHARACTER(LEN=256) :: CLA
   REAL(KIND=REAL128) :: Q(14)
-  REAL(KIND=REAL64) :: D(7)
+  REAL(KIND=REAL64) :: D(7), T
   INTEGER, ALLOCATABLE :: ISEED(:)
   !DIR$ ATTRIBUTES ALIGN: 64:: ISEED
   INTEGER :: I, N, SSIZE
@@ -43,9 +43,10 @@ PROGRAM ZJV2T
   ELSE ! a wrong SEED
      STOP 'invalid number of SEED arguments'
   END IF
-  DO I = 1, SSIZE
-     WRITE (ERROR_UNIT,*) ISEED(I)
+  DO I = 1, SSIZE-1
+     WRITE (ERROR_UNIT,'(I12)',ADVANCE='NO') ISEED(I)
   END DO
+  WRITE (ERROR_UNIT,'(I12)') ISEED(SSIZE)
   Q = QZERO
   D = ZERO
   ISEED = 0
@@ -55,19 +56,19 @@ PROGRAM ZJV2T
      IF (.NOT. (D(1) .LE. HUGE(ZERO))) GOTO 1
      D(2) = D(2) / D(4)
      IF (.NOT. (D(2) .LE. HUGE(ZERO))) GOTO 1
-#ifdef ZJV2T_SAFE
-     D(7) = D(7) * SQRT(HALF * D(1)) * SQRT(HALF * D(2))
-#else
-     D(7) = SQRT(HALF * D(1)) * SQRT(HALF * D(2))
-#endif
+     T = SQRT(D(1)) * SQRT(D(2))
      SSIZE = MOD(EXPONENT(D(3)), 2)
-     D(3) = D(7) * D(5)
+     D(3) = T * D(5)
      IF (.NOT. (D(3) .LE. HUGE(ZERO))) GOTO 1
      IF (SSIZE .NE. 0) D(3) = -D(3)
      SSIZE = MOD(EXPONENT(D(4)), 2)
-     D(4) = D(7) * D(6)
+     D(4) = T * D(6)
      IF (.NOT. (D(4) .LE. HUGE(ZERO))) GOTO 1
      IF (SSIZE .NE. 0) D(4) = -D(4)
+     DO WHILE (HYPOT(D(3), D(4)) .GT. T)
+        D(3) = D(3) * D(7)
+        D(4) = D(4) * D(7)
+     END DO
      ES = 0_c_int
      SSIZE = INT(PVN_ZLJV2(D(1), D(2), D(3), D(4), D(5), D(6), D(7), ES))
      IF (SSIZE .LT. 0) THEN
