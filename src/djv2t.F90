@@ -28,7 +28,6 @@ PROGRAM DJV2T
   END IF
   CALL GET_COMMAND_ARGUMENT(1, CLA)
   READ (CLA,*) N
-  IF (N .LE. 0) STOP 'N <= 0'
   IF (I .EQ. 1) THEN
      ALLOCATE(ISEED(SSIZE))
      CALL RANDOM_SEED
@@ -50,7 +49,7 @@ PROGRAM DJV2T
   Q = QZERO
   D = ZERO
   ISEED = 0
-  DO I = 1, N
+  DO I = 1, ABS(N)
 1    CALL RANDOM_NUMBER(D)
      D(1) = D(1) / D(3)
      IF (.NOT. (D(1) .LE. HUGE(ZERO))) GOTO 1
@@ -66,7 +65,10 @@ PROGRAM DJV2T
         WRITE (ERROR_UNIT,'(I11,A,I3)') I, ': error', SSIZE
         GOTO 2
      END IF
-     IF (ABS(D(5)) .GE. (CUTOFF * D(4))) ISEED(1) = ISEED(1) + 1
+     IF (ABS(D(5)) .GT. (CUTOFF * D(4))) THEN
+        ISEED(1) = ISEED(1) + 1
+        IF (N .LT. 0) GOTO 1
+     END IF
      Q(4) = D(4) ! CS
      Q(5) = D(5) ! SN
      Q(6) = HYPOT(Q(5), QONE)
@@ -87,6 +89,6 @@ PROGRAM DJV2T
      IF ((Q(7) .NE. QZERO) .OR. (Q(5) .NE. QZERO)) Q(5) = Q(5) / Q(7)
      Q(3) = MAX(Q(3), Q(5))
   END DO
-  WRITE (OUTPUT_UNIT,'(I11,A,I11,3(A,ES25.17E3))') ISEED(1), ',', N, ',', Q(1), ',', Q(2), ',', Q(3)
+  WRITE (OUTPUT_UNIT,'(I11,A,I12,3(A,ES25.17E3))') ISEED(1), ',', N, ',', Q(1), ',', Q(2), ',', Q(3)
 2 DEALLOCATE(ISEED)
 END PROGRAM DJV2T
