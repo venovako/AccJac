@@ -61,7 +61,9 @@ qtest.exe\
 stest.exe\
 ytest.exe\
 ztest.exe\
+cjv2t.exe\
 djv2t.exe\
+sjv2t.exe\
 zjv2t.exe
 
 ifeq ($(COMPILER),gfortran)
@@ -78,7 +80,9 @@ xjiev2.o
 
 EXE2 += \
 wtest.exe\
-xtest.exe
+xtest.exe\
+wjv2t.exe\
+xjv2t.exe
 endif # x86_64 or i86pc
 endif # gfortran
 
