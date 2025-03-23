@@ -4,7 +4,9 @@ PROGRAM ZJV2T
   IMPLICIT NONE
   REAL(KIND=REAL128), PARAMETER :: QZERO = 0.0_REAL128, QONE = 1.0_REAL128
   REAL(KIND=REAL64), PARAMETER :: ZERO = 0.0_REAL64, CUTOFF = 0.8_REAL64, DEPS = EPSILON(ZERO) / 2
-  ! TODO: define DAMP here if necessary.
+  ! DAMP should counterweigh a possible unfavorable rounding when creating the off-diagonal element.
+  ! This has been observed in single precision, and is more unlikely in higher precisions.
+  REAL(KIND=REAL64), PARAMETER :: DAMP = 1.0_REAL64 - 4 * EPSILON(ZERO)
   CHARACTER(LEN=256) :: CLA
   REAL(KIND=REAL128) :: Q(14)
   REAL(KIND=REAL64) :: D(7), T
@@ -58,13 +60,14 @@ PROGRAM ZJV2T
      IF (.NOT. (D(2) .LE. HUGE(ZERO))) GOTO 1
      T = SQRT(D(1)) * SQRT(D(2))
      SSIZE = MOD(EXPONENT(D(3)), 2)
-     D(3) = T * D(5)
+     D(3) = T * MIN(D(5), DAMP)
      IF (.NOT. (D(3) .LE. HUGE(ZERO))) GOTO 1
      IF (SSIZE .NE. 0) D(3) = -D(3)
      SSIZE = MOD(EXPONENT(D(4)), 2)
-     D(4) = T * D(6)
+     D(4) = T * MIN(D(6), DAMP)
      IF (.NOT. (D(4) .LE. HUGE(ZERO))) GOTO 1
      IF (SSIZE .NE. 0) D(4) = -D(4)
+     D(7) = MIN(D(7), DAMP)
      DO WHILE (HYPOT(D(3), D(4)) .GT. T)
         D(3) = D(3) * D(7)
         D(4) = D(4) * D(7)
