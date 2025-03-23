@@ -78,7 +78,7 @@ PROGRAM CJV2T
         WRITE (ERROR_UNIT,'(I11,A,I3)') I, ': error', SSIZE
         GOTO 2
      END IF
-     IF (HYPOT(D(6), D(7)) .GT. (CUTOFF * D(5))) THEN
+     IF (HYPOT(D(6), D(7)) .GE. (CUTOFF * D(5))) THEN
         ISEED(1) = ISEED(1) + 1
         IF (N .LT. 0) GOTO 1
      END IF

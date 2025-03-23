@@ -68,7 +68,7 @@ PROGRAM SJV2T
         WRITE (ERROR_UNIT,'(I11,A,I3)') I, ': error', SSIZE
         GOTO 2
      END IF
-     IF (ABS(D(5)) .GT. (CUTOFF * D(4))) THEN
+     IF (ABS(D(5)) .GE. (CUTOFF * D(4))) THEN
         ISEED(1) = ISEED(1) + 1
         IF (N .LT. 0) GOTO 1
      END IF
