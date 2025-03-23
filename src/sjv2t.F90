@@ -4,6 +4,9 @@ PROGRAM SJV2T
   IMPLICIT NONE
   REAL(KIND=REAL128), PARAMETER :: QZERO = 0.0_REAL128, QONE = 1.0_REAL128
   REAL(KIND=REAL32), PARAMETER :: ZERO = 0.0_REAL32, CUTOFF = 0.8_REAL32, SEPS = EPSILON(ZERO) / 2
+  ! DAMP should counterweigh a possible unfavorable rounding when creating the off-diagonal element.
+  ! This has been observed in single precision, and is more unlikely in higher precisions.
+  REAL(KIND=REAL32), PARAMETER :: DAMP = 1.0_REAL32 - 4 * EPSILON(ZERO)
   CHARACTER(LEN=256) :: CLA
   REAL(KIND=REAL128) :: Q(10)
   REAL(KIND=REAL32) :: D(5)
@@ -56,7 +59,7 @@ PROGRAM SJV2T
      D(2) = D(2) / D(4)
      IF (.NOT. (D(2) .LE. HUGE(ZERO))) GOTO 1
      SSIZE = MOD(EXPONENT(D(3)), 2)
-     D(3) = SQRT(D(1)) * SQRT(D(2)) * D(5)
+     D(3) = SQRT(D(1)) * SQRT(D(2)) * MIN(D(5), DAMP)
      IF (.NOT. (D(3) .LE. HUGE(ZERO))) GOTO 1
      IF (SSIZE .NE. 0) D(3) = -D(3)
      ES = 0_c_int

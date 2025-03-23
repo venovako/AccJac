@@ -1,12 +1,12 @@
-#!/usr/bin/env wolframscript -print all
+#!/usr/bin/wolframscript -print all
 If[Length[$ScriptCommandLine]<4,Quit[]];
 p=FullSimplify[ToExpression[$ScriptCommandLine[[2]]]];
 n=FullSimplify[ToExpression[$ScriptCommandLine[[3]]]];
 d=FullSimplify[ToExpression[$ScriptCommandLine[[4]]]];
 pm=FullSimplify[-p]; (* due to rounding to nearest *)
 ep=FullSimplify[2^pm]; (* \varepsilon *)
-raz[x_]:=Block[{f=Ceiling[x*(10^d)]/(10^d)},If[f<10," "<>ToString[N[f,d+1]],ToString[N[f,d+2]]]<>ToString[\[Epsilon]]];
-ToString[\[Epsilon]]<>"=2^"<>ToString[pm]<>"; n="<>ToString[n]<>"; d="<>ToString[d]
+raz[x_]:=Block[{f=Ceiling[x*(10^d)]/(10^d)},If[f<10,"  "<>ToString[N[f,d+1]],If[f<100," "<>ToString[N[f,d+2]],ToString[N[f,d+3]]]]<>ToString[\[Epsilon]]];
+ToString[\[Epsilon]]<>"=2^"<>ToString[pm]<>"; n="<>ToString[n]
 d1m[e_]:=If[n<0,1,1-e];
 ToString[\[Delta]]<>"1-=1-"<>raz[N[FullSimplify[(1-d1m[ep])/ep],Abs[n]]]
 d1p[e_]:=If[n<0,1,1+e];
@@ -14,5 +14,56 @@ ToString[\[Delta]]<>"1+=1+"<>raz[N[FullSimplify[(d1p[ep]-1)/ep],Abs[n]]]
 ddm[e_]:=(d1m[e]/(1+e))*(1-e);
 ToString[\[Delta]]<>"d-=1-"<>raz[N[FullSimplify[(1-ddm[ep])/ep],Abs[n]]]
 ddp[e_]:=(d1p[e]/(1-e))*(1+e);
-ToString[\[Delta]]<>"1+=1+"<>raz[N[FullSimplify[(ddp[ep]-1)/ep],Abs[n]]]
-(* TODO *)
+ToString[\[Delta]]<>"d+=1+"<>raz[N[FullSimplify[(ddp[ep]-1)/ep],Abs[n]]]
+edm[e_]:=ddm[e]-1;
+edp[e_]:=ddp[e]-1;
+eddm[e_]:=(2+edm[e])*edm[e];
+eddp[e_]:=(2+edp[e])*edp[e];
+e4m[e_]:=-eddp[e]*1600/81;
+e4p[e_]:=-eddm[e]*1600/81;
+d4m[e_]:=1+e4m[e];
+(* ToString[\[Delta]]<>"4-=1-"<>raz[N[FullSimplify[(1-d4m[ep])/ep],Abs[n]]] *)
+d4p[e_]:=1+e4p[e];
+(* ToString[\[Delta]]<>"4+=1+"<>raz[N[FullSimplify[(d4p[ep]-1)/ep],Abs[n]]] *)
+d7m[e_]:=Sqrt[d4m[e]*(1-e)]*(1-e);
+(* ToString[\[Delta]]<>"7-=1-"<>raz[N[FullSimplify[(1-d7m[ep])/ep],Abs[n]]] *)
+d7p[e_]:=Sqrt[d4p[e]*(1+e)]*(1+e);
+(* ToString[\[Delta]]<>"7+=1+"<>raz[N[FullSimplify[(d7p[ep]-1)/ep],Abs[n]]] *)
+e7m[e_]:=d7m[e]-1;
+e7p[e_]:=d7p[e]-1;
+e8m[e_]:=e7m[e]/2;
+e8p[e_]:=e7p[e]/2;
+d8m[e_]:=1+e8m[e];
+(* ToString[\[Delta]]<>"8-=1-"<>raz[N[FullSimplify[(1-d8m[ep])/ep],Abs[n]]] *)
+d8p[e_]:=1+e8p[e];
+(* ToString[\[Delta]]<>"8+=1+"<>raz[N[FullSimplify[(d8p[ep]-1)/ep],Abs[n]]] *)
+d10m[e_]:=d8m[e]*(1-e);
+(* ToString[\[Delta]]<>"10-=1-"<>raz[N[FullSimplify[(1-d10m[ep])/ep],Abs[n]]] *)
+d10p[e_]:=d8p[e]*(1+e);
+(* ToString[\[Delta]]<>"10+=1+"<>raz[N[FullSimplify[(d10p[ep]-1)/ep],Abs[n]]] *)
+dtm[e_]:=(ddm[e]/d10p[e])*(1-e);
+ToString[\[Delta]]<>"t-=1-"<>raz[N[FullSimplify[(1-dtm[ep])/ep],Abs[n]]]
+dtp[e_]:=(ddp[e]/d10m[e])*(1+e);
+ToString[\[Delta]]<>"t+=1+"<>raz[N[FullSimplify[(dtp[ep]-1)/ep],Abs[n]]]
+etm[e_]:=dtm[e]-1;
+etp[e_]:=dtp[e]-1;
+ettm[e_]:=(2+etm[e])*etm[e];
+ettp[e_]:=(2+etp[e])*etp[e];
+e12m[e_]:=-ettp[e]*16/9;
+e12p[e_]:=-ettm[e]*16/9;
+d12m[e_]:=1+e12m[e];
+(* ToString[\[Delta]]<>"12-=1-"<>raz[N[FullSimplify[(1-d12m[ep])/ep],Abs[n]]] *)
+d12p[e_]:=1+e12p[e];
+(* ToString[\[Delta]]<>"12+=1+"<>raz[N[FullSimplify[(d12p[ep]-1)/ep],Abs[n]]] *)
+dcm[e_]:=(1-e)/Sqrt[d12p[e]*(1+e)];
+ToString[\[Delta]]<>"c-=1-"<>raz[N[FullSimplify[(1-dcm[ep])/ep],Abs[n]]]
+dcp[e_]:=(1+e)/Sqrt[d12m[e]*(1-e)];
+ToString[\[Delta]]<>"c+=1+"<>raz[N[FullSimplify[(dcp[ep]-1)/ep],Abs[n]]]
+dsm[e_]:=dtm[e]*dcm[e]*(1-e);
+ToString[\[Delta]]<>"s-=1-"<>raz[N[FullSimplify[(1-dsm[ep])/ep],Abs[n]]]
+dsp[e_]:=dtp[e]*dcp[e]*(1+e);
+ToString[\[Delta]]<>"s+=1+"<>raz[N[FullSimplify[(dsp[ep]-1)/ep],Abs[n]]]
+drm[e_]:=If[n<0,dsm[e],((1-e)/d1p[e])*dsm[e]*(1-e)];
+ToString[\[Delta]]<>"r-=1-"<>raz[N[FullSimplify[(1-drm[ep])/ep],Abs[n]]]
+drp[e_]:=If[n<0,dsp[e],((1+e)/d1m[e])*dsp[e]*(1+e)];
+ToString[\[Delta]]<>"r+=1+"<>raz[N[FullSimplify[(drp[ep]-1)/ep],Abs[n]]]
