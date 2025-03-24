@@ -1,20 +1,20 @@
-PROGRAM CJV2T
+PROGRAM DLJV2T
   USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_int
-  USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: ERROR_UNIT, OUTPUT_UNIT, REAL32, REAL128
+  USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: ERROR_UNIT, OUTPUT_UNIT, REAL64, REAL128
   IMPLICIT NONE
   REAL(KIND=REAL128), PARAMETER :: QZERO = 0.0_REAL128, QONE = 1.0_REAL128
-  REAL(KIND=REAL32), PARAMETER :: ZERO = 0.0_REAL32, CUTOFF = 0.8_REAL32, SEPS = EPSILON(ZERO) / 2
+  REAL(KIND=REAL64), PARAMETER :: ZERO = 0.0_REAL64, CUTOFF = 0.8_REAL64, DEPS = EPSILON(ZERO) / 2
   ! DAMP should counterweigh a possible unfavorable rounding when creating the off-diagonal element.
   ! This has been observed in single precision, and is more unlikely in higher precisions.
-  REAL(KIND=REAL32), PARAMETER :: DAMP = 1.0_REAL32 - 8 * EPSILON(ZERO)
+  REAL(KIND=REAL64), PARAMETER :: DAMP = 1.0_REAL64 - 4 * EPSILON(ZERO)
   CHARACTER(LEN=256) :: CLA
-  REAL(KIND=REAL128) :: Q(14)
-  REAL(KIND=REAL32) :: D(7), T
+  REAL(KIND=REAL128) :: Q(10)
+  REAL(KIND=REAL64) :: D(5)
   INTEGER, ALLOCATABLE :: ISEED(:)
   !DIR$ ATTRIBUTES ALIGN: 64:: ISEED
   INTEGER :: I, N, SSIZE
   INTEGER(KIND=c_int) :: ES
-  INTEGER(KIND=c_int), EXTERNAL :: PVN_CLJV2, PVN_YLJV2
+  INTEGER(KIND=c_int), EXTERNAL :: PVN_DLJV2, PVN_QLJV2
   ! random seed may be given
   CALL RANDOM_SEED(SIZE=SSIZE)
   IF (SSIZE .LE. 0) STOP 'seed size non-positive'
@@ -58,64 +58,48 @@ PROGRAM CJV2T
      IF (.NOT. (D(1) .LE. HUGE(ZERO))) GOTO 1
      D(2) = D(2) / D(4)
      IF (.NOT. (D(2) .LE. HUGE(ZERO))) GOTO 1
-     T = SQRT(D(1)) * SQRT(D(2))
      SSIZE = MOD(EXPONENT(D(3)), 2)
-     D(3) = T * MIN(D(5), DAMP)
+     D(3) = SQRT(D(1)) * SQRT(D(2)) * MIN(D(5), DAMP)
      IF (.NOT. (D(3) .LE. HUGE(ZERO))) GOTO 1
      IF (SSIZE .NE. 0) D(3) = -D(3)
-     SSIZE = MOD(EXPONENT(D(4)), 2)
-     D(4) = T * MIN(D(6), DAMP)
-     IF (.NOT. (D(4) .LE. HUGE(ZERO))) GOTO 1
-     IF (SSIZE .NE. 0) D(4) = -D(4)
-     D(7) = MIN(D(7), DAMP)
-     DO WHILE (HYPOT(D(3), D(4)) .GT. T)
-        D(3) = D(3) * D(7)
-        D(4) = D(4) * D(7)
-     END DO
      ES = 0_c_int
-     SSIZE = INT(PVN_CLJV2(D(1), D(2), D(3), D(4), D(5), D(6), D(7), ES))
+     SSIZE = INT(PVN_DLJV2(D(1), D(2), D(3), D(4), D(5), ES))
      IF (SSIZE .LT. 0) THEN
         WRITE (ERROR_UNIT,'(I11,A,I3)') I, ': error', SSIZE
         GOTO 2
      END IF
-     IF (HYPOT(D(6), D(7)) .GE. (CUTOFF * D(5))) THEN
+     IF (ABS(D(5)) .GE. (CUTOFF * D(4))) THEN
         ISEED(1) = ISEED(1) + 1
         IF (N .LT. 0) GOTO 1
      END IF
-     Q(5) = D(5) ! CS
-     Q(6) = D(6) ! SNR
-     Q(7) = D(7) ! SNI
-     Q(8) = HYPOT(Q(6), Q(7))
-     Q(8) = HYPOT(Q(8), QONE)
-     Q(8) = ABS((Q(5) - Q(8)) * (Q(5) + Q(8)))
-     Q(1) = MAX(Q(1), Q(8))
-     Q(11) = D(1)
-     Q(12) = D(2)
-     Q(13) = D(3)
-     Q(14) = D(4)
+     Q(4) = D(4) ! CS
+     Q(5) = D(5) ! SN
+     Q(6) = HYPOT(Q(5), QONE)
+     Q(6) = ABS((Q(4) - Q(6)) * (Q(4) + Q(6)))
+     Q(1) = MAX(Q(1), Q(6))
+     Q(8) = D(1)
+     Q(9) = D(2)
+     Q(10) = D(3)
      ES = 0_c_int
-     SSIZE = INT(PVN_YLJV2(Q(11), Q(12), Q(13), Q(14), Q(8), Q(9), Q(10), ES))
+     SSIZE = INT(PVN_QLJV2(Q(8), Q(9), Q(10), Q(6), Q(7), ES))
      IF (SSIZE .LT. 0) THEN
         WRITE (ERROR_UNIT,'(I11,A,I3)') I, ': ERROR', SSIZE
         GOTO 2
      END IF
-     Q(5) = ABS(Q(5) - Q(8)) / Q(8)
-     Q(2) = MAX(Q(2), Q(5))
-     Q(6) = ABS(Q(6) - Q(9))
-     IF ((Q(9) .NE. QZERO) .OR. (Q(6) .NE. QZERO)) Q(6) = Q(6) / Q(9)
-     Q(3) = MAX(Q(3), Q(6))
-     Q(7) = ABS(Q(7) - Q(10))
-     IF ((Q(10) .NE. QZERO) .OR. (Q(7) .NE. QZERO)) Q(7) = Q(7) / Q(10)
-     Q(4) = MAX(Q(4), Q(7))
+     Q(4) = ABS(Q(4) - Q(6)) / Q(6)
+     Q(2) = MAX(Q(2), Q(4))
+     Q(5) = ABS(Q(5) - Q(7))
+     IF ((Q(7) .NE. QZERO) .OR. (Q(5) .NE. QZERO)) Q(5) = Q(5) / Q(7)
+     Q(3) = MAX(Q(3), Q(5))
   END DO
   ! relative errors in the terms of \epsilon
-  DO I = 1, 4
-     Q(I) = Q(I) / SEPS
+  DO I = 1, 3
+     Q(I) = Q(I) / DEPS
   END DO
   IF (N .LT. 0) THEN
-     WRITE (OUTPUT_UNIT,'(I11,A,I11,4(A,ES16.9E2))') -ISEED(1), ',', -N, ',', Q(1), ',', Q(2), ',', Q(3), ',', Q(4)
+     WRITE (OUTPUT_UNIT,'(I11,A,I11,3(A,ES25.17E3))') -ISEED(1), ',', -N, ',', Q(1), ',', Q(2), ',', Q(3)
   ELSE ! N >= 0
-     WRITE (OUTPUT_UNIT,'(I11,A,I11,4(A,ES16.9E2))')  ISEED(1), ',',  N, ',', Q(1), ',', Q(2), ',', Q(3), ',', Q(4)
+     WRITE (OUTPUT_UNIT,'(I11,A,I11,3(A,ES25.17E3))')  ISEED(1), ',',  N, ',', Q(1), ',', Q(2), ',', Q(3)
   END IF
 2 DEALLOCATE(ISEED)
-END PROGRAM CJV2T
+END PROGRAM DLJV2T

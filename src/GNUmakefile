@@ -46,9 +46,13 @@ yjaev2.o\
 yjiev2.o\
 zjaev2.o\
 zjiev2.o\
+clju2.o\
 cljv2.o\
+dlju2.o\
 dljv2.o\
+slju2.o\
 sljv2.o\
+zlju2.o\
 zljv2.o
 
 ifdef MPFR
@@ -65,10 +69,10 @@ qtest.exe\
 stest.exe\
 ytest.exe\
 ztest.exe\
-cjv2t.exe\
-djv2t.exe\
-sjv2t.exe\
-zjv2t.exe
+cljv2t.exe\
+dljv2t.exe\
+sljv2t.exe\
+zljv2t.exe
 
 ifeq ($(COMPILER),gfortran)
 ifeq ($(findstring 86,$(ARCH)),86)
@@ -81,14 +85,16 @@ wjaev2.o\
 wjiev2.o\
 xjaev2.o\
 xjiev2.o\
+wlju2.o\
 wljv2.o\
+xlju2.o\
 xljv2.o
 
 EXE2 += \
 wtest.exe\
 xtest.exe\
-wjv2t.exe\
-xjv2t.exe
+wljv2t.exe\
+xljv2t.exe
 endif # x86_64 or i86pc
 endif # gfortran
 

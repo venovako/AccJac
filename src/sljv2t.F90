@@ -1,20 +1,20 @@
-PROGRAM DJV2T
+PROGRAM SLJV2T
   USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_int
-  USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: ERROR_UNIT, OUTPUT_UNIT, REAL64, REAL128
+  USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: ERROR_UNIT, OUTPUT_UNIT, REAL32, REAL128
   IMPLICIT NONE
   REAL(KIND=REAL128), PARAMETER :: QZERO = 0.0_REAL128, QONE = 1.0_REAL128
-  REAL(KIND=REAL64), PARAMETER :: ZERO = 0.0_REAL64, CUTOFF = 0.8_REAL64, DEPS = EPSILON(ZERO) / 2
+  REAL(KIND=REAL32), PARAMETER :: ZERO = 0.0_REAL32, CUTOFF = 0.8_REAL32, SEPS = EPSILON(ZERO) / 2
   ! DAMP should counterweigh a possible unfavorable rounding when creating the off-diagonal element.
   ! This has been observed in single precision, and is more unlikely in higher precisions.
-  REAL(KIND=REAL64), PARAMETER :: DAMP = 1.0_REAL64 - 4 * EPSILON(ZERO)
+  REAL(KIND=REAL32), PARAMETER :: DAMP = 1.0_REAL32 - 4 * EPSILON(ZERO)
   CHARACTER(LEN=256) :: CLA
   REAL(KIND=REAL128) :: Q(10)
-  REAL(KIND=REAL64) :: D(5)
+  REAL(KIND=REAL32) :: D(5)
   INTEGER, ALLOCATABLE :: ISEED(:)
   !DIR$ ATTRIBUTES ALIGN: 64:: ISEED
   INTEGER :: I, N, SSIZE
   INTEGER(KIND=c_int) :: ES
-  INTEGER(KIND=c_int), EXTERNAL :: PVN_DLJV2, PVN_QLJV2
+  INTEGER(KIND=c_int), EXTERNAL :: PVN_SLJV2, PVN_QLJV2
   ! random seed may be given
   CALL RANDOM_SEED(SIZE=SSIZE)
   IF (SSIZE .LE. 0) STOP 'seed size non-positive'
@@ -63,7 +63,7 @@ PROGRAM DJV2T
      IF (.NOT. (D(3) .LE. HUGE(ZERO))) GOTO 1
      IF (SSIZE .NE. 0) D(3) = -D(3)
      ES = 0_c_int
-     SSIZE = INT(PVN_DLJV2(D(1), D(2), D(3), D(4), D(5), ES))
+     SSIZE = INT(PVN_SLJV2(D(1), D(2), D(3), D(4), D(5), ES))
      IF (SSIZE .LT. 0) THEN
         WRITE (ERROR_UNIT,'(I11,A,I3)') I, ': error', SSIZE
         GOTO 2
@@ -94,12 +94,12 @@ PROGRAM DJV2T
   END DO
   ! relative errors in the terms of \epsilon
   DO I = 1, 3
-     Q(I) = Q(I) / DEPS
+     Q(I) = Q(I) / SEPS
   END DO
   IF (N .LT. 0) THEN
-     WRITE (OUTPUT_UNIT,'(I11,A,I11,3(A,ES25.17E3))') -ISEED(1), ',', -N, ',', Q(1), ',', Q(2), ',', Q(3)
+     WRITE (OUTPUT_UNIT,'(I11,A,I11,3(A,ES16.9E2))') -ISEED(1), ',', -N, ',', Q(1), ',', Q(2), ',', Q(3)
   ELSE ! N >= 0
-     WRITE (OUTPUT_UNIT,'(I11,A,I11,3(A,ES25.17E3))')  ISEED(1), ',',  N, ',', Q(1), ',', Q(2), ',', Q(3)
+     WRITE (OUTPUT_UNIT,'(I11,A,I11,3(A,ES16.9E2))')  ISEED(1), ',',  N, ',', Q(1), ',', Q(2), ',', Q(3)
   END IF
 2 DEALLOCATE(ISEED)
-END PROGRAM DJV2T
+END PROGRAM SLJV2T
