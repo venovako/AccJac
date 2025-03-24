@@ -6,7 +6,7 @@ PROGRAM WJV2T
   REAL(KIND=10), PARAMETER :: ZERO = 0.0_10, CUTOFF = 0.8_10, XEPS = EPSILON(ZERO) / 2
   ! DAMP should counterweigh a possible unfavorable rounding when creating the off-diagonal element.
   ! This has been observed in single precision, and is more unlikely in higher precisions.
-  REAL(KIND=10), PARAMETER :: DAMP = 1.0_10 - 4 * EPSILON(ZERO)
+  REAL(KIND=10), PARAMETER :: DAMP = 1.0_10 - 8 * EPSILON(ZERO)
   CHARACTER(LEN=256) :: CLA
   REAL(KIND=REAL128) :: Q(14)
   REAL(KIND=10) :: D(7), T

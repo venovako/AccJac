@@ -1,0 +1,38 @@
+SUBROUTINE XLJV2(A11, A22, A21, CH, SH, INFO)
+  USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_int
+  IMPLICIT NONE
+  REAL(KIND=10), PARAMETER :: ZERO = 0.0_10, ONE = 1.0_10
+  REAL(KIND=10), PARAMETER :: CUTTH = 4.0_10 / 5.0_10
+  REAL(KIND=10), PARAMETER :: CUTCH = 5.0_10 / 3.0_10
+  REAL(KIND=10), PARAMETER :: CUTSH = 4.0_10 / 3.0_10
+  REAL(KIND=10), INTENT(IN) :: A11, A22, A21
+  REAL(KIND=10), INTENT(OUT) :: CH, SH
+  INTEGER, INTENT(INOUT) :: INFO
+  REAL(KIND=10) :: A
+  INTEGER(KIND=c_int) :: ES
+  INTEGER(KIND=c_int), EXTERNAL :: PVN_XLJV2
+  ES = INT(INFO, c_int)
+  INFO = INT(PVN_XLJV2(A11, A22, A21, CH, SH, ES))
+  IF (INFO .GE. 0) THEN
+     INFO = IAND(INFO, 1)
+     A = ABS(SH)
+     IF (.NOT. (A .LE. HUGE(A))) THEN
+        ! |TH| >= 1 => skip the transformation
+        CH = ONE
+        SH = ZERO
+        INFO = INFO + 4
+     ELSE IF (INFO .EQ. 0) THEN
+        IF (A .GE. (CUTTH * CH)) THEN
+           CH = CUTCH
+           SH = SIGN(CUTSH, SH)
+           INFO = 2
+        END IF
+     ELSE ! SH => TH
+        IF (A .GE. CUTTH) THEN
+           CH = CUTCH
+           SH = SIGN(CUTTH, SH)
+           INFO = 3
+        END IF
+     END IF
+  END IF
+END SUBROUTINE XLJV2

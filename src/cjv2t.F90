@@ -6,7 +6,7 @@ PROGRAM CJV2T
   REAL(KIND=REAL32), PARAMETER :: ZERO = 0.0_REAL32, CUTOFF = 0.8_REAL32, SEPS = EPSILON(ZERO) / 2
   ! DAMP should counterweigh a possible unfavorable rounding when creating the off-diagonal element.
   ! This has been observed in single precision, and is more unlikely in higher precisions.
-  REAL(KIND=REAL32), PARAMETER :: DAMP = 1.0_REAL32 - 4 * EPSILON(ZERO)
+  REAL(KIND=REAL32), PARAMETER :: DAMP = 1.0_REAL32 - 8 * EPSILON(ZERO)
   CHARACTER(LEN=256) :: CLA
   REAL(KIND=REAL128) :: Q(14)
   REAL(KIND=REAL32) :: D(7), T
