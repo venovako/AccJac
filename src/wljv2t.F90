@@ -56,19 +56,29 @@ PROGRAM WLJV2T
 1    CALL RANDOM_NUMBER(D)
      D(1) = D(1) / D(3)
      IF (.NOT. (D(1) .LE. HUGE(ZERO))) GOTO 1
-     D(2) = D(2) / D(4)
+     IF (D(1) .EQ. ZERO) GOTO 2
+     IF (.NOT. (D(1) .GE. TINY(ZERO))) GOTO 1
+2    D(2) = D(2) / D(4)
      IF (.NOT. (D(2) .LE. HUGE(ZERO))) GOTO 1
-     T = SQRT(D(1)) * SQRT(D(2))
+     IF (D(2) .EQ. ZERO) GOTO 3
+     IF (.NOT. (D(2) .GE. TINY(ZERO))) GOTO 1
+3    T = SQRT(D(1)) * SQRT(D(2))
      SSIZE = MOD(EXPONENT(D(3)), 2)
      D(3) = T * MIN(D(5), DAMP)
      IF (.NOT. (D(3) .LE. HUGE(ZERO))) GOTO 1
-     IF (SSIZE .NE. 0) D(3) = -D(3)
+     IF (D(3) .EQ. ZERO) GOTO 4
+     IF (.NOT. (D(3) .GE. TINY(ZERO))) GOTO 1
+4    IF (SSIZE .NE. 0) D(3) = -D(3)
      SSIZE = MOD(EXPONENT(D(4)), 2)
      D(4) = T * MIN(D(6), DAMP)
      IF (.NOT. (D(4) .LE. HUGE(ZERO))) GOTO 1
-     IF (SSIZE .NE. 0) D(4) = -D(4)
+     IF (D(4) .EQ. ZERO) GOTO 5
+     IF (.NOT. (D(4) .GE. TINY(ZERO))) GOTO 1
+5    IF (SSIZE .NE. 0) D(4) = -D(4)
      D(7) = MIN(D(7), DAMP)
-     DO WHILE (HYPOT(D(3), D(4)) .GT. T)
+     IF (D(7) .EQ. ZERO) GOTO 6
+     IF (.NOT. (D(7) .GE. TINY(ZERO))) D(7) = SQRT(D(7))
+6    DO WHILE (HYPOT(D(3), D(4)) .GT. T)
         D(3) = D(3) * D(7)
         D(4) = D(4) * D(7)
      END DO
@@ -76,7 +86,7 @@ PROGRAM WLJV2T
      SSIZE = INT(PVN_WLJV2(D(1), D(2), D(3), D(4), D(5), D(6), D(7), ES))
      IF (SSIZE .LT. 0) THEN
         WRITE (ERROR_UNIT,'(I11,A,I3)') I, ': error', SSIZE
-        GOTO 2
+        GOTO 9
      END IF
      IF (HYPOT(D(6), D(7)) .GE. (CUTOFF * D(5))) THEN
         ISEED(1) = ISEED(1) + 1
@@ -97,7 +107,7 @@ PROGRAM WLJV2T
      SSIZE = INT(PVN_YLJV2(Q(11), Q(12), Q(13), Q(14), Q(8), Q(9), Q(10), ES))
      IF (SSIZE .LT. 0) THEN
         WRITE (ERROR_UNIT,'(I11,A,I3)') I, ': ERROR', SSIZE
-        GOTO 2
+        GOTO 9
      END IF
      Q(5) = ABS(Q(5) - Q(8)) / Q(8)
      Q(2) = MAX(Q(2), Q(5))
@@ -117,5 +127,5 @@ PROGRAM WLJV2T
   ELSE ! N >= 0
      WRITE (OUTPUT_UNIT,'(I11,A,I11,4(A,ES30.21E4))')  ISEED(1), ',',  N, ',', Q(1), ',', Q(2), ',', Q(3), ',', Q(4)
   END IF
-2 DEALLOCATE(ISEED)
+9 DEALLOCATE(ISEED)
 END PROGRAM WLJV2T

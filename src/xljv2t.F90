@@ -56,17 +56,23 @@ PROGRAM XLJV2T
 1    CALL RANDOM_NUMBER(D)
      D(1) = D(1) / D(3)
      IF (.NOT. (D(1) .LE. HUGE(ZERO))) GOTO 1
-     D(2) = D(2) / D(4)
+     IF (D(1) .EQ. ZERO) GOTO 2
+     IF (.NOT. (D(1) .GE. TINY(ZERO))) GOTO 1
+2    D(2) = D(2) / D(4)
      IF (.NOT. (D(2) .LE. HUGE(ZERO))) GOTO 1
-     SSIZE = MOD(EXPONENT(D(3)), 2)
+     IF (D(2) .EQ. ZERO) GOTO 3
+     IF (.NOT. (D(2) .GE. TINY(ZERO))) GOTO 1
+3    SSIZE = MOD(EXPONENT(D(3)), 2)
      D(3) = SQRT(D(1)) * SQRT(D(2)) * MIN(D(5), DAMP)
      IF (.NOT. (D(3) .LE. HUGE(ZERO))) GOTO 1
-     IF (SSIZE .NE. 0) D(3) = -D(3)
+     IF (D(3) .EQ. ZERO) GOTO 4
+     IF (.NOT. (D(3) .GE. TINY(ZERO))) GOTO 1
+4    IF (SSIZE .NE. 0) D(3) = -D(3)
      ES = 0_c_int
      SSIZE = INT(PVN_XLJV2(D(1), D(2), D(3), D(4), D(5), ES))
      IF (SSIZE .LT. 0) THEN
         WRITE (ERROR_UNIT,'(I11,A,I3)') I, ': error', SSIZE
-        GOTO 2
+        GOTO 9
      END IF
      IF (ABS(D(5)) .GE. (CUTOFF * D(4))) THEN
         ISEED(1) = ISEED(1) + 1
@@ -84,7 +90,7 @@ PROGRAM XLJV2T
      SSIZE = INT(PVN_QLJV2(Q(8), Q(9), Q(10), Q(6), Q(7), ES))
      IF (SSIZE .LT. 0) THEN
         WRITE (ERROR_UNIT,'(I11,A,I3)') I, ': ERROR', SSIZE
-        GOTO 2
+        GOTO 9
      END IF
      Q(4) = ABS(Q(4) - Q(6)) / Q(6)
      Q(2) = MAX(Q(2), Q(4))
@@ -101,5 +107,5 @@ PROGRAM XLJV2T
   ELSE ! N >= 0
      WRITE (OUTPUT_UNIT,'(I11,A,I11,3(A,ES30.21E4))')  ISEED(1), ',',  N, ',', Q(1), ',', Q(2), ',', Q(3)
   END IF
-2 DEALLOCATE(ISEED)
+9 DEALLOCATE(ISEED)
 END PROGRAM XLJV2T
