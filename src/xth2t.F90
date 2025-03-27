@@ -117,7 +117,7 @@ PROGRAM XTH2T
   DEALLOCATE(ISEED)
   ! relative errors in the terms of \epsilon
   QE = DEPS
-  Q = Q / DEPS
+  Q = Q / QE
   WRITE (OUTPUT_UNIT,'(I3,A,I11,12(A,ES30.21E4))') NEXP, ',', ABS(N), ',', &
        Q(ARE,ETH), ',', Q(MRE,ETH), ',', Q(ARE,ECH), ',', Q(MRE,ECH), ',', Q(ARE,ESH), ',', Q(MRE,ESH), ',', &
        Q(ARE,STH), ',', Q(MRE,STH), ',', Q(ARE,SCH), ',', Q(MRE,SCH), ',', Q(ARE,SSH), ',', Q(MRE,SSH)
