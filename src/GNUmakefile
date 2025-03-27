@@ -72,7 +72,9 @@ ztest.exe\
 cljv2t.exe\
 dljv2t.exe\
 sljv2t.exe\
-zljv2t.exe
+zljv2t.exe\
+dth2t.exe\
+sth2t.exe
 
 ifeq ($(COMPILER),gfortran)
 ifeq ($(findstring 86,$(ARCH)),86)
@@ -94,7 +96,8 @@ EXE2 += \
 wtest.exe\
 xtest.exe\
 wljv2t.exe\
-xljv2t.exe
+xljv2t.exe\
+xth2t.exe
 endif # x86_64 or i86pc
 endif # gfortran
 
