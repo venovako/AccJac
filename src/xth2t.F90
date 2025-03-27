@@ -80,7 +80,7 @@ PROGRAM XTH2T
      QC = QONE / SQRT(IEEE_FMA(-QT, QT, QONE))
      QS = QC * QT
      QD = I - 1
-     QD = QD / ABS(N)
+     QD = QD / I
      QE = T
      QE = ABS(QT - QE) / QT
      Q(ARE,ETH) = IEEE_FMA(Q(ARE,ETH), QD, QE / I)
