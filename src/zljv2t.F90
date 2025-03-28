@@ -2,6 +2,14 @@ PROGRAM ZLJV2T
   USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_int
   USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: ERROR_UNIT, OUTPUT_UNIT, REAL64, REAL128
   IMPLICIT NONE
+  INTERFACE
+     PURE FUNCTION CR_HYPOT(X, Y) BIND(C,NAME='cr_hypot')
+       USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_double
+       IMPLICIT NONE
+       REAL(KIND=c_double), INTENT(IN), VALUE :: X, Y
+       REAL(KIND=c_double) :: CR_HYPOT
+     END FUNCTION CR_HYPOT
+  END INTERFACE
   REAL(KIND=REAL128), PARAMETER :: QZERO = 0.0_REAL128, QONE = 1.0_REAL128
   REAL(KIND=REAL64), PARAMETER :: ZERO = 0.0_REAL64, CUTOFF = 0.8_REAL64, DEPS = EPSILON(ZERO) / 2
   ! DAMP should counterweigh a possible unfavorable rounding when creating the off-diagonal element.
@@ -68,7 +76,7 @@ PROGRAM ZLJV2T
      IF (.NOT. (D(4) .LE. HUGE(ZERO))) GOTO 1
      IF (SSIZE .NE. 0) D(4) = -D(4)
      D(7) = MIN(D(7), DAMP)
-     DO WHILE (HYPOT(D(3), D(4)) .GT. T)
+     DO WHILE (CR_HYPOT(D(3), D(4)) .GT. T)
         D(3) = D(3) * D(7)
         D(4) = D(4) * D(7)
      END DO
@@ -78,7 +86,7 @@ PROGRAM ZLJV2T
         WRITE (ERROR_UNIT,'(I11,A,I3)') I, ': error', SSIZE
         GOTO 2
      END IF
-     IF (HYPOT(D(6), D(7)) .GE. (CUTOFF * D(5))) THEN
+     IF (CR_HYPOT(D(6), D(7)) .GE. (CUTOFF * D(5))) THEN
         ISEED(1) = ISEED(1) + 1
         IF (N .LT. 0) GOTO 1
      END IF

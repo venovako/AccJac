@@ -2,11 +2,19 @@ PROGRAM WLJV2T
   USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_int
   USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: ERROR_UNIT, OUTPUT_UNIT, REAL128
   IMPLICIT NONE
+  INTERFACE
+     PURE FUNCTION CR_HYPOT(X, Y) BIND(C,NAME='cr_hypotl')
+       USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
+       IMPLICIT NONE
+       REAL(KIND=c_long_double), INTENT(IN), VALUE :: X, Y
+       REAL(KIND=c_long_double) :: CR_HYPOT
+     END FUNCTION CR_HYPOT
+  END INTERFACE
   REAL(KIND=REAL128), PARAMETER :: QZERO = 0.0_REAL128, QONE = 1.0_REAL128
   REAL(KIND=10), PARAMETER :: ZERO = 0.0_10, CUTOFF = 0.8_10, XEPS = EPSILON(ZERO) / 2
   ! DAMP should counterweigh a possible unfavorable rounding when creating the off-diagonal element.
   ! This has been observed in single precision, and is more unlikely in higher precisions.
-  REAL(KIND=10), PARAMETER :: DAMP = 1.0_10 - 8 * EPSILON(ZERO)
+  REAL(KIND=10), PARAMETER :: DAMP = 1.0_10 - 8 * EPSILON(ZERO), CXEPS = 66 * XEPS, SXEPS = 105 * XEPS
   CHARACTER(LEN=256) :: CLA
   REAL(KIND=REAL128) :: Q(14)
   REAL(KIND=10) :: D(7), T
@@ -78,7 +86,7 @@ PROGRAM WLJV2T
      D(7) = MIN(D(7), DAMP)
      IF (D(7) .EQ. ZERO) GOTO 6
      IF (.NOT. (D(7) .GE. TINY(ZERO))) D(7) = SQRT(D(7))
-6    DO WHILE (HYPOT(D(3), D(4)) .GT. T)
+6    DO WHILE (CR_HYPOT(D(3), D(4)) .GT. T)
         D(3) = D(3) * D(7)
         D(4) = D(4) * D(7)
      END DO
@@ -88,7 +96,7 @@ PROGRAM WLJV2T
         WRITE (ERROR_UNIT,'(I11,A,I3)') I, ': error', SSIZE
         GOTO 9
      END IF
-     IF (HYPOT(D(6), D(7)) .GE. (CUTOFF * D(5))) THEN
+     IF (CR_HYPOT(D(6), D(7)) .GE. (CUTOFF * D(5))) THEN
         ISEED(1) = ISEED(1) + 1
         IF (N .LT. 0) GOTO 1
      END IF
@@ -110,12 +118,15 @@ PROGRAM WLJV2T
         GOTO 9
      END IF
      Q(5) = ABS(Q(5) - Q(8)) / Q(8)
+     IF (REAL(Q(5), 10) .GE. CXEPS) GOTO 8
      Q(2) = MAX(Q(2), Q(5))
      Q(6) = ABS(Q(6) - Q(9))
      IF ((Q(9) .NE. QZERO) .OR. (Q(6) .NE. QZERO)) Q(6) = Q(6) / Q(9)
+     IF (REAL(Q(6), 10) .GE. SXEPS) GOTO 8
      Q(3) = MAX(Q(3), Q(6))
      Q(7) = ABS(Q(7) - Q(10))
      IF ((Q(10) .NE. QZERO) .OR. (Q(7) .NE. QZERO)) Q(7) = Q(7) / Q(10)
+     IF (REAL(Q(7), 10) .GE. SXEPS) GOTO 8
      Q(4) = MAX(Q(4), Q(7))
   END DO
   ! relative errors in the terms of \epsilon
@@ -127,5 +138,7 @@ PROGRAM WLJV2T
   ELSE ! N >= 0
      WRITE (OUTPUT_UNIT,'(I11,A,I11,4(A,ES30.21E4))')  ISEED(1), ',',  N, ',', Q(1), ',', Q(2), ',', Q(3), ',', Q(4)
   END IF
+  GOTO 9
+8 WRITE (ERROR_UNIT,'(4(A,ES30.21E4))') 'check:', D(1), ',', D(2), ', ', D(3), ', ', D(4)
 9 DEALLOCATE(ISEED)
 END PROGRAM WLJV2T
