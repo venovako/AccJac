@@ -1,7 +1,7 @@
 #ifndef MPFR_WANT_FLOAT128
 #define MPFR_WANT_FLOAT128
 #endif /* !MPFR_WANT_FLOAT128 */
-#if (defined(__ICC) || defined(__INTEL_COMPILER) || defined(__INTEL_CLANG_COMPILER) || defined(__INTEL_LLVM_COMPILER))
+#if (defined(__INTEL_CLANG_COMPILER) || defined(__INTEL_LLVM_COMPILER))
 #ifndef _Float128
 #define _Float128 __float128
 #endif /* !_Float128 */
