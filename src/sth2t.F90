@@ -17,7 +17,7 @@ PROGRAM STH2T
   CHARACTER(LEN=256) :: CLA
   REAL(KIND=REAL128) :: Q(2,6), QD, QT, QC, QS, QE
   REAL(KIND=REAL32) :: D, T, C, S, U
-  INTEGER :: I, N, NEXP
+  INTEGER :: I, NEXP
   INTEGER(KIND=INT32) :: ID
   EQUIVALENCE (D,ID)
   IF (COMMAND_ARGUMENT_COUNT() .NE. 1) STOP 'sth2t.exe EXP'
@@ -31,7 +31,7 @@ PROGRAM STH2T
      U = SCALE(ONE, NEXP + 1)
   END IF
   D = SCALE(ONE, NEXP)
-  N = 0
+  I = 1
   DO WHILE (D .LT. U)
      ! "enhanced" formulas
      T = D / (ONE + SQRT(IEEE_FMA(-D, D, ONE)))
@@ -75,12 +75,13 @@ PROGRAM STH2T
      Q(MRE,SSH) = MAX(Q(MRE,SSH), QE)
      ! increment
      ID = ID + 1
-     N = N + 1
+     I = I + 1
   END DO
   ! relative errors in the terms of \epsilon
   QE = DEPS
   Q = Q / QE
-  WRITE (OUTPUT_UNIT,'(I3,A,I11,12(A,ES16.9E2))') NEXP, ',', N, ',', &
+  I = I - 1
+  WRITE (OUTPUT_UNIT,'(I3,A,I11,12(A,ES16.9E2))') NEXP, ',', I, ',', &
        Q(ARE,ETH), ',', Q(MRE,ETH), ',', Q(ARE,ECH), ',', Q(MRE,ECH), ',', Q(ARE,ESH), ',', Q(MRE,ESH), ',', &
        Q(ARE,STH), ',', Q(MRE,STH), ',', Q(ARE,SCH), ',', Q(MRE,SCH), ',', Q(ARE,SSH), ',', Q(MRE,SSH)
 END PROGRAM STH2T
