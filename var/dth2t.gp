@@ -2,7 +2,7 @@
 set term cairolatex pdf standalone header "\\usepackage{amsmath,amsfonts}" color font ", 10" size 10cm,6cm
 set output "dth2t.tex"
 
-set key top left vertical maxrows 3 spacing 2 width 3 box
+set key top left vertical maxrows 3 spacing 1.75 width 3 box
 
 set xrange [-28:0]
 set xtics ("-27" -27, "-25" -25, "-23" -23, "-21" -21, "-19" -19, "-17" -17, "-15" -15, "-13" -13, "-11" -11, "-9" -9, "-7" -7, "-5" -5, "-3" -3, "-1" -1)
