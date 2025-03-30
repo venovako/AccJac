@@ -14,6 +14,7 @@ SUBROUTINE DROTT(M, X, Y, CS, SN, MX, MY, INFO)
   MX = ZERO
   MY = ZERO
   IF (INFO .EQ. 0) THEN
+     !DIR$ VECTOR ALWAYS
      DO I = 1, M
         XX = X(I) * CS + Y(I) * SN
         YY = Y(I) * CS - X(I) * SN
@@ -25,6 +26,7 @@ SUBROUTINE DROTT(M, X, Y, CS, SN, MX, MY, INFO)
   ELSE ! INFO > 0
      INFO = 0
      ! SN => TH
+     !DIR$ VECTOR ALWAYS
      DO I = 1, M
         !DIR$ FMA
         XX = (X(I) + Y(I) * SN) * CS

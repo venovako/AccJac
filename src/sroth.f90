@@ -14,6 +14,7 @@ SUBROUTINE SROTH(M, X, Y, CH, SH, MX, MY, INFO)
   MX = ZERO
   MY = ZERO
   IF (INFO .EQ. 0) THEN
+     !DIR$ VECTOR ALWAYS
      DO I = 1, M
         XX = X(I) * CH + Y(I) * SH
         YY = X(I) * SH + Y(I) * CH
@@ -25,6 +26,7 @@ SUBROUTINE SROTH(M, X, Y, CH, SH, MX, MY, INFO)
   ELSE ! INFO > 0
      INFO = 0
      ! SH => TH
+     !DIR$ VECTOR ALWAYS
      DO I = 1, M
         !DIR$ FMA
         XX = (X(I) + Y(I) * SH) * CH
