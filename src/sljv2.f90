@@ -21,7 +21,7 @@ SUBROUTINE SLJV2(A11, A22, A21, CH, SH, INFO)
         ! |TH| >= 1 => skip the transformation
         CH = ONE
         SH = ZERO
-        INFO = INFO + 4
+        INFO = IOR(INFO, 4)
      ELSE IF (INFO .EQ. 0) THEN
         IF (A .GE. (CUTTH * CH)) THEN
            CH = CUTCH

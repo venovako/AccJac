@@ -15,7 +15,8 @@ SUBROUTINE WROTH(M, X, Y, CH, SHR, SHI, MX, MY, INFO)
   IF (M .EQ. 0) RETURN
   SH = CMPLX(SHR,  SHI, 10)
   HS = CMPLX(SHR, -SHI, 10)
-  IF (INFO .EQ. 0) THEN
+  IF (IAND(INFO, 5) .EQ. 0) THEN
+     INFO = 0
      DO I = 1, M
         XX = X(I) * CH + Y(I) * SH
         YY = X(I) * HS + Y(I) * CH
@@ -24,7 +25,7 @@ SUBROUTINE WROTH(M, X, Y, CH, SHR, SHI, MX, MY, INFO)
         MX = MAX(MX, ABS(REAL(XX)), ABS(AIMAG(YY)))
         MY = MAX(MY, ABS(REAL(YY)), ABS(AIMAG(YY)))
      END DO
-  ELSE ! INFO > 0
+  ELSE IF (IAND(INFO, 4) .EQ. 0) THEN
      INFO = 0
      ! SH => TH
      DO I = 1, M
@@ -35,5 +36,7 @@ SUBROUTINE WROTH(M, X, Y, CH, SHR, SHI, MX, MY, INFO)
         MX = MAX(MX, ABS(REAL(XX)), ABS(AIMAG(YY)))
         MY = MAX(MY, ABS(REAL(YY)), ABS(AIMAG(YY)))
      END DO
+  ELSE ! no-op
+     INFO = 1
   END IF
 END SUBROUTINE WROTH

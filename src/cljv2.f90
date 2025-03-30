@@ -30,7 +30,7 @@ SUBROUTINE CLJV2(A11, A22, A21R, A21I, CH, SHR, SHI, INFO)
         CH = ONE
         SHR = ZERO
         SHI = ZERO
-        INFO = INFO + 4
+        INFO = IOR(INFO, 4)
      ELSE IF (INFO .EQ. 0) THEN
         IF (A .GE. (CUTTH * CH)) THEN
            CH = CUTCH

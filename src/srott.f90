@@ -13,7 +13,8 @@ SUBROUTINE SROTT(M, X, Y, CS, SN, MX, MY, INFO)
   IF (INFO .LT. 0) RETURN
   MX = ZERO
   MY = ZERO
-  IF (INFO .EQ. 0) THEN
+  IF (IAND(INFO, 5) .EQ. 0) THEN
+     INFO = 0
      !DIR$ VECTOR ALWAYS
      DO I = 1, M
         XX = X(I) * CS + Y(I) * SN
@@ -23,7 +24,7 @@ SUBROUTINE SROTT(M, X, Y, CS, SN, MX, MY, INFO)
         MX = MAX(MX, ABS(XX))
         MY = MAX(MY, ABS(YY))
      END DO
-  ELSE ! INFO > 0
+  ELSE IF (IAND(INFO, 4) .EQ. 0) THEN
      INFO = 0
      ! SN => TH
      !DIR$ VECTOR ALWAYS
@@ -37,5 +38,7 @@ SUBROUTINE SROTT(M, X, Y, CS, SN, MX, MY, INFO)
         MX = MAX(MX, ABS(XX))
         MY = MAX(MY, ABS(YY))
      END DO
+  ELSE ! no-op
+     INFO = 1
   END IF
 END SUBROUTINE SROTT
