@@ -1,3 +1,4 @@
+! meant to be compiled with gfortran and ABI=lp64
 PROGRAM XLJV2T
   USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_int
   USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: ERROR_UNIT, OUTPUT_UNIT, REAL128
