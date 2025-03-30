@@ -1,0 +1,40 @@
+SUBROUTINE CROTH(M, X, Y, CH, SHR, SHI, MX, MY, INFO)
+  USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL32
+  IMPLICIT NONE
+  REAL(KIND=REAL32), PARAMETER :: ZERO = 0.0_REAL32
+  INTEGER, INTENT(IN) :: M
+  COMPLEX(KIND=REAL32), INTENT(INOUT) :: X(M), Y(M)
+  REAL(KIND=REAL32), INTENT(IN) :: CH, SHR, SHI
+  REAL(KIND=REAL32), INTENT(OUT) :: MX, MY
+  INTEGER, INTENT(INOUT) :: INFO
+  COMPLEX(KIND=REAL32) :: SH, HS, XX, YY
+  INTEGER :: I
+  IF (M .LT. 0) INFO = -1
+  IF (INFO .LT. 0) RETURN
+  MX = ZERO
+  MY = ZERO
+  IF (M .EQ. 0) RETURN
+  SH = CMPLX(SHR,  SHI, REAL32)
+  HS = CMPLX(SHR, -SHI, REAL32)
+  IF (INFO .EQ. 0) THEN
+     DO I = 1, M
+        XX = X(I) * CH + Y(I) * SH
+        YY = X(I) * HS + Y(I) * CH
+        X(I) = XX
+        Y(I) = YY
+        MX = MAX(MX, ABS(REAL(XX)), ABS(AIMAG(YY)))
+        MY = MAX(MY, ABS(REAL(YY)), ABS(AIMAG(YY)))
+     END DO
+  ELSE ! INFO > 0
+     INFO = 0
+     ! SH => TH
+     DO I = 1, M
+        XX = (X(I) + Y(I) * SH) * CH
+        YY = (X(I) * HS + Y(I)) * CH
+        X(I) = XX
+        Y(I) = YY
+        MX = MAX(MX, ABS(REAL(XX)), ABS(AIMAG(YY)))
+        MY = MAX(MY, ABS(REAL(YY)), ABS(AIMAG(YY)))
+     END DO
+  END IF
+END SUBROUTINE CROTH
