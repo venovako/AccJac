@@ -53,19 +53,7 @@ dljv2.o\
 slju2.o\
 sljv2.o\
 zlju2.o\
-zljv2.o\
-croth.o\
-droth.o\
-sroth.o\
-zroth.o\
-crott.o\
-drott.o\
-srott.o\
-zrott.o\
-csdp.o\
-dsdp.o\
-ssdp.o\
-zsdp.o
+zljv2.o
 
 ifdef MPFR
 OBJ2 += \
@@ -88,6 +76,32 @@ zljv2t.exe\
 dth2t.exe\
 sth2t.exe
 
+OBJD=\
+cjaevd.o\
+zjaevd.o\
+croth.o\
+droth.o\
+sroth.o\
+zroth.o\
+crott.o\
+drott.o\
+srott.o\
+zrott.o\
+cnrmf.o\
+dnrmf.o\
+snrmf.o\
+znrmf.o\
+csdp.o\
+dsdp.o\
+ssdp.o\
+zsdp.o
+
+LIBD=libjaevd.a
+
+EXED=\
+cevdj.exe\
+zevdj.exe
+
 ifeq ($(COMPILER),gfortran)
 ifeq ($(findstring 86,$(ARCH)),86)
 OBJL += \
@@ -102,13 +116,7 @@ xjiev2.o\
 wlju2.o\
 wljv2.o\
 xlju2.o\
-xljv2.o\
-wroth.o\
-xroth.o\
-wrott.o\
-xrott.o\
-wsdp.o\
-xsdp.o
+xljv2.o
 
 EXE2 += \
 wtest.exe\
@@ -116,18 +124,18 @@ xtest.exe\
 wljv2t.exe\
 xljv2t.exe\
 xth2t.exe
+
+OBJD += \
+wroth.o\
+xroth.o\
+wrott.o\
+xrott.o\
+wnrmf.o\
+xnrmf.o\
+wsdp.o\
+xsdp.o
 endif # x86_64 or i86pc
 endif # gfortran
-
-OBJD=\
-cjaevd.o\
-zjaevd.o
-
-LIBD=libjaevd.a
-
-EXED=\
-cevdj.exe\
-zevdj.exe
 
 LDFLAGS=-rdynamic -static-libgcc
 ifeq ($(COMPILER),gfortran)
