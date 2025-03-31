@@ -1,43 +1,22 @@
 SUBROUTINE CROTH(M, X, Y, CH, SHR, SHI, MX, MY, INFO)
   USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL32
   IMPLICIT NONE
-  REAL(KIND=REAL32), PARAMETER :: ZERO = 0.0_REAL32
+  INTERFACE
+     PURE FUNCTION CR_HYPOT(X, Y) BIND(C,NAME='cr_hypotf')
+       USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_float
+       IMPLICIT NONE
+       REAL(KIND=c_float), INTENT(IN), VALUE :: X, Y
+       REAL(KIND=c_float) :: CR_HYPOT
+     END FUNCTION CR_HYPOT
+  END INTERFACE
+  INTEGER, PARAMETER :: K = REAL32
+  REAL(KIND=K), PARAMETER :: ZERO = 0.0_K
   INTEGER, INTENT(IN) :: M
-  COMPLEX(KIND=REAL32), INTENT(INOUT) :: X(M), Y(M)
-  REAL(KIND=REAL32), INTENT(IN) :: CH, SHR, SHI
-  REAL(KIND=REAL32), INTENT(OUT) :: MX, MY
+  COMPLEX(KIND=K), INTENT(INOUT) :: X(M), Y(M)
+  REAL(KIND=K), INTENT(IN) :: CH, SHR, SHI
+  REAL(KIND=K), INTENT(OUT) :: MX, MY
   INTEGER, INTENT(INOUT) :: INFO
-  COMPLEX(KIND=REAL32) :: SH, HS, XX, YY
+  COMPLEX(KIND=K) :: SH, HS, XX, YY
   INTEGER :: I
-  IF (M .LT. 0) INFO = -1
-  IF (INFO .LT. 0) RETURN
-  MX = ZERO
-  MY = ZERO
-  IF (M .EQ. 0) RETURN
-  SH = CMPLX(SHR,  SHI, REAL32)
-  HS = CMPLX(SHR, -SHI, REAL32)
-  IF (IAND(INFO, 5) .EQ. 0) THEN
-     INFO = 0
-     DO I = 1, M
-        XX = X(I) * CH + Y(I) * SH
-        YY = X(I) * HS + Y(I) * CH
-        X(I) = XX
-        Y(I) = YY
-        MX = MAX(MX, ABS(REAL(XX)), ABS(AIMAG(YY)))
-        MY = MAX(MY, ABS(REAL(YY)), ABS(AIMAG(YY)))
-     END DO
-  ELSE IF (IAND(INFO, 4) .EQ. 0) THEN
-     INFO = 0
-     ! SH => TH
-     DO I = 1, M
-        XX = (X(I) + Y(I) * SH) * CH
-        YY = (X(I) * HS + Y(I)) * CH
-        X(I) = XX
-        Y(I) = YY
-        MX = MAX(MX, ABS(REAL(XX)), ABS(AIMAG(YY)))
-        MY = MAX(MY, ABS(REAL(YY)), ABS(AIMAG(YY)))
-     END DO
-  ELSE ! no-op
-     INFO = 1
-  END IF
+  INCLUDE 'hroth.f90'
 END SUBROUTINE CROTH

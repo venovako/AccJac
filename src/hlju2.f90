@@ -1,0 +1,4 @@
+  IF (INFO .GE. 0) THEN
+     INFO = IAND(INFO, 1)
+     IF ((CS .EQ. ONE) .AND. (SNR .EQ. ZERO) .AND. (SNI .EQ. ZERO)) INFO = IOR(INFO, 4)
+  END IF

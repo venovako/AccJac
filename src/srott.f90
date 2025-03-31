@@ -1,44 +1,22 @@
 SUBROUTINE SROTT(M, X, Y, CS, SN, MX, MY, INFO)
   USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL32
   IMPLICIT NONE
-  REAL(KIND=REAL32), PARAMETER :: ZERO = 0.0_REAL32
+  INTERFACE
+     PURE FUNCTION CR_HYPOT(X, Y) BIND(C,NAME='cr_hypotf')
+       USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_float
+       IMPLICIT NONE
+       REAL(KIND=c_float), INTENT(IN), VALUE :: X, Y
+       REAL(KIND=c_float) :: CR_HYPOT
+     END FUNCTION CR_HYPOT
+  END INTERFACE
+  INTEGER, PARAMETER :: K = REAL32
+  REAL(KIND=K), PARAMETER :: ZERO = 0.0_K
   INTEGER, INTENT(IN) :: M
-  REAL(KIND=REAL32), INTENT(INOUT) :: X(M), Y(M)
-  REAL(KIND=REAL32), INTENT(IN) :: CS, SN
-  REAL(KIND=REAL32), INTENT(OUT) :: MX, MY
+  REAL(KIND=K), INTENT(INOUT) :: X(M), Y(M)
+  REAL(KIND=K), INTENT(IN) :: CS, SN
+  REAL(KIND=K), INTENT(OUT) :: MX, MY
   INTEGER, INTENT(INOUT) :: INFO
-  REAL(KIND=REAL32) :: XX, YY
+  REAL(KIND=K) :: XX, YY
   INTEGER :: I
-  IF (M .LT. 0) INFO = -1
-  IF (INFO .LT. 0) RETURN
-  MX = ZERO
-  MY = ZERO
-  IF (IAND(INFO, 5) .EQ. 0) THEN
-     INFO = 0
-     !DIR$ VECTOR ALWAYS
-     DO I = 1, M
-        XX = X(I) * CS + Y(I) * SN
-        YY = Y(I) * CS - X(I) * SN
-        X(I) = XX
-        Y(I) = YY
-        MX = MAX(MX, ABS(XX))
-        MY = MAX(MY, ABS(YY))
-     END DO
-  ELSE IF (IAND(INFO, 4) .EQ. 0) THEN
-     INFO = 0
-     ! SN => TH
-     !DIR$ VECTOR ALWAYS
-     DO I = 1, M
-        !DIR$ FMA
-        XX = (X(I) + Y(I) * SN) * CS
-        !DIR$ FMA
-        YY = (Y(I) - X(I) * SN) * CS
-        X(I) = XX
-        Y(I) = YY
-        MX = MAX(MX, ABS(XX))
-        MY = MAX(MY, ABS(YY))
-     END DO
-  ELSE ! no-op
-     INFO = 1
-  END IF
+  INCLUDE 'grott.f90'
 END SUBROUTINE SROTT
