@@ -61,7 +61,11 @@ zroth.o\
 crott.o\
 drott.o\
 srott.o\
-zrott.o
+zrott.o\
+csdp.o\
+dsdp.o\
+ssdp.o\
+zsdp.o
 
 ifdef MPFR
 OBJ2 += \
@@ -102,7 +106,9 @@ xljv2.o\
 wroth.o\
 xroth.o\
 wrott.o\
-xrott.o
+xrott.o\
+wsdp.o\
+xsdp.o
 
 EXE2 += \
 wtest.exe\
