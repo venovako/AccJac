@@ -1,4 +1,3 @@
-! meant to be compiled with ifx and ABI=ilp64
 PROGRAM DTH2T
   USE, INTRINSIC :: IEEE_ARITHMETIC, ONLY: IEEE_FMA
   USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: ERROR_UNIT, OUTPUT_UNIT, REAL64, REAL128
@@ -54,9 +53,11 @@ PROGRAM DTH2T
   ELSE ! a wrong SEED
      STOP 'invalid number of SEED arguments'
   END IF
-  DO I = 1, SSIZE
-     WRITE (ERROR_UNIT,*) ISEED(I)
+  WRITE (ERROR_UNIT,'(I11)',ADVANCE='NO') ISEED(1)
+  DO I = 2, SSIZE-1
+     WRITE (ERROR_UNIT,'(I12)',ADVANCE='NO') ISEED(I)
   END DO
+  WRITE (ERROR_UNIT,'(I12)') ISEED(SSIZE)
   ISEED = 0
   Q = QZERO
   D = ZERO
@@ -112,13 +113,13 @@ PROGRAM DTH2T
      Q(MRE,SSH) = MAX(Q(MRE,SSH), QE)
   END DO
 #ifndef NDEBUG
-  IF (N .LT. 0) WRITE (ERROR_UNIT,'(A,I12)') 'Skipped:', ISEED(1)
+  IF (N .LT. 0) WRITE (ERROR_UNIT,'(A,I11)') 'Skipped:', ISEED(1)
 #endif
   DEALLOCATE(ISEED)
   ! relative errors in the terms of \epsilon
   QE = DEPS
   Q = Q / QE
-  WRITE (OUTPUT_UNIT,'(I3,A,I12,12(A,ES25.17E3))') NEXP, ',', ABS(N), ',', &
+  WRITE (OUTPUT_UNIT,'(I3,A,I11,12(A,ES25.17E3))') NEXP, ',', ABS(N), ',', &
        Q(ARE,ETH), ',', Q(MRE,ETH), ',', Q(ARE,ECH), ',', Q(MRE,ECH), ',', Q(ARE,ESH), ',', Q(MRE,ESH), ',', &
        Q(ARE,STH), ',', Q(MRE,STH), ',', Q(ARE,SCH), ',', Q(MRE,SCH), ',', Q(ARE,SSH), ',', Q(MRE,SSH)
 END PROGRAM DTH2T

@@ -54,7 +54,8 @@ PROGRAM XTH2T
   ELSE ! a wrong SEED
      STOP 'invalid number of SEED arguments'
   END IF
-  DO I = 1, SSIZE-1
+  WRITE (ERROR_UNIT,'(I11)',ADVANCE='NO') ISEED(1)
+  DO I = 2, SSIZE-1
      WRITE (ERROR_UNIT,'(I12)',ADVANCE='NO') ISEED(I)
   END DO
   WRITE (ERROR_UNIT,'(I12)') ISEED(SSIZE)
