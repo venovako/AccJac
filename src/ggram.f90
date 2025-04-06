@@ -1,10 +1,8 @@
   INFO = -HUGE(INFO)
-  IF (.NOT. (PNF .GE. QNF)) THEN
+  IF (.NOT. (QNF .GT. ZERO)) THEN
      INFO = INFO - 1
-  ELSE IF (.NOT. (QNF .GT. ZERO)) THEN
-     CONTINUE
   ELSE IF (.NOT. (PNF .GT. ZERO)) THEN
-     INFO = INFO + 1
+     CONTINUE
   ELSE ! OK
      INFO = 0
   END IF
@@ -13,17 +11,33 @@
   FP = FRACTION(PNF)
   EQ = EXPONENT(QNF)
   FQ = FRACTION(QNF)
-  ! APP = PNF / QNF
-  E1 = EP - EQ
-  F1 = FP / FQ
-  E1 = E1 + EXPONENT(F1)
-  F1 = FRACTION(F1)
-  INFO = EXPONENT(HUGE(ZERO)) - E1
-  APP = SCALE(F1, EXPONENT(HUGE(F1)))
-  ! AQQ = QNF / PNF
-  E2 = EQ - EP
-  F2 = FQ / FP
-  E2 = E2 + EXPONENT(F2)
-  F2 = FRACTION(F2)
-  AQQ = SCALE(F2, E2 + INFO)
+  IF (PNF .GE. QNF) THEN
+     ! APP = PNF / QNF
+     E1 = EP - EQ
+     F1 = FP / FQ
+     E1 = E1 + EXPONENT(F1)
+     F1 = FRACTION(F1)
+     INFO = EXPONENT(HUGE(ZERO)) - E1
+     APP = SCALE(F1, EXPONENT(HUGE(F1)))
+     ! AQQ = QNF / PNF
+     E2 = EQ - EP
+     F2 = FQ / FP
+     E2 = E2 + EXPONENT(F2)
+     F2 = FRACTION(F2)
+     AQQ = SCALE(F2, E2 + INFO)
+  ELSE ! PNF < QNF
+     ! AQQ = QNF / PNF
+     E2 = EQ - EP
+     F2 = FQ / FP
+     E2 = E2 + EXPONENT(F2)
+     F2 = FRACTION(F2)
+     INFO = EXPONENT(HUGE(ZERO)) - E2
+     AQQ = SCALE(F2, EXPONENT(HUGE(F2)))
+     ! APP = PNF / QNF
+     E1 = EP - EQ
+     F1 = FP / FQ
+     E1 = E1 + EXPONENT(F1)
+     F1 = FRACTION(F1)
+     APP = SCALE(F1, E1 + INFO)
+  END IF
   AQP = SCALE(QPS, INFO)

@@ -1,8 +1,8 @@
   IF (INFO .GE. 0) THEN
      INFO = IAND(INFO, 1)
      A = CR_HYPOT(SHR, SHI)
-     IF (.NOT. (A .LE. HUGE(A))) THEN
-        ! |TH| >= 1 => skip the transformation
+     IF ((.NOT. (A .LE. HUGE(A))) .OR. ((CH .EQ. ONE) .AND. (A .EQ. ZERO))) THEN
+        ! identity or |TH| >= 1 => skip the transformation
         CH = ONE
         SHR = ZERO
         SHI = ZERO
