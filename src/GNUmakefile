@@ -94,7 +94,11 @@ znrmf.o\
 csdp.o\
 dsdp.o\
 ssdp.o\
-zsdp.o
+zsdp.o\
+cgram.o\
+dgram.o\
+sgram.o\
+zgram.o
 
 LIBD=libjaevd.a
 
@@ -133,7 +137,9 @@ xrott.o\
 wnrmf.o\
 xnrmf.o\
 wsdp.o\
-xsdp.o
+xsdp.o\
+wgram.o\
+xgram.o
 endif # x86_64 or i86pc
 endif # gfortran
 
