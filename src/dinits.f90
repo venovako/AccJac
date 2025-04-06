@@ -1,0 +1,46 @@
+SUBROUTINE DINITS(M, N, G, LDG, SV, JPOS, MP, MN, INFO)
+  USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL64
+  IMPLICIT NONE
+  INTEGER, PARAMETER :: K = REAL64
+  REAL(KIND=K), PARAMETER :: ZERO = 0.0_K
+  INTEGER, INTENT(IN) :: M, N, LDG, JPOS
+  REAL(KIND=K), INTENT(IN) :: G(LDG,N)
+  REAL(KIND=K), INTENT(OUT) :: SV(N)
+  INTEGER, INTENT(OUT) :: MP, MN, INFO
+  REAL(KIND=K) :: XP, XN
+  INTEGER :: J
+  REAL(KIND=K), EXTERNAL :: DNRMF
+  MP = 0
+  MN = 0
+  INFO = 0
+  IF ((JPOS .LT. 0) .OR. (JPOS .GT. N)) INFO = -6
+  IF (LDG .LT. M) INFO = -4
+  IF ((N .LT. 0) .OR. (N .GT. M)) INFO = -2
+  IF (M .LT. 0) INFO = -1
+  IF (INFO .NE. 0) RETURN
+  IF (N .EQ. 0) RETURN
+  XP = ZERO
+  XN = ZERO
+  DO J = 1, JPOS
+     SV(J) = DNRMF(M, G(1,J), INFO)
+     IF (INFO .NE. 0) THEN
+        INFO = -3
+        RETURN
+     END IF
+     IF (SV(J) .GT. XP) THEN
+        XP = SV(J)
+        MP = J
+     END IF
+  END DO
+  DO J = JPOS+1, N
+     SV(J) = DNRMF(M, G(1,J), INFO)
+     IF (INFO .NE. 0) THEN
+        INFO = -3
+        RETURN
+     END IF
+     IF (SV(J) .GT. XN) THEN
+        XN = SV(J)
+        MN = J
+     END IF
+  END DO
+END SUBROUTINE DINITS
