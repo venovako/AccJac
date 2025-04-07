@@ -4,7 +4,7 @@
 !     INFO = 1: transf (but identity, so no-op)
 !     INFO = 2: transf, no downscaling of G and SV
 !     INFO = 3: transf with downscaling of G and SV
-SUBROUTINE XTRANS(M, N, G, LDG, SV, GX, GS, P, Q, TOL, INFO)
+SUBROUTINE XTRANS(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, TOL, INFO)
   IMPLICIT NONE
   INTERFACE
      FUNCTION XSDP(M, X, Y, MX, MY, INFO)
@@ -40,6 +40,24 @@ SUBROUTINE XTRANS(M, N, G, LDG, SV, GX, GS, P, Q, TOL, INFO)
      END SUBROUTINE XLJV2
   END INTERFACE
   INTERFACE
+     PURE SUBROUTINE XRTVT(M, X, Y, CS, SN, INFO)
+       IMPLICIT NONE
+       INTEGER, INTENT(IN) :: M
+       REAL(KIND=10), INTENT(INOUT) :: X(M), Y(M)
+       REAL(KIND=10), INTENT(IN) :: CS, SN
+       INTEGER, INTENT(INOUT) :: INFO
+     END SUBROUTINE XRTVT
+  END INTERFACE
+  INTERFACE
+     PURE SUBROUTINE XRTVH(M, X, Y, CH, SH, INFO)
+       IMPLICIT NONE
+       INTEGER, INTENT(IN) :: M
+       REAL(KIND=10), INTENT(INOUT) :: X(M), Y(M)
+       REAL(KIND=10), INTENT(IN) :: CH, SH
+       INTEGER, INTENT(INOUT) :: INFO
+     END SUBROUTINE XRTVH
+  END INTERFACE
+  INTERFACE
      PURE SUBROUTINE XROTT(M, X, Y, CS, SN, GX, MX, MY, INFO)
        IMPLICIT NONE
        INTEGER, INTENT(IN) :: M
@@ -67,15 +85,17 @@ SUBROUTINE XTRANS(M, N, G, LDG, SV, GX, GS, P, Q, TOL, INFO)
   END INTERFACE
   INTEGER, PARAMETER :: K = 10
   REAL(KIND=K), PARAMETER :: ZERO = 0.0_K
-  INTEGER, INTENT(IN) :: M, N, LDG, P, Q
-  REAL(KIND=K), INTENT(INOUT) :: G(LDG,N), SV(N), GX
+  INTEGER, INTENT(IN) :: M, N, LDG, LDV, P, Q
+  REAL(KIND=K), INTENT(INOUT) :: G(LDG,N), V(LDV,N), SV(N), GX
   REAL(KIND=K), INTENT(IN) :: TOL
   INTEGER, INTENT(INOUT) :: GS, INFO
   REAL(KIND=K) :: QPS, APP, AQQ, AQP, C, S, T
   INTEGER :: I, J
-  IF (TOL .LT. ZERO) INFO = -10
-  IF ((Q .LE. P) .OR. (Q .GT. N)) INFO = -9
-  IF ((P .LE. 0) .OR. (P .GT. N)) INFO = -8
+  IF ((INFO .LT. 0) .OR. (INFO .GT. 3)) INFO = -13
+  IF (TOL .LT. ZERO) INFO = -12
+  IF ((Q .LE. P) .OR. (Q .GT. N)) INFO = -11
+  IF ((P .LE. 0) .OR. (P .GT. N)) INFO = -10
+  IF (LDV .LT. N) INFO = -6
   IF (LDG .LT. M) INFO = -4
   IF ((N .LT. 0) .OR. (N .GT. M)) INFO = -2
   IF (M .LT. 0) INFO = -1
@@ -84,7 +104,7 @@ SUBROUTINE XTRANS(M, N, G, LDG, SV, GX, GS, P, Q, TOL, INFO)
   I = 0
   QPS = XSDP(M, G(1,Q), G(1,P), SV(Q), SV(P), I)
   IF (I .NE. 0) THEN
-     INFO = -5
+     INFO = -3
      RETURN
   END IF
   T = ABS(QPS)
@@ -102,7 +122,7 @@ SUBROUTINE XTRANS(M, N, G, LDG, SV, GX, GS, P, Q, TOL, INFO)
   J = 0
   CALL XGRAM(SV(P), SV(Q), QPS, APP, AQQ, AQP, J)
   IF (J .LE. -HUGE(J)) THEN
-     INFO = -5
+     INFO = -7
      RETURN
   END IF
   J = IAND(I, 2)
@@ -110,14 +130,20 @@ SUBROUTINE XTRANS(M, N, G, LDG, SV, GX, GS, P, Q, TOL, INFO)
   T = GX
   IF (J .EQ. 0) THEN
      CALL XLJU2(APP, AQQ, AQP, C, S, I)
-     CALL XROTT(M, G(1,P), G(1,Q), C, S, T, SV(P), SV(Q), I)
+     J = I
+     CALL XROTT(M, G(1,P), G(1,Q), C, S, T, SV(P), SV(Q), J)
+     IF (J .EQ. 0) CALL XRTVT(N, V(1,P), V(1,Q), C, S, I)
+     I = J
   ELSE ! hyp
      CALL XLJV2(APP, AQQ, AQP, C, S, I)
-     CALL XROTH(M, G(1,P), G(1,Q), C, S, T, SV(P), SV(Q), I)
+     J = I
+     CALL XROTH(M, G(1,P), G(1,Q), C, S, T, SV(P), SV(Q), J)
+     IF (J .EQ. 0) CALL XRTVH(N, V(1,P), V(1,Q), C, S, I)
+     I = J
   END IF
   IF (I .NE. 0) THEN
      IF (I .LT. 0) THEN
-        INFO = -6
+        INFO = -8
      ELSE ! no-op
         INFO = 1
      END IF
@@ -128,7 +154,7 @@ SUBROUTINE XTRANS(M, N, G, LDG, SV, GX, GS, P, Q, TOL, INFO)
      I = 1
      CALL XSCALG(M, N, G, LDG, GX, GS, I)
      IF (I .LT. 0) THEN
-        INFO = -7
+        INFO = -9
         RETURN
      END IF
      IF (I .GT. 0) THEN

@@ -4,7 +4,7 @@
 !     INFO = 1: transf (but identity, so no-op)
 !     INFO = 2: transf, no downscaling of G and SV
 !     INFO = 3: transf with downscaling of G and SV
-SUBROUTINE DTRANS(M, N, G, LDG, SV, GX, GS, P, Q, TOL, INFO)
+SUBROUTINE DTRANS(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, TOL, INFO)
   USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL64
   IMPLICIT NONE
   INTERFACE
@@ -45,6 +45,26 @@ SUBROUTINE DTRANS(M, N, G, LDG, SV, GX, GS, P, Q, TOL, INFO)
      END SUBROUTINE DLJV2
   END INTERFACE
   INTERFACE
+     PURE SUBROUTINE DRTVT(M, X, Y, CS, SN, INFO)
+       USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL64
+       IMPLICIT NONE
+       INTEGER, INTENT(IN) :: M
+       REAL(KIND=REAL64), INTENT(INOUT) :: X(M), Y(M)
+       REAL(KIND=REAL64), INTENT(IN) :: CS, SN
+       INTEGER, INTENT(INOUT) :: INFO
+     END SUBROUTINE DRTVT
+  END INTERFACE
+  INTERFACE
+     PURE SUBROUTINE DRTVH(M, X, Y, CH, SH, INFO)
+       USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL64
+       IMPLICIT NONE
+       INTEGER, INTENT(IN) :: M
+       REAL(KIND=REAL64), INTENT(INOUT) :: X(M), Y(M)
+       REAL(KIND=REAL64), INTENT(IN) :: CH, SH
+       INTEGER, INTENT(INOUT) :: INFO
+     END SUBROUTINE DRTVH
+  END INTERFACE
+  INTERFACE
      PURE SUBROUTINE DROTT(M, X, Y, CS, SN, GX, MX, MY, INFO)
        USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL64
        IMPLICIT NONE
@@ -75,15 +95,17 @@ SUBROUTINE DTRANS(M, N, G, LDG, SV, GX, GS, P, Q, TOL, INFO)
   END INTERFACE
   INTEGER, PARAMETER :: K = REAL64
   REAL(KIND=K), PARAMETER :: ZERO = 0.0_K
-  INTEGER, INTENT(IN) :: M, N, LDG, P, Q
-  REAL(KIND=K), INTENT(INOUT) :: G(LDG,N), SV(N), GX
+  INTEGER, INTENT(IN) :: M, N, LDG, LDV, P, Q
+  REAL(KIND=K), INTENT(INOUT) :: G(LDG,N), V(LDV,N), SV(N), GX
   REAL(KIND=K), INTENT(IN) :: TOL
   INTEGER, INTENT(INOUT) :: GS, INFO
   REAL(KIND=K) :: QPS, APP, AQQ, AQP, C, S, T
   INTEGER :: I, J
-  IF (TOL .LT. ZERO) INFO = -10
-  IF ((Q .LE. P) .OR. (Q .GT. N)) INFO = -9
-  IF ((P .LE. 0) .OR. (P .GT. N)) INFO = -8
+  IF ((INFO .LT. 0) .OR. (INFO .GT. 3)) INFO = -13
+  IF (TOL .LT. ZERO) INFO = -12
+  IF ((Q .LE. P) .OR. (Q .GT. N)) INFO = -11
+  IF ((P .LE. 0) .OR. (P .GT. N)) INFO = -10
+  IF (LDV .LT. N) INFO = -6
   IF (LDG .LT. M) INFO = -4
   IF ((N .LT. 0) .OR. (N .GT. M)) INFO = -2
   IF (M .LT. 0) INFO = -1
@@ -92,7 +114,7 @@ SUBROUTINE DTRANS(M, N, G, LDG, SV, GX, GS, P, Q, TOL, INFO)
   I = 0
   QPS = DSDP(M, G(1,Q), G(1,P), SV(Q), SV(P), I)
   IF (I .NE. 0) THEN
-     INFO = -5
+     INFO = -3
      RETURN
   END IF
   T = ABS(QPS)
@@ -110,7 +132,7 @@ SUBROUTINE DTRANS(M, N, G, LDG, SV, GX, GS, P, Q, TOL, INFO)
   J = 0
   CALL DGRAM(SV(P), SV(Q), QPS, APP, AQQ, AQP, J)
   IF (J .LE. -HUGE(J)) THEN
-     INFO = -5
+     INFO = -7
      RETURN
   END IF
   J = IAND(I, 2)
@@ -118,14 +140,20 @@ SUBROUTINE DTRANS(M, N, G, LDG, SV, GX, GS, P, Q, TOL, INFO)
   T = GX
   IF (J .EQ. 0) THEN
      CALL DLJU2(APP, AQQ, AQP, C, S, I)
-     CALL DROTT(M, G(1,P), G(1,Q), C, S, T, SV(P), SV(Q), I)
+     J = I
+     CALL DROTT(M, G(1,P), G(1,Q), C, S, T, SV(P), SV(Q), J)
+     IF (J .EQ. 0) CALL DRTVT(N, V(1,P), V(1,Q), C, S, I)
+     I = J
   ELSE ! hyp
      CALL DLJV2(APP, AQQ, AQP, C, S, I)
-     CALL DROTH(M, G(1,P), G(1,Q), C, S, T, SV(P), SV(Q), I)
+     J = I
+     CALL DROTH(M, G(1,P), G(1,Q), C, S, T, SV(P), SV(Q), J)
+     IF (J .EQ. 0) CALL DRTVH(N, V(1,P), V(1,Q), C, S, I)
+     I = J
   END IF
   IF (I .NE. 0) THEN
      IF (I .LT. 0) THEN
-        INFO = -6
+        INFO = -8
      ELSE ! no-op
         INFO = 1
      END IF
@@ -136,7 +164,7 @@ SUBROUTINE DTRANS(M, N, G, LDG, SV, GX, GS, P, Q, TOL, INFO)
      I = 1
      CALL DSCALG(M, N, G, LDG, GX, GS, I)
      IF (I .LT. 0) THEN
-        INFO = -7
+        INFO = -9
         RETURN
      END IF
      IF (I .GT. 0) THEN

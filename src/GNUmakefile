@@ -51,6 +51,8 @@ OBJD=\
 cjaevd.o zjaevd.o\
 croth.o droth.o sroth.o zroth.o\
 crott.o drott.o srott.o zrott.o\
+crtvh.o drtvh.o srtvh.o zrtvh.o\
+crtvt.o drtvt.o srtvt.o zrtvt.o\
 cnrmf.o dnrmf.o snrmf.o znrmf.o\
 csdp.o dsdp.o ssdp.o zsdp.o\
 cgram.o dgram.o sgram.o zgram.o\
@@ -82,6 +84,8 @@ xth2t.exe
 OBJD += \
 wroth.o xroth.o\
 wrott.o xrott.o\
+wrtvh.o xrtvh.o\
+wrtvt.o xrtvt.o\
 wnrmf.o xnrmf.o\
 wsdp.o xsdp.o\
 wgram.o xgram.o\

@@ -4,7 +4,7 @@
 !     INFO = 1: transf (but identity, so no-op)
 !     INFO = 2: transf, no downscaling of G and SV
 !     INFO = 3: transf with downscaling of G and SV
-SUBROUTINE ZTRANS(M, N, G, LDG, SV, GX, GS, P, Q, TOL, INFO)
+SUBROUTINE ZTRANS(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, TOL, INFO)
   USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL64
   IMPLICIT NONE
   INTERFACE
@@ -47,6 +47,26 @@ SUBROUTINE ZTRANS(M, N, G, LDG, SV, GX, GS, P, Q, TOL, INFO)
      END SUBROUTINE ZLJV2
   END INTERFACE
   INTERFACE
+     PURE SUBROUTINE ZRTVT(M, X, Y, CS, SNR, SNI, INFO)
+       USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL64
+       IMPLICIT NONE
+       INTEGER, INTENT(IN) :: M
+       COMPLEX(KIND=REAL64), INTENT(INOUT) :: X(M), Y(M)
+       REAL(KIND=REAL64), INTENT(IN) :: CS, SNR, SNI
+       INTEGER, INTENT(INOUT) :: INFO
+     END SUBROUTINE ZRTVT
+  END INTERFACE
+  INTERFACE
+     PURE SUBROUTINE ZRTVH(M, X, Y, CH, SHR, SHI, INFO)
+       USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL64
+       IMPLICIT NONE
+       INTEGER, INTENT(IN) :: M
+       COMPLEX(KIND=REAL64), INTENT(INOUT) :: X(M), Y(M)
+       REAL(KIND=REAL64), INTENT(IN) :: CH, SHR, SHI
+       INTEGER, INTENT(INOUT) :: INFO
+     END SUBROUTINE ZRTVH
+  END INTERFACE
+  INTERFACE
      PURE SUBROUTINE ZROTT(M, X, Y, CS, SNR, SNI, GX, MX, MY, INFO)
        USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL64
        IMPLICIT NONE
@@ -80,17 +100,19 @@ SUBROUTINE ZTRANS(M, N, G, LDG, SV, GX, GS, P, Q, TOL, INFO)
   END INTERFACE
   INTEGER, PARAMETER :: K = REAL64
   REAL(KIND=K), PARAMETER :: ZERO = 0.0_K
-  INTEGER, INTENT(IN) :: M, N, LDG, P, Q
-  COMPLEX(KIND=K), INTENT(INOUT) :: G(LDG,N)
+  INTEGER, INTENT(IN) :: M, N, LDG, LDV, P, Q
+  COMPLEX(KIND=K), INTENT(INOUT) :: G(LDG,N), V(LDV,N)
   REAL(KIND=K), INTENT(INOUT) :: SV(N), GX
   REAL(KIND=K), INTENT(IN) :: TOL
   INTEGER, INTENT(INOUT) :: GS, INFO
   COMPLEX(KIND=K) :: QPS
   REAL(KIND=K) :: APP, AQQ, AQPR, AQPI, C, SR, SI, T
   INTEGER :: I, J
-  IF (TOL .LT. ZERO) INFO = -10
-  IF ((Q .LE. P) .OR. (Q .GT. N)) INFO = -9
-  IF ((P .LE. 0) .OR. (P .GT. N)) INFO = -8
+  IF ((INFO .LT. 0) .OR. (INFO .GT. 3)) INFO = -13
+  IF (TOL .LT. ZERO) INFO = -12
+  IF ((Q .LE. P) .OR. (Q .GT. N)) INFO = -11
+  IF ((P .LE. 0) .OR. (P .GT. N)) INFO = -10
+  IF (LDV .LT. N) INFO = -6
   IF (LDG .LT. M) INFO = -4
   IF ((N .LT. 0) .OR. (N .GT. M)) INFO = -2
   IF (M .LT. 0) INFO = -1
@@ -99,7 +121,7 @@ SUBROUTINE ZTRANS(M, N, G, LDG, SV, GX, GS, P, Q, TOL, INFO)
   I = 0
   QPS = ZSDP(M, G(1,Q), G(1,P), SV(Q), SV(P), I)
   IF (I .NE. 0) THEN
-     INFO = -5
+     INFO = -3
      RETURN
   END IF
   T = ABS(QPS)
@@ -117,7 +139,7 @@ SUBROUTINE ZTRANS(M, N, G, LDG, SV, GX, GS, P, Q, TOL, INFO)
   J = 0
   CALL ZGRAM(SV(P), SV(Q), QPS, APP, AQQ, AQPR, AQPI, J)
   IF (J .LE. -HUGE(J)) THEN
-     INFO = -5
+     INFO = -7
      RETURN
   END IF
   J = IAND(I, 2)
@@ -125,14 +147,20 @@ SUBROUTINE ZTRANS(M, N, G, LDG, SV, GX, GS, P, Q, TOL, INFO)
   T = GX
   IF (J .EQ. 0) THEN
      CALL ZLJU2(APP, AQQ, AQPR, AQPI, C, SR, SI, I)
-     CALL ZROTT(M, G(1,P), G(1,Q), C, SR, SI, T, SV(P), SV(Q), I)
+     J = I
+     CALL ZROTT(M, G(1,P), G(1,Q), C, SR, SI, T, SV(P), SV(Q), J)
+     IF (J .EQ. 0) CALL ZRTVT(N, V(1,P), V(1,Q), C, SR, SI, I)
+     I = J
   ELSE ! hyp
      CALL ZLJV2(APP, AQQ, AQPR, AQPI, C, SR, SI, I)
-     CALL ZROTH(M, G(1,P), G(1,Q), C, SR, SI, T, SV(P), SV(Q), I)
+     J = I
+     CALL ZROTH(M, G(1,P), G(1,Q), C, SR, SI, T, SV(P), SV(Q), J)
+     IF (J .EQ. 0) CALL ZRTVH(N, V(1,P), V(1,Q), C, SR, SI, I)
+     I = J
   END IF
   IF (I .NE. 0) THEN
      IF (I .LT. 0) THEN
-        INFO = -6
+        INFO = -8
      ELSE ! no-op
         INFO = 1
      END IF
@@ -143,7 +171,7 @@ SUBROUTINE ZTRANS(M, N, G, LDG, SV, GX, GS, P, Q, TOL, INFO)
      I = 1
      CALL ZSCALG(M, N, G, LDG, GX, GS, I)
      IF (I .LT. 0) THEN
-        INFO = -7
+        INFO = -9
         RETURN
      END IF
      IF (I .GT. 0) THEN
