@@ -1,0 +1,23 @@
+! the first time this routine is called, let GS = 0 and INFO = 0
+! otherwise, set INFO > 0 (e.g., to the step number)
+PURE SUBROUTINE CSCALG(M, N, G, LDG, GX, GS, INFO)
+  USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL32
+  IMPLICIT NONE
+  INTERFACE
+     PURE FUNCTION CR_HYPOT(X, Y) BIND(C,NAME='cr_hypotf')
+       USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_float
+       IMPLICIT NONE
+       REAL(KIND=c_float), INTENT(IN), VALUE :: X, Y
+       REAL(KIND=c_float) :: CR_HYPOT
+     END FUNCTION CR_HYPOT
+  END INTERFACE
+  INTEGER, PARAMETER :: K = REAL32
+  REAL(KIND=K), PARAMETER :: ZERO = 0.0_K, HALF = 0.5_K
+  INTEGER, INTENT(IN) :: M, N, LDG
+  COMPLEX(KIND=K), INTENT(INOUT) :: G(LDG,N)
+  REAL(KIND=K), INTENT(INOUT) :: GX
+  INTEGER, INTENT(INOUT) :: GS, INFO
+  REAL(KIND=K) :: X
+  INTEGER :: I, J, S
+  INCLUDE 'hscalg.f90'
+END SUBROUTINE CSCALG

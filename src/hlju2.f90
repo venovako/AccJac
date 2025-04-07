@@ -1,3 +1,5 @@
+  ES = INT(INFO, c_int)
+  INFO = INT(PVN_LJEU2(A11, A22, A21R, A21I, CS, SNR, SNI, ES))
   IF (INFO .GE. 0) THEN
      INFO = IAND(INFO, 1)
      IF ((CS .EQ. ONE) .AND. (SNR .EQ. ZERO) .AND. (SNI .EQ. ZERO)) INFO = IOR(INFO, 4)

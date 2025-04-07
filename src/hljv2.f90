@@ -1,3 +1,5 @@
+  ES = INT(INFO, c_int)
+  INFO = INT(PVN_LJV2(A11, A22, A21R, A21I, CH, SHR, SHI, ES))
   IF (INFO .GE. 0) THEN
      INFO = IAND(INFO, 1)
      A = CR_HYPOT(SHR, SHI)

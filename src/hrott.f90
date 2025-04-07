@@ -11,8 +11,11 @@
         YY = X(I) * HS + Y(I) * CS
         X(I) = XX
         Y(I) = YY
-        MX = CR_HYPOT(MX, CR_HYPOT(REAL(XX), AIMAG(YY)))
-        MY = CR_HYPOT(MY, CR_HYPOT(REAL(YY), AIMAG(YY)))
+        AX = CR_HYPOT(REAL(XX), AIMAG(YY))
+        AY = CR_HYPOT(REAL(YY), AIMAG(YY))
+        GX = MAX(GX, AX, AY)
+        MX = CR_HYPOT(MX, AX)
+        MY = CR_HYPOT(MY, AY)
      END DO
   ELSE IF (IAND(INFO, 4) .EQ. 0) THEN
      MX = ZERO
@@ -24,8 +27,11 @@
         YY = (X(I) * HS + Y(I)) * CS
         X(I) = XX
         Y(I) = YY
-        MX = CR_HYPOT(MX, CR_HYPOT(REAL(XX), AIMAG(YY)))
-        MY = CR_HYPOT(MY, CR_HYPOT(REAL(YY), AIMAG(YY)))
+        AX = CR_HYPOT(REAL(XX), AIMAG(YY))
+        AY = CR_HYPOT(REAL(YY), AIMAG(YY))
+        GX = MAX(GX, AX, AY)
+        MX = CR_HYPOT(MX, AX)
+        MY = CR_HYPOT(MY, AY)
      END DO
   ELSE ! no-op
      INFO = 1
