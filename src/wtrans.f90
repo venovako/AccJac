@@ -1,0 +1,149 @@
+! IN: INFO & 1: sin => tan
+!     INFO & 2: hyp
+!OUT: INFO = 0: notransf (convergence criterion)
+!     INFO = 1: transf (but identity, so no-op)
+!     INFO = 2: transf, no downscaling of G and SV
+!     INFO = 3: transf with downscaling of G and SV
+SUBROUTINE WTRANS(M, N, G, LDG, SV, GX, GS, P, Q, TOL, INFO)
+  IMPLICIT NONE
+  INTERFACE
+     FUNCTION WSDP(M, X, Y, MX, MY, INFO)
+       IMPLICIT NONE
+       INTEGER, INTENT(IN) :: M
+       COMPLEX(KIND=10), INTENT(IN) :: X(M), Y(M)
+       REAL(KIND=10), INTENT(IN) :: MX, MY
+       INTEGER, INTENT(OUT) :: INFO
+       COMPLEX(KIND=10) :: WSDP
+     END FUNCTION WSDP
+  END INTERFACE
+  INTERFACE
+     PURE SUBROUTINE WGRAM(PNF, QNF, QPS, APP, AQQ, AQPR, AQPI, INFO)
+       IMPLICIT NONE
+       REAL(KIND=10), INTENT(IN) :: PNF, QNF
+       COMPLEX(KIND=10), INTENT(IN) :: QPS
+       REAL(KIND=10), INTENT(OUT) :: APP, AQQ, AQPR, AQPI
+       INTEGER, INTENT(OUT) :: INFO
+     END SUBROUTINE WGRAM
+  END INTERFACE
+  INTERFACE
+     SUBROUTINE WLJU2(A11, A22, A21R, A21I, CS, SNR, SNI, INFO)
+       IMPLICIT NONE
+       REAL(KIND=10), INTENT(IN) :: A11, A22, A21R, A21I
+       REAL(KIND=10), INTENT(OUT) :: CS, SNR, SNI
+       INTEGER, INTENT(INOUT) :: INFO
+     END SUBROUTINE WLJU2
+  END INTERFACE
+  INTERFACE
+     SUBROUTINE WLJV2(A11, A22, A21R, A21I, CH, SHR, SHI, INFO)
+       IMPLICIT NONE
+       REAL(KIND=10), INTENT(IN) :: A11, A22, A21R, A21I
+       REAL(KIND=10), INTENT(OUT) :: CH, SHR, SHI
+       INTEGER, INTENT(INOUT) :: INFO
+     END SUBROUTINE WLJV2
+  END INTERFACE
+  INTERFACE
+     PURE SUBROUTINE WROTT(M, X, Y, CS, SNR, SNI, GX, MX, MY, INFO)
+       IMPLICIT NONE
+       INTEGER, INTENT(IN) :: M
+       COMPLEX(KIND=10), INTENT(INOUT) :: X(M), Y(M)
+       REAL(KIND=10), INTENT(IN) :: CS, SNR, SNI
+       REAL(KIND=10), INTENT(INOUT) :: GX, MX, MY
+       INTEGER, INTENT(INOUT) :: INFO
+     END SUBROUTINE WROTT
+  END INTERFACE
+  INTERFACE
+     PURE SUBROUTINE WROTH(M, X, Y, CH, SHR, SHI, GX, MX, MY, INFO)
+       IMPLICIT NONE
+       INTEGER, INTENT(IN) :: M
+       COMPLEX(KIND=10), INTENT(INOUT) :: X(M), Y(M)
+       REAL(KIND=10), INTENT(IN) :: CH, SHR, SHI
+       REAL(KIND=10), INTENT(INOUT) :: GX, MX, MY
+       INTEGER, INTENT(INOUT) :: INFO
+     END SUBROUTINE WROTH
+  END INTERFACE
+  INTERFACE
+     PURE SUBROUTINE WSCALG(M, N, G, LDG, GX, GS, INFO)
+       IMPLICIT NONE
+       INTEGER, INTENT(IN) :: M, N, LDG
+       COMPLEX(KIND=10), INTENT(INOUT) :: G(LDG,N)
+       REAL(KIND=10), INTENT(INOUT) :: GX
+       INTEGER, INTENT(INOUT) :: GS, INFO
+     END SUBROUTINE WSCALG
+  END INTERFACE
+  INTEGER, PARAMETER :: K = 10
+  REAL(KIND=K), PARAMETER :: ZERO = 0.0_K
+  INTEGER, INTENT(IN) :: M, N, LDG, P, Q
+  COMPLEX(KIND=K), INTENT(INOUT) :: G(LDG,N)
+  REAL(KIND=K), INTENT(INOUT) :: SV(N), GX
+  REAL(KIND=K), INTENT(IN) :: TOL
+  INTEGER, INTENT(INOUT) :: GS, INFO
+  COMPLEX(KIND=K) :: QPS
+  REAL(KIND=K) :: APP, AQQ, AQPR, AQPI, C, SR, SI, T
+  INTEGER :: I, J
+  IF (TOL .LT. ZERO) INFO = -10
+  IF ((Q .LE. P) .OR. (Q .GT. N)) INFO = -9
+  IF ((P .LE. 0) .OR. (P .GT. N)) INFO = -8
+  IF (LDG .LT. M) INFO = -4
+  IF ((N .LT. 0) .OR. (N .GT. M)) INFO = -2
+  IF (M .LT. 0) INFO = -1
+  IF (INFO .LT. 0) RETURN
+  IF (M .EQ. 0) RETURN
+  I = 0
+  QPS = WSDP(M, G(1,Q), G(1,P), SV(Q), SV(P), I)
+  IF (I .NE. 0) THEN
+     INFO = -5
+     RETURN
+  END IF
+  T = ABS(QPS)
+  IF (.NOT. (T .LE. HUGE(T))) THEN
+     INFO = -3
+     RETURN
+  END IF
+  I = INFO
+  IF (T .LT. TOL) THEN
+     INFO = 0
+     RETURN
+  ELSE ! transform
+     INFO = 2
+  END IF
+  J = 0
+  CALL WGRAM(SV(P), SV(Q), QPS, APP, AQQ, AQPR, AQPI, J)
+  IF (J .LE. -HUGE(J)) THEN
+     INFO = -5
+     RETURN
+  END IF
+  J = IAND(I, 2)
+  I = IAND(I, 1)
+  T = GX
+  IF (J .EQ. 0) THEN
+     CALL WLJU2(APP, AQQ, AQPR, AQPI, C, SR, SI, I)
+     CALL WROTT(M, G(1,P), G(1,Q), C, SR, SI, T, SV(P), SV(Q), I)
+  ELSE ! hyp
+     CALL WLJV2(APP, AQQ, AQPR, AQPI, C, SR, SI, I)
+     CALL WROTH(M, G(1,P), G(1,Q), C, SR, SI, T, SV(P), SV(Q), I)
+  END IF
+  IF (I .NE. 0) THEN
+     IF (I .LT. 0) THEN
+        INFO = -6
+     ELSE ! no-op
+        INFO = 1
+     END IF
+     RETURN
+  END IF
+  IF (T .GT. GX) THEN
+     GX = T
+     I = 1
+     CALL WSCALG(M, N, G, LDG, GX, GS, I)
+     IF (I .LT. 0) THEN
+        INFO = -7
+        RETURN
+     END IF
+     IF (I .GT. 0) THEN
+        I = -I
+        DO J = 1, N
+           SV(J) = SCALE(SV(J), I)
+        END DO
+        INFO = 3
+     END IF
+  END IF
+END SUBROUTINE WTRANS

@@ -23,37 +23,17 @@ MKFS += local.mk
 endif # local.mk
 
 OBJL=\
-qlaev2.o\
-ylaev2.o
+qlaev2.o ylaev2.o
 ifndef LAPACK
 OBJL += \
-claev2.o\
-dlaev2.o\
-slaev2.o\
-zlaev2.o
+claev2.o dlaev2.o slaev2.o zlaev2.o
 endif # !LAPACK
 
 OBJ2=\
-cjaev2.o\
-cjiev2.o\
-djaev2.o\
-djiev2.o\
-qjaev2.o\
-qjiev2.o\
-sjaev2.o\
-sjiev2.o\
-yjaev2.o\
-yjiev2.o\
-zjaev2.o\
-zjiev2.o\
-clju2.o\
-cljv2.o\
-dlju2.o\
-dljv2.o\
-slju2.o\
-sljv2.o\
-zlju2.o\
-zljv2.o
+cjaev2.o djaev2.o qjaev2.o sjaev2.o yjaev2.o zjaev2.o\
+cjiev2.o djiev2.o qjiev2.o sjiev2.o yjiev2.o zjiev2.o\
+clju2.o dlju2.o slju2.o zlju2.o\
+cljv2.o dljv2.o sljv2.o zljv2.o
 
 ifdef MPFR
 OBJ2 += \
@@ -63,95 +43,51 @@ endif # MPFR
 LIB2=libjaev2.a
 
 EXE2=\
-ctest.exe\
-dtest.exe\
-qtest.exe\
-stest.exe\
-ytest.exe\
-ztest.exe\
-cljv2t.exe\
-dljv2t.exe\
-sljv2t.exe\
-zljv2t.exe\
-dth2t.exe\
-sth2t.exe
+ctest.exe dtest.exe qtest.exe stest.exe ytest.exe ztest.exe\
+cljv2t.exe dljv2t.exe sljv2t.exe zljv2t.exe\
+dth2t.exe sth2t.exe
 
 OBJD=\
-cjaevd.o\
-zjaevd.o\
-croth.o\
-droth.o\
-sroth.o\
-zroth.o\
-crott.o\
-drott.o\
-srott.o\
-zrott.o\
-cnrmf.o\
-dnrmf.o\
-snrmf.o\
-znrmf.o\
-csdp.o\
-dsdp.o\
-ssdp.o\
-zsdp.o\
-cgram.o\
-dgram.o\
-sgram.o\
-zgram.o\
-cscalg.o\
-dscalg.o\
-sscalg.o\
-zscalg.o\
-cinits.o\
-dinits.o\
-sinits.o\
-zinits.o
+cjaevd.o zjaevd.o\
+croth.o droth.o sroth.o zroth.o\
+crott.o drott.o srott.o zrott.o\
+cnrmf.o dnrmf.o snrmf.o znrmf.o\
+csdp.o dsdp.o ssdp.o zsdp.o\
+cgram.o dgram.o sgram.o zgram.o\
+cscalg.o dscalg.o sscalg.o zscalg.o\
+cinits.o dinits.o sinits.o zinits.o\
+ctrans.o dtrans.o strans.o ztrans.o
 
 LIBD=libjaevd.a
 
 EXED=\
-cevdj.exe\
-zevdj.exe
+cevdj.exe zevdj.exe
 
 ifeq ($(COMPILER),gfortran)
 ifeq ($(findstring 86,$(ARCH)),86)
 OBJL += \
-wlaev2.o\
-xlaev2.o
+wlaev2.o xlaev2.o
 
 OBJ2 += \
-wjaev2.o\
-wjiev2.o\
-xjaev2.o\
-xjiev2.o\
-wlju2.o\
-wljv2.o\
-xlju2.o\
-xljv2.o
+wjaev2.o xjaev2.o\
+wjiev2.o xjiev2.o\
+wlju2.o xlju2.o\
+xljv2.o wljv2.o
 
 EXE2 += \
-wtest.exe\
-xtest.exe\
-wljv2t.exe\
-xljv2t.exe\
+wtest.exe xtest.exe\
+wljv2t.exe xljv2t.exe\
 xth2t.exe
 
 OBJD += \
-wroth.o\
-xroth.o\
-wrott.o\
-xrott.o\
-wnrmf.o\
-xnrmf.o\
-wsdp.o\
-xsdp.o\
-wgram.o\
-xgram.o\
-wscalg.o\
-xscalg.o\
-winits.o\
-xinits.o
+wroth.o xroth.o\
+wrott.o xrott.o\
+wnrmf.o xnrmf.o\
+wsdp.o xsdp.o\
+wgram.o xgram.o\
+wscalg.o xscalg.o\
+winits.o xinits.o\
+wtrans.o xtrans.o
 endif # x86_64 or i86pc
 endif # gfortran
 
