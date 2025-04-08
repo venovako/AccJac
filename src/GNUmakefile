@@ -58,7 +58,8 @@ csdp.o dsdp.o ssdp.o zsdp.o\
 cgram.o dgram.o sgram.o zgram.o\
 cscalg.o dscalg.o sscalg.o zscalg.o\
 cinisv.o dinisv.o sinisv.o zinisv.o\
-ctrans.o dtrans.o strans.o ztrans.o
+ctrans.o dtrans.o strans.o ztrans.o\
+djsvdc.o dtrack.o
 
 LIBD=libjaevd.a
 
