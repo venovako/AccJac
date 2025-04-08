@@ -1,4 +1,4 @@
-PURE SUBROUTINE ZINITS(M, N, G, LDG, SV, JPOS, MP, MN, INFO)
+PURE SUBROUTINE ZINISV(M, N, G, LDG, V, LDV, SV, INFO)
   USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL64
   IMPLICIT NONE
   INTERFACE
@@ -11,44 +11,34 @@ PURE SUBROUTINE ZINITS(M, N, G, LDG, SV, JPOS, MP, MN, INFO)
      END FUNCTION ZNRMF
   END INTERFACE
   INTEGER, PARAMETER :: K = REAL64
-  REAL(KIND=K), PARAMETER :: ZERO = 0.0_K
-  INTEGER, INTENT(IN) :: M, N, LDG, JPOS
+  REAL(KIND=K), PARAMETER :: ZERO = 0.0_K, ONE = 1.0_K
+  INTEGER, INTENT(IN) :: M, N, LDG, LDV
   COMPLEX(KIND=K), INTENT(IN) :: G(LDG,N)
+  COMPLEX(KIND=K), INTENT(OUT) :: V(LDV,N)
   REAL(KIND=K), INTENT(OUT) :: SV(N)
-  INTEGER, INTENT(OUT) :: MP, MN, INFO
-  REAL(KIND=K) :: XP, XN
-  INTEGER :: J
-  MP = 0
-  MN = 0
+  INTEGER, INTENT(OUT) :: INFO
+  INTEGER :: I, J
   INFO = 0
-  IF ((JPOS .LT. 0) .OR. (JPOS .GT. N)) INFO = -6
+  IF (LDV .LT. N) INFO = -6
   IF (LDG .LT. M) INFO = -4
   IF ((N .LT. 0) .OR. (N .GT. M)) INFO = -2
   IF (M .LT. 0) INFO = -1
   IF (INFO .NE. 0) RETURN
   IF (N .EQ. 0) RETURN
-  XP = ZERO
-  XN = ZERO
-  DO J = 1, JPOS
+  DO J = 1, N
      SV(J) = ZNRMF(M, G(1,J))
-     IF (.NOT. (SV(J) .LE. HUGE(ZERO))) THEN
+     IF ((.NOT. (SV(J) .LE. HUGE(ZERO))) .OR. (SV(J) .LE. ZERO)) THEN
         INFO = -3
         RETURN
      END IF
-     IF (SV(J) .GT. XP) THEN
-        XP = SV(J)
-        MP = J
-     END IF
   END DO
-  DO J = JPOS+1, N
-     SV(J) = ZNRMF(M, G(1,J))
-     IF (.NOT. (SV(J) .LE. HUGE(ZERO))) THEN
-        INFO = -3
-        RETURN
-     END IF
-     IF (SV(J) .GT. XN) THEN
-        XN = SV(J)
-        MN = J
-     END IF
+  DO J = 1, N
+     DO I = 1, J-1
+        V(I,J) = ZERO
+     END DO
+     V(J,J) = ONE
+     DO I = J+1, N
+        V(I,J) = ZERO
+     END DO
   END DO
-END SUBROUTINE ZINITS
+END SUBROUTINE ZINISV

@@ -57,7 +57,7 @@ cnrmf.o dnrmf.o snrmf.o znrmf.o\
 csdp.o dsdp.o ssdp.o zsdp.o\
 cgram.o dgram.o sgram.o zgram.o\
 cscalg.o dscalg.o sscalg.o zscalg.o\
-cinits.o dinits.o sinits.o zinits.o\
+cinisv.o dinisv.o sinisv.o zinisv.o\
 ctrans.o dtrans.o strans.o ztrans.o
 
 LIBD=libjaevd.a
@@ -90,7 +90,7 @@ wnrmf.o xnrmf.o\
 wsdp.o xsdp.o\
 wgram.o xgram.o\
 wscalg.o xscalg.o\
-winits.o xinits.o\
+winisv.o xinisv.o\
 wtrans.o xtrans.o
 endif # x86_64 or i86pc
 endif # gfortran

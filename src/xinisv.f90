@@ -1,0 +1,41 @@
+PURE SUBROUTINE XINISV(M, N, G, LDG, V, LDV, SV, INFO)
+  IMPLICIT NONE
+  INTERFACE
+     PURE FUNCTION XNRMF(M, X)
+       IMPLICIT NONE
+       INTEGER, INTENT(IN) :: M
+       REAL(KIND=10), INTENT(IN) :: X(M)
+       REAL(KIND=10) :: XNRMF
+     END FUNCTION XNRMF
+  END INTERFACE
+  INTEGER, PARAMETER :: K = 10
+  REAL(KIND=K), PARAMETER :: ZERO = 0.0_K, ONE = 1.0_K
+  INTEGER, INTENT(IN) :: M, N, LDG, LDV
+  REAL(KIND=K), INTENT(IN) :: G(LDG,N)
+  REAL(KIND=K), INTENT(OUT) :: V(LDV,N), SV(N)
+  INTEGER, INTENT(OUT) :: INFO
+  INTEGER :: I, J
+  INFO = 0
+  IF (LDV .LT. N) INFO = -6
+  IF (LDG .LT. M) INFO = -4
+  IF ((N .LT. 0) .OR. (N .GT. M)) INFO = -2
+  IF (M .LT. 0) INFO = -1
+  IF (INFO .NE. 0) RETURN
+  IF (N .EQ. 0) RETURN
+  DO J = 1, N
+     SV(J) = XNRMF(M, G(1,J))
+     IF ((.NOT. (SV(J) .LE. HUGE(ZERO))) .OR. (SV(J) .LE. ZERO)) THEN
+        INFO = -3
+        RETURN
+     END IF
+  END DO
+  DO J = 1, N
+     DO I = 1, J-1
+        V(I,J) = ZERO
+     END DO
+     V(J,J) = ONE
+     DO I = J+1, N
+        V(I,J) = ZERO
+     END DO
+  END DO
+END SUBROUTINE XINISV
