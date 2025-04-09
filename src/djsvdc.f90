@@ -82,7 +82,11 @@ SUBROUTINE DJSVDC(M, N, G, LDG, V, LDV, JPOS, SV, GS, INFO)
      DO P = 1, N-1
         DO Q = P+1, N
            W = INFO
-           IF ((P .LE. JPOS) .AND. (Q .GT. JPOS)) W = IAND(W, 2)
+           IF ((P .LE. JPOS) .AND. (Q .GT. JPOS)) THEN
+              W = IAND(W, 2)
+           ELSE IF (P .GT. JPOS) THEN
+              W = IAND(W, 4)
+           END IF
            CALL DTRANS(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, TOL, W)
            SELECT CASE (W)
            CASE (0,1)

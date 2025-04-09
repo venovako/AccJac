@@ -1,6 +1,7 @@
   ES = INT(INFO, c_int)
-  INFO = INT(PVN_LJEU2(A11, A22, A21, CS, SN, ES))
-  IF (INFO .GE. 0) THEN
-     INFO = IAND(INFO, 1)
-     IF ((CS .EQ. ONE) .AND. (SN .EQ. ZERO)) INFO = IOR(INFO, 4)
+  RT = PVN_LJEU2(A11, A22, A21, CS, SN, ES)
+  IF (RT .LT. 0_c_int) THEN
+     INFO = INT(RT)
+  ELSE IF ((CS .EQ. ONE) .AND. (SN .EQ. ZERO)) THEN
+     INFO = IOR(INFO, 4)
   END IF

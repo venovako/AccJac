@@ -1,5 +1,6 @@
 ! IN: INFO & 1: sin => tan
 !     INFO & 2: hyp
+!     INFO & 4: JPOS < P < Q
 !OUT: INFO = 0: notransf (convergence criterion)
 !     INFO = 1: transf (but identity, so no-op)
 !     INFO = 2: transf, no downscaling of G and SV
@@ -100,8 +101,8 @@ SUBROUTINE DTRANS(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, TOL, INFO)
   REAL(KIND=K), INTENT(IN) :: TOL
   INTEGER, INTENT(INOUT) :: GS, INFO
   REAL(KIND=K) :: QPS, APP, AQQ, AQP, C, S, T
-  INTEGER :: I, J
-  IF ((INFO .LT. 0) .OR. (INFO .GT. 3)) INFO = -13
+  INTEGER :: I, J, L
+  IF ((INFO .LT. 0) .OR. (INFO .GT. 7)) INFO = -13
   IF (TOL .LT. ZERO) INFO = -12
   IF ((Q .LE. P) .OR. (Q .GT. N)) INFO = -11
   IF ((P .LE. 0) .OR. (P .GT. N)) INFO = -10
@@ -122,7 +123,7 @@ SUBROUTINE DTRANS(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, TOL, INFO)
      INFO = -3
      RETURN
   END IF
-  I = INFO
+  L = INFO
   IF (T .LT. TOL) THEN
      INFO = 0
      RETURN
@@ -135,31 +136,24 @@ SUBROUTINE DTRANS(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, TOL, INFO)
      INFO = -7
      RETURN
   END IF
-  J = IAND(I, 2)
-  I = IAND(I, 1)
+  J = IAND(L, 2)
+  I = IAND(L, 1)
+  IF (IAND(L, 4) .NE. 0) I = IOR(I, 16)
   T = GX
   IF (J .EQ. 0) THEN
      CALL DLJU2(APP, AQQ, AQP, C, S, I)
-     J = I
-     CALL DROTT(M, G(1,P), G(1,Q), C, S, T, SV(P), SV(Q), J)
-     IF (J .EQ. 0) CALL DRTVT(N, V(1,P), V(1,Q), C, S, I)
-     I = J
+     CALL DROTT(M, G(1,P), G(1,Q), C, S, T, SV(P), SV(Q), I)
+     CALL DRTVT(N, V(1,P), V(1,Q), C, S, I)
   ELSE ! hyp
      CALL DLJV2(APP, AQQ, AQP, C, S, I)
-     J = I
-     CALL DROTH(M, G(1,P), G(1,Q), C, S, T, SV(P), SV(Q), J)
-     IF (J .EQ. 0) CALL DRTVH(N, V(1,P), V(1,Q), C, S, I)
-     I = J
+     CALL DROTH(M, G(1,P), G(1,Q), C, S, T, SV(P), SV(Q), I)
+     CALL DRTVH(N, V(1,P), V(1,Q), C, S, I)
   END IF
-  IF (I .NE. 0) THEN
-     IF (I .LT. 0) THEN
-        INFO = -8
-     ELSE ! no-op
-        INFO = 1
-     END IF
-     RETURN
-  END IF
-  IF (T .GT. GX) THEN
+  IF (I .LT. 0) THEN
+     INFO = -8
+  ELSE IF ((IAND(I, 4) .NE. 0) .AND. (IAND(I, 8) .EQ. 0)) THEN
+     INFO = 1
+  ELSE IF (T .GT. GX) THEN
      GX = T
      I = 1
      CALL DSCALG(M, N, G, LDG, GX, GS, I)

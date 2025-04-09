@@ -1,5 +1,6 @@
 ! IN: INFO & 1: sin => tan
 !     INFO & 2: hyp
+!     INFO & 4: JPOS < P < Q
 !OUT: INFO = 0: notransf (convergence criterion)
 !     INFO = 1: transf (but identity, so no-op)
 !     INFO = 2: transf, no downscaling of G and SV
@@ -107,8 +108,8 @@ SUBROUTINE ZTRANS(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, TOL, INFO)
   INTEGER, INTENT(INOUT) :: GS, INFO
   COMPLEX(KIND=K) :: QPS
   REAL(KIND=K) :: APP, AQQ, AQPR, AQPI, C, SR, SI, T
-  INTEGER :: I, J
-  IF ((INFO .LT. 0) .OR. (INFO .GT. 3)) INFO = -13
+  INTEGER :: I, J, L
+  IF ((INFO .LT. 0) .OR. (INFO .GT. 7)) INFO = -13
   IF (TOL .LT. ZERO) INFO = -12
   IF ((Q .LE. P) .OR. (Q .GT. N)) INFO = -11
   IF ((P .LE. 0) .OR. (P .GT. N)) INFO = -10
@@ -129,7 +130,7 @@ SUBROUTINE ZTRANS(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, TOL, INFO)
      INFO = -3
      RETURN
   END IF
-  I = INFO
+  L = INFO
   IF (T .LT. TOL) THEN
      INFO = 0
      RETURN
@@ -142,31 +143,24 @@ SUBROUTINE ZTRANS(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, TOL, INFO)
      INFO = -7
      RETURN
   END IF
-  J = IAND(I, 2)
-  I = IAND(I, 1)
+  J = IAND(L, 2)
+  I = IAND(L, 1)
+  IF (IAND(L, 4) .NE. 0) I = IOR(I, 16)
   T = GX
   IF (J .EQ. 0) THEN
      CALL ZLJU2(APP, AQQ, AQPR, AQPI, C, SR, SI, I)
-     J = I
-     CALL ZROTT(M, G(1,P), G(1,Q), C, SR, SI, T, SV(P), SV(Q), J)
-     IF (J .EQ. 0) CALL ZRTVT(N, V(1,P), V(1,Q), C, SR, SI, I)
-     I = J
+     CALL ZROTT(M, G(1,P), G(1,Q), C, SR, SI, T, SV(P), SV(Q), I)
+     CALL ZRTVT(N, V(1,P), V(1,Q), C, SR, SI, I)
   ELSE ! hyp
      CALL ZLJV2(APP, AQQ, AQPR, AQPI, C, SR, SI, I)
-     J = I
-     CALL ZROTH(M, G(1,P), G(1,Q), C, SR, SI, T, SV(P), SV(Q), J)
-     IF (J .EQ. 0) CALL ZRTVH(N, V(1,P), V(1,Q), C, SR, SI, I)
-     I = J
+     CALL ZROTH(M, G(1,P), G(1,Q), C, SR, SI, T, SV(P), SV(Q), I)
+     CALL ZRTVH(N, V(1,P), V(1,Q), C, SR, SI, I)
   END IF
-  IF (I .NE. 0) THEN
-     IF (I .LT. 0) THEN
-        INFO = -8
-     ELSE ! no-op
-        INFO = 1
-     END IF
-     RETURN
-  END IF
-  IF (T .GT. GX) THEN
+  IF (I .LT. 0) THEN
+     INFO = -8
+  ELSE IF ((IAND(I, 4) .NE. 0) .AND. (IAND(I, 8) .EQ. 0)) THEN
+     INFO = 1
+  ELSE IF (T .GT. GX) THEN
      GX = T
      I = 1
      CALL ZSCALG(M, N, G, LDG, GX, GS, I)

@@ -1,7 +1,8 @@
   ES = INT(INFO, c_int)
-  INFO = INT(PVN_LJV2(A11, A22, A21, CH, SH, ES))
-  IF (INFO .GE. 0) THEN
-     INFO = IAND(INFO, 1)
+  RT = PVN_LJV2(A11, A22, A21, CH, SH, ES)
+  IF (RT .LT. 0_c_int) THEN
+     INFO = INT(RT)
+  ELSE ! OK
      A = ABS(SH)
      IF ((.NOT. (A .LE. HUGE(A))) .OR. ((CH .EQ. ONE) .AND. (A .EQ. ZERO))) THEN
         ! identity or |TH| >= 1 => skip the transformation

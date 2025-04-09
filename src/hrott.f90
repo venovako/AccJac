@@ -5,7 +5,6 @@
   IF (IAND(INFO, 5) .EQ. 0) THEN
      MX = ZERO
      MY = ZERO
-     INFO = 0
      DO I = 1, M
         XX = X(I) * CS + Y(I) * SN
         YY = X(I) * HS + Y(I) * CS
@@ -20,7 +19,6 @@
   ELSE IF (IAND(INFO, 4) .EQ. 0) THEN
      MX = ZERO
      MY = ZERO
-     INFO = 0
      ! SN => TG
      DO I = 1, M
         XX = (X(I) + Y(I) * SN) * CS
@@ -33,6 +31,19 @@
         MX = CR_HYPOT(MX, AX)
         MY = CR_HYPOT(MY, AY)
      END DO
-  ELSE ! no-op
-     INFO = 1
+  END IF
+  IF (((IAND(INFO, 16) .EQ. 0) .AND. (MY .GT. MX)) .OR. ((IAND(INFO, 16) .NE. 0) .AND. (MX .GT. MY))) THEN
+     DO I = 1, M
+        XX = X(I)
+        YY = Y(I)
+        X(I) = YY
+        Y(I) = XX
+     END DO
+     AX = MX
+     AY = MY
+     MX = AY
+     MY = AX
+     INFO = IOR(INFO, 8)
+  ELSE ! no swap
+     INFO = IAND(INFO, 7)
   END IF

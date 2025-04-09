@@ -3,7 +3,6 @@
   IF (IAND(INFO, 5) .EQ. 0) THEN
      MX = ZERO
      MY = ZERO
-     INFO = 0
      DO I = 1, M
         XX = X(I) * CH + Y(I) * SH
         YY = X(I) * SH + Y(I) * CH
@@ -16,7 +15,6 @@
   ELSE IF (IAND(INFO, 4) .EQ. 0) THEN
      MX = ZERO
      MY = ZERO
-     INFO = 0
      ! SH => TH
      DO I = 1, M
         !DIR$ FMA
@@ -29,6 +27,4 @@
         MX = CR_HYPOT(MX, XX)
         MY = CR_HYPOT(MY, YY)
      END DO
-  ELSE ! no-op
-     INFO = 1
   END IF
