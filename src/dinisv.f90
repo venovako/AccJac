@@ -1,4 +1,4 @@
-PURE SUBROUTINE DINISV(M, N, G, LDG, V, LDV, SV, INFO)
+PURE SUBROUTINE DINISV(M, N, G, LDG, V, LDV, JPOS, SV, INFO)
   USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL64
   IMPLICIT NONE
   INTERFACE
@@ -12,12 +12,14 @@ PURE SUBROUTINE DINISV(M, N, G, LDG, V, LDV, SV, INFO)
   END INTERFACE
   INTEGER, PARAMETER :: K = REAL64
   REAL(KIND=K), PARAMETER :: ZERO = 0.0_K, ONE = 1.0_K
-  INTEGER, INTENT(IN) :: M, N, LDG, LDV
-  REAL(KIND=K), INTENT(IN) :: G(LDG,N)
+  INTEGER, INTENT(IN) :: M, N, LDG, LDV, JPOS
+  REAL(KIND=K), INTENT(INOUT) :: G(LDG,N)
   REAL(KIND=K), INTENT(OUT) :: V(LDV,N), SV(N)
   INTEGER, INTENT(OUT) :: INFO
-  INTEGER :: I, J
+  REAL(KIND=K) :: W
+  INTEGER :: I, J, L, T
   INFO = 0
+  IF ((JPOS .LT. 0) .OR. (JPOS .GT. N)) INFO = -7
   IF (LDV .LT. N) INFO = -6
   IF (LDG .LT. M) INFO = -4
   IF ((N .LT. 0) .OR. (N .GT. M)) INFO = -2
@@ -31,13 +33,91 @@ PURE SUBROUTINE DINISV(M, N, G, LDG, V, LDV, SV, INFO)
         RETURN
      END IF
   END DO
+  IF (N .EQ. 1) THEN
+     V(1,1) = ONE
+     RETURN
+  END IF
+  ! sort G, SV
+  DO I = 1, N
+     V(I,2) = I
+  END DO
+  INFO = 0
+  I = 1
+  T = 1
+  DO WHILE (T .GT. 0)
+     T = 0
+     DO J = 1, JPOS-I
+        IF (SV(J) .LT. SV(J+1)) THEN
+           W = SV(J)
+           SV(J) = SV(J+1)
+           SV(J+1) = W
+           W = V(J,2)
+           V(J,2) = V(J+1,2)
+           V(J+1,2) = W
+           T = T + 1
+        END IF
+     END DO
+     INFO = INFO + T
+     I = I + 1
+  END DO
+  I = 1
+  T = 1
+  DO WHILE (T .GT. 0)
+     T = 0
+     DO J = JPOS, N-I
+        IF (SV(J) .GT. SV(J+1)) THEN
+           W = SV(J)
+           SV(J) = SV(J+1)
+           SV(J+1) = W
+           W = V(J,2)
+           V(J,2) = V(J+1,2)
+           V(J+1,2) = W
+           T = T + 1
+        END IF
+     END DO
+     INFO = INFO + T
+     I = I + 1
+  END DO
+  DO I = 1, N
+     V(I,1) = V(I,2)
+  END DO
   DO J = 1, N
-     DO I = 1, J-1
+     L = INT(V(J,2))
+     IF (J .LT. L) THEN
+        ! swap the Jth and the Lth column
+        DO I = 1, M
+           W = G(I,J)
+           G(I,J) = G(I,L)
+           G(I,L) = W
+        END DO
+     ELSE IF (J .GT. L) THEN
+        T = INT(V(L,2))
+        ! swap the Jth and the Tth column
+        DO I = 1, M
+           W = G(I,J)
+           G(I,J) = G(I,T)
+           G(I,T) = W
+        END DO
+        V(J,2) = T
+     END IF
+  END DO
+  ! init V
+  DO J = 2, N
+     L = INT(V(J,1))
+     DO I = 1, L-1
         V(I,J) = ZERO
      END DO
-     V(J,J) = ONE
-     DO I = J+1, N
+     V(L,J) = ONE
+     DO I = L+1, N
         V(I,J) = ZERO
      END DO
+  END DO
+  L = INT(V(1,1))
+  DO I = 1, L-1
+     V(I,1) = ZERO
+  END DO
+  V(L,1) = ONE
+  DO I = L+1, N
+     V(I,1) = ZERO
   END DO
 END SUBROUTINE DINISV
