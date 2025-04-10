@@ -76,16 +76,16 @@ SUBROUTINE DJSVDC(M, N, G, LDG, V, LDV, JPOS, SV, GS, INFO)
   TOL = M
   TOL = SQRT(TOL) * EPS
   CALL DTRACK(N, SV, GX, GS, -R, S)
-  ! row-cyclic
   DO R = 1, S
      T = 0
+     ! row-cyclic
      DO P = 1, N-1
         DO Q = P+1, N
            W = INFO
            IF ((P .LE. JPOS) .AND. (Q .GT. JPOS)) THEN
-              W = IAND(W, 2)
+              W = IOR(W, 2)
            ELSE IF (P .GT. JPOS) THEN
-              W = IAND(W, 4)
+              W = IOR(W, 4)
            END IF
            CALL DTRANS(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, TOL, W)
            SELECT CASE (W)

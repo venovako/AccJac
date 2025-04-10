@@ -64,7 +64,8 @@ djsvdc.o dtrack.o
 LIBD=libjaevd.a
 
 EXED=\
-cevdj.exe zevdj.exe
+cevdj.exe zevdj.exe\
+djsvdt.exe
 
 ifeq ($(COMPILER),gfortran)
 ifeq ($(findstring 86,$(ARCH)),86)
