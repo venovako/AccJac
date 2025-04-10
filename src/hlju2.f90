@@ -1,4 +1,4 @@
-  ES = INT(INFO, c_int)
+  ES = INT(IAND(INFO, 1), c_int)
   RT = PVN_LJEU2(A11, A22, A21R, A21I, CS, SNR, SNI, ES)
   IF (RT .LT. 0_c_int) THEN
      INFO = INT(RT)

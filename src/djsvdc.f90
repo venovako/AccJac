@@ -67,7 +67,7 @@ SUBROUTINE DJSVDC(M, N, G, LDG, V, LDV, JPOS, SV, GS, INFO)
      INFO = -3
      RETURN
   END IF
-  ! init SV, V; sort SV, G (TODO: check the sort)
+  ! init SV, V; sort SV, G
   CALL DINISV(M, N, G, LDG, V, LDV, JPOS, SV, R)
   IF (R .LT. 0) THEN
      INFO = -3

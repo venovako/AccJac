@@ -17,9 +17,7 @@ PURE SUBROUTINE ZINISV(M, N, G, LDG, V, LDV, JPOS, SV, INFO)
   COMPLEX(KIND=K), INTENT(OUT) :: V(LDV,N)
   REAL(KIND=K), INTENT(OUT) :: SV(N)
   INTEGER, INTENT(OUT) :: INFO
-  COMPLEX(KIND=K) :: Z
-  REAL(KIND=K) :: W
-  INTEGER :: I, J, L, T
+  INTEGER :: I, J
   INFO = 0
   IF ((JPOS .LT. 0) .OR. (JPOS .GT. N)) INFO = -7
   IF (LDV .LT. N) INFO = -6
@@ -35,91 +33,15 @@ PURE SUBROUTINE ZINISV(M, N, G, LDG, V, LDV, JPOS, SV, INFO)
         RETURN
      END IF
   END DO
-  IF (N .EQ. 1) THEN
-     V(1,1) = ONE
-     RETURN
-  END IF
-  ! sort G, SV
-  DO I = 1, N
-     V(I,2) = I
-  END DO
-  INFO = 0
-  I = 1
-  T = 1
-  DO WHILE (T .GT. 0)
-     T = 0
-     DO J = 1, JPOS-I
-        IF (SV(J) .LT. SV(J+1)) THEN
-           W = SV(J)
-           SV(J) = SV(J+1)
-           SV(J+1) = W
-           Z = V(J,2)
-           V(J,2) = V(J+1,2)
-           V(J+1,2) = Z
-           T = T + 1
-        END IF
-     END DO
-     INFO = INFO + T
-     I = I + 1
-  END DO
-  I = 1
-  T = 1
-  DO WHILE (T .GT. 0)
-     T = 0
-     DO J = JPOS, N-I
-        IF (SV(J) .GT. SV(J+1)) THEN
-           W = SV(J)
-           SV(J) = SV(J+1)
-           SV(J+1) = W
-           Z = V(J,2)
-           V(J,2) = V(J+1,2)
-           V(J+1,2) = Z
-           T = T + 1
-        END IF
-     END DO
-     INFO = INFO + T
-     I = I + 1
-  END DO
-  DO I = 1, N
-     V(I,1) = V(I,2)
-  END DO
-  DO J = 1, N
-     L = INT(REAL(V(J,2)))
-     IF (J .LT. L) THEN
-        ! swap the Jth and the Lth column
-        DO I = 1, M
-           Z = G(I,J)
-           G(I,J) = G(I,L)
-           G(I,L) = Z
-        END DO
-     ELSE IF (J .GT. L) THEN
-        T = INT(REAL(V(L,2)))
-        ! swap the Jth and the Tth column
-        DO I = 1, M
-           Z = G(I,J)
-           G(I,J) = G(I,T)
-           G(I,T) = Z
-        END DO
-        V(J,2) = T
-     END IF
-  END DO
+  ! TODO: sort G, SV
   ! init V
-  DO J = 2, N
-     L = INT(REAL(V(J,1)))
-     DO I = 1, L-1
+  DO J = 1, N
+     DO I = 1, J-1
         V(I,J) = ZERO
      END DO
-     V(L,J) = ONE
-     DO I = L+1, N
+     V(J,J) = ONE
+     DO I = J+1, N
         V(I,J) = ZERO
      END DO
-  END DO
-  L = INT(REAL(V(1,1)))
-  DO I = 1, L-1
-     V(I,1) = ZERO
-  END DO
-  V(L,1) = ONE
-  DO I = L+1, N
-     V(I,1) = ZERO
   END DO
 END SUBROUTINE ZINISV
