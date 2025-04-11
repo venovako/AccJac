@@ -10,7 +10,7 @@
         YY = X(I) * HS + Y(I) * CH
         X(I) = XX
         Y(I) = YY
-        AX = CR_HYPOT(REAL(XX), AIMAG(YY))
+        AX = CR_HYPOT(REAL(XX), AIMAG(XX))
         AY = CR_HYPOT(REAL(YY), AIMAG(YY))
         GX = MAX(GX, AX, AY)
         MX = CR_HYPOT(MX, AX)
@@ -31,7 +31,7 @@
              (REAL(X(I)) * AIMAG(HS) + (AIMAG(Y(I)) + AIMAG(X(I)) * REAL(HS))) * CH, K)
         X(I) = XX
         Y(I) = YY
-        AX = CR_HYPOT(REAL(XX), AIMAG(YY))
+        AX = CR_HYPOT(REAL(XX), AIMAG(XX))
         AY = CR_HYPOT(REAL(YY), AIMAG(YY))
         GX = MAX(GX, AX, AY)
         MX = CR_HYPOT(MX, AX)

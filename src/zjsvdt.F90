@@ -7,9 +7,10 @@ PROGRAM ZJSVDT
   REAL(KIND=REAL128) :: Y, Z
   COMPLEX(KIND=REAL128) :: H
   COMPLEX(KIND=REAL64) :: T
+  REAL(KIND=REAL64) :: R
   INTEGER :: M, N, LDG, LDV, JPOS, GS, INFO, I, J, L
   COMPLEX(KIND=REAL64), ALLOCATABLE :: G(:,:), V(:,:)
-  REAL(KIND=REAL64), ALLOCATABLE :: SV(:)
+  REAL(KIND=REAL64), ALLOCATABLE :: SV(:), LY(:)
   COMPLEX(KIND=REAL128), ALLOCATABLE :: U(:,:), W(:,:)
   ! read the command line arguments
   I = COMMAND_ARGUMENT_COUNT()
@@ -104,6 +105,41 @@ PROGRAM ZJSVDT
   IF (J .NE. 0) STOP 'SY'
   WRITE (UNIT=I, IOSTAT=J) SV
   IF (J .NE. 0) STOP 'S'
+  ! read LY
+  ALLOCATE(LY(N))
+  CALL BFOPEN(TRIM(CLA)//'.LY', 'RO', I, J)
+  IF (J .NE. 0) STOP 'LY'
+  READ (UNIT=I, IOSTAT=J) LY
+  IF (J .NE. 0) STOP 'L'
+  CLOSE(I)
+  L = 1
+  I = 1
+  DO WHILE (L .GT. 0)
+     L = 0
+     DO J = 1, N-I
+        IF (LY(J) .LT. LY(J+1)) THEN
+           R = LY(J)
+           LY(J) = LY(J+1)
+           LY(J+1) = R
+           L = L + 1
+        END IF
+     END DO
+     I = I + 1
+  END DO
+  Z = QZERO
+  DO J = 1, JPOS
+     Y = SV(J)
+     Y = ABS(IEEE_FMA(Y, Y, REAL(-LY(J), REAL128)) / LY(J))
+     Z = MAX(Z, Y)
+  END DO
+  DO J = JPOS+1, N
+     Y = SV(J)
+     Y = ABS(IEEE_FMA(Y, Y, REAL(LY(J), REAL128)) / LY(J))
+     Z = MAX(Z, Y)
+  END DO
+  DEALLOCATE(LY)
+  WRITE (OUTPUT_UNIT,'(ES25.17E3)',ADVANCE='NO') Z
+  FLUSH(OUTPUT_UNIT)
   ! read G again
   CALL BFOPEN(TRIM(CLA)//'.Y', 'RO', I, J)
   IF (J .NE. 0) STOP 'Y'
