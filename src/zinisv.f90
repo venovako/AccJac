@@ -17,7 +17,10 @@ PURE SUBROUTINE ZINISV(M, N, G, LDG, V, LDV, JPOS, SV, INFO)
   COMPLEX(KIND=K), INTENT(OUT) :: V(LDV,N)
   REAL(KIND=K), INTENT(OUT) :: SV(N)
   INTEGER, INTENT(OUT) :: INFO
-  INTEGER :: I, J
+  COMPLEX(KIND=K) :: Z
+  REAL(KIND=K) :: W
+  INTEGER :: I, J, L
+  COMPLEX(KIND=K), ALLOCATABLE :: H(:,:)
   INFO = 0
   IF ((JPOS .LT. 0) .OR. (JPOS .GT. N)) INFO = -7
   IF (LDV .LT. N) INFO = -6
@@ -33,15 +36,80 @@ PURE SUBROUTINE ZINISV(M, N, G, LDG, V, LDV, JPOS, SV, INFO)
         RETURN
      END IF
   END DO
-  ! TODO: sort G, SV
+  ! sort G, SV
+  DO I = 1, N
+     V(I,1) = I
+  END DO
+  INFO = 0
+  I = 1
+  L = 1
+  DO WHILE (L .GT. 0)
+     L = 0
+     DO J = 1, JPOS-I
+        IF (SV(J) .LT. SV(J+1)) THEN
+           W = SV(J)
+           SV(J) = SV(J+1)
+           SV(J+1) = W
+           Z = V(J,1)
+           V(J,1) = V(J+1,1)
+           V(J+1,1) = Z
+           L = L + 1
+        END IF
+     END DO
+     INFO = INFO + L
+     I = I + 1
+  END DO
+  I = 1
+  L = 1
+  DO WHILE (L .GT. 0)
+     L = 0
+     DO J = JPOS+1, N-I
+        IF (SV(J) .GT. SV(J+1)) THEN
+           W = SV(J)
+           SV(J) = SV(J+1)
+           SV(J+1) = W
+           Z = V(J,1)
+           V(J,1) = V(J+1,1)
+           V(J+1,1) = Z
+           L = L + 1
+        END IF
+     END DO
+     INFO = INFO + L
+     I = I + 1
+  END DO
+  ! ugly but simple
+  IF (INFO .GT. 0) THEN
+     ALLOCATE(H(M,N))
+     DO J = 1, N
+        L = INT(REAL(V(J,1)))
+        DO I = 1, M
+           H(I,J) = G(I,L)
+        END DO
+     END DO
+     DO J = 1, N
+        DO I = 1, M
+           G(I,J) = H(I,J)
+        END DO
+     END DO
+     DEALLOCATE(H)
+  END IF
   ! init V
-  DO J = 1, N
-     DO I = 1, J-1
+  DO J = 2, N
+     L = INT(REAL(V(J,1)))
+     DO I = 1, L-1
         V(I,J) = ZERO
      END DO
-     V(J,J) = ONE
-     DO I = J+1, N
+     V(L,J) = ONE
+     DO I = L+1, N
         V(I,J) = ZERO
      END DO
+  END DO
+  L = INT(REAL(V(1,1)))
+  DO I = 1, L-1
+     V(I,1) = ZERO
+  END DO
+  V(L,1) = ONE
+  DO I = L+1, N
+     V(I,1) = ZERO
   END DO
 END SUBROUTINE ZINISV

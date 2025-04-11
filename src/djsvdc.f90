@@ -81,7 +81,7 @@ SUBROUTINE DJSVDC(M, N, G, LDG, V, LDV, JPOS, SV, GS, INFO)
      ! row-cyclic
      DO P = 1, N-1
         DO Q = P+1, N
-           W = INFO
+           W = IAND(INFO, 1)
            IF ((P .LE. JPOS) .AND. (Q .GT. JPOS)) THEN
               W = IOR(W, 2)
            ELSE IF (P .GT. JPOS) THEN
