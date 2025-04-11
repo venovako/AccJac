@@ -80,28 +80,10 @@ SUBROUTINE WJSVDC(M, N, G, LDG, V, LDV, JPOS, SV, GS, INFO)
      T = 0
      ! row-cyclic
      DO P = 1, N-1
-        DO Q = P+1, N
-           W = IAND(INFO, 1)
-           IF ((P .LE. JPOS) .AND. (Q .GT. JPOS)) THEN
-              W = IOR(W, 2)
-           ELSE IF (P .GT. JPOS) THEN
-              W = IOR(W, 4)
-           END IF
-           CALL WTRANS(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, TOL, W)
-           SELECT CASE (W)
-           CASE (0)
-              CONTINUE
-           CASE (1,2,3)
-              T = T + 1
-           CASE DEFAULT
-              INFO = -5
-              RETURN
-           END SELECT
-        END DO
         ! de Rijk
         IF (IAND(INFO, 2) .NE. 0) THEN
-           IF (P .LT. JPOS) THEN
-              Y = P + 1
+           IF (P .LE. JPOS) THEN
+              Y = P
               MX = ZERO
               W = 0
               DO Q = Y, JPOS
@@ -126,8 +108,8 @@ SUBROUTINE WJSVDC(M, N, G, LDG, V, LDV, JPOS, SV, GS, INFO)
                  SV(W) = MY
                  T = T + 1
               END IF
-           ELSE ! P >= JPOS
-              Y = N - P + JPOS
+           ELSE ! P > JPOS
+              Y = N - P + JPOS + 1
               MY = ZERO
               W = N + 1
               DO Q = Y, JPOS+1, -1
@@ -154,6 +136,24 @@ SUBROUTINE WJSVDC(M, N, G, LDG, V, LDV, JPOS, SV, GS, INFO)
               END IF
            END IF
         END IF
+        DO Q = P+1, N
+           W = IAND(INFO, 1)
+           IF ((P .LE. JPOS) .AND. (Q .GT. JPOS)) THEN
+              W = IOR(W, 2)
+           ELSE IF (P .GT. JPOS) THEN
+              W = IOR(W, 4)
+           END IF
+           CALL WTRANS(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, TOL, W)
+           SELECT CASE (W)
+           CASE (0)
+              CONTINUE
+           CASE (1,2,3)
+              T = T + 1
+           CASE DEFAULT
+              INFO = -5
+              RETURN
+           END SELECT
+        END DO
      END DO
      CALL XTRACK(N, SV, GX, GS, R, T)
      IF (T .EQ. 0) EXIT
