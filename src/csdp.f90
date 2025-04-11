@@ -16,6 +16,6 @@ FUNCTION CSDP(M, X, Y, MX, MY, INFO)
   IF (M .LT. 0) INFO = -1
   IF (INFO .NE. 0) RETURN
   DO I = 1, M
-     CSDP = CSDP + (X(I) / MX) * (Y(I) / MY)
+     CSDP = CSDP + (CONJG(X(I)) / MX) * (Y(I) / MY)
   END DO
 END FUNCTION CSDP

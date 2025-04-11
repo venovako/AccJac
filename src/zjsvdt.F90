@@ -1,0 +1,123 @@
+PROGRAM ZJSVDT
+  USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: OUTPUT_UNIT, REAL64, REAL128
+  IMPLICIT NONE
+  REAL(KIND=REAL128), PARAMETER :: QZERO = 0.0_REAL128
+  CHARACTER(LEN=256) :: CLA
+  REAL(KIND=REAL128) :: Y, Z
+  COMPLEX(KIND=REAL64) :: T
+  INTEGER :: M, N, LDG, LDV, JPOS, GS, INFO, I, J, L
+  COMPLEX(KIND=REAL64), ALLOCATABLE :: G(:,:), V(:,:)
+  REAL(KIND=REAL64), ALLOCATABLE :: SV(:)
+  COMPLEX(KIND=REAL128), ALLOCATABLE :: U(:,:), W(:,:)
+  ! read the command line arguments
+  I = COMMAND_ARGUMENT_COUNT()
+  IF (I .NE. 5) STOP 'zjsvdt.exe M N JPOS OPTS FILE'
+  CALL GET_COMMAND_ARGUMENT(1, CLA)
+  READ (CLA,*) M
+  IF (M .LE. 0) STOP 'M'
+  CALL GET_COMMAND_ARGUMENT(2, CLA)
+  READ (CLA,*) N
+  IF ((N .LE. 0) .OR. (N .GT. M)) STOP 'N'
+  CALL GET_COMMAND_ARGUMENT(3, CLA)
+  READ (CLA,*) JPOS
+  IF ((JPOS .LT. 0) .OR. (JPOS .GT. N)) STOP 'JPOS'
+  CALL GET_COMMAND_ARGUMENT(4, CLA)
+  READ (CLA,*) L
+  IF (L .LT. 0) STOP 'OPTS'
+  CALL GET_COMMAND_ARGUMENT(5, CLA)
+  IF (LEN_TRIM(CLA) .LE. 0) STOP 'FILE'
+  ! set G
+  LDG = M
+  ALLOCATE(G(LDG,N))
+  CALL BFOPEN(TRIM(CLA)//'.Y', 'RO', I, J)
+  IF (J .NE. 0) STOP 'Y'
+  READ (UNIT=I, IOSTAT=J) G
+  IF (J .NE. 0) STOP 'G'
+  CLOSE(I)
+  ! allocate the rest
+  LDV = N
+  ALLOCATE(V(LDV,N))
+  ALLOCATE(SV(N))
+  ! call ZJSVDC
+  GS = HUGE(GS)
+  INFO = L
+  CALL ZJSVDC(M, N, G, LDG, V, LDV, JPOS, SV, GS, INFO)
+  WRITE (OUTPUT_UNIT,'(I6,I11)',ADVANCE='NO') GS, INFO
+  FLUSH(OUTPUT_UNIT)
+  IF (INFO .LT. 0) STOP 'ZJSVDC'
+  CALL BFOPEN(TRIM(CLA)//'.YU', 'WO', I, J)
+  IF (J .NE. 0) STOP 'YU'
+  WRITE (UNIT=I, IOSTAT=J) G
+  IF (J .NE. 0) STOP 'U'
+  CLOSE(I)
+  CALL BFOPEN(TRIM(CLA)//'.WV', 'WO', I, J)
+  IF (J .NE. 0) STOP 'WV'
+  WRITE (UNIT=I, IOSTAT=J) V
+  IF (J .NE. 0) STOP 'V'
+  CLOSE(I)
+  CALL BFOPEN(TRIM(CLA)//'.SY', 'WO', I, J)
+  IF (J .NE. 0) STOP 'SY'
+  WRITE (UNIT=I, IOSTAT=J) SV
+  IF (J .NE. 0) STOP 'SV'
+  CLOSE(I)
+  ! V^-1 = J V^H J
+  DO J = 1, N
+     DO I = 1, J-1
+        T = V(I,J)
+        V(I,J) = CONJG(V(J,I))
+        V(J,I) = CONJG(T)
+     END DO
+     V(J,J) = CONJG(V(J,J))
+  END DO
+  DO J = 1, JPOS
+     DO I = JPOS+1, N
+        V(I,J) = -V(I,J)
+     END DO
+  END DO
+  DO J = JPOS+1, N
+     DO I = 1, JPOS
+        V(I,J) = -V(I,J)
+     END DO
+  END DO
+  CALL BFOPEN(TRIM(CLA)//'.ZZ', 'WO', I, J)
+  IF (J .NE. 0) STOP 'ZZ'
+  WRITE (UNIT=I, IOSTAT=J) V
+  IF (J .NE. 0) STOP 'Z'
+  CLOSE(I)
+  ALLOCATE(U(M,N))
+  DO J = 1, N
+     Y = SV(J)
+     Y = SCALE(Y, -GS)
+     DO I = 1, M
+        U(I,J) = G(I,J) * Y
+     END DO
+  END DO
+  ! read G again
+  CALL BFOPEN(TRIM(CLA)//'.Y', 'RO', I, J)
+  IF (J .NE. 0) STOP 'Y'
+  READ (UNIT=I, IOSTAT=J) G
+  IF (J .NE. 0) STOP 'G'
+  CLOSE(I)
+  ALLOCATE(W(M,N))
+  Y = QZERO
+  Z = QZERO
+  DO I = 1, M
+     DO J = 1, N
+        W(I,J) = G(I,J)
+        Z = HYPOT(Z, HYPOT(REAL(W(I,J)), AIMAG(W(I,J))))
+        DO L = 1, N
+           W(I,J) = W(I,J) - U(I,L) * V(L,J)
+        END DO
+        Y = HYPOT(Y, HYPOT(REAL(W(I,J)), AIMAG(W(I,J))))
+     END DO
+  END DO
+  Y = Y / Z
+  WRITE (OUTPUT_UNIT,'(ES25.17E3)') Y
+  IF (ALLOCATED(W)) DEALLOCATE(W)
+  IF (ALLOCATED(U)) DEALLOCATE(U)
+  IF (ALLOCATED(SV)) DEALLOCATE(SV)
+  IF (ALLOCATED(V)) DEALLOCATE(V)
+  IF (ALLOCATED(G)) DEALLOCATE(G)
+CONTAINS
+#include "bfopen.f90"
+END PROGRAM ZJSVDT

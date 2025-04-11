@@ -15,6 +15,6 @@ FUNCTION WSDP(M, X, Y, MX, MY, INFO)
   IF (M .LT. 0) INFO = -1
   IF (INFO .NE. 0) RETURN
   DO I = 1, M
-     WSDP = WSDP + (X(I) / MX) * (Y(I) / MY)
+     WSDP = WSDP + (CONJG(X(I)) / MX) * (Y(I) / MY)
   END DO
 END FUNCTION WSDP

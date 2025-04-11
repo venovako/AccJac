@@ -16,6 +16,6 @@ FUNCTION ZSDP(M, X, Y, MX, MY, INFO)
   IF (M .LT. 0) INFO = -1
   IF (INFO .NE. 0) RETURN
   DO I = 1, M
-     ZSDP = ZSDP + (X(I) / MX) * (Y(I) / MY)
+     ZSDP = ZSDP + (CONJG(X(I)) / MX) * (Y(I) / MY)
   END DO
 END FUNCTION ZSDP
