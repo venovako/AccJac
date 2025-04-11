@@ -60,13 +60,12 @@ PROGRAM DJSVDT
   IF (J .NE. 0) STOP 'SV'
   CLOSE(I)
   ! V^-1 = J V^T J
-  DO J = 1, N
+  DO J = 2, N
      DO I = 1, J-1
         T = V(I,J)
-        V(I,J) = V(J,I) ! C=>CONJG
-        V(J,I) = T ! C=>CONJG
+        V(I,J) = V(J,I)
+        V(J,I) = T
      END DO
-     ! V(J,J) = CONJG(V(J,J))
   END DO
   DO J = 1, JPOS
      DO I = JPOS+1, N
