@@ -42,7 +42,7 @@ SUBROUTINE XJSVDC(M, N, G, LDG, V, LDV, JPOS, SV, GS, INFO)
   REAL(KIND=K), INTENT(OUT) :: V(LDV,N), SV(N)
   INTEGER, INTENT(INOUT) :: GS, INFO
   REAL(KIND=K) :: GX, TOL, MX, MY
-  INTEGER :: P, Q, R, S, T, W
+  INTEGER :: P, Q, R, S, T, W, Y
   IF ((INFO .LT. 0) .OR. (INFO .GT. 3)) INFO = -10
   IF (GS .LT. 0) INFO = -9
   IF ((JPOS .LT. 0) .OR. (JPOS .GT. N)) INFO = -7
@@ -95,53 +95,58 @@ SUBROUTINE XJSVDC(M, N, G, LDG, V, LDV, JPOS, SV, GS, INFO)
         END DO
         ! de Rijk
         IF (IAND(INFO, 2) .NE. 0) THEN
-           MX = ZERO
-           W = 0
-           DO Q = P+1, JPOS
-              IF (SV(Q) .GT. MX) THEN
-                 MX = SV(Q)
-                 W = Q
+           IF (P .LT. JPOS) THEN
+              Y = P + 1
+              MX = ZERO
+              W = 0
+              DO Q = Y, JPOS
+                 IF (SV(Q) .GT. MX) THEN
+                    MX = SV(Q)
+                    W = Q
+                 END IF
+              END DO
+              IF (W .GT. Y) THEN
+                 DO Q = 1, M
+                    MY = G(Q,Y)
+                    G(Q,Y) = G(Q,W)
+                    G(Q,W) = MY
+                 END DO
+                 DO Q = 1, N
+                    MY = V(Q,Y)
+                    V(Q,Y) = V(Q,W)
+                    V(Q,W) = MY
+                 END DO
+                 MY = SV(Y)
+                 SV(Y) = SV(W)
+                 SV(W) = MY
+                 T = T + 1
               END IF
-           END DO
-           IF (W .GT. (P+1)) THEN
-              DO Q = 1, M
-                 MY = G(Q,P+1)
-                 G(Q,P+1) = G(Q,W)
-                 G(Q,W) = MY
+           ELSE ! P >= JPOS
+              Y = N - P + JPOS
+              MY = ZERO
+              W = N + 1
+              DO Q = Y, JPOS+1, -1
+                 IF (SV(Q) .GT. MY) THEN
+                    MY = SV(Q)
+                    W = Q
+                 END IF
               END DO
-              DO Q = 1, N
-                 MY = V(Q,P+1)
-                 V(Q,P+1) = V(Q,W)
-                 V(Q,W) = MY
-              END DO
-              MY = SV(P+1)
-              SV(P+1) = SV(W)
-              SV(W) = MY
-              T = T + 1
-           END IF
-           MY = ZERO
-           W = N + 1
-           DO Q = JPOS+1, N-P
-              IF (SV(Q) .GT. MY) THEN
-                 MY = SV(Q)
-                 W = Q
+              IF (W .LT. Y) THEN
+                 DO Q = 1, M
+                    MX = G(Q,Y)
+                    G(Q,Y) = G(Q,W)
+                    G(Q,W) = MX
+                 END DO
+                 DO Q = 1, N
+                    MX = V(Q,Y)
+                    V(Q,Y) = V(Q,W)
+                    V(Q,W) = MX
+                 END DO
+                 MX = SV(Y)
+                 SV(Y) = SV(W)
+                 SV(W) = MX
+                 T = T + 1
               END IF
-           END DO
-           IF (W .LT. (N-P)) THEN
-              DO Q = 1, M
-                 MX = G(Q,N-P)
-                 G(Q,N-P) = G(Q,W)
-                 G(Q,W) = MX
-              END DO
-              DO Q = 1, N
-                 MX = V(Q,N-P)
-                 V(Q,N-P) = V(Q,W)
-                 V(Q,W) = MX
-              END DO
-              MX = SV(N-P)
-              SV(N-P) = SV(W)
-              SV(W) = MX
-              T = T + 1
            END IF
         END IF
      END DO
