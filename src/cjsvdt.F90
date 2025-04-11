@@ -52,13 +52,13 @@ PROGRAM CJSVDT
   WRITE (UNIT=I, IOSTAT=J) G
   IF (J .NE. 0) STOP 'U'
   CLOSE(I)
-  CALL BFOPEN(TRIM(CLA)//'.WV', 'WO', I, J)
-  IF (J .NE. 0) STOP 'WV'
+  CALL BFOPEN(TRIM(CLA)//'.YV', 'WO', I, J)
+  IF (J .NE. 0) STOP 'YV'
   WRITE (UNIT=I, IOSTAT=J) V
   IF (J .NE. 0) STOP 'V'
   CLOSE(I)
-  CALL BFOPEN(TRIM(CLA)//'.SY', 'WO', I, J)
-  IF (J .NE. 0) STOP 'SY'
+  CALL BFOPEN(TRIM(CLA)//'.SS', 'WO', I, J)
+  IF (J .NE. 0) STOP 'SS'
   WRITE (UNIT=I, IOSTAT=J) SV
   IF (J .NE. 0) STOP 'SV'
   CLOSE(I)
@@ -87,15 +87,23 @@ PROGRAM CJSVDT
   IF (J .NE. 0) STOP 'Z'
   CLOSE(I)
   ALLOCATE(U(M,N))
+  L = -GS
   DO J = 1, N
      Y = SV(J)
-     Y = SCALE(Y, -GS)
+     Y = SCALE(Y, L)
      DO I = 1, M
         U(I,J) = CMPLX(&
              REAL(REAL(G(I,J)), REAL128) * Y,&
              REAL(AIMAG(G(I,J)), REAL128) * Y, REAL128)
      END DO
   END DO
+  DO J = 1, N
+     SV(J) = SCALE(SV(J), L)
+  END DO
+  CALL BFOPEN(TRIM(CLA)//'.SY', 'WO', I, J)
+  IF (J .NE. 0) STOP 'SY'
+  WRITE (UNIT=I, IOSTAT=J) SV
+  IF (J .NE. 0) STOP 'S'
   ! read G again
   CALL BFOPEN(TRIM(CLA)//'.Y', 'RO', I, J)
   IF (J .NE. 0) STOP 'Y'
