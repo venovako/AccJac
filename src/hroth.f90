@@ -21,8 +21,14 @@
      MY = ZERO
      ! SH => TH
      DO I = 1, M
-        XX = (X(I) + Y(I) * SH) * CH
-        YY = (X(I) * HS + Y(I)) * CH
+        ! XX = (X(I) + Y(I) * SH) * CH
+        XX = CMPLX(&
+             (REAL(Y(I)) * REAL(SH) + (REAL(X(I)) - AIMAG(Y(I)) * AIMAG(SH))) * CH,&
+             (REAL(Y(I)) * AIMAG(SH) + (AIMAG(X(I)) + AIMAG(Y(I)) * REAL(SH))) * CH, K)
+        ! YY = (X(I) * HS + Y(I)) * CH
+        YY = CMPLX(&
+             (REAL(X(I)) * REAL(HS) + (REAL(Y(I)) - AIMAG(X(I)) * AIMAG(HS))) * CH,&
+             (REAL(X(I)) * AIMAG(HS) + (AIMAG(Y(I)) + AIMAG(X(I)) * REAL(HS))) * CH, K)
         X(I) = XX
         Y(I) = YY
         AX = CR_HYPOT(REAL(XX), AIMAG(YY))

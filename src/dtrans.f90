@@ -1,8 +1,8 @@
 ! IN: INFO & 1: sin => tan
 !     INFO & 2: hyp
 !     INFO & 4: JPOS < P < Q
-!OUT: INFO = 0: notransf (convergence criterion)
-!     INFO = 1: transf (but identity, so no-op)
+!OUT: INFO = 0: notransf
+!     INFO = 1: swap only
 !     INFO = 2: transf, no downscaling of G and SV
 !     INFO = 3: transf with downscaling of G and SV
 SUBROUTINE DTRANS(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, TOL, INFO)
@@ -125,7 +125,24 @@ SUBROUTINE DTRANS(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, TOL, INFO)
   END IF
   L = INFO
   IF (T .LT. TOL) THEN
-     INFO = 0
+     IF (((IAND(L,6) .EQ. 0) .AND. (SV(P) .LT. SV(Q))) .OR. ((IAND(L,4) .NE. 0) .AND. (SV(P) .GT. SV(Q)))) THEN
+        DO I = 1, M
+           T = G(I,P)
+           G(I,P) = G(I,Q)
+           G(I,Q) = T
+        END DO
+        DO I = 1, N
+           T = V(I,P)
+           V(I,P) = V(I,Q)
+           V(I,Q) = T
+        END DO
+        T = SV(P)
+        SV(P) = SV(Q)
+        SV(Q) = T
+        INFO = 1
+     ELSE ! no swap
+        INFO = 0
+     END IF
      RETURN
   ELSE ! transform
      INFO = 2
@@ -151,8 +168,12 @@ SUBROUTINE DTRANS(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, TOL, INFO)
   END IF
   IF (I .LT. 0) THEN
      INFO = -8
-  ELSE IF ((IAND(I, 4) .NE. 0) .AND. (IAND(I, 8) .EQ. 0)) THEN
-     INFO = 1
+  ELSE IF (IAND(I, 4) .NE. 0) THEN
+     IF (IAND(I, 8) .EQ. 0) THEN
+        INFO = 0
+     ELSE ! swap
+        INFO = 1
+     END IF
   ELSE IF (T .GT. GX) THEN
      GX = T
      I = 1

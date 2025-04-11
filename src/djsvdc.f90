@@ -46,9 +46,9 @@ SUBROUTINE DJSVDC(M, N, G, LDG, V, LDV, JPOS, SV, GS, INFO)
   REAL(KIND=K), INTENT(INOUT) :: G(LDG,N)
   REAL(KIND=K), INTENT(OUT) :: V(LDV,N), SV(N)
   INTEGER, INTENT(INOUT) :: GS, INFO
-  REAL(KIND=K) :: GX, TOL
+  REAL(KIND=K) :: GX, TOL, MX, MY
   INTEGER :: P, Q, R, S, T, W
-  IF ((INFO .LT. 0) .OR. (INFO .GT. 1)) INFO = -10
+  IF ((INFO .LT. 0) .OR. (INFO .GT. 3)) INFO = -10
   IF (GS .LT. 0) INFO = -9
   IF ((JPOS .LT. 0) .OR. (JPOS .GT. N)) INFO = -7
   IF (LDV .LT. N) INFO = -6
@@ -89,15 +89,66 @@ SUBROUTINE DJSVDC(M, N, G, LDG, V, LDV, JPOS, SV, GS, INFO)
            END IF
            CALL DTRANS(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, TOL, W)
            SELECT CASE (W)
-           CASE (0,1)
+           CASE (0)
               CONTINUE
-           CASE (2,3)
+           CASE (1,2,3)
               T = T + 1
            CASE DEFAULT
               INFO = -5
               RETURN
            END SELECT
         END DO
+        ! de Rijk
+        IF (IAND(INFO, 2) .NE. 0) THEN
+           MX = ZERO
+           W = 0
+           DO Q = P+1, JPOS
+              IF (SV(Q) .GT. MX) THEN
+                 MX = SV(Q)
+                 W = Q
+              END IF
+           END DO
+           IF (W .GT. (P+1)) THEN
+              DO Q = 1, M
+                 MY = G(Q,P+1)
+                 G(Q,P+1) = G(Q,W)
+                 G(Q,W) = MY
+              END DO
+              DO Q = 1, N
+                 MY = V(Q,P+1)
+                 V(Q,P+1) = V(Q,W)
+                 V(Q,W) = MY
+              END DO
+              MY = SV(P+1)
+              SV(P+1) = SV(W)
+              SV(W) = MY
+              T = T + 1
+           END IF
+           MY = ZERO
+           W = N + 1
+           DO Q = JPOS+1, N-P
+              IF (SV(Q) .GT. MY) THEN
+                 MY = SV(Q)
+                 W = Q
+              END IF
+           END DO
+           IF (W .LT. (N-P)) THEN
+              DO Q = 1, M
+                 MX = G(Q,N-P)
+                 G(Q,N-P) = G(Q,W)
+                 G(Q,W) = MX
+              END DO
+              DO Q = 1, N
+                 MX = V(Q,N-P)
+                 V(Q,N-P) = V(Q,W)
+                 V(Q,W) = MX
+              END DO
+              MX = SV(N-P)
+              SV(N-P) = SV(W)
+              SV(W) = MX
+              T = T + 1
+           END IF
+        END IF
      END DO
      CALL DTRACK(N, SV, GX, GS, R, T)
      IF (T .EQ. 0) EXIT

@@ -1,17 +1,19 @@
-PROGRAM DJSVDT
+PROGRAM WJSVDT
   USE, INTRINSIC :: IEEE_ARITHMETIC, ONLY: IEEE_FMA
-  USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: OUTPUT_UNIT, REAL64, REAL128
+  USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: OUTPUT_UNIT, REAL128
   IMPLICIT NONE
   REAL(KIND=REAL128), PARAMETER :: QZERO = 0.0_REAL128
   CHARACTER(LEN=256) :: CLA
   REAL(KIND=REAL128) :: Y, Z
-  REAL(KIND=REAL64) :: T
+  COMPLEX(KIND=REAL128) :: H
+  COMPLEX(KIND=10) :: T
   INTEGER :: M, N, LDG, LDV, JPOS, GS, INFO, I, J, L
-  REAL(KIND=REAL64), ALLOCATABLE :: G(:,:), V(:,:), SV(:)
-  REAL(KIND=REAL128), ALLOCATABLE :: U(:,:), W(:,:)
+  COMPLEX(KIND=10), ALLOCATABLE :: G(:,:), V(:,:)
+  REAL(KIND=10), ALLOCATABLE :: SV(:)
+  COMPLEX(KIND=REAL128), ALLOCATABLE :: U(:,:), W(:,:)
   ! read the command line arguments
   I = COMMAND_ARGUMENT_COUNT()
-  IF (I .NE. 5) STOP 'djsvdt.exe M N JPOS OPTS FILE'
+  IF (I .NE. 5) STOP 'wjsvdt.exe M N JPOS OPTS FILE'
   CALL GET_COMMAND_ARGUMENT(1, CLA)
   READ (CLA,*) M
   IF (M .LE. 0) STOP 'M'
@@ -38,13 +40,13 @@ PROGRAM DJSVDT
   LDV = N
   ALLOCATE(V(LDV,N))
   ALLOCATE(SV(N))
-  ! call DJSVDC
+  ! call WJSVDC
   GS = HUGE(GS)
   INFO = L
-  CALL DJSVDC(M, N, G, LDG, V, LDV, JPOS, SV, GS, INFO)
+  CALL WJSVDC(M, N, G, LDG, V, LDV, JPOS, SV, GS, INFO)
   WRITE (OUTPUT_UNIT,'(I6,I11)',ADVANCE='NO') GS, INFO
   FLUSH(OUTPUT_UNIT)
-  IF (INFO .LT. 0) STOP 'DJSVDC'
+  IF (INFO .LT. 0) STOP 'WJSVDC'
   CALL BFOPEN(TRIM(CLA)//'.YU', 'WO', I, J)
   IF (J .NE. 0) STOP 'YU'
   WRITE (UNIT=I, IOSTAT=J) G
@@ -60,13 +62,14 @@ PROGRAM DJSVDT
   WRITE (UNIT=I, IOSTAT=J) SV
   IF (J .NE. 0) STOP 'SV'
   CLOSE(I)
-  ! V^-1 = J V^T J
-  DO J = 2, N
+  ! V^-1 = J V^H J
+  DO J = 1, N
      DO I = 1, J-1
         T = V(I,J)
-        V(I,J) = V(J,I)
-        V(J,I) = T
+        V(I,J) = CONJG(V(J,I))
+        V(J,I) = CONJG(T)
      END DO
+     V(J,J) = CONJG(V(J,J))
   END DO
   DO J = 1, JPOS
      DO I = JPOS+1, N
@@ -88,7 +91,9 @@ PROGRAM DJSVDT
      Y = SV(J)
      Y = SCALE(Y, -GS)
      DO I = 1, M
-        U(I,J) = REAL(G(I,J), REAL128) * Y
+        U(I,J) = CMPLX(&
+             REAL(REAL(G(I,J)), REAL128) * Y,&
+             REAL(AIMAG(G(I,J)), REAL128) * Y, REAL128)
      END DO
   END DO
   ! read G again
@@ -103,16 +108,19 @@ PROGRAM DJSVDT
   DO I = 1, M
      DO J = 1, N
         W(I,J) = G(I,J)
-        Z = HYPOT(Z, W(I,J))
+        Z = HYPOT(Z, HYPOT(REAL(W(I,J)), AIMAG(W(I,J))))
         DO L = 1, N
-           ! W(I,J) = W(I,J) - U(I,L) * REAL(V(L,J), REAL128)
-           W(I,J) = IEEE_FMA(U(I,L), REAL(-V(L,J), REAL128), W(I,J))
+           ! W(I,J) = W(I,J) - U(I,L) * V(L,J)
+           H = CMPLX(REAL(-REAL(V(L,J)), REAL128), REAL(-AIMAG(V(L,J)), REAL128), REAL128)
+           W(I,J) = CMPLX(&
+                IEEE_FMA(REAL(U(I,L)), REAL(H), IEEE_FMA(-AIMAG(U(I,L)), AIMAG(H), REAL(W(I,J)))),&
+                IEEE_FMA(REAL(U(I,L)), AIMAG(H), IEEE_FMA(AIMAG(U(I,L)), REAL(H), AIMAG(W(I,J)))), REAL128)
         END DO
-        Y = HYPOT(Y, W(I,J))
+        Y = HYPOT(Y, HYPOT(REAL(W(I,J)), AIMAG(W(I,J))))
      END DO
   END DO
   Y = Y / Z
-  WRITE (OUTPUT_UNIT,'(ES25.17E3)') Y
+  WRITE (OUTPUT_UNIT,'(ES30.21E4)') Y
   IF (ALLOCATED(W)) DEALLOCATE(W)
   IF (ALLOCATED(U)) DEALLOCATE(U)
   IF (ALLOCATED(SV)) DEALLOCATE(SV)
@@ -120,4 +128,4 @@ PROGRAM DJSVDT
   IF (ALLOCATED(G)) DEALLOCATE(G)
 CONTAINS
 #include "bfopen.f90"
-END PROGRAM DJSVDT
+END PROGRAM WJSVDT

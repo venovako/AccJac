@@ -59,14 +59,14 @@ cgram.o dgram.o sgram.o zgram.o\
 cscalg.o dscalg.o sscalg.o zscalg.o\
 cinisv.o dinisv.o sinisv.o zinisv.o\
 ctrans.o dtrans.o strans.o ztrans.o\
-dtrack.o\
-djsvdc.o zjsvdc.o
+dtrack.o strack.o\
+cjsvdc.o djsvdc.o sjsvdc.o zjsvdc.o
 
 LIBD=libjaevd.a
 
 EXED=\
 cevdj.exe zevdj.exe\
-djsvdt.exe zjsvdt.exe
+cjsvdt.exe djsvdt.exe sjsvdt.exe zjsvdt.exe
 
 ifeq ($(COMPILER),gfortran)
 ifeq ($(findstring 86,$(ARCH)),86)
@@ -94,7 +94,12 @@ wsdp.o xsdp.o\
 wgram.o xgram.o\
 wscalg.o xscalg.o\
 winisv.o xinisv.o\
-wtrans.o xtrans.o
+wtrans.o xtrans.o\
+xtrack.o\
+wjsvdc.o xjsvdc.o
+
+EXED += \
+wjsvdt.exe xjsvdt.exe
 endif # x86_64 or i86pc
 endif # gfortran
 

@@ -31,6 +31,7 @@
      F2 = FQ / FP
      E2 = E2 + EXPONENT(F2)
      F2 = FRACTION(F2)
+     INFO = EXPONENT(HUGE(ZERO)) - E2
      AQQ = SCALE(F2, EXPONENT(HUGE(F2)))
      ! APP = PNF / QNF
      E1 = EP - EQ

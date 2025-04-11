@@ -1,56 +1,51 @@
 !  IN: GS = max sweeps, INFO = 0 or 1 (sin => tan)
 ! OUT: GS: backscale SV by 2**-GS, INFO: #sweeps
-SUBROUTINE ZJSVDC(M, N, G, LDG, V, LDV, JPOS, SV, GS, INFO)
-  USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL64
+SUBROUTINE SJSVDC(M, N, G, LDG, V, LDV, JPOS, SV, GS, INFO)
+  USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL32
   IMPLICIT NONE
   INTERFACE
-     PURE SUBROUTINE ZSCALG(M, N, G, LDG, GX, GS, INFO)
-       USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL64
+     PURE SUBROUTINE SSCALG(M, N, G, LDG, GX, GS, INFO)
+       USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL32
        IMPLICIT NONE
        INTEGER, INTENT(IN) :: M, N, LDG
-       COMPLEX(KIND=REAL64), INTENT(INOUT) :: G(LDG,N)
-       REAL(KIND=REAL64), INTENT(INOUT) :: GX
+       REAL(KIND=REAL32), INTENT(INOUT) :: G(LDG,N), GX
        INTEGER, INTENT(INOUT) :: GS, INFO
-     END SUBROUTINE ZSCALG
+     END SUBROUTINE SSCALG
   END INTERFACE
   INTERFACE
-     PURE SUBROUTINE ZINISV(M, N, G, LDG, V, LDV, JPOS, SV, INFO)
-       USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL64
+     PURE SUBROUTINE SINISV(M, N, G, LDG, V, LDV, JPOS, SV, INFO)
+       USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL32
        IMPLICIT NONE
        INTEGER, INTENT(IN) :: M, N, LDG, LDV, JPOS
-       COMPLEX(KIND=REAL64), INTENT(INOUT) :: G(LDG,N)
-       COMPLEX(KIND=REAL64), INTENT(OUT) :: V(LDV,N)
-       REAL(KIND=REAL64), INTENT(OUT) :: SV(N)
+       REAL(KIND=REAL32), INTENT(INOUT) :: G(LDG,N)
+       REAL(KIND=REAL32), INTENT(OUT) :: V(LDV,N), SV(N)
        INTEGER, INTENT(OUT) :: INFO
-     END SUBROUTINE ZINISV
+     END SUBROUTINE SINISV
   END INTERFACE
   INTERFACE
-     SUBROUTINE ZTRANS(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, TOL, INFO)
-       USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL64
+     SUBROUTINE STRANS(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, TOL, INFO)
+       USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL32
        IMPLICIT NONE
        INTEGER, INTENT(IN) :: M, N, LDG, LDV, P, Q
-       COMPLEX(KIND=REAL64), INTENT(INOUT) :: G(LDG,N), V(LDV,N)
-       REAL(KIND=REAL64), INTENT(INOUT) :: SV(N), GX
-       REAL(KIND=REAL64), INTENT(IN) :: TOL
+       REAL(KIND=REAL32), INTENT(INOUT) :: G(LDG,N), V(LDV,N), SV(N), GX
+       REAL(KIND=REAL32), INTENT(IN) :: TOL
        INTEGER, INTENT(INOUT) :: GS, INFO
-     END SUBROUTINE ZTRANS
+     END SUBROUTINE STRANS
   END INTERFACE
   INTERFACE
-     SUBROUTINE DTRACK(N, SV, GX, GS, SWP, NTR)
-       USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL64
+     SUBROUTINE STRACK(N, SV, GX, GS, SWP, NTR)
+       USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL32
        IMPLICIT NONE
        INTEGER, INTENT(IN) :: N, GS, SWP, NTR
-       REAL(KIND=REAL64), INTENT(IN) :: SV(N), GX
-     END SUBROUTINE DTRACK
+       REAL(KIND=REAL32), INTENT(IN) :: SV(N), GX
+     END SUBROUTINE STRACK
   END INTERFACE
-  INTEGER, PARAMETER :: K = REAL64
+  INTEGER, PARAMETER :: K = REAL32
   REAL(KIND=K), PARAMETER :: ZERO = 0.0_K, ONE = 1.0_K, EPS = EPSILON(EPS) / 2
   INTEGER, INTENT(IN) :: M, N, LDG, LDV, JPOS
-  COMPLEX(KIND=K), INTENT(INOUT) :: G(LDG,N)
-  COMPLEX(KIND=K), INTENT(OUT) :: V(LDV,N)
-  REAL(KIND=K), INTENT(OUT) :: SV(N)
+  REAL(KIND=K), INTENT(INOUT) :: G(LDG,N)
+  REAL(KIND=K), INTENT(OUT) :: V(LDV,N), SV(N)
   INTEGER, INTENT(INOUT) :: GS, INFO
-  COMPLEX(KIND=K) :: Z
   REAL(KIND=K) :: GX, TOL, MX, MY
   INTEGER :: P, Q, R, S, T, W
   IF ((INFO .LT. 0) .OR. (INFO .GT. 3)) INFO = -10
@@ -67,20 +62,20 @@ SUBROUTINE ZJSVDC(M, N, G, LDG, V, LDV, JPOS, SV, GS, INFO)
   GX = ZERO
   GS = 0
   R = 0
-  CALL ZSCALG(M, N, G, LDG, GX, GS, R)
+  CALL SSCALG(M, N, G, LDG, GX, GS, R)
   IF (R .LT. 0) THEN
      INFO = -3
      RETURN
   END IF
   ! init SV, V; sort SV, G
-  CALL ZINISV(M, N, G, LDG, V, LDV, JPOS, SV, R)
+  CALL SINISV(M, N, G, LDG, V, LDV, JPOS, SV, R)
   IF (R .LT. 0) THEN
      INFO = -3
      RETURN
   END IF
   TOL = M
   TOL = SQRT(TOL) * EPS
-  CALL DTRACK(N, SV, GX, GS, -R, S)
+  CALL STRACK(N, SV, GX, GS, -R, S)
   DO R = 1, S
      T = 0
      ! row-cyclic
@@ -92,7 +87,7 @@ SUBROUTINE ZJSVDC(M, N, G, LDG, V, LDV, JPOS, SV, GS, INFO)
            ELSE IF (P .GT. JPOS) THEN
               W = IOR(W, 4)
            END IF
-           CALL ZTRANS(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, TOL, W)
+           CALL STRANS(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, TOL, W)
            SELECT CASE (W)
            CASE (0)
               CONTINUE
@@ -115,14 +110,14 @@ SUBROUTINE ZJSVDC(M, N, G, LDG, V, LDV, JPOS, SV, GS, INFO)
            END DO
            IF (W .GT. (P+1)) THEN
               DO Q = 1, M
-                 Z = G(Q,P+1)
+                 MY = G(Q,P+1)
                  G(Q,P+1) = G(Q,W)
-                 G(Q,W) = Z
+                 G(Q,W) = MY
               END DO
               DO Q = 1, N
-                 Z = V(Q,P+1)
+                 MY = V(Q,P+1)
                  V(Q,P+1) = V(Q,W)
-                 V(Q,W) = Z
+                 V(Q,W) = MY
               END DO
               MY = SV(P+1)
               SV(P+1) = SV(W)
@@ -139,14 +134,14 @@ SUBROUTINE ZJSVDC(M, N, G, LDG, V, LDV, JPOS, SV, GS, INFO)
            END DO
            IF (W .LT. (N-P)) THEN
               DO Q = 1, M
-                 Z = G(Q,N-P)
+                 MX = G(Q,N-P)
                  G(Q,N-P) = G(Q,W)
-                 G(Q,W) = Z
+                 G(Q,W) = MX
               END DO
               DO Q = 1, N
-                 Z = V(Q,N-P)
+                 MX = V(Q,N-P)
                  V(Q,N-P) = V(Q,W)
-                 V(Q,W) = Z
+                 V(Q,W) = MX
               END DO
               MX = SV(N-P)
               SV(N-P) = SV(W)
@@ -155,7 +150,7 @@ SUBROUTINE ZJSVDC(M, N, G, LDG, V, LDV, JPOS, SV, GS, INFO)
            END IF
         END IF
      END DO
-     CALL DTRACK(N, SV, GX, GS, R, T)
+     CALL STRACK(N, SV, GX, GS, R, T)
      IF (T .EQ. 0) EXIT
   END DO
   ! rescale U
@@ -173,4 +168,4 @@ SUBROUTINE ZJSVDC(M, N, G, LDG, V, LDV, JPOS, SV, GS, INFO)
      END DO
   END IF
   INFO = R
-END SUBROUTINE ZJSVDC
+END SUBROUTINE SJSVDC

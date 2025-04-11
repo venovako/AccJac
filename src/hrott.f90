@@ -21,8 +21,14 @@
      MY = ZERO
      ! SN => TG
      DO I = 1, M
-        XX = (X(I) + Y(I) * SN) * CS
-        YY = (X(I) * HS + Y(I)) * CS
+        ! XX = (X(I) + Y(I) * SN) * CS
+        XX = CMPLX(&
+             (REAL(Y(I)) * REAL(SN) + (REAL(X(I)) - AIMAG(Y(I)) * AIMAG(SN))) * CS,&
+             (REAL(Y(I)) * AIMAG(SN) + (AIMAG(X(I)) + AIMAG(Y(I)) * REAL(SN))) * CS, K)
+        ! YY = (X(I) * HS + Y(I)) * CS
+        YY = CMPLX(&
+             (REAL(X(I)) * REAL(HS) + (REAL(Y(I)) - AIMAG(X(I)) * AIMAG(HS))) * CS,&
+             (REAL(X(I)) * AIMAG(HS) + (AIMAG(Y(I)) + AIMAG(X(I)) * REAL(HS))) * CS, K)
         X(I) = XX
         Y(I) = YY
         AX = CR_HYPOT(REAL(XX), AIMAG(YY))

@@ -7,7 +7,7 @@ FUNCTION CSDP(M, X, Y, MX, MY, INFO)
   COMPLEX(KIND=K), INTENT(IN) :: X(M), Y(M)
   REAL(KIND=K), INTENT(IN) :: MX, MY
   INTEGER, INTENT(OUT) :: INFO
-  COMPLEX(KIND=K) :: CSDP
+  COMPLEX(KIND=K) :: CSDP, XX, YY
   INTEGER :: I
   INFO = 0
   CSDP = ZERO
@@ -16,6 +16,12 @@ FUNCTION CSDP(M, X, Y, MX, MY, INFO)
   IF (M .LT. 0) INFO = -1
   IF (INFO .NE. 0) RETURN
   DO I = 1, M
-     CSDP = CSDP + (CONJG(X(I)) / MX) * (Y(I) / MY)
+     ! CSDP = CSDP + (CONJG(X(I)) / MX) * (Y(I) / MY)
+     XX = CMPLX(REAL(X(I)) / MX, -AIMAG(X(I)) / MX, K)
+     YY = CMPLX(REAL(Y(I)) / MY,  AIMAG(Y(I)) / MY, K)
+     !DIR$ FMA
+     CSDP = CMPLX(&
+          (REAL(XX) * REAL(YY) + (REAL(CSDP) - AIMAG(XX) * AIMAG(YY))),&
+          (REAL(XX) * AIMAG(YY) + (AIMAG(CSDP) + AIMAG(XX) * REAL(YY))), K)
   END DO
 END FUNCTION CSDP

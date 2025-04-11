@@ -7,7 +7,7 @@ FUNCTION ZSDP(M, X, Y, MX, MY, INFO)
   COMPLEX(KIND=K), INTENT(IN) :: X(M), Y(M)
   REAL(KIND=K), INTENT(IN) :: MX, MY
   INTEGER, INTENT(OUT) :: INFO
-  COMPLEX(KIND=K) :: ZSDP
+  COMPLEX(KIND=K) :: ZSDP, XX, YY
   INTEGER :: I
   INFO = 0
   ZSDP = ZERO
@@ -16,6 +16,12 @@ FUNCTION ZSDP(M, X, Y, MX, MY, INFO)
   IF (M .LT. 0) INFO = -1
   IF (INFO .NE. 0) RETURN
   DO I = 1, M
-     ZSDP = ZSDP + (CONJG(X(I)) / MX) * (Y(I) / MY)
+     ! ZSDP = ZSDP + (CONJG(X(I)) / MX) * (Y(I) / MY)
+     XX = CMPLX(REAL(X(I)) / MX, -AIMAG(X(I)) / MX, K)
+     YY = CMPLX(REAL(Y(I)) / MY,  AIMAG(Y(I)) / MY, K)
+     !DIR$ FMA
+     ZSDP = CMPLX(&
+          (REAL(XX) * REAL(YY) + (REAL(ZSDP) - AIMAG(XX) * AIMAG(YY))),&
+          (REAL(XX) * AIMAG(YY) + (AIMAG(ZSDP) + AIMAG(XX) * REAL(YY))), K)
   END DO
 END FUNCTION ZSDP

@@ -1,9 +1,11 @@
 PROGRAM ZJSVDT
+  USE, INTRINSIC :: IEEE_ARITHMETIC, ONLY: IEEE_FMA
   USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: OUTPUT_UNIT, REAL64, REAL128
   IMPLICIT NONE
   REAL(KIND=REAL128), PARAMETER :: QZERO = 0.0_REAL128
   CHARACTER(LEN=256) :: CLA
   REAL(KIND=REAL128) :: Y, Z
+  COMPLEX(KIND=REAL128) :: H
   COMPLEX(KIND=REAL64) :: T
   INTEGER :: M, N, LDG, LDV, JPOS, GS, INFO, I, J, L
   COMPLEX(KIND=REAL64), ALLOCATABLE :: G(:,:), V(:,:)
@@ -89,7 +91,9 @@ PROGRAM ZJSVDT
      Y = SV(J)
      Y = SCALE(Y, -GS)
      DO I = 1, M
-        U(I,J) = G(I,J) * Y
+        U(I,J) = CMPLX(&
+             REAL(REAL(G(I,J)), REAL128) * Y,&
+             REAL(AIMAG(G(I,J)), REAL128) * Y, REAL128)
      END DO
   END DO
   ! read G again
@@ -106,7 +110,11 @@ PROGRAM ZJSVDT
         W(I,J) = G(I,J)
         Z = HYPOT(Z, HYPOT(REAL(W(I,J)), AIMAG(W(I,J))))
         DO L = 1, N
-           W(I,J) = W(I,J) - U(I,L) * V(L,J)
+           ! W(I,J) = W(I,J) - U(I,L) * V(L,J)
+           H = CMPLX(REAL(-REAL(V(L,J)), REAL128), REAL(-AIMAG(V(L,J)), REAL128), REAL128)
+           W(I,J) = CMPLX(&
+                IEEE_FMA(REAL(U(I,L)), REAL(H), IEEE_FMA(-AIMAG(U(I,L)), AIMAG(H), REAL(W(I,J)))),&
+                IEEE_FMA(REAL(U(I,L)), AIMAG(H), IEEE_FMA(AIMAG(U(I,L)), REAL(H), AIMAG(W(I,J)))), REAL128)
         END DO
         Y = HYPOT(Y, HYPOT(REAL(W(I,J)), AIMAG(W(I,J))))
      END DO
