@@ -46,8 +46,8 @@ SUBROUTINE DJSVDC(M, N, G, LDG, V, LDV, JPOS, SV, GS, INFO)
   REAL(KIND=K), INTENT(INOUT) :: G(LDG,N)
   REAL(KIND=K), INTENT(OUT) :: V(LDV,N), SV(N)
   INTEGER, INTENT(INOUT) :: GS, INFO
-  REAL(KIND=K) :: GX, TOL, MX, MY
-  INTEGER :: P, Q, R, S, T, W, Y
+  REAL(KIND=K) :: GX, TOL
+  INTEGER :: P, Q, R, S, T, W
   IF ((INFO .LT. 0) .OR. (INFO .GT. 3)) INFO = -10
   IF (GS .LT. 0) INFO = -9
   IF ((JPOS .LT. 0) .OR. (JPOS .GT. N)) INFO = -7
@@ -68,6 +68,7 @@ SUBROUTINE DJSVDC(M, N, G, LDG, V, LDV, JPOS, SV, GS, INFO)
      RETURN
   END IF
   ! init SV, V; sort SV, G
+  R = IAND(INFO, 2)
   CALL DINISV(M, N, G, LDG, V, LDV, JPOS, SV, R)
   IF (R .LT. 0) THEN
      INFO = -3
@@ -80,67 +81,11 @@ SUBROUTINE DJSVDC(M, N, G, LDG, V, LDV, JPOS, SV, GS, INFO)
      T = 0
      ! row-cyclic
      DO P = 1, N-1
-        ! de Rijk
-        IF (IAND(INFO, 2) .NE. 0) THEN
-           IF (P .LE. JPOS) THEN
-              Y = P
-              MX = ZERO
-              W = 0
-              DO Q = Y, JPOS
-                 IF (SV(Q) .GT. MX) THEN
-                    MX = SV(Q)
-                    W = Q
-                 END IF
-              END DO
-              IF (W .GT. Y) THEN
-                 DO Q = 1, M
-                    MY = G(Q,Y)
-                    G(Q,Y) = G(Q,W)
-                    G(Q,W) = MY
-                 END DO
-                 DO Q = 1, N
-                    MY = V(Q,Y)
-                    V(Q,Y) = V(Q,W)
-                    V(Q,W) = MY
-                 END DO
-                 MY = SV(Y)
-                 SV(Y) = SV(W)
-                 SV(W) = MY
-                 T = T + 1
-              END IF
-           ELSE ! P > JPOS
-              Y = N - P + JPOS + 1
-              MY = ZERO
-              W = N + 1
-              DO Q = Y, JPOS+1, -1
-                 IF (SV(Q) .GT. MY) THEN
-                    MY = SV(Q)
-                    W = Q
-                 END IF
-              END DO
-              IF (W .LT. Y) THEN
-                 DO Q = 1, M
-                    MX = G(Q,Y)
-                    G(Q,Y) = G(Q,W)
-                    G(Q,W) = MX
-                 END DO
-                 DO Q = 1, N
-                    MX = V(Q,Y)
-                    V(Q,Y) = V(Q,W)
-                    V(Q,W) = MX
-                 END DO
-                 MX = SV(Y)
-                 SV(Y) = SV(W)
-                 SV(W) = MX
-                 T = T + 1
-              END IF
-           END IF
-        END IF
         DO Q = P+1, N
            W = IAND(INFO, 1)
            IF ((P .LE. JPOS) .AND. (Q .GT. JPOS)) THEN
               W = IOR(W, 2)
-           ELSE IF (P .GT. JPOS) THEN
+           ELSE IF ((P .GT. JPOS) .AND. (IAND(INFO, 2) .NE. 0)) THEN
               W = IOR(W, 4)
            END IF
            CALL DTRANS(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, TOL, W)

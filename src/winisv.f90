@@ -14,18 +14,17 @@ PURE SUBROUTINE WINISV(M, N, G, LDG, V, LDV, JPOS, SV, INFO)
   COMPLEX(KIND=K), INTENT(INOUT) :: G(LDG,N)
   COMPLEX(KIND=K), INTENT(OUT) :: V(LDV,N)
   REAL(KIND=K), INTENT(OUT) :: SV(N)
-  INTEGER, INTENT(OUT) :: INFO
+  INTEGER, INTENT(INOUT) :: INFO
   COMPLEX(KIND=K) :: Z
   REAL(KIND=K) :: W
   INTEGER :: I, J, L
   COMPLEX(KIND=K), ALLOCATABLE :: H(:,:)
-  INFO = 0
   IF ((JPOS .LT. 0) .OR. (JPOS .GT. N)) INFO = -7
   IF (LDV .LT. N) INFO = -6
   IF (LDG .LT. M) INFO = -4
   IF ((N .LT. 0) .OR. (N .GT. M)) INFO = -2
   IF (M .LT. 0) INFO = -1
-  IF (INFO .NE. 0) RETURN
+  IF (INFO .LT. 0) RETURN
   IF (N .EQ. 0) RETURN
   DO J = 1, N
      SV(J) = WNRMF(M, G(1,J))
@@ -38,31 +37,50 @@ PURE SUBROUTINE WINISV(M, N, G, LDG, V, LDV, JPOS, SV, INFO)
   DO I = 1, N
      V(I,1) = I
   END DO
-  INFO = 0
+  I = 1
+  L = 1
+  IF (INFO .NE. 0) THEN
+     INFO = 0
+     DO WHILE (L .GT. 0)
+        L = 0
+        DO J = JPOS+1, N-I
+           IF (SV(J) .GT. SV(J+1)) THEN
+              W = SV(J)
+              SV(J) = SV(J+1)
+              SV(J+1) = W
+              Z = V(J,1)
+              V(J,1) = V(J+1,1)
+              V(J+1,1) = Z
+              L = L + 1
+           END IF
+        END DO
+        INFO = INFO + L
+        I = I + 1
+     END DO
+  ELSE ! INFO = 0
+     DO WHILE (L .GT. 0)
+        L = 0
+        DO J = JPOS+1, N-I
+           IF (SV(J) .LT. SV(J+1)) THEN
+              W = SV(J)
+              SV(J) = SV(J+1)
+              SV(J+1) = W
+              Z = V(J,1)
+              V(J,1) = V(J+1,1)
+              V(J+1,1) = Z
+              L = L + 1
+           END IF
+        END DO
+        INFO = INFO + L
+        I = I + 1
+     END DO
+  END IF
   I = 1
   L = 1
   DO WHILE (L .GT. 0)
      L = 0
      DO J = 1, JPOS-I
         IF (SV(J) .LT. SV(J+1)) THEN
-           W = SV(J)
-           SV(J) = SV(J+1)
-           SV(J+1) = W
-           Z = V(J,1)
-           V(J,1) = V(J+1,1)
-           V(J+1,1) = Z
-           L = L + 1
-        END IF
-     END DO
-     INFO = INFO + L
-     I = I + 1
-  END DO
-  I = 1
-  L = 1
-  DO WHILE (L .GT. 0)
-     L = 0
-     DO J = JPOS+1, N-I
-        IF (SV(J) .GT. SV(J+1)) THEN
            W = SV(J)
            SV(J) = SV(J+1)
            SV(J+1) = W

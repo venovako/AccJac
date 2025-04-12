@@ -1,6 +1,6 @@
 ! IN: INFO & 1: sin => tan
 !     INFO & 2: hyp
-!     INFO & 4: JPOS < P < Q
+!     INFO & 4: dsc(0) or asc(1)
 !OUT: INFO = 0: notransf
 !     INFO = 1: swap only
 !     INFO = 2: transf, no downscaling of G and SV
@@ -115,7 +115,8 @@ SUBROUTINE XTRANS(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, TOL, INFO)
   END IF
   L = INFO
   IF (T .LT. TOL) THEN
-     IF (((IAND(L,6) .EQ. 0) .AND. (SV(P) .LT. SV(Q))) .OR. ((IAND(L,4) .NE. 0) .AND. (SV(P) .GT. SV(Q)))) THEN
+     IF ((IAND(L,2) .EQ. 0) .AND. &
+          ((IAND(L,4) .EQ. 0) .AND. (SV(P) .LT. SV(Q))) .OR. ((IAND(L,4) .NE. 0) .AND. (SV(P) .GT. SV(Q)))) THEN
         DO I = 1, M
            T = G(I,P)
            G(I,P) = G(I,Q)

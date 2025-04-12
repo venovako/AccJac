@@ -149,6 +149,34 @@ PROGRAM DJSVDT
      END DO
      I = I + 1
   END DO
+  L = 1
+  I = 1
+  DO WHILE (L .GT. 0)
+     L = 0
+     DO J = 1, JPOS-I
+        IF (SV(J) .LT. SV(J+1)) THEN
+           T = SV(J)
+           SV(J) = SV(J+1)
+           SV(J+1) = T
+           L = L + 1
+        END IF
+     END DO
+     I = I + 1
+  END DO
+  L = 1
+  I = 1
+  DO WHILE (L .GT. 0)
+     L = 0
+     DO J = JPOS+1, N-I
+        IF (SV(J) .GT. SV(J+1)) THEN
+           T = SV(J)
+           SV(J) = SV(J+1)
+           SV(J+1) = T
+           L = L + 1
+        END IF
+     END DO
+     I = I + 1
+  END DO
   Z = QZERO
   DO J = 1, JPOS
      Y = SV(J)
