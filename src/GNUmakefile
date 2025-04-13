@@ -60,7 +60,8 @@ cscalg.o dscalg.o sscalg.o zscalg.o\
 cinisv.o dinisv.o sinisv.o zinisv.o\
 ctrans.o dtrans.o strans.o ztrans.o\
 dtrack.o strack.o\
-cjsvdc.o djsvdc.o sjsvdc.o zjsvdc.o
+cjsvdc.o djsvdc.o sjsvdc.o zjsvdc.o\
+cjsvdr.o djsvdr.o sjsvdr.o zjsvdr.o
 
 LIBD=libjaevd.a
 
@@ -96,7 +97,8 @@ wscalg.o xscalg.o\
 winisv.o xinisv.o\
 wtrans.o xtrans.o\
 xtrack.o\
-wjsvdc.o xjsvdc.o
+wjsvdc.o xjsvdc.o\
+wjsvdr.o xjsvdr.o
 
 EXED += \
 wjsvdt.exe xjsvdt.exe

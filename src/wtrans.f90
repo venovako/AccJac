@@ -1,6 +1,5 @@
 ! IN: INFO & 1: sin => tan
 !     INFO & 2: hyp
-!     INFO & 4: dsc(0) or asc(1)
 !OUT: INFO = 0: notransf
 !     INFO = 1: swap only
 !     INFO = 2: transf, no downscaling of G and SV
@@ -107,9 +106,9 @@ SUBROUTINE WTRANS(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, TOL, INFO)
   COMPLEX(KIND=K) :: QPS, Z
   REAL(KIND=K) :: APP, AQQ, AQPR, AQPI, C, SR, SI, T
   INTEGER :: I, J, L
-  IF ((INFO .LT. 0) .OR. (INFO .GT. 7)) INFO = -13
+  IF ((INFO .LT. 0) .OR. (INFO .GT. 3)) INFO = -13
   IF (TOL .LT. ZERO) INFO = -12
-  IF ((Q .LE. P) .OR. (Q .GT. N)) INFO = -11
+  IF ((Q .LE. 0) .OR. (Q .GT. N)) INFO = -11
   IF ((P .LE. 0) .OR. (P .GT. N)) INFO = -10
   IF (LDV .LT. N) INFO = -6
   IF (LDG .LT. M) INFO = -4
@@ -130,8 +129,7 @@ SUBROUTINE WTRANS(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, TOL, INFO)
   END IF
   L = INFO
   IF (T .LT. TOL) THEN
-     IF ((IAND(L,2) .EQ. 0) .AND. &
-          ((IAND(L,4) .EQ. 0) .AND. (SV(P) .LT. SV(Q))) .OR. ((IAND(L,4) .NE. 0) .AND. (SV(P) .GT. SV(Q)))) THEN
+     IF ((IAND(L,2) .EQ. 0) .AND. (SV(P) .LT. SV(Q))) THEN
         DO I = 1, M
            Z = G(I,P)
            G(I,P) = G(I,Q)

@@ -1,4 +1,4 @@
-!  IN: GS = max sweeps, INFO = 0 or 1 (sin => tan)
+!  IN: GS = max sweeps, INFO = 0 or 1 (sin => tan) OR 2 (dsc/asc)
 ! OUT: GS: backscale SV by 2**-GS, INFO: #sweeps
 SUBROUTINE ZJSVDC(M, N, G, LDG, V, LDV, JPOS, SV, GS, INFO)
   USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL64
@@ -87,12 +87,12 @@ SUBROUTINE ZJSVDC(M, N, G, LDG, V, LDV, JPOS, SV, GS, INFO)
      DO P = 1, N-1
         DO Q = P+1, N
            W = IAND(INFO, 1)
-           IF ((P .LE. JPOS) .AND. (Q .GT. JPOS)) THEN
-              W = IOR(W, 2)
-           ELSE IF ((P .GT. JPOS) .AND. (IAND(INFO, 2) .NE. 0)) THEN
-              W = IOR(W, 4)
+           IF ((P .LE. JPOS) .AND. (Q .GT. JPOS)) W = IOR(W, 2)
+           IF ((P .GT. JPOS) .AND. (IAND(INFO, 2) .NE. 0)) THEN
+              CALL ZTRANS(M, N, G, LDG, V, LDV, SV, GX, GS, Q, P, TOL, W)
+           ELSE ! not asc
+              CALL ZTRANS(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, TOL, W)
            END IF
-           CALL ZTRANS(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, TOL, W)
            SELECT CASE (W)
            CASE (0)
               CONTINUE

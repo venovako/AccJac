@@ -38,7 +38,7 @@
         MY = CR_HYPOT(MY, AY)
      END DO
   END IF
-  IF (((IAND(INFO, 16) .EQ. 0) .AND. (MY .GT. MX)) .OR. ((IAND(INFO, 16) .NE. 0) .AND. (MX .GT. MY))) THEN
+  IF (MY .GT. MX) THEN
      DO I = 1, M
         XX = X(I)
         YY = Y(I)
