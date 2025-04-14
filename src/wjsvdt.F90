@@ -3,7 +3,7 @@ PROGRAM WJSVDT
   USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long
   USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: OUTPUT_UNIT, REAL128
   IMPLICIT NONE
-  REAL(KIND=REAL128), PARAMETER :: QZERO = 0.0_REAL128
+  REAL(KIND=REAL128), PARAMETER :: QZERO = 0.0_REAL128, QONE = 1.0_REAL128
   CHARACTER(LEN=256) :: CLA
   REAL(KIND=REAL128) :: Y, Z
   COMPLEX(KIND=REAL128) :: H
@@ -19,7 +19,14 @@ PROGRAM WJSVDT
   IF (I .NE. 5) STOP 'wjsvdt.exe M N JPOS OPTS FILE'
   CALL GET_COMMAND_ARGUMENT(1, CLA)
   READ (CLA,*) M
-  IF (M .LE. 0) STOP 'M'
+  IF (M .LT. 0) THEN
+     M = -M
+     Z = QONE
+  ELSE IF (M .GT. 0) THEN
+     Z = QZERO
+  ELSE ! M = 0
+     STOP 'M'
+  END IF
   CALL GET_COMMAND_ARGUMENT(2, CLA)
   READ (CLA,*) N
   IF ((N .LE. 0) .OR. (N .GT. M)) STOP 'N'
@@ -101,17 +108,19 @@ PROGRAM WJSVDT
   WRITE (UNIT=I, IOSTAT=J) V
   IF (J .NE. 0) STOP 'Z'
   CLOSE(I)
-  ALLOCATE(U(M,N))
   L = -GS
-  DO J = 1, N
-     Y = SV(J)
-     Y = SCALE(Y, L)
-     DO I = 1, M
-        U(I,J) = CMPLX(&
-             REAL(REAL(G(I,J)), REAL128) * Y,&
-             REAL(AIMAG(G(I,J)), REAL128) * Y, REAL128)
+  IF (Z .EQ. QZERO) THEN
+     ALLOCATE(U(M,N))
+     DO J = 1, N
+        Y = SV(J)
+        Y = SCALE(Y, L)
+        DO I = 1, M
+           U(I,J) = CMPLX(&
+                REAL(REAL(G(I,J)), REAL128) * Y,&
+                REAL(AIMAG(G(I,J)), REAL128) * Y, REAL128)
+        END DO
      END DO
-  END DO
+  END IF
   DO J = 1, N
      SV(J) = SCALE(SV(J), L)
   END DO
@@ -119,33 +128,34 @@ PROGRAM WJSVDT
   IF (J .NE. 0) STOP 'SY'
   WRITE (UNIT=I, IOSTAT=J) SV
   IF (J .NE. 0) STOP 'S'
-  ! read G again
-  CALL BFOPEN(TRIM(CLA)//'.Y', 'RO', I, J)
-  IF (J .NE. 0) STOP 'Y'
-  READ (UNIT=I, IOSTAT=J) G
-  IF (J .NE. 0) STOP 'G'
-  CLOSE(I)
-  ALLOCATE(W(M,N))
   Y = QZERO
-  Z = QZERO
-  DO I = 1, M
-     DO J = 1, N
-        W(I,J) = G(I,J)
-        Z = HYPOT(Z, HYPOT(REAL(W(I,J)), AIMAG(W(I,J))))
-        DO L = 1, N
-           ! W(I,J) = W(I,J) - U(I,L) * V(L,J)
-           H = CMPLX(REAL(-REAL(V(L,J)), REAL128), REAL(-AIMAG(V(L,J)), REAL128), REAL128)
-           W(I,J) = CMPLX(&
-                IEEE_FMA(REAL(U(I,L)), REAL(H), IEEE_FMA(-AIMAG(U(I,L)), AIMAG(H), REAL(W(I,J)))),&
-                IEEE_FMA(REAL(U(I,L)), AIMAG(H), IEEE_FMA(AIMAG(U(I,L)), REAL(H), AIMAG(W(I,J)))), REAL128)
+  IF (Z .EQ. QZERO) THEN
+     ! read G again
+     CALL BFOPEN(TRIM(CLA)//'.Y', 'RO', I, J)
+     IF (J .NE. 0) STOP 'Y'
+     READ (UNIT=I, IOSTAT=J) G
+     IF (J .NE. 0) STOP 'G'
+     CLOSE(I)
+     ALLOCATE(W(M,N))
+     DO I = 1, M
+        DO J = 1, N
+           W(I,J) = G(I,J)
+           Z = HYPOT(Z, HYPOT(REAL(W(I,J)), AIMAG(W(I,J))))
+           DO L = 1, N
+              ! W(I,J) = W(I,J) - U(I,L) * V(L,J)
+              H = CMPLX(REAL(-REAL(V(L,J)), REAL128), REAL(-AIMAG(V(L,J)), REAL128), REAL128)
+              W(I,J) = CMPLX(&
+                   IEEE_FMA(REAL(U(I,L)), REAL(H), IEEE_FMA(-AIMAG(U(I,L)), AIMAG(H), REAL(W(I,J)))),&
+                   IEEE_FMA(REAL(U(I,L)), AIMAG(H), IEEE_FMA(AIMAG(U(I,L)), REAL(H), AIMAG(W(I,J)))), REAL128)
+           END DO
+           Y = HYPOT(Y, HYPOT(REAL(W(I,J)), AIMAG(W(I,J))))
         END DO
-        Y = HYPOT(Y, HYPOT(REAL(W(I,J)), AIMAG(W(I,J))))
      END DO
-  END DO
-  Y = Y / Z
+     Y = Y / Z
+     IF (ALLOCATED(W)) DEALLOCATE(W)
+     IF (ALLOCATED(U)) DEALLOCATE(U)
+  END IF
   WRITE (OUTPUT_UNIT,'(ES30.21E4)') Y
-  IF (ALLOCATED(W)) DEALLOCATE(W)
-  IF (ALLOCATED(U)) DEALLOCATE(U)
   IF (ALLOCATED(SV)) DEALLOCATE(SV)
   IF (ALLOCATED(V)) DEALLOCATE(V)
   IF (ALLOCATED(G)) DEALLOCATE(G)
