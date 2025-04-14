@@ -7,7 +7,7 @@ do
 		for ((I=$1;I<=$2;I*=2))
 		do
 			let "J=I/2"
-			printf "%3d, %3d," $I $J >> $T-$S.csv
+			printf "%4d, %4d," $I $J >> $T-$S.csv
 			cat $T$I-$S.out >> $T-$S.csv
 		done
 	done
