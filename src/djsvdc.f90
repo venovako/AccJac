@@ -1,7 +1,7 @@
 !  IN: GS = max sweeps, INFO = 0 or 1 (sin => tan) OR 2 (dsc/asc)
 ! OUT: GS: backscale SV by 2**-GS, INFO: #sweeps
 SUBROUTINE DJSVDC(M, N, G, LDG, V, LDV, JPOS, SV, WRK, GS, INFO)
-  USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL64
+  USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: INT64, REAL64
   IMPLICIT NONE
   INTERFACE
      PURE SUBROUTINE DSCALG(M, N, G, LDG, GX, GS, INFO)
@@ -47,6 +47,7 @@ SUBROUTINE DJSVDC(M, N, G, LDG, V, LDV, JPOS, SV, WRK, GS, INFO)
   REAL(KIND=K), INTENT(OUT) :: V(LDV,N), SV(N), WRK(M,N)
   INTEGER, INTENT(INOUT) :: GS, INFO
   REAL(KIND=K) :: GX, TOL
+  INTEGER(KIND=INT64) :: TT
   INTEGER :: P, Q, R, S, T, W
   IF ((INFO .LT. 0) .OR. (INFO .GT. 7)) INFO = -11
   IF (GS .LT. 0) INFO = -10
@@ -77,6 +78,7 @@ SUBROUTINE DJSVDC(M, N, G, LDG, V, LDV, JPOS, SV, WRK, GS, INFO)
   TOL = M
   TOL = SQRT(TOL) * EPS
   CALL DTRACK(N, SV, GX, GS, -R, S)
+  TT = 0_INT64
   DO R = 1, S
      T = 0
      ! row-cyclic
@@ -92,8 +94,11 @@ SUBROUTINE DJSVDC(M, N, G, LDG, V, LDV, JPOS, SV, WRK, GS, INFO)
            SELECT CASE (W)
            CASE (0)
               CONTINUE
-           CASE (1,2,3)
+           CASE (1)
               T = T + 1
+           CASE (2,3)
+              T = T + 1
+              TT = TT + 1_INT64
            CASE DEFAULT
               INFO = -5
               RETURN
@@ -118,4 +123,5 @@ SUBROUTINE DJSVDC(M, N, G, LDG, V, LDV, JPOS, SV, WRK, GS, INFO)
      END DO
   END IF
   INFO = R
+  WRK(1,1) = TRANSFER(TT, ZERO)
 END SUBROUTINE DJSVDC
