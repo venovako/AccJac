@@ -6,7 +6,7 @@ do
 		for S in 1 3 5 7
 		do
 			echo $I $T $S
-			$3/${T}jsvdt.exe $4$I $I -1 $S $T$I > $T$I-$S.out 2> $T$I-$S.err
+			$3/${T}jsvdt.exe $4$I $5$I -1 $S $T$I > $T$I-$S.out 2> $T$I-$S.err
 		done
 	done
 done

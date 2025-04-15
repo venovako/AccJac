@@ -1,4 +1,4 @@
-SUBROUTINE CINISV(M, N, G, LDG, V, LDV, JPOS, SV, INFO)
+PURE SUBROUTINE CINISV(M, N, G, LDG, V, LDV, JPOS, SV, WRK, INFO)
   USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL32
   IMPLICIT NONE
   INTERFACE
@@ -14,13 +14,12 @@ SUBROUTINE CINISV(M, N, G, LDG, V, LDV, JPOS, SV, INFO)
   REAL(KIND=K), PARAMETER :: ZERO = 0.0_K, ONE = 1.0_K
   INTEGER, INTENT(IN) :: M, N, LDG, LDV, JPOS
   COMPLEX(KIND=K), INTENT(INOUT) :: G(LDG,N)
-  COMPLEX(KIND=K), INTENT(OUT) :: V(LDV,N)
+  COMPLEX(KIND=K), INTENT(OUT) :: V(LDV,N), WRK(M,N)
   REAL(KIND=K), INTENT(OUT) :: SV(N)
   INTEGER, INTENT(INOUT) :: INFO
   COMPLEX(KIND=K) :: Z
   REAL(KIND=K) :: W
   INTEGER :: I, J, L
-  COMPLEX(KIND=K), ALLOCATABLE :: H(:,:)
   IF ((JPOS .LT. 0) .OR. (JPOS .GT. N)) INFO = -7
   IF (LDV .LT. N) INFO = -6
   IF (LDG .LT. M) INFO = -4
@@ -97,19 +96,17 @@ SUBROUTINE CINISV(M, N, G, LDG, V, LDV, JPOS, SV, INFO)
   END DO
   ! ugly but simple
   IF (INFO .GT. 0) THEN
-     ALLOCATE(H(M,N))
      DO J = 1, N
         L = INT(REAL(V(J,1)))
         DO I = 1, M
-           H(I,J) = G(I,L)
+           WRK(I,J) = G(I,L)
         END DO
      END DO
      DO J = 1, N
         DO I = 1, M
-           G(I,J) = H(I,J)
+           G(I,J) = WRK(I,J)
         END DO
      END DO
-     DEALLOCATE(H)
   END IF
   ! init V
   DO J = 2, N

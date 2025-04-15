@@ -59,6 +59,7 @@ cgram.o dgram.o sgram.o zgram.o\
 cscalg.o dscalg.o sscalg.o zscalg.o\
 cinisv.o dinisv.o sinisv.o zinisv.o\
 ctrans.o dtrans.o strans.o ztrans.o\
+doffa.o zoffa.o\
 dtrack.o strack.o\
 cjsvdc.o djsvdc.o sjsvdc.o zjsvdc.o\
 cjsvdr.o djsvdr.o sjsvdr.o zjsvdr.o

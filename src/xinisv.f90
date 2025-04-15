@@ -1,4 +1,4 @@
-SUBROUTINE XINISV(M, N, G, LDG, V, LDV, JPOS, SV, INFO)
+PURE SUBROUTINE XINISV(M, N, G, LDG, V, LDV, JPOS, SV, WRK, INFO)
   IMPLICIT NONE
   INTERFACE
      PURE FUNCTION XNRMF(M, X)
@@ -12,11 +12,10 @@ SUBROUTINE XINISV(M, N, G, LDG, V, LDV, JPOS, SV, INFO)
   REAL(KIND=K), PARAMETER :: ZERO = 0.0_K, ONE = 1.0_K
   INTEGER, INTENT(IN) :: M, N, LDG, LDV, JPOS
   REAL(KIND=K), INTENT(INOUT) :: G(LDG,N)
-  REAL(KIND=K), INTENT(OUT) :: V(LDV,N), SV(N)
+  REAL(KIND=K), INTENT(OUT) :: V(LDV,N), SV(N), WRK(M,N)
   INTEGER, INTENT(INOUT) :: INFO
   REAL(KIND=K) :: W
   INTEGER :: I, J, L
-  REAL(KIND=K), ALLOCATABLE :: H(:,:)
   IF ((JPOS .LT. 0) .OR. (JPOS .GT. N)) INFO = -7
   IF (LDV .LT. N) INFO = -6
   IF (LDG .LT. M) INFO = -4
@@ -93,19 +92,17 @@ SUBROUTINE XINISV(M, N, G, LDG, V, LDV, JPOS, SV, INFO)
   END DO
   ! ugly but simple
   IF (INFO .GT. 0) THEN
-     ALLOCATE(H(M,N))
      DO J = 1, N
         L = INT(V(J,1))
         DO I = 1, M
-           H(I,J) = G(I,L)
+           WRK(I,J) = G(I,L)
         END DO
      END DO
      DO J = 1, N
         DO I = 1, M
-           G(I,J) = H(I,J)
+           G(I,J) = WRK(I,J)
         END DO
      END DO
-     DEALLOCATE(H)
   END IF
   ! init V
   DO J = 2, N
