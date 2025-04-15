@@ -61,6 +61,7 @@ cinisv.o dinisv.o sinisv.o zinisv.o\
 ctrans.o dtrans.o strans.o ztrans.o\
 coffa.o doffa.o soffa.o zoffa.o\
 dtrack.o strack.o\
+dtrkoa.o ztrkoa.o\
 cjsvdc.o djsvdc.o sjsvdc.o zjsvdc.o\
 cjsvdr.o djsvdr.o sjsvdr.o zjsvdr.o
 
