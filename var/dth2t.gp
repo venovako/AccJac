@@ -1,7 +1,6 @@
 # max 140 (W) x 195 (H) mm
 set term cairolatex pdf standalone header "\\usepackage{amsmath,amsfonts}" color font ", 10" size 10cm,6cm
 set output "dth2t.tex"
-
 set key top left vertical maxrows 3 spacing 1.75 width 3 box
 
 set xrange [-28:0]

@@ -1,7 +1,6 @@
 # max 140 (W) x 195 (H) mm
 set term cairolatex pdf standalone header "\\usepackage{amsmath,amsfonts}" color font ", 10" size 14cm,6cm
 set output "srejv2.tex"
-
 set key center rmargin vertical spacing 2 box
 
 set xrange [0:32]

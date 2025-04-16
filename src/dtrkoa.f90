@@ -17,7 +17,7 @@ SUBROUTINE DTRKOA(M, N, G, LDG, GS, S, T, U, WRK)
   CHARACTER(LEN=10) :: FN
   INTEGER :: NS, MD, H1
   REAL(KIND=K), EXTERNAL :: DOFFA
-  IF ((LDG .LT. M) .OR. (N .LE. 0) .OR. (N .GT. 1000) .OR. (M .LT. N)) RETURN
+  IF ((LDG .LT. M) .OR. (N .LE. 1) .OR. (N .GT. 1000) .OR. (M .LT. N)) RETURN
   IF (S .EQ. 0) THEN
      IF (N .LT. 10) THEN
         WRITE (FN,'(I1)') N
