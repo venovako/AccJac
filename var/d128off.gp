@@ -14,5 +14,5 @@ set ylabel "$\\mathop{\\mathrm{off}}(A)$"
 set ytics ("$10^{-15}$" 1e-15, "$10^{-13}$" 1e-13, "$10^{-11}$" 1e-11, "$10^{-9\\hphantom{0}}$" 1e-9, "$10^{-7\\hphantom{0}}$" 1e-7, "$10^{-5\\hphantom{0}}$" 1e-5, "$10^{-3\\hphantom{0}}$" 1e-3, "$10^{-1\\hphantom{0}}$" 1e-1, "$10^{1\\hphantom{-0}}$" 1e1)
 
 set datafile columnheaders
-plot "128rc.csv" using 1:3 with points title "row-cyclic" pointtype 7 linetype 1, \
-     "128dR.csv" using 1:3 with points title "de\\,Rijk" pointtype 7 linetype -1
+plot "d128rc.csv" using 1:3 with points title "row-cyclic" pointtype 7 linetype 1, \
+     "d128dR.csv" using 1:3 with points title "de\\,Rijk" pointtype 7 linetype -1
