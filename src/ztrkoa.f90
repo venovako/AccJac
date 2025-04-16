@@ -15,6 +15,7 @@ SUBROUTINE ZTRKOA(M, N, G, LDG, GS, S, T, U, WRK)
   INTEGER, INTENT(INOUT) :: T, U
   COMPLEX(KIND=KK), INTENT(OUT) :: WRK(M,N)
   CHARACTER(LEN=10) :: FN
+  INTEGER :: NS, MD, H1
   REAL(KIND=K), EXTERNAL :: ZOFFA
   IF ((LDG .LT. M) .OR. (N .LE. 0) .OR. (N .GT. 1000) .OR. (M .LT. N)) RETURN
   IF (S .EQ. 0) THEN
@@ -33,11 +34,18 @@ SUBROUTINE ZTRKOA(M, N, G, LDG, GS, S, T, U, WRK)
      ELSE ! ERROR
         RETURN
      END IF
-  ELSE IF (S .LT. 0) THEN
-     CLOSE(U)
-     RETURN
   END IF
-  WRITE (U,'(I11,A,I3,A,ES25.17E3)') T, ',', S, ',', ZOFFA(M, N, G, LDG, GS, WRK)
-  FLUSH(U)
-  T = T + 1
+  NS = (N * (N - 1)) / 2
+  MD = MOD(T, NS)
+  ! HACK: assuming that N/2 is a power of two
+  H1 = (N / 2) - 1
+  IF ((MD .EQ. 0) .OR. (MD .EQ. 1) .OR. (IAND(MD, H1) .EQ. 0)) THEN
+     WRITE (U,'(I11,A,I3,A,ES25.17E3)') T, ',', S, ',', ZOFFA(M, N, G, LDG, GS, WRK)
+     FLUSH(U)
+  END IF
+  IF (S .LT. 0) THEN
+     CLOSE(U)
+  ELSE ! S >= 0
+     T = T + 1
+  END IF
 END SUBROUTINE ZTRKOA

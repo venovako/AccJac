@@ -48,7 +48,8 @@ SUBROUTINE DJSVDR(M, N, G, LDG, V, LDV, JPOS, SV, WRK, GS, INFO)
   INTEGER, INTENT(INOUT) :: GS, INFO
   REAL(KIND=K) :: GX, TOL, X
   INTEGER(KIND=INT64) :: TT
-  INTEGER :: P, Q, R, S, T, W
+  INTEGER :: O, P, Q, R, S, T, U, W
+  EXTERNAL :: DTRKOA
   IF ((INFO .LT. 0) .OR. (INFO .GT. 7)) INFO = -11
   IF (GS .LT. 0) INFO = -10
   IF ((JPOS .LT. 0) .OR. (JPOS .GT. N)) INFO = -7
@@ -78,6 +79,7 @@ SUBROUTINE DJSVDR(M, N, G, LDG, V, LDV, JPOS, SV, WRK, GS, INFO)
   TOL = M
   TOL = SQRT(TOL) * EPS
   CALL DTRACK(N, SV, GX, GS, -R, S)
+  IF (IAND(INFO, 4) .NE. 0) CALL DTRKOA(M, N, G, LDG, GS, 0, O, U, WRK)
   TT = 0_INT64
   DO R = 1, S
      T = 0
@@ -122,6 +124,7 @@ SUBROUTINE DJSVDR(M, N, G, LDG, V, LDV, JPOS, SV, WRK, GS, INFO)
               INFO = -5
               RETURN
            END SELECT
+           IF (IAND(INFO, 4) .NE. 0) CALL DTRKOA(M, N, G, LDG, GS, R, O, U, WRK)
         END DO
      END DO
      ! the off-diagonal block (hyp)
@@ -141,6 +144,7 @@ SUBROUTINE DJSVDR(M, N, G, LDG, V, LDV, JPOS, SV, WRK, GS, INFO)
               INFO = -5
               RETURN
            END SELECT
+           IF (IAND(INFO, 4) .NE. 0) CALL DTRKOA(M, N, G, LDG, GS, R, O, U, WRK)
         END DO
      END DO
      ! the second diagonal block
@@ -185,6 +189,7 @@ SUBROUTINE DJSVDR(M, N, G, LDG, V, LDV, JPOS, SV, WRK, GS, INFO)
                  INFO = -5
                  RETURN
               END SELECT
+              IF (IAND(INFO, 4) .NE. 0) CALL DTRKOA(M, N, G, LDG, GS, R, O, U, WRK)
            END DO
         END DO
      ELSE ! asc
@@ -228,6 +233,7 @@ SUBROUTINE DJSVDR(M, N, G, LDG, V, LDV, JPOS, SV, WRK, GS, INFO)
                  INFO = -5
                  RETURN
               END SELECT
+              IF (IAND(INFO, 4) .NE. 0) CALL DTRKOA(M, N, G, LDG, GS, R, O, U, WRK)
            END DO
         END DO
      END IF
@@ -248,6 +254,7 @@ SUBROUTINE DJSVDR(M, N, G, LDG, V, LDV, JPOS, SV, WRK, GS, INFO)
         END IF
      END DO
   END IF
+  IF (IAND(INFO, 4) .NE. 0) CALL DTRKOA(M, N, G, LDG, GS, -1, O, U, WRK)
   INFO = R
   WRK(1,1) = TRANSFER(TT, ZERO)
 END SUBROUTINE DJSVDR
