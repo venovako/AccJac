@@ -1,5 +1,5 @@
   ES = INT(IAND(INFO, 1), c_int)
-  RT = PVN_LJV2(A11, A22, A21R, A21I, CH, SHR, SHI, ES)
+  RT = LJV2(A11, A22, A21R, A21I, CH, SHR, SHI, ES)
   IF (RT .LT. 0_c_int) THEN
      INFO = INT(RT)
   ELSE ! OK
