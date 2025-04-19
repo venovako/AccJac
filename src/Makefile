@@ -2,7 +2,7 @@ RM=del /F
 AR=lib.exe
 ARFLAGS=/NOLOGO /VERBOSE
 FC=ifx.exe
-FCLAGS=/nologo /fpp /recursive /standard-semantics /traceback /DNDEBUG=$(NDEBUG) /I. /EHsc /MT /O$(NDEBUG) /Qx$(MARCH) /fp:precise /Qfma /Qftz- /Qprec-div /Qprec-sqrt /Qprotect-parens /Qopt-report:3 /Qvec-threshold:0
+FCFLAGS=/nologo /fpp /recursive /standard-semantics /traceback /DNDEBUG=$(NDEBUG) /I. /EHsc /MT /O$(NDEBUG) /Qx$(MARCH) /fp:precise /Qfma /Qftz- /Qprec-div /Qprec-sqrt /Qprotect-parens /Qopt-report:3 /Qvec-threshold:0
 !IFNDEF MARCH
 MARCH=Host
 !ENDIF # !MARCH
