@@ -94,19 +94,19 @@ LDFLAGS=/link /RELEASE /LIBPATH:. jaevd.lib jaev2.lib /LIBPATH:..\..\libpvn\src 
 
 all: $(LIBS) $(EXES)
 
-jaev2.lib: $(OBJ2)
+jaev2.lib: $(OBJ2) Makefile
 	$(AR) $(ARFLAGS) /OUT:$@ $(OBJ2)
 
-jaevd.lib: $(OBJD)
+jaevd.lib: $(OBJD) Makefile
 	$(AR) $(ARFLAGS) /OUT:$@ $(OBJD)
 
 help:
 	@echo "nmake.exe [MARCH=Host|...] [NDEBUG=d|1|2|3|...] [all|help|clean]"
 
-.f90.obj: Makefile
+.f90.obj:
 	$(FC) $(FCFLAGS) /c $< /Fo$@
 
-.F90.exe: Makefile
+.F90.exe:
 	$(FC) $(FCFLAGS) $< /Fe$@ $(LDFLAGS)
 
 clean:
