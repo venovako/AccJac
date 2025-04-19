@@ -12,6 +12,7 @@ FCFLAGS=/nologo /fpp /recursive /standard-semantics /traceback /DNDEBUG=$(NDEBUG
 !IF "$(ABI)"=="ilp64"
 FCFLAGS=$(FCFLAGS) /4I8
 !ENDIF # ilp64
+LDFLAGS=/link /RELEASE /LIBPATH:. jaevd.lib jaev2.lib /LIBPATH:..\..\libpvn\src pvn.lib
 OBJ2= \
 clju2.obj \
 dlju2.obj \
@@ -93,8 +94,6 @@ djsvdt.exe \
 sjsvdt.exe \
 zjsvdt.exe
 
-LDFLAGS=/link /RELEASE /LIBPATH:. jaevd.lib jaev2.lib /LIBPATH:..\..\libpvn\src pvn.lib
-
 all: $(LIBS) $(EXES)
 
 jaev2.lib: $(OBJ2) Makefile
@@ -104,7 +103,7 @@ jaevd.lib: $(OBJD) Makefile
 	$(AR) $(ARFLAGS) /OUT:$@ $(OBJD)
 
 help:
-	@echo "nmake.exe [MARCH=Host|...] [NDEBUG=d|1|2|3|...] [all|help|clean]"
+	@echo "nmake.exe [MARCH=Host|...] [NDEBUG=d|1|2|3|...] [ABI=lp64|ilp64] [all|help|clean]"
 
 .f90.obj:
 	$(FC) $(FCFLAGS) /c $< /Fo$@
