@@ -2,13 +2,16 @@ RM=del /F
 AR=lib.exe
 ARFLAGS=/NOLOGO /VERBOSE
 FC=ifx.exe
-FCFLAGS=/nologo /fpp /recursive /standard-semantics /traceback /DNDEBUG=$(NDEBUG) /I. /MT /O$(NDEBUG) /Qx$(MARCH) /fp:precise /Qfma /Qftz- /Qprec-div /Qprotect-parens /Qopt-report:3 /Qvec-threshold:0
 !IFNDEF MARCH
 MARCH=Host
 !ENDIF # !MARCH
 !IFNDEF NDEBUG
 NDEBUG=d
 !ENDIF # NDEBUG
+FCFLAGS=/nologo /fpp /recursive /standard-semantics /traceback /DNDEBUG=$(NDEBUG) /I. /MT /O$(NDEBUG) /Qx$(MARCH) /fp:precise /Qfma /Qftz- /Qprec-div /Qprotect-parens /Qopt-report:3 /Qvec-threshold:0
+!IF "$(ABI)"=="ilp64"
+FCFLAGS=$(FCFLAGS) /4I8
+!ENDIF # ilp64
 OBJ2= \
 clju2.obj \
 dlju2.obj \
