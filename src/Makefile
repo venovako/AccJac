@@ -13,16 +13,33 @@ FCFLAGS=/nologo /fpp /recursive /standard-semantics /traceback /DNDEBUG=$(NDEBUG
 FCFLAGS=$(FCFLAGS) /4I8
 !ENDIF # ilp64
 LDFLAGS=/link /RELEASE /LIBPATH:. jaevd.lib jaev2.lib /LIBPATH:..\..\libpvn\src pvn.lib
+
 OBJ2= \
-clju2.obj \
-dlju2.obj \
-slju2.obj \
-zlju2.obj \
-cljv2.obj \
-dljv2.obj \
-sljv2.obj \
-zljv2.obj
+clju2.obj    \
+dlju2.obj    \
+slju2.obj    \
+zlju2.obj    \
+cljv2.obj    \
+dljv2.obj    \
+sljv2.obj    \
+zljv2.obj    \
+qlaev2.obj   \
+ylaev2.obj
+
+# e.g., LAPACK=/Qmkl:sequential
+!IFDEF LAPACK
+FCFLAGS=$(FCFLAGS) $(LAPACK)
+!ELSE # !LAPACK
+OBJ2=$(OBJ2) \
+claev2.obj   \
+dlaev2.obj   \
+slaev2.obj   \
+zlaev2.obj
+!ENDIF # ?LAPACK
+
 OBJD= \
+cjaevd.obj \
+zjaevd.obj \
 croth.obj  \
 droth.obj  \
 sroth.obj  \
@@ -83,6 +100,8 @@ LIBS= \
 jaev2.lib \
 jaevd.lib
 EXES= \
+cevdj.exe  \
+zevdj.exe  \
 cljv2t.exe \
 dljv2t.exe \
 sljv2t.exe \
@@ -116,3 +135,4 @@ clean:
 	-$(RM) *.lib
 	-$(RM) *.obj
 	-$(RM) *.optrpt
+	-$(RM) *.pdb
