@@ -37,7 +37,6 @@ where `t=c,d,s,z`.
 
 Here, `c` stands for `COMPLEX(REAL32)`, `d` for `REAL(REAL64)`, `s` for `REAL(REAL32)`, and `z` for `COMPLEX(REAL64)`.
 The executables with other values of `t` are of special purpose and have specific requirements to be built and run.
-Since there are no CORE-MATH `cr_*` functions for these other datatypes yet, the testing results are not quite relevant to the proposed algorithm.
 With GNU Fortran on Intel-compatible platforms, `t=w` stands for `COMPLEX(10)`, and `t=x` for `REAL(10)` (the 80-bit extended floating-point datatype).
 With the [MPFR](https://www.mpfr.org) and [GMP](https://gmplib.org) libraries, and `MPFR` and `GMP` set to their respective installation prefixes, `t=y` stands for `COMPLEX(REAL128)` and `t=q` for `REAL(REAL128)`.
 
