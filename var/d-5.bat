@@ -11,4 +11,5 @@ ECHO 1..4096 > d-5.txt
 ..\src\djsvdt.exe  256  256 -1 5  d256 >> d-5.txt 2> d-5_256.trc
 ..\src\djsvdt.exe  512  512 -1 5  d512 >> d-5.txt 2> d-5_512.trc
 ..\src\djsvdt.exe 1024 1024 -1 5 d1024 >> d-5.txt 2> d-5_1024.trc
-..\src\djsvdt.exe 2048 2048 -1 5 d2048 >> d-5.txt 2> d_5_2048.trc
+..\src\djsvdt.exe 2048 2048 -1 5 d2048 >> d-5.txt 2> d-5_2048.trc
+..\src\djsvdt.exe 4096 4096 -1 5 d4096 >> d-5.txt 2> d-5_4096.trc

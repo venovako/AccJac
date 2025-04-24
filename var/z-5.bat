@@ -11,4 +11,5 @@ ECHO 1..4096 > z-5.txt
 ..\src\zjsvdt.exe  256  256 -1 5  z256 >> z-5.txt 2> z-5_256.trc
 ..\src\zjsvdt.exe  512  512 -1 5  z512 >> z-5.txt 2> z-5_512.trc
 ..\src\zjsvdt.exe 1024 1024 -1 5 z1024 >> z-5.txt 2> z-5_1024.trc
-..\src\zjsvdt.exe 2048 2048 -1 5 z2048 >> z-5.txt 2> z_5_2048.trc
+..\src\zjsvdt.exe 2048 2048 -1 5 z2048 >> z-5.txt 2> z-5_2048.trc
+..\src\zjsvdt.exe 4096 4096 -1 5 z4096 >> z-5.txt 2> z-5_4096.trc
