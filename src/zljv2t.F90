@@ -91,9 +91,9 @@ PROGRAM ZLJV2T
         ISEED(1) = ISEED(1) + 1
         IF (N .LT. 0) GOTO 1
      END IF
-     Q(5) = D(5) ! CS
-     Q(6) = D(6) ! SNR
-     Q(7) = D(7) ! SNI
+     Q(5) = D(5) ! CH
+     Q(6) = D(6) ! SHR
+     Q(7) = D(7) ! SHI
      Q(8) = HYPOT(Q(6), Q(7))
      Q(8) = HYPOT(Q(8), QONE)
      Q(8) = ABS((Q(5) - Q(8)) * (Q(5) + Q(8)))

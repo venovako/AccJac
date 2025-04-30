@@ -129,7 +129,7 @@ SUBROUTINE WTRANS(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, TOL, INFO)
   END IF
   L = INFO
   IF (T .LT. TOL) THEN
-     IF ((IAND(L,2) .EQ. 0) .AND. (SV(P) .LT. SV(Q))) THEN
+     IF ((IAND(L, 2) .EQ. 0) .AND. (SV(P) .LT. SV(Q))) THEN
         DO I = 1, M
            Z = G(I,P)
            G(I,P) = G(I,Q)
@@ -159,7 +159,7 @@ SUBROUTINE WTRANS(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, TOL, INFO)
   END IF
   J = IAND(L, 2)
   I = IAND(L, 1)
-  IF (IAND(L, 4) .NE. 0) I = IOR(I, 16)
+  T = GX
   IF (J .EQ. 0) THEN
      CALL WLJU2(APP, AQQ, AQPR, AQPI, C, SR, SI, I)
      CALL WROTT(M, G(1,P), G(1,Q), C, SR, SI, T, SV(P), SV(Q), I)

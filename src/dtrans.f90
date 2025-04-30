@@ -124,7 +124,7 @@ SUBROUTINE DTRANS(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, TOL, INFO)
   END IF
   L = INFO
   IF (T .LT. TOL) THEN
-     IF ((IAND(L,2) .EQ. 0) .AND. (SV(P) .LT. SV(Q))) THEN
+     IF ((IAND(L, 2) .EQ. 0) .AND. (SV(P) .LT. SV(Q))) THEN
         DO I = 1, M
            T = G(I,P)
            G(I,P) = G(I,Q)

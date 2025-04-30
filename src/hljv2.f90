@@ -1,4 +1,8 @@
-  ES = INT(IAND(INFO, 1), c_int)
+  IF (INFO .EQ. 0) THEN
+     ES = 0_c_int
+  ELSE ! (ch,th)
+     ES = -2_c_int
+  END IF
   RT = LJV2(A11, A22, A21R, A21I, CH, SHR, SHI, ES)
   IF (RT .LT. 0_c_int) THEN
      INFO = INT(RT)

@@ -79,8 +79,8 @@ PROGRAM XLJV2T
         ISEED(1) = ISEED(1) + 1
         IF (N .LT. 0) GOTO 1
      END IF
-     Q(4) = D(4) ! CS
-     Q(5) = D(5) ! SN
+     Q(4) = D(4) ! CH
+     Q(5) = D(5) ! SH
      Q(6) = HYPOT(Q(5), QONE)
      Q(6) = ABS((Q(4) - Q(6)) * (Q(4) + Q(6)))
      Q(1) = MAX(Q(1), Q(6))
