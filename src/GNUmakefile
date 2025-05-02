@@ -37,15 +37,21 @@ cljv2.o dljv2.o sljv2.o zljv2.o
 
 ifdef MPFR
 OBJ2 += \
-mtest.obj
+mtest.obj \
+mtsc.obj
 endif # MPFR
 
 LIB2=libjaev2.a
 
 EXE2=\
 ctest.exe dtest.exe qtest.exe stest.exe ytest.exe ztest.exe\
-cljv2t.exe dljv2t.exe sljv2t.exe zljv2t.exe\
-dth2t.exe sth2t.exe
+cljv2t.exe dljv2t.exe sljv2t.exe zljv2t.exe
+
+ifdef MPFR
+EXE2 += \
+dth2t.exe \
+sth2t.exe
+endif # MPFR
 
 OBJD=\
 cjaevd.o zjaevd.o\
@@ -84,8 +90,12 @@ xljv2.o wljv2.o
 
 EXE2 += \
 wtest.exe xtest.exe\
-wljv2t.exe xljv2t.exe\
+wljv2t.exe xljv2t.exe
+
+ifdef MPFR
+EXE2 += \
 xth2t.exe
+endif # MPFR
 
 OBJD += \
 wroth.o xroth.o\
@@ -141,6 +151,9 @@ help:
 	@echo $(MAKE) "[COMPILER=gfortran|ifx] [COMPILER_PREFIX=...] [COMPILER_SUFFIX=...] [MARCH=...] [ABI=lp64|ilp64] [NDEBUG=optimization_level] [LAPACK=...] [MPFR=...] [GMP=...] [PROFILE=...] [ANIMATE=ppe] [all|help|clean]"
 
 mtest.obj: mtest.c $(MKFS)
+	$(CC) $(CFLAGS) -c $< -o $@
+
+mtsc.obj: mtsc.c $(MKFS)
 	$(CC) $(CFLAGS) -c $< -o $@
 
 %.o : %.f90 $(MKFS)

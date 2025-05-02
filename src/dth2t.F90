@@ -1,5 +1,3 @@
-! meant to be compiled with ifx and ABI=lp64;
-! adjust the integer formats for ABI=ilp64
 PROGRAM DTH2T
   USE, INTRINSIC :: IEEE_ARITHMETIC, ONLY: IEEE_FMA
   USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: ERROR_UNIT, OUTPUT_UNIT, REAL64, REAL128
@@ -12,17 +10,8 @@ PROGRAM DTH2T
        REAL(KIND=c_double) :: CR_RSQRT
      END FUNCTION CR_RSQRT
   END INTERFACE
-  INTERFACE
-     PURE FUNCTION CR_RSQRTQ(X) BIND(C,NAME='cr_rsqrtq')
-       USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL128
-       IMPLICIT NONE
-       REAL(KIND=REAL128), INTENT(IN), VALUE :: X
-       REAL(KIND=REAL128) :: CR_RSQRTQ
-     END FUNCTION CR_RSQRTQ
-  END INTERFACE
-  REAL(KIND=REAL128), PARAMETER :: QZERO = 0.0_REAL128, QONE = 1.0_REAL128
-  REAL(KIND=REAL64), PARAMETER :: ZERO = 0.0_REAL64, ONE = 1.0_REAL64
-  REAL(KIND=REAL64), PARAMETER :: CUTOFF = 40.0_REAL64 / 41.0_REAL64, DEPS = EPSILON(ZERO) / 2
+  REAL(KIND=REAL64), PARAMETER :: ZERO = 0.0_REAL64, ONE = 1.0_REAL64, CUTOFF = 40.0_REAL64 / 41.0_REAL64
+  REAL(KIND=REAL128), PARAMETER :: QZERO = 0.0_REAL128, DEPS = EPSILON(ZERO) / 2
   INTEGER, PARAMETER :: ETH = 1, ECH = 2, ESH = 3, STH = 4, SCH = 5, SSH = 6, ARE = 1, MRE = 2
   CHARACTER(LEN=256) :: CLA
   REAL(KIND=REAL128) :: Q(2,6), QD, QT, QC, QS, QE
@@ -30,6 +19,7 @@ PROGRAM DTH2T
   INTEGER, ALLOCATABLE :: ISEED(:)
   !DIR$ ATTRIBUTES ALIGN: 64:: ISEED
   INTEGER :: I, N, NEXP, SSIZE
+  EXTERNAL :: MPFR_START, MPFR_STOP, MPFR_TCS, MPFR_RE
   ! random seed may be given
   CALL RANDOM_SEED(SIZE=SSIZE)
   IF (SSIZE .LE. 0) STOP 'seed size non-positive'
@@ -71,6 +61,9 @@ PROGRAM DTH2T
   ISEED = 0
   Q = QZERO
   D = ZERO
+  I = 1024
+  CALL MPFR_START(I)
+  IF (I .NE. 0) STOP 'MPFR_START'
   DO I = 1, ABS(N)
 1    CALL RANDOM_NUMBER(D)
      D = FRACTION(D)
@@ -86,21 +79,19 @@ PROGRAM DTH2T
      S = C * T
      ! error check
      QD = D
-     QT = QD / (QONE + SQRT(IEEE_FMA(-QD, QD, QONE)))
-     QC = CR_RSQRTQ(IEEE_FMA(-QT, QT, QONE))
-     QS = QC * QT
+     CALL MPFR_TCS(QD, QT, QC, QS)
      QD = I - 1
      QD = QD / I
      QE = T
-     QE = ABS(QT - QE) / QT
+     CALL MPFR_RE(QT, QE, DEPS)
      Q(ARE,ETH) = IEEE_FMA(Q(ARE,ETH), QD, QE / I)
      Q(MRE,ETH) = MAX(Q(MRE,ETH), QE)
      QE = C
-     QE = ABS(QC - QE) / QC
+     CALL MPFR_RE(QC, QE, DEPS)
      Q(ARE,ECH) = IEEE_FMA(Q(ARE,ECH), QD, QE / I)
      Q(MRE,ECH) = MAX(Q(MRE,ECH), QE)
      QE = S
-     QE = ABS(QS - QE) / QS
+     CALL MPFR_RE(QS, QE, DEPS)
      Q(ARE,ESH) = IEEE_FMA(Q(ARE,ESH), QD, QE / I)
      Q(MRE,ESH) = MAX(Q(MRE,ESH), QE)
      ! "standard" formulas
@@ -109,25 +100,24 @@ PROGRAM DTH2T
      S = C * T
      ! error check
      QE = T
-     QE = ABS(QT - QE) / QT
+     CALL MPFR_RE(QT, QE, DEPS)
      Q(ARE,STH) = IEEE_FMA(Q(ARE,STH), QD, QE / I)
      Q(MRE,STH) = MAX(Q(MRE,STH), QE)
      QE = C
-     QE = ABS(QC - QE) / QC
+     CALL MPFR_RE(QC, QE, DEPS)
      Q(ARE,SCH) = IEEE_FMA(Q(ARE,SCH), QD, QE / I)
      Q(MRE,SCH) = MAX(Q(MRE,SCH), QE)
      QE = S
-     QE = ABS(QS - QE) / QS
+     CALL MPFR_RE(QS, QE, DEPS)
      Q(ARE,SSH) = IEEE_FMA(Q(ARE,SSH), QD, QE / I)
      Q(MRE,SSH) = MAX(Q(MRE,SSH), QE)
   END DO
 #ifndef NDEBUG
   IF (N .LT. 0) WRITE (ERROR_UNIT,'(A,I11)') 'Skipped:', ISEED(1)
 #endif
+  CALL MPFR_STOP()
   DEALLOCATE(ISEED)
   ! relative errors in the terms of \epsilon
-  QE = DEPS
-  Q = Q / QE
   WRITE (OUTPUT_UNIT,'(I3,A,I11,12(A,ES25.17E3))') NEXP, ',', ABS(N), ',', &
        Q(ARE,ETH), ',', Q(MRE,ETH), ',', Q(ARE,ECH), ',', Q(MRE,ECH), ',', Q(ARE,ESH), ',', Q(MRE,ESH), ',', &
        Q(ARE,STH), ',', Q(MRE,STH), ',', Q(ARE,SCH), ',', Q(MRE,SCH), ',', Q(ARE,SSH), ',', Q(MRE,SSH)

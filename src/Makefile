@@ -118,8 +118,6 @@ cljv2t.exe \
 dljv2t.exe \
 sljv2t.exe \
 zljv2t.exe \
-dth2t.exe  \
-sth2t.exe  \
 cjsvdt.exe \
 djsvdt.exe \
 sjsvdt.exe \
