@@ -1,3 +1,4 @@
+! TODO: reenable the average error computation
 ! meant to be compiled with gfortran and ABI=lp64
 PROGRAM XTH2T
   USE, INTRINSIC :: IEEE_ARITHMETIC, ONLY: IEEE_FMA
@@ -86,15 +87,15 @@ PROGRAM XTH2T
      QD = QD / I
      QE = T
      CALL MPFR_RE(QT, QE, DEPS)
-     Q(ARE,ETH) = IEEE_FMA(Q(ARE,ETH), QD, QE / I)
+     ! Q(ARE,ETH) = IEEE_FMA(Q(ARE,ETH), QD, QE / I)
      Q(MRE,ETH) = MAX(Q(MRE,ETH), QE)
      QE = C
      CALL MPFR_RE(QC, QE, DEPS)
-     Q(ARE,ECH) = IEEE_FMA(Q(ARE,ECH), QD, QE / I)
+     ! Q(ARE,ECH) = IEEE_FMA(Q(ARE,ECH), QD, QE / I)
      Q(MRE,ECH) = MAX(Q(MRE,ECH), QE)
      QE = S
      CALL MPFR_RE(QS, QE, DEPS)
-     Q(ARE,ESH) = IEEE_FMA(Q(ARE,ESH), QD, QE / I)
+     ! Q(ARE,ESH) = IEEE_FMA(Q(ARE,ESH), QD, QE / I)
      Q(MRE,ESH) = MAX(Q(MRE,ESH), QE)
      ! "standard" formulas
      T = D / (ONE + SQRT((ONE - D) * (ONE + D)))
@@ -103,15 +104,15 @@ PROGRAM XTH2T
      ! error check
      QE = T
      CALL MPFR_RE(QT, QE, DEPS)
-     Q(ARE,STH) = IEEE_FMA(Q(ARE,STH), QD, QE / I)
+     ! Q(ARE,STH) = IEEE_FMA(Q(ARE,STH), QD, QE / I)
      Q(MRE,STH) = MAX(Q(MRE,STH), QE)
      QE = C
      CALL MPFR_RE(QC, QE, DEPS)
-     Q(ARE,SCH) = IEEE_FMA(Q(ARE,SCH), QD, QE / I)
+     ! Q(ARE,SCH) = IEEE_FMA(Q(ARE,SCH), QD, QE / I)
      Q(MRE,SCH) = MAX(Q(MRE,SCH), QE)
      QE = S
      CALL MPFR_RE(QS, QE, DEPS)
-     Q(ARE,SSH) = IEEE_FMA(Q(ARE,SSH), QD, QE / I)
+     ! Q(ARE,SSH) = IEEE_FMA(Q(ARE,SSH), QD, QE / I)
      Q(MRE,SSH) = MAX(Q(MRE,SSH), QE)
   END DO
 #ifndef NDEBUG
