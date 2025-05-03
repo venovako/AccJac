@@ -1,15 +1,40 @@
-#ifndef MPFR_WANT_FLOAT128
-#define MPFR_WANT_FLOAT128
-#endif /* !MPFR_WANT_FLOAT128 */
-#if (defined(__INTEL_CLANG_COMPILER) || defined(__INTEL_LLVM_COMPILER))
-#ifndef _Float128
-#define _Float128 __float128
-#endif /* !_Float128 */
-#endif /* Intel compiler */
+#ifndef NDEBUG
+#include <assert.h>
+#endif /* !NDEBUG */
 #include "gmp.h"
 #include "mpfr.h"
 
+extern float cr_rsqrtf(float x);
+//extern double cr_rsqrt(double x);
+//extern long double cr_rsqrtl(long double x);
+
 static mpfr_t O, D, T, C, S;
+
+extern void tcs_new_(const float *const d, float *const t, float *const c, float *const s)
+{
+#ifndef NDEBUG
+  assert(d);
+  assert(t);
+  assert(c);
+  assert(s);
+#endif /* !NDEBUG */
+  *t = *d / (1.0f + __builtin_sqrtf(__builtin_fmaf(-*d, *d, 1.0f)));
+  *c = cr_rsqrtf(__builtin_fmaf(-*t, *t, 1.0f));
+  *s = (*c) * (*t);
+}
+
+extern void tcs_old_(const float *const d, float *const t, float *const c, float *const s)
+{
+#ifndef NDEBUG
+  assert(d);
+  assert(t);
+  assert(c);
+  assert(s);
+#endif /* !NDEBUG */
+  *t = *d / (1.0f + __builtin_sqrtf((1.0f - *d) * (1.0f + *d)));
+  *c = 1.0f / __builtin_sqrtf((1.0f - *t) * (1.0f + *t));
+  *s = (*c) * (*t);
+}
 
 extern void mpfr_start_(int *const p)
 {
@@ -69,7 +94,7 @@ extern void mpfr_stop_()
   mpfr_free_cache();
 }
 
-extern void mpfr_tcs_(const __float128 *const d, __float128 *const t, __float128 *const c, __float128 *const s)
+extern void mpfr_tcs_(const double *const d, double *const t, double *const c, double *const s)
 {
 #ifndef NDEBUG
   assert(d);
@@ -77,7 +102,7 @@ extern void mpfr_tcs_(const __float128 *const d, __float128 *const t, __float128
   assert(c);
   assert(s);
 #endif /* !NDEBUG */
-  (void)mpfr_set_float128(D, *d, MPFR_RNDN);
+  (void)mpfr_set_d(D, *d, MPFR_RNDN);
 
   (void)mpfr_neg(C, D, MPFR_RNDN);
   (void)mpfr_fma(S, C, D, O, MPFR_RNDN);
@@ -91,26 +116,26 @@ extern void mpfr_tcs_(const __float128 *const d, __float128 *const t, __float128
 
   (void)mpfr_mul(S, C, T, MPFR_RNDN);
 
-  *t = mpfr_get_float128(T, MPFR_RNDN);
-  *c = mpfr_get_float128(C, MPFR_RNDN);
-  *s = mpfr_get_float128(S, MPFR_RNDN);
+  *t = mpfr_get_d(T, MPFR_RNDN);
+  *c = mpfr_get_d(C, MPFR_RNDN);
+  *s = mpfr_get_d(S, MPFR_RNDN);
 }
 
-extern void mpfr_re_(const __float128 *const exac, __float128 *const comp, const __float128 *const eps)
+extern void mpfr_re_(const double *const exac, double *const comp, const double *const eps)
 {
 #ifndef NDEBUG
   assert(exac);
   assert(comp);
   assert(eps);
 #endif /* !NDEBUG */
-  (void)mpfr_set_float128(D, *exac, MPFR_RNDN);
-  (void)mpfr_set_float128(T, *comp, MPFR_RNDN);
-  (void)mpfr_set_float128(C, *eps, MPFR_RNDN);
+  (void)mpfr_set_d(D, *exac, MPFR_RNDN);
+  (void)mpfr_set_d(T, *comp, MPFR_RNDN);
+  (void)mpfr_set_d(C, *eps, MPFR_RNDN);
 
   (void)mpfr_sub(T, D, T, MPFR_RNDN);
   (void)mpfr_abs(T, T, MPFR_RNDN);
   (void)mpfr_mul(S, D, C, MPFR_RNDN);
   (void)mpfr_div(D, T, S, MPFR_RNDN);
 
-  *comp = mpfr_get_float128(D, MPFR_RNDN);
+  *comp = mpfr_get_d(D, MPFR_RNDN);
 }

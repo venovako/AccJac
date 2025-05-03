@@ -49,8 +49,8 @@ cljv2t.exe dljv2t.exe sljv2t.exe zljv2t.exe
 
 ifdef MPFR
 EXE2 += \
-dth2t.exe \
 sth2t.exe
+#dth2t.exe
 endif # MPFR
 
 OBJD=\
@@ -92,10 +92,10 @@ EXE2 += \
 wtest.exe xtest.exe\
 wljv2t.exe xljv2t.exe
 
-ifdef MPFR
-EXE2 += \
-xth2t.exe
-endif # MPFR
+# ifdef MPFR
+# EXE2 += \
+# xth2t.exe
+# endif # MPFR
 
 OBJD += \
 wroth.o xroth.o\
