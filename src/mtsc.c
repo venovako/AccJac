@@ -6,38 +6,13 @@
 
 extern float cr_rsqrtf(float x);
 
-static mpfr_t O, D, T, C, S;
+static mpfr_t O, D, T, C, S, E, F;
 
-extern void tcs_new_(const float *const d, float *const t, float *const c, float *const s)
-{
-#ifndef NDEBUG
-  assert(d);
-  assert(t);
-  assert(c);
-  assert(s);
-#endif /* !NDEBUG */
-  *t = *d / (1.0f + __builtin_sqrtf(__builtin_fmaf(-*d, *d, 1.0f)));
-  *c = cr_rsqrtf(__builtin_fmaf(-*t, *t, 1.0f));
-  *s = (*c) * (*t);
-}
-
-extern void tcs_old_(const float *const d, float *const t, float *const c, float *const s)
-{
-#ifndef NDEBUG
-  assert(d);
-  assert(t);
-  assert(c);
-  assert(s);
-#endif /* !NDEBUG */
-  *t = *d / (1.0f + __builtin_sqrtf((1.0f - *d) * (1.0f + *d)));
-  *c = 1.0f / __builtin_sqrtf((1.0f - *t) * (1.0f + *t));
-  *s = (*c) * (*t);
-}
-
-extern void mpfr_start_(int *const p)
+extern void mpfr_start_(int *const p, const float *const eps)
 {
 #ifndef NDEBUG
   assert(p);
+  assert(eps);
 #endif /* !NDEBUG */
   if (*p < MPFR_PREC_MIN) {
     *p = -1;
@@ -79,11 +54,21 @@ extern void mpfr_start_(int *const p)
     *p = 7;
     return;
   }
+  if (mpfr_init_set_d(E, (double)*eps, MPFR_RNDN)) {
+    *p = 8;
+    return;
+  }
+  if (mpfr_init_set_d(F, 0.0, MPFR_RNDN)) {
+    *p = 9;
+    return;
+  }
   *p = 0;
 }
 
 extern void mpfr_stop_()
 {
+  mpfr_clear(F);
+  mpfr_clear(E);
   mpfr_clear(S);
   mpfr_clear(C);
   mpfr_clear(T);
@@ -92,48 +77,99 @@ extern void mpfr_stop_()
   mpfr_free_cache();
 }
 
-extern void mpfr_tcs_(const double *const d, double *const t, double *const c, double *const s)
+extern void tcs_new_(const float *const d, float *const t, float *const c, float *const s, double *const et, double *const ec, double *const es)
 {
 #ifndef NDEBUG
   assert(d);
   assert(t);
   assert(c);
   assert(s);
+  assert(et);
+  assert(ec);
+  assert(es);
 #endif /* !NDEBUG */
-  (void)mpfr_set_d(D, *d, MPFR_RNDN);
+  *t = *d / (1.0f + __builtin_sqrtf(__builtin_fmaf(-*d, *d, 1.0f)));
+  *c = cr_rsqrtf(__builtin_fmaf(-*t, *t, 1.0f));
+  *s = (*c) * (*t);
 
+  (void)mpfr_set_flt(D, *d, MPFR_RNDN);
+
+  /* T */
   (void)mpfr_neg(C, D, MPFR_RNDN);
   (void)mpfr_fma(S, C, D, O, MPFR_RNDN);
   (void)mpfr_sqrt(S, S, MPFR_RNDN);
   (void)mpfr_add(S, S, O, MPFR_RNDN);
   (void)mpfr_div(T, D, S, MPFR_RNDN);
 
+  /* C */
   (void)mpfr_neg(C, T, MPFR_RNDN);
   (void)mpfr_fma(S, C, T, O, MPFR_RNDN);
   (void)mpfr_rec_sqrt(C, S, MPFR_RNDN);
 
+  /* S */
   (void)mpfr_mul(S, C, T, MPFR_RNDN);
 
-  *t = mpfr_get_d(T, MPFR_RNDN);
-  *c = mpfr_get_d(C, MPFR_RNDN);
-  *s = mpfr_get_d(S, MPFR_RNDN);
+  /* relerr T */
+  (void)mpfr_set_flt(D, *t, MPFR_RNDN);
+  (void)mpfr_sub(D, T, D, MPFR_RNDN);
+  (void)mpfr_abs(D, D, MPFR_RNDN);
+  (void)mpfr_mul(F, E, T, MPFR_RNDN);
+  (void)mpfr_div(D, D, F, MPFR_RNDN);
+  *et = mpfr_get_d(D, MPFR_RNDN);
+
+  /* relerr C */
+  (void)mpfr_set_flt(D, *c, MPFR_RNDN);
+  (void)mpfr_sub(D, C, D, MPFR_RNDN);
+  (void)mpfr_abs(D, D, MPFR_RNDN);
+  (void)mpfr_mul(F, E, C, MPFR_RNDN);
+  (void)mpfr_div(D, D, F, MPFR_RNDN);
+  *ec = mpfr_get_d(D, MPFR_RNDN);
+
+  /* relerr S */
+  (void)mpfr_set_flt(D, *s, MPFR_RNDN);
+  (void)mpfr_sub(D, S, D, MPFR_RNDN);
+  (void)mpfr_abs(D, D, MPFR_RNDN);
+  (void)mpfr_mul(F, E, S, MPFR_RNDN);
+  (void)mpfr_div(D, D, F, MPFR_RNDN);
+  *es = mpfr_get_d(D, MPFR_RNDN);
 }
 
-extern void mpfr_re_(const double *const exac, double *const comp, const double *const eps)
+extern void tcs_old_(const float *const d, float *const t, float *const c, float *const s, double *const et, double *const ec, double *const es)
 {
 #ifndef NDEBUG
-  assert(exac);
-  assert(comp);
-  assert(eps);
+  assert(d);
+  assert(t);
+  assert(c);
+  assert(s);
+  assert(et);
+  assert(ec);
+  assert(es);
 #endif /* !NDEBUG */
-  (void)mpfr_set_d(D, *exac, MPFR_RNDN);
-  (void)mpfr_set_d(T, *comp, MPFR_RNDN);
-  (void)mpfr_set_d(C, *eps, MPFR_RNDN);
+  *t = *d / (1.0f + __builtin_sqrtf((1.0f - *d) * (1.0f + *d)));
+  *c = 1.0f / __builtin_sqrtf((1.0f - *t) * (1.0f + *t));
+  *s = (*c) * (*t);
 
-  (void)mpfr_sub(T, D, T, MPFR_RNDN);
-  (void)mpfr_abs(T, T, MPFR_RNDN);
-  (void)mpfr_mul(S, D, C, MPFR_RNDN);
-  (void)mpfr_div(D, T, S, MPFR_RNDN);
+  /* relerr T */
+  (void)mpfr_set_flt(D, *t, MPFR_RNDN);
+  (void)mpfr_sub(D, T, D, MPFR_RNDN);
+  (void)mpfr_abs(D, D, MPFR_RNDN);
+  (void)mpfr_mul(F, E, T, MPFR_RNDN);
+  (void)mpfr_div(D, D, F, MPFR_RNDN);
+  *et = mpfr_get_d(D, MPFR_RNDN);
 
-  *comp = mpfr_get_d(D, MPFR_RNDN);
+  /* relerr C */
+  (void)mpfr_set_flt(D, *c, MPFR_RNDN);
+  (void)mpfr_sub(D, C, D, MPFR_RNDN);
+  (void)mpfr_abs(D, D, MPFR_RNDN);
+  (void)mpfr_mul(F, E, C, MPFR_RNDN);
+  (void)mpfr_div(D, D, F, MPFR_RNDN);
+  *ec = mpfr_get_d(D, MPFR_RNDN);
+
+  /* relerr S */
+  (void)mpfr_set_flt(D, *s, MPFR_RNDN);
+  (void)mpfr_sub(D, S, D, MPFR_RNDN);
+  (void)mpfr_abs(D, D, MPFR_RNDN);
+  (void)mpfr_mul(F, E, S, MPFR_RNDN);
+  (void)mpfr_div(D, D, F, MPFR_RNDN);
+  *es = mpfr_get_d(D, MPFR_RNDN);
 }
