@@ -1,7 +1,5 @@
-! TODO: reenable the average error computation
 !!! QUADRUPLE PRECISION BEHAVES DIFFERENTLY WITH THE GNU FORTRAN AND WITH THE INTEL FORTRAN !!!
 PROGRAM STH2T
-  ! USE, INTRINSIC :: IEEE_ARITHMETIC, ONLY: IEEE_FMA
   USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: ERROR_UNIT, OUTPUT_UNIT, INT32, REAL32, REAL64
   IMPLICIT NONE
   REAL(KIND=REAL32), PARAMETER :: ZERO = 0.0_REAL32, ONE = 1.0_REAL32, CUTOFF = 40.0_REAL32 / 41.0_REAL32
@@ -34,34 +32,40 @@ PROGRAM STH2T
      ! error check
      QD = D
      CALL MPFR_TCS(QD, QT, QC, QS)
-     ! QD = I - 1
-     ! QD = QD / I
+     QD = I - 1
+     QD = QD / I
      QE = T
      CALL MPFR_RE(QT, QE, DEPS)
-     ! Q(ARE,ETH) = IEEE_FMA(Q(ARE,ETH), QD, QE / I)
+     !DIR$ FMA
+     Q(ARE,ETH) = Q(ARE,ETH) * QD + (QE / I)
      Q(MRE,ETH) = MAX(Q(MRE,ETH), QE)
      QE = C
      CALL MPFR_RE(QC, QE, DEPS)
-     ! Q(ARE,ECH) = IEEE_FMA(Q(ARE,ECH), QD, QE / I)
+     !DIR$ FMA
+     Q(ARE,ECH) = Q(ARE,ECH) * QD + (QE / I)
      Q(MRE,ECH) = MAX(Q(MRE,ECH), QE)
      QE = S
      CALL MPFR_RE(QS, QE, DEPS)
-     ! Q(ARE,ESH) = IEEE_FMA(Q(ARE,ESH), QD, QE / I)
+     !DIR$ FMA
+     Q(ARE,ESH) = Q(ARE,ESH) * QD + (QE / I)
      Q(MRE,ESH) = MAX(Q(MRE,ESH), QE)
      ! "standard" formulas
      CALL TCS_OLD(D, T, C, S);
      ! error check
      QE = T
      CALL MPFR_RE(QT, QE, DEPS)
-     ! Q(ARE,STH) = IEEE_FMA(Q(ARE,STH), QD, QE / I)
+     !DIR$ FMA
+     Q(ARE,STH) = Q(ARE,STH) * QD + (QE / I)
      Q(MRE,STH) = MAX(Q(MRE,STH), QE)
      QE = C
      CALL MPFR_RE(QC, QE, DEPS)
-     ! Q(ARE,SCH) = IEEE_FMA(Q(ARE,SCH), QD, QE / I)
+     !DIR$ FMA
+     Q(ARE,SCH) = Q(ARE,SCH) * QD + (QE / I)
      Q(MRE,SCH) = MAX(Q(MRE,SCH), QE)
      QE = S
      CALL MPFR_RE(QS, QE, DEPS)
-     ! Q(ARE,SSH) = IEEE_FMA(Q(ARE,SSH), QD, QE / I)
+     !DIR$ FMA
+     Q(ARE,SSH) = Q(ARE,SSH) * QD + (QE / I)
      Q(MRE,SSH) = MAX(Q(MRE,SSH), QE)
      ! increment
      ID = ID + 1

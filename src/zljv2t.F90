@@ -1,7 +1,10 @@
-! meant to be compiled with ifx and ABI=lp64
 PROGRAM ZLJV2T
   USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_int
+#ifdef __GFORTRAN__
+  USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: ERROR_UNIT, OUTPUT_UNIT, REAL64
+#else
   USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: ERROR_UNIT, OUTPUT_UNIT, REAL64, REAL128
+#endif
   IMPLICIT NONE
   INTERFACE
      PURE FUNCTION CR_HYPOT(X, Y) BIND(C,NAME='cr_hypot')
@@ -11,19 +14,38 @@ PROGRAM ZLJV2T
        REAL(KIND=c_double) :: CR_HYPOT
      END FUNCTION CR_HYPOT
   END INTERFACE
-  REAL(KIND=REAL128), PARAMETER :: QZERO = 0.0_REAL128, QONE = 1.0_REAL128
+#ifdef __GFORTRAN__
+  INTERFACE
+     PURE FUNCTION HYPOTX(X, Y) BIND(C,NAME='cr_hypotl')
+       USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
+       IMPLICIT NONE
+       REAL(KIND=c_long_double), INTENT(IN), VALUE :: X, Y
+       REAL(KIND=c_long_double) :: HYPOTX
+     END FUNCTION HYPOTX
+  END INTERFACE
+  INTEGER, PARAMETER :: KK = 10
+#else
+#define HYPOTX HYPOT
+  INTEGER, PARAMETER :: KK = REAL128
+#endif
+  REAL(KIND=KK), PARAMETER :: QZERO = 0.0_KK, QONE = 1.0_KK
   REAL(KIND=REAL64), PARAMETER :: ZERO = 0.0_REAL64, CUTOFF = 0.8_REAL64, DEPS = EPSILON(ZERO) / 2
   ! DAMP should counterweigh a possible unfavorable rounding when creating the off-diagonal element.
   ! This has been observed in single precision, and is more unlikely in higher precisions.
   REAL(KIND=REAL64), PARAMETER :: DAMP = 1.0_REAL64 - 8 * EPSILON(ZERO)
   CHARACTER(LEN=256) :: CLA
-  REAL(KIND=REAL128) :: Q(14)
+  REAL(KIND=KK) :: Q(14)
   REAL(KIND=REAL64) :: D(7), T
   INTEGER, ALLOCATABLE :: ISEED(:)
   !DIR$ ATTRIBUTES ALIGN: 64:: ISEED
   INTEGER :: I, N, SSIZE
   INTEGER(KIND=c_int) :: ES
-  INTEGER(KIND=c_int), EXTERNAL :: PVN_ZLJV2, PVN_YLJV2
+  INTEGER(KIND=c_int), EXTERNAL :: PVN_ZLJV2
+#ifdef __GFORTRAN__
+  INTEGER(KIND=c_int), EXTERNAL :: PVN_WLJV2
+#else
+  INTEGER(KIND=c_int), EXTERNAL :: PVN_YLJV2
+#endif
   ! random seed may be given
   CALL RANDOM_SEED(SIZE=SSIZE)
   IF (SSIZE .LE. 0) STOP 'seed size non-positive'
@@ -94,8 +116,8 @@ PROGRAM ZLJV2T
      Q(5) = D(5) ! CH
      Q(6) = D(6) ! SHR
      Q(7) = D(7) ! SHI
-     Q(8) = HYPOT(Q(6), Q(7))
-     Q(8) = HYPOT(Q(8), QONE)
+     Q(8) = HYPOTX(Q(6), Q(7))
+     Q(8) = HYPOTX(Q(8), QONE)
      Q(8) = ABS((Q(5) - Q(8)) * (Q(5) + Q(8)))
      Q(1) = MAX(Q(1), Q(8))
      Q(11) = D(1)
@@ -103,7 +125,11 @@ PROGRAM ZLJV2T
      Q(13) = D(3)
      Q(14) = D(4)
      ES = 0_c_int
+#ifdef __GFORTRAN__
+     SSIZE = INT(PVN_WLJV2(Q(11), Q(12), Q(13), Q(14), Q(8), Q(9), Q(10), ES))
+#else
      SSIZE = INT(PVN_YLJV2(Q(11), Q(12), Q(13), Q(14), Q(8), Q(9), Q(10), ES))
+#endif
      IF (SSIZE .LT. 0) THEN
         WRITE (ERROR_UNIT,'(I11,A,I3)') I, ': ERROR', SSIZE
         GOTO 2
