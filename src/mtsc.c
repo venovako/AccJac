@@ -5,8 +5,6 @@
 #include "mpfr.h"
 
 extern float cr_rsqrtf(float x);
-//extern double cr_rsqrt(double x);
-//extern long double cr_rsqrtl(long double x);
 
 static mpfr_t O, D, T, C, S;
 
