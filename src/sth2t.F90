@@ -69,7 +69,7 @@ PROGRAM STH2T
   ! relative errors in the terms of \epsilon
   I = I - 1
   WRITE (OUTPUT_UNIT,'(I3,A,I11,12(A,ES16.9E2))') NEXP, ',', I, ',',&
-       REAL(Q(ARE,ETH)), ',', REAL(Q(MRE,ETH)), ',', REAL(Q(ARE,ECH)), ',', REAL(Q(MRE,ECH)), ',',&
-       REAL(Q(ARE,ESH)), ',', REAL(Q(MRE,ESH)), ',', REAL(Q(ARE,STH)), ',', REAL(Q(MRE,STH)), ',',&
-       REAL(Q(ARE,SCH)), ',', REAL(Q(MRE,SCH)), ',', REAL(Q(ARE,SSH)), ',', REAL(Q(MRE,SSH))
+       Q(ARE,ETH), ',', Q(MRE,ETH), ',', Q(ARE,ECH), ',', Q(MRE,ECH), ',',&
+       Q(ARE,ESH), ',', Q(MRE,ESH), ',', Q(ARE,STH), ',', Q(MRE,STH), ',',&
+       Q(ARE,SCH), ',', Q(MRE,SCH), ',', Q(ARE,SSH), ',', Q(MRE,SSH)
 END PROGRAM STH2T

@@ -35,12 +35,6 @@ cjiev2.o djiev2.o qjiev2.o sjiev2.o yjiev2.o zjiev2.o\
 clju2.o dlju2.o slju2.o zlju2.o\
 cljv2.o dljv2.o sljv2.o zljv2.o
 
-ifdef MPFR
-OBJ2 += \
-mtest.obj \
-mtsc.obj
-endif # MPFR
-
 LIB2=libjaev2.a
 
 EXE2=\
@@ -48,9 +42,11 @@ ctest.exe dtest.exe qtest.exe stest.exe ytest.exe ztest.exe\
 cljv2t.exe dljv2t.exe sljv2t.exe zljv2t.exe
 
 ifdef MPFR
+OBJ2 += \
+mtest.obj \
+mtsc.obj
 EXE2 += \
 sth2t.exe
-#dth2t.exe
 endif # MPFR
 
 OBJD=\
@@ -91,11 +87,6 @@ xljv2.o wljv2.o
 EXE2 += \
 wtest.exe xtest.exe\
 wljv2t.exe xljv2t.exe
-
-# ifdef MPFR
-# EXE2 += \
-# xth2t.exe
-# endif # MPFR
 
 OBJD += \
 wroth.o xroth.o\
