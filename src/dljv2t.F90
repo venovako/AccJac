@@ -1,25 +1,8 @@
 PROGRAM DLJV2T
   USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_int
-#ifdef __GFORTRAN__
-  USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: ERROR_UNIT, OUTPUT_UNIT, REAL64
-#else
   USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: ERROR_UNIT, OUTPUT_UNIT, REAL64, REAL128
-#endif
   IMPLICIT NONE
-#ifdef __GFORTRAN__
-  INTERFACE
-     PURE FUNCTION HYPOTX(X, Y) BIND(C,NAME='cr_hypotl')
-       USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
-       IMPLICIT NONE
-       REAL(KIND=c_long_double), INTENT(IN), VALUE :: X, Y
-       REAL(KIND=c_long_double) :: HYPOTX
-     END FUNCTION HYPOTX
-  END INTERFACE
-  INTEGER, PARAMETER :: KK = 10
-#else
-#define HYPOTX HYPOT
   INTEGER, PARAMETER :: KK = REAL128
-#endif
   REAL(KIND=KK), PARAMETER :: QZERO = 0.0_KK, QONE = 1.0_KK
   REAL(KIND=REAL64), PARAMETER :: ZERO = 0.0_REAL64, CUTOFF = 0.8_REAL64, DEPS = EPSILON(ZERO) / 2
   ! DAMP should counterweigh a possible unfavorable rounding when creating the off-diagonal element.
@@ -32,12 +15,7 @@ PROGRAM DLJV2T
   !DIR$ ATTRIBUTES ALIGN: 64:: ISEED
   INTEGER :: I, N, SSIZE
   INTEGER(KIND=c_int) :: ES
-  INTEGER(KIND=c_int), EXTERNAL :: PVN_DLJV2
-#ifdef __GFORTRAN__
-  INTEGER(KIND=c_int), EXTERNAL :: PVN_XLJV2
-#else
-  INTEGER(KIND=c_int), EXTERNAL :: PVN_QLJV2
-#endif
+  INTEGER(KIND=c_int), EXTERNAL :: PVN_DLJV2, PVN_QLJV2
   ! random seed may be given
   CALL RANDOM_SEED(SIZE=SSIZE)
   IF (SSIZE .LE. 0) STOP 'seed size non-positive'
@@ -97,18 +75,14 @@ PROGRAM DLJV2T
      END IF
      Q(4) = D(4) ! CH
      Q(5) = D(5) ! SH
-     Q(6) = HYPOTX(Q(5), QONE)
+     Q(6) = HYPOT(Q(5), QONE)
      Q(6) = ABS((Q(4) - Q(6)) * (Q(4) + Q(6)))
      Q(1) = MAX(Q(1), Q(6))
      Q(8) = D(1)
      Q(9) = D(2)
      Q(10) = D(3)
      ES = 0_c_int
-#ifdef __GFORTRAN__
-     SSIZE = INT(PVN_XLJV2(Q(8), Q(9), Q(10), Q(6), Q(7), ES))
-#else
      SSIZE = INT(PVN_QLJV2(Q(8), Q(9), Q(10), Q(6), Q(7), ES))
-#endif
      IF (SSIZE .LT. 0) THEN
         WRITE (ERROR_UNIT,'(I11,A,I3)') I, ': ERROR', SSIZE
         GOTO 2
