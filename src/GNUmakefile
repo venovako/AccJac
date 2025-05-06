@@ -109,7 +109,12 @@ wjsvdt.exe xjsvdt.exe
 endif # x86_64 or i86pc
 endif # gfortran
 
-LDFLAGS=-rdynamic -static-libgcc
+ifeq ($(findstring MINGW64,$(OS)),MINGW64)
+LDFLAGS=
+else # !MINGW64
+LDFLAGS=-rdynamic
+endif # ?MINGW64
+LDFLAGS += -static-libgcc
 ifeq ($(COMPILER),gfortran)
 LDFLAGS += -static-libgfortran -static-libquadmath
 endif # gfortran
@@ -122,9 +127,6 @@ LDFLAGS += -L$(GMP)/lib -lgmp
 endif # GMP
 ifdef ANIMATE
 FCFLAGS += -DANIMATE=$(ANIMATE)
-ifneq ($(COMPILER),gfortran)
-LDFLAGS += $(realpath $(shell gcc -print-file-name=libquadmath.a))
-endif # !gfortran
 endif # ANIMATE
 LDFLAGS += -ldl -lm
 
