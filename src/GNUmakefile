@@ -128,7 +128,10 @@ endif # GMP
 ifdef ANIMATE
 FCFLAGS += -DANIMATE=$(ANIMATE)
 endif # ANIMATE
-LDFLAGS += -ldl -lm
+ifneq ($(findstring MINGW64,$(OS)),MINGW64)
+LDFLAGS += -ldl
+endif # !MINGW64
+LDFLAGS += -lm
 
 .PHONY: all help clean
 
