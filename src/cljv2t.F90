@@ -1,8 +1,9 @@
 PROGRAM CLJV2T
-  USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_int
 #ifdef __GFORTRAN__
+  USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_int, c_long_double
   USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: ERROR_UNIT, OUTPUT_UNIT, REAL32
 #else
+  USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_int
   USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: ERROR_UNIT, OUTPUT_UNIT, REAL32, REAL128
 #endif
   IMPLICIT NONE
@@ -23,7 +24,7 @@ PROGRAM CLJV2T
        REAL(KIND=c_long_double) :: HYPOTX
      END FUNCTION HYPOTX
   END INTERFACE
-  INTEGER, PARAMETER :: KK = 10
+  INTEGER, PARAMETER :: KK = c_long_double
 #else
 #define HYPOTX HYPOT
   INTEGER, PARAMETER :: KK = REAL128
@@ -148,9 +149,15 @@ PROGRAM CLJV2T
      Q(I) = Q(I) / SEPS
   END DO
   IF (N .LT. 0) THEN
-     WRITE (OUTPUT_UNIT,'(I11,A,I11,4(A,ES16.9E2))') -ISEED(1), ',', -N, ',', Q(1), ',', Q(2), ',', Q(3), ',', Q(4)
+     WRITE (OUTPUT_UNIT,'(I11,A,I11)',ADVANCE='NO') -ISEED(1), ',', -N
   ELSE ! N >= 0
-     WRITE (OUTPUT_UNIT,'(I11,A,I11,4(A,ES16.9E2))')  ISEED(1), ',',  N, ',', Q(1), ',', Q(2), ',', Q(3), ',', Q(4)
+     WRITE (OUTPUT_UNIT,'(I11,A,I11)',ADVANCE='NO')  ISEED(1), ',',  N
   END IF
+#ifdef __GFORTRAN__
+  WRITE (OUTPUT_UNIT,'(4(A,ES16.9E2))') ',', Q(1), ',', Q(2), ',', Q(3), ',', Q(4)
+#else
+  WRITE (OUTPUT_UNIT,'(4(A,ES16.9E2))') ',',&
+       REAL(Q(1), REAL32), ',', REAL(Q(2), REAL32), ',', REAL(Q(3), REAL32), ',', REAL(Q(4), REAL32)
+#endif
 2 DEALLOCATE(ISEED)
 END PROGRAM CLJV2T

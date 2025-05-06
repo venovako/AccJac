@@ -1,16 +1,16 @@
 ! meant to be compiled with gfortran and ABI=lp64
 PROGRAM XLJV2T
-  USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_int
+  USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_int, c_long_double
   USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: ERROR_UNIT, OUTPUT_UNIT, REAL128
   IMPLICIT NONE
   REAL(KIND=REAL128), PARAMETER :: QZERO = 0.0_REAL128, QONE = 1.0_REAL128
-  REAL(KIND=10), PARAMETER :: ZERO = 0.0_10, CUTOFF = 0.8_10, XEPS = EPSILON(ZERO) / 2
+  REAL(KIND=c_long_double), PARAMETER :: ZERO = 0.0_c_long_double, CUTOFF = 0.8_c_long_double, XEPS = EPSILON(ZERO) / 2
   ! DAMP should counterweigh a possible unfavorable rounding when creating the off-diagonal element.
   ! This has been observed in single precision, and is more unlikely in higher precisions.
-  REAL(KIND=10), PARAMETER :: DAMP = 1.0_10 - 4 * EPSILON(ZERO)
+  REAL(KIND=c_long_double), PARAMETER :: DAMP = 1.0_c_long_double - 4 * EPSILON(ZERO)
   CHARACTER(LEN=256) :: CLA
   REAL(KIND=REAL128) :: Q(10)
-  REAL(KIND=10) :: D(5)
+  REAL(KIND=c_long_double) :: D(5)
   INTEGER, ALLOCATABLE :: ISEED(:)
   !DIR$ ATTRIBUTES ALIGN: 64:: ISEED
   INTEGER :: I, N, SSIZE
@@ -104,9 +104,11 @@ PROGRAM XLJV2T
      Q(I) = Q(I) / XEPS
   END DO
   IF (N .LT. 0) THEN
-     WRITE (OUTPUT_UNIT,'(I11,A,I11,3(A,ES30.21E4))') -ISEED(1), ',', -N, ',', Q(1), ',', Q(2), ',', Q(3)
+     WRITE (OUTPUT_UNIT,'(I11,A,I11)',ADVANCE='NO') -ISEED(1), ',', -N
   ELSE ! N >= 0
-     WRITE (OUTPUT_UNIT,'(I11,A,I11,3(A,ES30.21E4))')  ISEED(1), ',',  N, ',', Q(1), ',', Q(2), ',', Q(3)
+     WRITE (OUTPUT_UNIT,'(I11,A,I11)',ADVANCE='NO')  ISEED(1), ',',  N
   END IF
+  WRITE (OUTPUT_UNIT,'(3(A,ES30.21E4))') ',',&
+       REAL(Q(1), c_long_double), ',', REAL(Q(2), c_long_double), ',', REAL(Q(3), c_long_double)
 9 DEALLOCATE(ISEED)
 END PROGRAM XLJV2T

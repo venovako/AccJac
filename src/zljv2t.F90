@@ -122,9 +122,11 @@ PROGRAM ZLJV2T
      Q(I) = Q(I) / DEPS
   END DO
   IF (N .LT. 0) THEN
-     WRITE (OUTPUT_UNIT,'(I11,A,I11,4(A,ES25.17E3))') -ISEED(1), ',', -N, ',', Q(1), ',', Q(2), ',', Q(3), ',', Q(4)
+     WRITE (OUTPUT_UNIT,'(I11,A,I11)',ADVANCE='NO') -ISEED(1), ',', -N
   ELSE ! N >= 0
-     WRITE (OUTPUT_UNIT,'(I11,A,I11,4(A,ES25.17E3))')  ISEED(1), ',',  N, ',', Q(1), ',', Q(2), ',', Q(3), ',', Q(4)
+     WRITE (OUTPUT_UNIT,'(I11,A,I11)',ADVANCE='NO')  ISEED(1), ',',  N
   END IF
+  WRITE (OUTPUT_UNIT,'(4(A,ES25.17E3))') ',',&
+       REAL(Q(1), REAL64), ',', REAL(Q(2), REAL64), ',', REAL(Q(3), REAL64), ',', REAL(Q(4), REAL64)
 2 DEALLOCATE(ISEED)
 END PROGRAM ZLJV2T
