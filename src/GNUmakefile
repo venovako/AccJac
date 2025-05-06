@@ -136,6 +136,9 @@ LDFLAGS += -lm
 .PHONY: all help clean
 
 all: $(LIB2) $(LIBD) $(EXE2) $(EXED)
+ifeq ($(findstring MINGW64,$(OS)),MINGW64)
+	cp -fuv /ucrt64/bin/libwinpthread-1.dll .
+endif
 
 $(LIB2): $(OBJ2) $(OBJL)
 	$(AR) $(ARFLAGS) $@ $(OBJ2) $(OBJL)
