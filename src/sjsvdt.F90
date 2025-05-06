@@ -1,16 +1,35 @@
 PROGRAM SJSVDT
   USE, INTRINSIC :: IEEE_ARITHMETIC, ONLY: IEEE_FMA
+#ifdef __GFORTRAN__
+  USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long, c_long_double
+  USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: INT64, OUTPUT_UNIT, REAL32
+#else
   USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long
   USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: INT64, OUTPUT_UNIT, REAL32, REAL128
+#endif
   IMPLICIT NONE
-  REAL(KIND=REAL128), PARAMETER :: QZERO = 0.0_REAL128, QONE = 1.0_REAL128
+#ifdef __GFORTRAN__
+  INTERFACE
+     PURE FUNCTION HYPOTX(X, Y) BIND(C,NAME='cr_hypotl')
+       USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
+       IMPLICIT NONE
+       REAL(KIND=c_long_double), INTENT(IN), VALUE :: X, Y
+       REAL(KIND=c_long_double) :: HYPOTX
+     END FUNCTION HYPOTX
+  END INTERFACE
+  INTEGER, PARAMETER :: KK = c_long_double
+#else
+#define HYPOTX HYPOT
+  INTEGER, PARAMETER :: KK = REAL128
+#endif
+  REAL(KIND=KK), PARAMETER :: QZERO = 0.0_KK, QONE = 1.0_KK
   CHARACTER(LEN=256) :: CLA
-  REAL(KIND=REAL128) :: Y, Z
+  REAL(KIND=KK) :: Y, Z
   INTEGER(KIND=INT64) :: CLK(3)
   REAL(KIND=REAL32) :: T
   INTEGER :: M, N, LDG, LDV, JPOS, GS, INFO, I, J, L
   REAL(KIND=REAL32), ALLOCATABLE :: G(:,:), V(:,:), WRK(:,:), SV(:)
-  REAL(KIND=REAL128), ALLOCATABLE :: U(:,:), W(:,:)
+  REAL(KIND=KK), ALLOCATABLE :: U(:,:), W(:,:)
   EXTERNAL :: SJSVDC, SJSVDR
   ! read the command line arguments
   I = COMMAND_ARGUMENT_COUNT()
@@ -117,7 +136,7 @@ PROGRAM SJSVDT
         Y = SV(J)
         Y = SCALE(Y, L)
         DO I = 1, M
-           U(I,J) = REAL(G(I,J), REAL128) * Y
+           U(I,J) = REAL(G(I,J), KK) * Y
         END DO
      END DO
   END IF
@@ -140,12 +159,12 @@ PROGRAM SJSVDT
      DO I = 1, M
         DO J = 1, N
            W(I,J) = G(I,J)
-           Z = HYPOT(Z, W(I,J))
+           Z = HYPOTX(Z, W(I,J))
            DO L = 1, N
-              ! W(I,J) = W(I,J) - U(I,L) * REAL(V(L,J), REAL128)
-              W(I,J) = IEEE_FMA(U(I,L), REAL(-V(L,J), REAL128), W(I,J))
+              ! W(I,J) = W(I,J) - U(I,L) * REAL(V(L,J), KK)
+              W(I,J) = IEEE_FMA(U(I,L), REAL(-V(L,J), KK), W(I,J))
            END DO
-           Y = HYPOT(Y, W(I,J))
+           Y = HYPOTX(Y, W(I,J))
         END DO
      END DO
      Y = Y / Z

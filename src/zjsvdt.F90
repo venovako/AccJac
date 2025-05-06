@@ -1,12 +1,31 @@
 PROGRAM ZJSVDT
   USE, INTRINSIC :: IEEE_ARITHMETIC, ONLY: IEEE_FMA
+#ifdef __GFORTRAN__
+  USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long, c_long_double
+  USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: INT64, OUTPUT_UNIT, REAL64
+#else
   USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long
   USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: INT64, OUTPUT_UNIT, REAL64, REAL128
+#endif
   IMPLICIT NONE
-  REAL(KIND=REAL128), PARAMETER :: QZERO = 0.0_REAL128, QONE = 1.0_REAL128
+#ifdef __GFORTRAN__
+  INTERFACE
+     PURE FUNCTION HYPOTX(X, Y) BIND(C,NAME='cr_hypotl')
+       USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
+       IMPLICIT NONE
+       REAL(KIND=c_long_double), INTENT(IN), VALUE :: X, Y
+       REAL(KIND=c_long_double) :: HYPOTX
+     END FUNCTION HYPOTX
+  END INTERFACE
+  INTEGER, PARAMETER :: KK = c_long_double
+#else
+#define HYPOTX HYPOT
+  INTEGER, PARAMETER :: KK = REAL128
+#endif
+  REAL(KIND=KK), PARAMETER :: QZERO = 0.0_KK, QONE = 1.0_KK
   CHARACTER(LEN=256) :: CLA
-  REAL(KIND=REAL128) :: X, Y, Z
-  COMPLEX(KIND=REAL128) :: H
+  REAL(KIND=KK) :: X, Y, Z
+  COMPLEX(KIND=KK) :: H
   COMPLEX(KIND=REAL64) :: T
   REAL(KIND=REAL64) :: R
   INTEGER(KIND=INT64) :: CLK(3)
@@ -14,7 +33,7 @@ PROGRAM ZJSVDT
   INTEGER(KIND=INT64), ALLOCATABLE :: JV(:)
   COMPLEX(KIND=REAL64), ALLOCATABLE :: G(:,:), V(:,:), WRK(:,:)
   REAL(KIND=REAL64), ALLOCATABLE :: SV(:), LY(:)
-  COMPLEX(KIND=REAL128), ALLOCATABLE :: U(:,:), W(:,:)
+  COMPLEX(KIND=KK), ALLOCATABLE :: U(:,:), W(:,:)
   EXTERNAL :: ZJSVDC, ZJSVDR
   ! read the command line arguments
   I = COMMAND_ARGUMENT_COUNT()
@@ -158,9 +177,7 @@ PROGRAM ZJSVDT
         Y = SV(J)
         Y = SCALE(Y, L)
         DO I = 1, M
-           U(I,J) = CMPLX(&
-                REAL(REAL(G(I,J)), REAL128) * Y,&
-                REAL(AIMAG(G(I,J)), REAL128) * Y, REAL128)
+           U(I,J) = CMPLX(REAL(REAL(G(I,J)), KK) * Y, REAL(AIMAG(G(I,J)), KK) * Y, KK)
         END DO
      END DO
   END IF
@@ -223,12 +240,12 @@ PROGRAM ZJSVDT
   X = QZERO
   DO J = 1, JPOS
      Y = SV(J)
-     Y = ABS(IEEE_FMA(Y, Y, REAL(-LY(J), REAL128)) / LY(J))
+     Y = ABS(IEEE_FMA(Y, Y, REAL(-LY(J), KK)) / LY(J))
      X = MAX(X, Y)
   END DO
   DO J = JPOS+1, N
      Y = SV(J)
-     Y = ABS(IEEE_FMA(Y, Y, REAL(LY(J), REAL128)) / LY(J))
+     Y = ABS(IEEE_FMA(Y, Y, REAL(LY(J), KK)) / LY(J))
      X = MAX(X, Y)
   END DO
   DEALLOCATE(LY)
@@ -246,15 +263,15 @@ PROGRAM ZJSVDT
      DO I = 1, M
         DO J = 1, N
            W(I,J) = G(I,J)
-           Z = HYPOT(Z, HYPOT(REAL(W(I,J)), AIMAG(W(I,J))))
+           Z = HYPOTX(Z, HYPOTX(REAL(W(I,J)), AIMAG(W(I,J))))
            DO L = 1, N
               ! W(I,J) = W(I,J) - U(I,L) * V(L,J)
-              H = CMPLX(REAL(-REAL(V(L,J)), REAL128), REAL(-AIMAG(V(L,J)), REAL128), REAL128)
+              H = CMPLX(REAL(-REAL(V(L,J)), KK), REAL(-AIMAG(V(L,J)), KK), KK)
               W(I,J) = CMPLX(&
                    IEEE_FMA(REAL(U(I,L)), REAL(H), IEEE_FMA(-AIMAG(U(I,L)), AIMAG(H), REAL(W(I,J)))),&
-                   IEEE_FMA(REAL(U(I,L)), AIMAG(H), IEEE_FMA(AIMAG(U(I,L)), REAL(H), AIMAG(W(I,J)))), REAL128)
+                   IEEE_FMA(REAL(U(I,L)), AIMAG(H), IEEE_FMA(AIMAG(U(I,L)), REAL(H), AIMAG(W(I,J)))), KK)
            END DO
-           Y = HYPOT(Y, HYPOT(REAL(W(I,J)), AIMAG(W(I,J))))
+           Y = HYPOTX(Y, HYPOTX(REAL(W(I,J)), AIMAG(W(I,J))))
         END DO
      END DO
      Y = Y / Z
