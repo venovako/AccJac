@@ -5,85 +5,95 @@
 !     INFO = 2: transf, no downscaling of G and SV
 !     INFO = 3: transf with downscaling of G and SV
 SUBROUTINE XTRANS(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, TOL, INFO)
+  USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
   IMPLICIT NONE
   INTERFACE
      FUNCTION XSDP(M, X, Y, MX, MY, INFO)
+       USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
        IMPLICIT NONE
        INTEGER, INTENT(IN) :: M
-       REAL(KIND=10), INTENT(IN) :: X(M), Y(M), MX, MY
+       REAL(KIND=c_long_double), INTENT(IN) :: X(M), Y(M), MX, MY
        INTEGER, INTENT(OUT) :: INFO
-       REAL(KIND=10) :: XSDP
+       REAL(KIND=c_long_double) :: XSDP
      END FUNCTION XSDP
   END INTERFACE
   INTERFACE
      PURE SUBROUTINE XGRAM(PNF, QNF, QPS, APP, AQQ, AQP, INFO)
+       USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
        IMPLICIT NONE
-       REAL(KIND=10), INTENT(IN) :: PNF, QNF, QPS
-       REAL(KIND=10), INTENT(OUT) :: APP, AQQ, AQP
+       REAL(KIND=c_long_double), INTENT(IN) :: PNF, QNF, QPS
+       REAL(KIND=c_long_double), INTENT(OUT) :: APP, AQQ, AQP
        INTEGER, INTENT(OUT) :: INFO
      END SUBROUTINE XGRAM
   END INTERFACE
   INTERFACE
      SUBROUTINE XLJU2(A11, A22, A21, CS, SN, INFO)
+       USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
        IMPLICIT NONE
-       REAL(KIND=10), INTENT(IN) :: A11, A22, A21
-       REAL(KIND=10), INTENT(OUT) :: CS, SN
+       REAL(KIND=c_long_double), INTENT(IN) :: A11, A22, A21
+       REAL(KIND=c_long_double), INTENT(OUT) :: CS, SN
        INTEGER, INTENT(INOUT) :: INFO
      END SUBROUTINE XLJU2
   END INTERFACE
   INTERFACE
      SUBROUTINE XLJV2(A11, A22, A21, CH, SH, INFO)
+       USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
        IMPLICIT NONE
-       REAL(KIND=10), INTENT(IN) :: A11, A22, A21
-       REAL(KIND=10), INTENT(OUT) :: CH, SH
+       REAL(KIND=c_long_double), INTENT(IN) :: A11, A22, A21
+       REAL(KIND=c_long_double), INTENT(OUT) :: CH, SH
        INTEGER, INTENT(INOUT) :: INFO
      END SUBROUTINE XLJV2
   END INTERFACE
   INTERFACE
      PURE SUBROUTINE XRTVT(M, X, Y, CS, SN, INFO)
+       USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
        IMPLICIT NONE
        INTEGER, INTENT(IN) :: M
-       REAL(KIND=10), INTENT(INOUT) :: X(M), Y(M)
-       REAL(KIND=10), INTENT(IN) :: CS, SN
+       REAL(KIND=c_long_double), INTENT(INOUT) :: X(M), Y(M)
+       REAL(KIND=c_long_double), INTENT(IN) :: CS, SN
        INTEGER, INTENT(INOUT) :: INFO
      END SUBROUTINE XRTVT
   END INTERFACE
   INTERFACE
      PURE SUBROUTINE XRTVH(M, X, Y, CH, SH, INFO)
+       USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
        IMPLICIT NONE
        INTEGER, INTENT(IN) :: M
-       REAL(KIND=10), INTENT(INOUT) :: X(M), Y(M)
-       REAL(KIND=10), INTENT(IN) :: CH, SH
+       REAL(KIND=c_long_double), INTENT(INOUT) :: X(M), Y(M)
+       REAL(KIND=c_long_double), INTENT(IN) :: CH, SH
        INTEGER, INTENT(INOUT) :: INFO
      END SUBROUTINE XRTVH
   END INTERFACE
   INTERFACE
      PURE SUBROUTINE XROTT(M, X, Y, CS, SN, GX, MX, MY, INFO)
+       USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
        IMPLICIT NONE
        INTEGER, INTENT(IN) :: M
-       REAL(KIND=10), INTENT(INOUT) :: X(M), Y(M), GX, MX, MY
-       REAL(KIND=10), INTENT(IN) :: CS, SN
+       REAL(KIND=c_long_double), INTENT(INOUT) :: X(M), Y(M), GX, MX, MY
+       REAL(KIND=c_long_double), INTENT(IN) :: CS, SN
        INTEGER, INTENT(INOUT) :: INFO
      END SUBROUTINE XROTT
   END INTERFACE
   INTERFACE
      PURE SUBROUTINE XROTH(M, X, Y, CH, SH, GX, MX, MY, INFO)
+       USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
        IMPLICIT NONE
        INTEGER, INTENT(IN) :: M
-       REAL(KIND=10), INTENT(INOUT) :: X(M), Y(M), GX, MX, MY
-       REAL(KIND=10), INTENT(IN) :: CH, SH
+       REAL(KIND=c_long_double), INTENT(INOUT) :: X(M), Y(M), GX, MX, MY
+       REAL(KIND=c_long_double), INTENT(IN) :: CH, SH
        INTEGER, INTENT(INOUT) :: INFO
      END SUBROUTINE XROTH
   END INTERFACE
   INTERFACE
      PURE SUBROUTINE XSCALG(M, N, G, LDG, GX, GS, INFO)
+       USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
        IMPLICIT NONE
        INTEGER, INTENT(IN) :: M, N, LDG
-       REAL(KIND=10), INTENT(INOUT) :: G(LDG,N), GX
+       REAL(KIND=c_long_double), INTENT(INOUT) :: G(LDG,N), GX
        INTEGER, INTENT(INOUT) :: GS, INFO
      END SUBROUTINE XSCALG
   END INTERFACE
-  INTEGER, PARAMETER :: K = 10
+  INTEGER, PARAMETER :: K = c_long_double
   REAL(KIND=K), PARAMETER :: ZERO = 0.0_K
   INTEGER, INTENT(IN) :: M, N, LDG, LDV, P, Q
   REAL(KIND=K), INTENT(INOUT) :: G(LDG,N), V(LDV,N), SV(N), GX

@@ -13,7 +13,7 @@
 !       SUBROUTINE XLAEV2( A, B, C, RT1, RT2, CS1, SN1 )
 !
 !       .. Scalar Arguments ..
-!       REAL(10)      A, B, C, CS1, RT1, RT2, SN1
+!       REAL(c_long_double)      A, B, C, CS1, RT1, RT2, SN1
 !       ..
 !
 !
@@ -38,43 +38,43 @@
 !
 !> \param[in] A
 !> \verbatim
-!>          A is REAL(10)
+!>          A is REAL(c_long_double)
 !>          The (1,1) element of the 2-by-2 matrix.
 !> \endverbatim
 !>
 !> \param[in] B
 !> \verbatim
-!>          B is REAL(10)
+!>          B is REAL(c_long_double)
 !>          The (1,2) element and the conjugate of the (2,1) element of
 !>          the 2-by-2 matrix.
 !> \endverbatim
 !>
 !> \param[in] C
 !> \verbatim
-!>          C is REAL(10)
+!>          C is REAL(c_long_double)
 !>          The (2,2) element of the 2-by-2 matrix.
 !> \endverbatim
 !>
 !> \param[out] RT1
 !> \verbatim
-!>          RT1 is REAL(10)
+!>          RT1 is REAL(c_long_double)
 !>          The eigenvalue of larger absolute value.
 !> \endverbatim
 !>
 !> \param[out] RT2
 !> \verbatim
-!>          RT2 is REAL(10)
+!>          RT2 is REAL(c_long_double)
 !>          The eigenvalue of smaller absolute value.
 !> \endverbatim
 !>
 !> \param[out] CS1
 !> \verbatim
-!>          CS1 is REAL(10)
+!>          CS1 is REAL(c_long_double)
 !> \endverbatim
 !>
 !> \param[out] SN1
 !> \verbatim
-!>          SN1 is REAL(10)
+!>          SN1 is REAL(c_long_double)
 !>          The vector (CS1, SN1) is a unit right eigenvector for RT1.
 !> \endverbatim
 !
@@ -114,8 +114,9 @@ PURE SUBROUTINE XLAEV2(A, B, C, RT1, RT2, CS1, SN1)
   !  -- LAPACK is a software package provided by Univ. of Tennessee,    --
   !  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
   !
+  USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
   IMPLICIT NONE
-  INTEGER, PARAMETER :: K = 10
+  INTEGER, PARAMETER :: K = c_long_double
   !     .. Scalar Arguments ..
   REAL(K), INTENT(IN) :: A, B, C
   REAL(K), INTENT(OUT) :: CS1, RT1, RT2, SN1
