@@ -57,6 +57,8 @@ croth.o droth.o sroth.o zroth.o\
 crott.o drott.o srott.o zrott.o\
 crtvh.o drtvh.o srtvh.o zrtvh.o\
 crtvt.o drtvt.o srtvt.o zrtvt.o\
+drtlt.o drtrt.o\
+drtlh.o drtrh.o\
 cnrmf.o dnrmf.o snrmf.o znrmf.o\
 csdp.o dsdp.o ssdp.o zsdp.o\
 cgram.o dgram.o sgram.o zgram.o\
