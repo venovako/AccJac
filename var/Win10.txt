@@ -1,3 +1,7 @@
+Intel(R) Core(TM) i7-4770K CPU @ 3.50GHz
+
 Intel(R) oneAPI DPC++/C++ Compiler for applications running on Intel(R) 64, Version 2025.1.0 Build 20250317
 Intel(R) Fortran Compiler for applications running on Intel(R) 64, Version 2025.1.0 Build 20250317
-Intel(R) Core(TM) i7-4770K CPU @ 3.50GHz
+
+gcc.exe (Rev1, Built by MSYS2 project) 15.1.0
+GNU Fortran (Rev1, Built by MSYS2 project) 15.1.0
