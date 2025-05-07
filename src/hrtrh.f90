@@ -8,6 +8,7 @@
         YY = A(I,P) * HS + A(I,Q) * CH
         A(I,P) = XX
         A(I,Q) = YY
+        AX = MAX(AX, CR_HYPOT(REAL(XX), AIMAG(XX)), CR_HYPOT(REAL(YY), AIMAG(YY)))
      END DO
   ELSE IF (IAND(INFO, 4) .EQ. 0) THEN
      ! SH => TH
@@ -16,5 +17,6 @@
         YY = (A(I,P) * HS + A(I,Q)) * CH
         A(I,P) = XX
         A(I,Q) = YY
+        AX = MAX(AX, CR_HYPOT(REAL(XX), AIMAG(XX)), CR_HYPOT(REAL(YY), AIMAG(YY)))
      END DO
   END IF

@@ -9,6 +9,7 @@
            YY = A(I,P) * HS + A(I,Q) * CS
            A(I,P) = XX
            A(I,Q) = YY
+           AX = MAX(AX, CR_HYPOT(REAL(XX), AIMAG(XX)), CR_HYPOT(REAL(YY), AIMAG(YY)))
         END DO
      ELSE ! swap
         DO I = 1, N
@@ -16,6 +17,7 @@
            YY = A(I,P) * HS + A(I,Q) * CS
            A(I,P) = YY
            A(I,Q) = XX
+           AX = MAX(AX, CR_HYPOT(REAL(XX), AIMAG(XX)), CR_HYPOT(REAL(YY), AIMAG(YY)))
         END DO
      END IF
   ELSE IF (IAND(INFO, 4) .EQ. 0) THEN
@@ -26,6 +28,7 @@
            YY = (A(I,P) * HS + A(I,Q)) * CS
            A(I,P) = XX
            A(I,Q) = YY
+           AX = MAX(AX, CR_HYPOT(REAL(XX), AIMAG(XX)), CR_HYPOT(REAL(YY), AIMAG(YY)))
         END DO
      ELSE ! swap
         DO I = 1, N
@@ -33,6 +36,7 @@
            YY = (A(I,P) * HS + A(I,Q)) * CS
            A(I,P) = YY
            A(I,Q) = XX
+           AX = MAX(AX, CR_HYPOT(REAL(XX), AIMAG(XX)), CR_HYPOT(REAL(YY), AIMAG(YY)))
         END DO
      END IF
   ELSE IF (IAND(INFO, 8) .NE. 0) THEN

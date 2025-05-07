@@ -7,6 +7,7 @@
            YY = A(I,Q) * CS - A(I,P) * SN
            A(I,P) = XX
            A(I,Q) = YY
+           AX = MAX(AX, ABS(XX), ABS(YY))
         END DO
      ELSE ! swap
         DO I = 1, N
@@ -14,6 +15,7 @@
            YY = A(I,Q) * CS - A(I,P) * SN
            A(I,P) = YY
            A(I,Q) = XX
+           AX = MAX(AX, ABS(XX), ABS(YY))
         END DO
      END IF
   ELSE IF (IAND(INFO, 4) .EQ. 0) THEN
@@ -26,6 +28,7 @@
            YY = (A(I,Q) - A(I,P) * SN) * CS
            A(I,P) = XX
            A(I,Q) = YY
+           AX = MAX(AX, ABS(XX), ABS(YY))
         END DO
      ELSE ! swap
         DO I = 1, N
@@ -35,6 +38,7 @@
            YY = (A(I,Q) - A(I,P) * SN) * CS
            A(I,P) = YY
            A(I,Q) = XX
+           AX = MAX(AX, ABS(XX), ABS(YY))
         END DO
      END IF
   ELSE IF (IAND(INFO, 8) .NE. 0) THEN

@@ -6,6 +6,7 @@
         YY = SH * A(P,J) + CH * A(Q,J)
         A(P,J) = XX
         A(Q,J) = YY
+        AX = MAX(AX, ABS(XX), ABS(YY))
      END DO
   ELSE IF (IAND(INFO, 4) .EQ. 0) THEN
      ! SH => TH
@@ -16,5 +17,6 @@
         YY = CH * (SH * A(P,J) + A(Q,J))
         A(P,J) = XX
         A(Q,J) = YY
+        AX = MAX(AX, ABS(XX), ABS(YY))
      END DO
   END IF

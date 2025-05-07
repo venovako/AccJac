@@ -14,3 +14,4 @@
         A22 = L2
      END IF
   END IF
+  IF (A11 .LT. A22) INFO = IOR(INFO, 8)
