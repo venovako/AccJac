@@ -14,4 +14,9 @@
         A22 = L2
      END IF
   END IF
-  IF (A11 .LT. A22) INFO = IOR(INFO, 8)
+  IF (A11 .LT. A22) THEN
+     L1 = A11
+     A11 = A22
+     A22 = L1
+     INFO = IOR(INFO, 8)
+  END IF

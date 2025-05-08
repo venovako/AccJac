@@ -66,6 +66,7 @@ cscalg.o dscalg.o sscalg.o zscalg.o\
 dscala.o zscala.o\
 cinisv.o dinisv.o sinisv.o zinisv.o\
 ctrans.o dtrans.o strans.o ztrans.o\
+dtrana.o ztrana.o\
 coffa.o doffa.o soffa.o zoffa.o\
 dtrack.o strack.o\
 dtrkoa.o ztrkoa.o\
