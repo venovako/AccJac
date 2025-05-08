@@ -1,5 +1,4 @@
 FUNCTION COFFA(M, N, G, LDG, GS, WRK)
-  USE, INTRINSIC :: IEEE_ARITHMETIC, ONLY: IEEE_FMA
   USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL32, REAL64
   IMPLICIT NONE
   INTERFACE
@@ -34,9 +33,10 @@ FUNCTION COFFA(M, N, G, LDG, GS, WRK)
         DO L = 1, M
            X = CONJG(WRK(L,I))
            Y = WRK(L,J)
+           !DIR$ FMA
            D = CMPLX(&
-                IEEE_FMA(REAL(X), REAL(Y), IEEE_FMA(-AIMAG(X), AIMAG(Y), REAL(D))),&
-                IEEE_FMA(REAL(X), AIMAG(Y), IEEE_FMA(AIMAG(X), REAL(Y), AIMAG(D))), KK)
+                (REAL(X) *  REAL(Y) + (REAL(D)  - AIMAG(X) * AIMAG(Y))),&
+                (REAL(X) * AIMAG(Y) + (AIMAG(D) + AIMAG(X) *  REAL(Y))), KK)
         END DO
         O = CR_HYPOT(O, CR_HYPOT(REAL(D), AIMAG(D)))
      END DO

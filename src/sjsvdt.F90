@@ -1,14 +1,22 @@
 PROGRAM SJSVDT
-  USE, INTRINSIC :: IEEE_ARITHMETIC, ONLY: IEEE_FMA
 #ifdef __GFORTRAN__
   USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long, c_long_double
   USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: INT64, OUTPUT_UNIT, REAL32
 #else
+  USE, INTRINSIC :: IEEE_ARITHMETIC, ONLY: IEEE_FMA
   USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long
   USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: INT64, OUTPUT_UNIT, REAL32, REAL128
 #endif
   IMPLICIT NONE
 #ifdef __GFORTRAN__
+  INTERFACE
+     PURE FUNCTION X_FMA(X, Y, Z) BIND(C,NAME='fmal')
+       USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
+       IMPLICIT NONE
+       REAL(KIND=c_long_double), INTENT(IN), VALUE :: X, Y, Z
+       REAL(KIND=c_long_double) :: X_FMA
+     END FUNCTION X_FMA
+  END INTERFACE
   INTERFACE
      PURE FUNCTION HYPOTX(X, Y) BIND(C,NAME='cr_hypotl')
        USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
@@ -19,6 +27,7 @@ PROGRAM SJSVDT
   END INTERFACE
   INTEGER, PARAMETER :: KK = c_long_double
 #else
+#define X_FMA IEEE_FMA
 #define HYPOTX HYPOT
   INTEGER, PARAMETER :: KK = REAL128
 #endif
@@ -162,7 +171,7 @@ PROGRAM SJSVDT
            Z = HYPOTX(Z, W(I,J))
            DO L = 1, N
               ! W(I,J) = W(I,J) - U(I,L) * REAL(V(L,J), KK)
-              W(I,J) = IEEE_FMA(U(I,L), REAL(-V(L,J), KK), W(I,J))
+              W(I,J) = X_FMA(U(I,L), REAL(-V(L,J), KK), W(I,J))
            END DO
            Y = HYPOTX(Y, W(I,J))
         END DO

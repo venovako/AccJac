@@ -1,5 +1,4 @@
 FUNCTION SOFFA(M, N, G, LDG, GS, WRK)
-  USE, INTRINSIC :: IEEE_ARITHMETIC, ONLY: IEEE_FMA
   USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL32, REAL64
   IMPLICIT NONE
   INTERFACE
@@ -31,7 +30,8 @@ FUNCTION SOFFA(M, N, G, LDG, GS, WRK)
      DO I = 1, J-1
         D = ZERO
         DO L = 1, M
-           D = IEEE_FMA(WRK(L,I), WRK(L,J), D)
+           !DIR$ FMA
+           D = WRK(L,I) * WRK(L,J) + D
         END DO
         O = CR_HYPOT(O, D)
      END DO

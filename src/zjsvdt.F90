@@ -1,14 +1,22 @@
 PROGRAM ZJSVDT
-  USE, INTRINSIC :: IEEE_ARITHMETIC, ONLY: IEEE_FMA
 #ifdef __GFORTRAN__
   USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long, c_long_double
   USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: INT64, OUTPUT_UNIT, REAL64
 #else
+  USE, INTRINSIC :: IEEE_ARITHMETIC, ONLY: IEEE_FMA
   USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long
   USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: INT64, OUTPUT_UNIT, REAL64, REAL128
 #endif
   IMPLICIT NONE
 #ifdef __GFORTRAN__
+  INTERFACE
+     PURE FUNCTION X_FMA(X, Y, Z) BIND(C,NAME='fmal')
+       USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
+       IMPLICIT NONE
+       REAL(KIND=c_long_double), INTENT(IN), VALUE :: X, Y, Z
+       REAL(KIND=c_long_double) :: X_FMA
+     END FUNCTION X_FMA
+  END INTERFACE
   INTERFACE
      PURE FUNCTION HYPOTX(X, Y) BIND(C,NAME='cr_hypotl')
        USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
@@ -19,6 +27,7 @@ PROGRAM ZJSVDT
   END INTERFACE
   INTEGER, PARAMETER :: KK = c_long_double
 #else
+#define X_FMA IEEE_FMA
 #define HYPOTX HYPOT
   INTEGER, PARAMETER :: KK = REAL128
 #endif
@@ -240,12 +249,12 @@ PROGRAM ZJSVDT
   X = QZERO
   DO J = 1, JPOS
      Y = SV(J)
-     Y = ABS(IEEE_FMA(Y, Y, REAL(-LY(J), KK)) / LY(J))
+     Y = ABS(X_FMA(Y, Y, REAL(-LY(J), KK)) / LY(J))
      X = MAX(X, Y)
   END DO
   DO J = JPOS+1, N
      Y = SV(J)
-     Y = ABS(IEEE_FMA(Y, Y, REAL(LY(J), KK)) / LY(J))
+     Y = ABS(X_FMA(Y, Y, REAL(LY(J), KK)) / LY(J))
      X = MAX(X, Y)
   END DO
   DEALLOCATE(LY)
@@ -268,8 +277,8 @@ PROGRAM ZJSVDT
               ! W(I,J) = W(I,J) - U(I,L) * V(L,J)
               H = CMPLX(REAL(-REAL(V(L,J)), KK), REAL(-AIMAG(V(L,J)), KK), KK)
               W(I,J) = CMPLX(&
-                   IEEE_FMA(REAL(U(I,L)), REAL(H), IEEE_FMA(-AIMAG(U(I,L)), AIMAG(H), REAL(W(I,J)))),&
-                   IEEE_FMA(REAL(U(I,L)), AIMAG(H), IEEE_FMA(AIMAG(U(I,L)), REAL(H), AIMAG(W(I,J)))), KK)
+                   X_FMA(REAL(U(I,L)), REAL(H), X_FMA(-AIMAG(U(I,L)), AIMAG(H), REAL(W(I,J)))),&
+                   X_FMA(REAL(U(I,L)), AIMAG(H), X_FMA(AIMAG(U(I,L)), REAL(H), AIMAG(W(I,J)))), KK)
            END DO
            Y = HYPOTX(Y, HYPOTX(REAL(W(I,J)), AIMAG(W(I,J))))
         END DO
