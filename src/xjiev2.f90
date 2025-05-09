@@ -1,10 +1,10 @@
 SUBROUTINE XJIEV2(A, B, C, RT1, RT2, CS1, SN1, INFO)
-  USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_int
+  USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_int, c_long_double
   IMPLICIT NONE
 
-  REAL(10), PARAMETER :: ZERO = 0.0_10, ONE = 1.0_10
-  REAL(10), INTENT(IN) :: A, B, C
-  REAL(10), INTENT(OUT) :: RT1, RT2, CS1, SN1
+  REAL(c_long_double), PARAMETER :: ZERO = 0.0_c_long_double, ONE = 1.0_c_long_double
+  REAL(c_long_double), INTENT(IN) :: A, B, C
+  REAL(c_long_double), INTENT(OUT) :: RT1, RT2, CS1, SN1
   INTEGER, INTENT(INOUT) :: INFO
   INTEGER(c_int) :: ES
   INTEGER(c_int), EXTERNAL :: PVN_XLJEV2

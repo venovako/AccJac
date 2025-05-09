@@ -1,7 +1,8 @@
 FUNCTION XRSAFE(U)
+  USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
   IMPLICIT NONE
   INTEGER, INTENT(IN) :: U
-  REAL(10) :: XRSAFE, RMIN, RMAX, R, A
+  REAL(c_long_double) :: XRSAFE, RMIN, RMAX, R, A
   RMIN = TINY(A)
   A = HUGE(A)
   RMAX = SCALE(A, -2)

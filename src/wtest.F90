@@ -1,15 +1,18 @@
 PROGRAM WTEST
+  USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
   USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL128
   IMPLICIT NONE
   INTEGER, PARAMETER :: CLAL = 256
-  REAL(10), PARAMETER :: HALF = 0.5_10
+  REAL(c_long_double), PARAMETER :: HALF = 0.5_c_long_double
   REAL(REAL128), PARAMETER :: QZERO = 0.0_REAL128, QONE = 1.0_REAL128
   CHARACTER(LEN=CLAL) :: CLA
-  COMPLEX(10) :: A, B, C, SN1
-  REAL(10) :: RT1, RT2, CS1
+  COMPLEX(c_long_double) :: A, B, C, SN1
+  REAL(c_long_double) :: RT1, RT2, CS1
   COMPLEX(REAL128) :: QA, QB, QC, QSN1
   REAL(REAL128) :: QRT1, QRT2, QCS1, QJD, QLD, QREC, QRESR,QRESI, MJD, XJD, MLD, XLD, MREC, XREC, MRESR,MRESI, XRESR,XRESI, E_2
   INTEGER :: I, N, U, INFO
+  REAL(c_long_double), EXTERNAL :: XRSAFE
+  REAL(REAL128), EXTERNAL :: QRE, YDETM1
   EXTERNAL :: WJIEV2, WLAEV2, YJIEV2
 
   I = CLAL
@@ -36,11 +39,11 @@ PROGRAM WTEST
   XRESR = E_2
   XRESI = E_2
   E_2 = EPSILON(HALF) * HALF
-  U = ORFILE()
+  OPEN(NEWUNIT=U,FILE='/dev/random',ACCESS='STREAM',ACTION='READ',STATUS='OLD')
   I = 1
   DO WHILE (I .LE. N)
      A = XRSAFE(U)
-     B = CMPLX(XRSAFE(U), XRSAFE(U), 10)
+     B = CMPLX(XRSAFE(U), XRSAFE(U), c_long_double)
      C = XRSAFE(U)
 #ifndef NDEBUG
      WRITE (*,9,ADVANCE='NO') 'A(1,:):(', REAL(A)
@@ -151,9 +154,4 @@ PROGRAM WTEST
   WRITE (*,9) 'min(relerr(sinα*sinφ)/ε)=', MRESI
   WRITE (*,9) 'max(relerr(sinα*sinφ)/ε)=', XRESI
 9 FORMAT(A,ES30.21E4)
-CONTAINS
-#include "orfile.F90"
-#include "xrsafe.F90"
-#include "ydetm1.F90"
-#include "qre.F90"
 END PROGRAM WTEST

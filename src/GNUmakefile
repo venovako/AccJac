@@ -51,8 +51,10 @@ EXE2 += \
 sth2t.exe
 endif # MPFR
 
-OBJD=\
+OBJD=bfopen.o\
 cjaevd.o zjaevd.o\
+drsafe.o qrsafe.o srsafe.o\
+qre.o qdetm1.o ydetm1.o\
 croth.o droth.o sroth.o zroth.o\
 crott.o drott.o srott.o zrott.o\
 crtvh.o drtvh.o srtvh.o zrtvh.o\
@@ -96,7 +98,7 @@ EXE2 += \
 wtest.exe xtest.exe\
 wljv2t.exe xljv2t.exe
 
-OBJD += \
+OBJD += xrsafe.o\
 wroth.o xroth.o\
 wrott.o xrott.o\
 wrtvh.o xrtvh.o\

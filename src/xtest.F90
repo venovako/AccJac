@@ -1,13 +1,16 @@
 PROGRAM XTEST
+  USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
   USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL128
   IMPLICIT NONE
   INTEGER, PARAMETER :: CLAL = 256
-  REAL(10), PARAMETER :: HALF = 0.5_10
+  REAL(c_long_double), PARAMETER :: HALF = 0.5_c_long_double
   REAL(REAL128), PARAMETER :: QZERO = 0.0_REAL128, QONE = 1.0_REAL128
   CHARACTER(LEN=CLAL) :: CLA
-  REAL(10) :: A, B, C, RT1, RT2, CS1, SN1
+  REAL(c_long_double) :: A, B, C, RT1, RT2, CS1, SN1
   REAL(REAL128) :: QA, QB, QC, QRT1, QRT2, QCS1, QSN1, QJD, QLD, QREC, QRES, MJD, XJD, MLD, XLD, MREC, XREC, MRES, XRES, E_2
   INTEGER :: I, N, U, INFO
+  REAL(c_long_double), EXTERNAL :: XRSAFE
+  REAL(REAL128), EXTERNAL :: QRE, QDETM1
   EXTERNAL :: XJIEV2, XLAEV2, QJIEV2
 
   I = CLAL
@@ -32,7 +35,7 @@ PROGRAM XTEST
   XREC = E_2
   XRES = E_2
   E_2 = EPSILON(HALF) * HALF
-  U = ORFILE()
+  OPEN(NEWUNIT=U,FILE='/dev/random',ACCESS='STREAM',ACTION='READ',STATUS='OLD')
   I = 1
   DO WHILE (I .LE. N)
      A = XRSAFE(U)
@@ -126,9 +129,4 @@ PROGRAM XTEST
   WRITE (*,9) '     min(relerr(sinφ)/ε)=', MRES
   WRITE (*,9) '     max(relerr(sinφ)/ε)=', XRES
 9 FORMAT(A,ES30.21E4)
-CONTAINS
-#include "orfile.F90"
-#include "xrsafe.F90"
-#include "qdetm1.F90"
-#include "qre.F90"
 END PROGRAM XTEST
