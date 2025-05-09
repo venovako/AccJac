@@ -8,6 +8,32 @@ SUBROUTINE ZTRANA(N, A, LDA, V, LDV, AX, AS, P, Q, TOL, INFO)
   USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL64
   IMPLICIT NONE
   INTERFACE
+     SUBROUTINE ZSWPC(N, A, LDA, P, Q, INFO)
+       USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL64
+       IMPLICIT NONE
+       INTEGER, INTENT(IN) :: N, LDA, P, Q
+       COMPLEX(KIND=REAL64), INTENT(INOUT) :: A(LDA,N)
+       INTEGER, INTENT(OUT) :: INFO
+     END SUBROUTINE ZSWPC
+  END INTERFACE
+  INTERFACE
+     SUBROUTINE ZSWPR(N, A, LDA, P, Q, INFO)
+       USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL64
+       IMPLICIT NONE
+       INTEGER, INTENT(IN) :: N, LDA, P, Q
+       COMPLEX(KIND=REAL64), INTENT(INOUT) :: A(LDA,N)
+       INTEGER, INTENT(OUT) :: INFO
+     END SUBROUTINE ZSWPR
+  END INTERFACE
+  INTERFACE
+     PURE FUNCTION CR_HYPOT(X, Y) BIND(C,NAME='cr_hypot')
+       USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_double
+       IMPLICIT NONE
+       REAL(KIND=c_double), INTENT(IN), VALUE :: X, Y
+       REAL(KIND=c_double) :: CR_HYPOT
+     END FUNCTION CR_HYPOT
+  END INTERFACE
+  INTERFACE
      SUBROUTINE ZLJAU2(A11, A22, A21R, A21I, CS, SNR, SNI, INFO)
        USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL64
        IMPLICIT NONE
@@ -100,54 +126,67 @@ SUBROUTINE ZTRANA(N, A, LDA, V, LDV, AX, AS, P, Q, TOL, INFO)
   IF (N .LT. 0) INFO = -1
   IF (INFO .LT. 0) RETURN
   IF (N .EQ. 0) RETURN
+  I = IAND(INFO, 2)
   A1 = REAL(A(P,P))
   A2 = REAL(A(Q,Q))
-  VX = ZERO
-  T = AX
-  IF (IAND(INFO, 2) .EQ. 0) THEN
-     CALL ZLJAU2(A1, A2, REAL(A(Q,P)), AIMAG(A(Q,P)), C, SR, SI, INFO)
-     CALL ZRTRT(N, V, LDV, VX, P, Q, C, SR, SI, INFO)
-     CALL ZRTRT(N, A, LDA, AX, P, Q, C, SR, SI, INFO)
-     CALL ZRTLT(N, A, LDA, AX, P, Q, C, SR, SI, INFO)
-  ELSE ! hyp
-     CALL ZLJAV2(A1, A2, REAL(A(Q,P)), AIMAG(A(Q,P)), C, SR, SI, INFO)
-     CALL ZRTRH(N, V, LDV, VX, P, Q, C, SR, SI, INFO)
-     CALL ZRTRH(N, A, LDA, AX, P, Q, C, SR, SI, INFO)
-     CALL ZRTLH(N, A, LDA, AX, P, Q, C, SR, SI, INFO)
-  END IF
-  IF (.NOT. (VX .LT. HUGE(VX))) THEN
-     INFO = -4
-     RETURN
-  END IF
-  IF (INFO .LT. 0) THEN
-     INFO = -2
-     RETURN
-  END IF
-  IF (IAND(INFO, 4) .NE. 0) THEN
-     IF (IAND(INFO, 8) .EQ. 0) THEN
-        I = 0
-     ELSE ! swap
-        I = 1
+  T = (SQRT(ABS(REAL(A1))) * SQRT(ABS(REAL(A2)))) * TOL
+  IF (CR_HYPOT(REAL(A(Q,P)), AIMAG(A(Q,P))) .LT. T) THEN
+     IF ((I .EQ. 0) .AND. (A1 .LT. A2)) THEN
+        CALL ZSWPC(N, V, LDV, P, Q, INFO)
+        CALL ZSWPC(N, A, LDA, P, Q, INFO)
+        CALL ZSWPR(N, A, LDA, P, Q, INFO)
+        INFO = 1
+     ELSE ! no-op
+        INFO = 0
      END IF
-  ELSE ! transf
-     I = 2
-  END IF
-  A(P,P) = A1
-  A(Q,Q) = A2
-  IF (IAND(INFO, 2) .EQ. 0) THEN
-     A(P,Q) = ZERO
-     A(Q,P) = ZERO
-  END IF
-  IF (AX .GT. T) THEN
-     INFO = 1
-     CALL ZSCALA(N, A, LDA, AX, AS, INFO)
+  ELSE ! rotate
+     VX = ZERO
+     T = AX
+     IF (I .EQ. 0) THEN
+        CALL ZLJAU2(A1, A2, REAL(A(Q,P)), AIMAG(A(Q,P)), C, SR, SI, INFO)
+        CALL ZRTRT(N, V, LDV, VX, P, Q, C, SR, SI, INFO)
+        CALL ZRTRT(N, A, LDA, AX, P, Q, C, SR, SI, INFO)
+        CALL ZRTLT(N, A, LDA, AX, P, Q, C, SR, SI, INFO)
+     ELSE ! hyp
+        CALL ZLJAV2(A1, A2, REAL(A(Q,P)), AIMAG(A(Q,P)), C, SR, SI, INFO)
+        CALL ZRTRH(N, V, LDV, VX, P, Q, C, SR, SI, INFO)
+        CALL ZRTRH(N, A, LDA, AX, P, Q, C, SR, SI, INFO)
+        CALL ZRTLH(N, A, LDA, AX, P, Q, C, SR, SI, INFO)
+     END IF
+     IF (.NOT. (VX .LT. HUGE(VX))) THEN
+        INFO = -4
+        RETURN
+     END IF
      IF (INFO .LT. 0) THEN
-        I = -7
-     ELSE IF (INFO .GT. 0) THEN
-        I = 3
-     ELSE ! no downscaling
+        INFO = -2
+        RETURN
+     END IF
+     IF (IAND(INFO, 4) .NE. 0) THEN
+        IF (IAND(INFO, 8) .EQ. 0) THEN
+           I = 0
+        ELSE ! swap
+           I = 1
+        END IF
+     ELSE ! transf
         I = 2
      END IF
+     A(P,P) = A1
+     A(Q,Q) = A2
+     IF (IAND(INFO, 2) .EQ. 0) THEN
+        A(P,Q) = ZERO
+        A(Q,P) = ZERO
+     END IF
+     IF (AX .GT. T) THEN
+        INFO = 1
+        CALL ZSCALA(N, A, LDA, AX, AS, INFO)
+        IF (INFO .LT. 0) THEN
+           I = -7
+        ELSE IF (INFO .GT. 0) THEN
+           I = 3
+        ELSE ! no downscaling
+           I = 2
+        END IF
+     END IF
+     INFO = I
   END IF
-  INFO = I
 END SUBROUTINE ZTRANA
