@@ -62,7 +62,6 @@ crtvt.o drtvt.o srtvt.o zrtvt.o\
 drtlt.o drtrt.o zrtlt.o zrtrt.o\
 drtlh.o drtrh.o zrtlh.o zrtrh.o\
 cnrmf.o dnrmf.o snrmf.o znrmf.o\
-dnrmoa.o znrmoa.o\
 csdp.o dsdp.o ssdp.o zsdp.o\
 cgram.o dgram.o sgram.o zgram.o\
 cscalg.o dscalg.o sscalg.o zscalg.o\
@@ -73,8 +72,9 @@ cinisv.o dinisv.o sinisv.o zinisv.o\
 ctrans.o dtrans.o strans.o ztrans.o\
 dtrana.o ztrana.o\
 coffa.o doffa.o soffa.o zoffa.o\
-dtrack.o strack.o\
-dtrkoa.o ztrkoa.o\
+dtrace.o dtrack.o strack.o ztrace.o\
+dnrmoa.o znrmoa.o\
+dtrcoa.o dtrkoa.o ztrcoa.o ztrkoa.o\
 cjsvdc.o djsvdc.o sjsvdc.o zjsvdc.o\
 cjsvdr.o djsvdr.o sjsvdr.o zjsvdr.o
 

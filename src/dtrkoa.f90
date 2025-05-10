@@ -10,15 +10,14 @@ SUBROUTINE DTRKOA(M, N, G, LDG, GS, S, T, U, WRK)
   INTEGER, PARAMETER :: KK = REAL128
 #endif
   INTEGER, PARAMETER :: K = REAL64
-  INTEGER, INTENT(IN) :: M, N, LDG
+  INTEGER, INTENT(IN) :: M, N, LDG, GS, S
   REAL(KIND=K), INTENT(IN) :: G(LDG,N)
-  INTEGER, INTENT(IN) :: GS, S
   INTEGER, INTENT(INOUT) :: T, U
   REAL(KIND=KK), INTENT(OUT) :: WRK(M,N)
   CHARACTER(LEN=10) :: FN
   INTEGER :: NS, MD, H1
   REAL(KIND=K), EXTERNAL :: DOFFA
-  IF ((LDG .LT. M) .OR. (N .LE. 1) .OR. (N .GT. 1000) .OR. (M .LT. N)) RETURN
+  IF ((LDG .LT. M) .OR. (N .LE. 1) .OR. (N .GE. 1000) .OR. (M .LT. N)) RETURN
   IF (S .EQ. 0) THEN
      IF (N .LT. 10) THEN
         WRITE (FN,'(I1)') N
@@ -38,9 +37,8 @@ SUBROUTINE DTRKOA(M, N, G, LDG, GS, S, T, U, WRK)
   END IF
   NS = (N * (N - 1)) / 2
   MD = MOD(T, NS)
-  ! HACK: assuming that N/2 is a power of two
-  H1 = (N / 2) - 1
-  IF ((MD .EQ. 0) .OR. (MD .EQ. 1) .OR. (IAND(MD, H1) .EQ. 0)) THEN
+  H1 = N / 2
+  IF ((MD .EQ. 0) .OR. (MD .EQ. 1) .OR. (MOD(MD, H1) .EQ. 0)) THEN
      WRITE (U,'(I11,A,I3,A,ES25.17E3)') T, ',', S, ',', DOFFA(M, N, G, LDG, GS, WRK)
      FLUSH(U)
   END IF
