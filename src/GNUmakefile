@@ -62,6 +62,7 @@ crtvt.o drtvt.o srtvt.o zrtvt.o\
 drtlt.o drtrt.o zrtlt.o zrtrt.o\
 drtlh.o drtrh.o zrtlh.o zrtrh.o\
 cnrmf.o dnrmf.o snrmf.o znrmf.o\
+dnrmoa.o znrmoa.o\
 csdp.o dsdp.o ssdp.o zsdp.o\
 cgram.o dgram.o sgram.o zgram.o\
 cscalg.o dscalg.o sscalg.o zscalg.o\
