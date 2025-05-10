@@ -194,66 +194,69 @@ PROGRAM DJSVDT
   WRITE (UNIT=I, IOSTAT=J) SV
   IF (J .NE. 0) STOP 'S'
   ! read LY
-  ALLOCATE(LY(N))
   CALL BFOPEN(TRIM(CLA)//'.LY', 'RO', I, J)
-  IF (J .NE. 0) STOP 'LY'
-  READ (UNIT=I, IOSTAT=J) LY
-  IF (J .NE. 0) STOP 'L'
-  CLOSE(I)
-  L = 1
-  I = 1
-  DO WHILE (L .GT. 0)
-     L = 0
-     DO J = 1, N-I
-        IF (LY(J) .LT. LY(J+1)) THEN
-           T = LY(J)
-           LY(J) = LY(J+1)
-           LY(J+1) = T
-           L = L + 1
-        END IF
+  IF (J .EQ. 0) THEN
+     ALLOCATE(LY(N))
+     READ (UNIT=I, IOSTAT=J) LY
+     IF (J .NE. 0) STOP 'L'
+     CLOSE(I)
+     L = 1
+     I = 1
+     DO WHILE (L .GT. 0)
+        L = 0
+        DO J = 1, N-I
+           IF (LY(J) .LT. LY(J+1)) THEN
+              T = LY(J)
+              LY(J) = LY(J+1)
+              LY(J+1) = T
+              L = L + 1
+           END IF
+        END DO
+        I = I + 1
      END DO
-     I = I + 1
-  END DO
-  L = 1
-  I = 1
-  DO WHILE (L .GT. 0)
-     L = 0
-     DO J = 1, JPOS-I
-        IF (SV(J) .LT. SV(J+1)) THEN
-           T = SV(J)
-           SV(J) = SV(J+1)
-           SV(J+1) = T
-           L = L + 1
-        END IF
+     L = 1
+     I = 1
+     DO WHILE (L .GT. 0)
+        L = 0
+        DO J = 1, JPOS-I
+           IF (SV(J) .LT. SV(J+1)) THEN
+              T = SV(J)
+              SV(J) = SV(J+1)
+              SV(J+1) = T
+              L = L + 1
+           END IF
+        END DO
+        I = I + 1
      END DO
-     I = I + 1
-  END DO
-  L = 1
-  I = 1
-  DO WHILE (L .GT. 0)
-     L = 0
-     DO J = JPOS+1, N-I
-        IF (SV(J) .GT. SV(J+1)) THEN
-           T = SV(J)
-           SV(J) = SV(J+1)
-           SV(J+1) = T
-           L = L + 1
-        END IF
+     L = 1
+     I = 1
+     DO WHILE (L .GT. 0)
+        L = 0
+        DO J = JPOS+1, N-I
+           IF (SV(J) .GT. SV(J+1)) THEN
+              T = SV(J)
+              SV(J) = SV(J+1)
+              SV(J+1) = T
+              L = L + 1
+           END IF
+        END DO
+        I = I + 1
      END DO
-     I = I + 1
-  END DO
-  X = QZERO
-  DO J = 1, JPOS
-     Y = SV(J)
-     Y = ABS(X_FMA(Y, Y, REAL(-LY(J), KK)) / LY(J))
-     X = MAX(X, Y)
-  END DO
-  DO J = JPOS+1, N
-     Y = SV(J)
-     Y = ABS(X_FMA(Y, Y, REAL(LY(J), KK)) / LY(J))
-     X = MAX(X, Y)
-  END DO
-  DEALLOCATE(LY)
+     X = QZERO
+     DO J = 1, JPOS
+        Y = SV(J)
+        Y = ABS(X_FMA(Y, Y, REAL(-LY(J), KK)) / LY(J))
+        X = MAX(X, Y)
+     END DO
+     DO J = JPOS+1, N
+        Y = SV(J)
+        Y = ABS(X_FMA(Y, Y, REAL(LY(J), KK)) / LY(J))
+        X = MAX(X, Y)
+     END DO
+     DEALLOCATE(LY)
+  ELSE ! no LY
+     X = -QZERO
+  END IF
   WRITE (OUTPUT_UNIT,'(ES25.17E3,A)',ADVANCE='NO') REAL(X, REAL64), ','
   FLUSH(OUTPUT_UNIT)
   Y = QZERO
