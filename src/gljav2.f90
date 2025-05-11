@@ -1,5 +1,5 @@
   IF (INFO .EQ. 0) THEN
-     ES = 3_c_int
+     ES =  3_c_int
   ELSE ! (ch,th)
      ES = -3_c_int
   END IF

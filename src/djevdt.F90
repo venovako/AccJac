@@ -7,15 +7,27 @@ PROGRAM DJEVDT
 #endif
   IMPLICIT NONE
 #ifdef __GFORTRAN__
+  INTERFACE
+     PURE FUNCTION HYPOTX(X, Y) BIND(C,NAME='cr_hypotl')
+       USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
+       IMPLICIT NONE
+       REAL(KIND=c_long_double), INTENT(IN), VALUE :: X, Y
+       REAL(KIND=c_long_double) :: HYPOTX
+     END FUNCTION HYPOTX
+  END INTERFACE
   INTEGER, PARAMETER :: KK = c_long_double
 #else
+#define HYPOTX HYPOT
   INTEGER, PARAMETER :: KK = REAL128
 #endif
   INTEGER, PARAMETER :: K = REAL64
+  REAL(KIND=KK), PARAMETER :: XZERO = 0.0_KK
+  REAL(KIND=K), PARAMETER :: ZERO = 0.0_K
   CHARACTER(LEN=256) :: CLA
   REAL(KIND=KK) :: X
   INTEGER :: N, JPOS, INFO, I, J, AS
   REAL(KIND=K), ALLOCATABLE :: A(:,:), V(:,:), WRK(:,:)
+  REAL(KIND=K), EXTERNAL :: DNRMF
   EXTERNAL :: BFOPEN, DJEVDR
   ! read the command line arguments
   I = COMMAND_ARGUMENT_COUNT()
@@ -49,42 +61,45 @@ PROGRAM DJEVDT
   ALLOCATE(WRK(N,N))
   AS = HUGE(AS)
   CALL DJEVDR(N, A, N, V, N, JPOS, WRK, AS, INFO)
-  WRITE (OUTPUT_UNIT,'(I2,A,I6,A,I11)') INFO, ',', AS, ',', INT(WRK(1,1), INT64)
+  WRITE (OUTPUT_UNIT,'(I2,A,I6,A,I11,A)',ADVANCE='NO') INFO, ',', AS, ',', INT(WRK(1,1), INT64), ','
   FLUSH(OUTPUT_UNIT)
-  DEALLOCATE(WRK)
   CALL BFOPEN(TRIM(CLA)//'.V', 'WO', I, J)
   IF (J .NE. 0) STOP 'OPEN(V)'
   WRITE (UNIT=I, IOSTAT=J) V
   IF (J .NE. 0) STOP 'WRITE(V)'
   CLOSE (UNIT=I, IOSTAT=J)
   IF (J .NE. 0) STOP 'CLOSE(V)'
-  DEALLOCATE(V)
-  OPEN(NEWUNIT=INFO, FILE=TRIM(CLA)//'.AE', STATUS='REPLACE', ACTION='WRITE', ACCESS='SEQUENTIAL', FORM='FORMATTED')
-  I = -AS
-  DO J = 1, JPOS
-     X = A(J,J)
-     A(J,J) = SCALE( A(J,J), I)
-     X = SCALE(X, I)
-     WRITE (INFO,'(ES25.17E3)') X
+  WRK = TRANSPOSE(V)
+  INFO = -AS
+  DO J = 1, N
+     DO I = 1, J-1
+        A(I,J) = ZERO
+     END DO
+     A(J,J) = SCALE(A(J,J), INFO)
+     DO I = J+1, N
+        A(I,J) = ZERO
+     END DO
+     DO I = 1, N
+        V(I,J) = V(I,J) * A(J,J)
+     END DO
   END DO
-  DO J = JPOS+1, N
-     X = -A(J,J)
-     A(J,J) = SCALE(-A(J,J), I)
-     X = SCALE(X, I)
-     WRITE (INFO,'(ES25.17E3)') X
-  END DO
-  CLOSE(INFO)
-  CALL BFOPEN(TRIM(CLA)//'.L', 'WO', I, J)
-  IF (J .NE. 0) STOP 'OPEN(L)'
-  DO INFO = 1, JPOS
-     WRITE (UNIT=I, IOSTAT=J) A(INFO,INFO)
-     IF (J .NE. 0) STOP 'WRITE(L+)'
-  END DO
-  DO INFO = JPOS+1, N
-     WRITE (UNIT=I, IOSTAT=J) A(INFO,INFO)
-     IF (J .NE. 0) STOP 'WRITE(L-)'
-  END DO
+  A = MATMUL(V, WRK)
+  CALL BFOPEN(TRIM(CLA)//'.A', 'RO', I, J)
+  IF (J .NE. 0) STOP 'OPEN(A)'
+  READ (UNIT=I, IOSTAT=J) WRK
+  IF (J .NE. 0) STOP 'READ(A)'
   CLOSE (UNIT=I, IOSTAT=J)
-  IF (J .NE. 0) STOP 'CLOSE(L)'
+  IF (J .NE. 0) STOP 'CLOSE(A)'
+  X = XZERO
+  DO J = 1, N
+     DO I = 1, N
+        X = HYPOTX(X, REAL(WRK(I,J), KK) - REAL(A(I,J), KK))
+     END DO
+  END DO
+  INFO = N * N
+  IF (X .NE. XZERO) X = X / DNRMF(INFO, WRK)
+  WRITE (OUTPUT_UNIT,'(ES25.17E3)') X
+  DEALLOCATE(WRK)
+  DEALLOCATE(V)
   DEALLOCATE(A)
 END PROGRAM DJEVDT

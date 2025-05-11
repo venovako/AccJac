@@ -104,8 +104,10 @@ SUBROUTINE DJEVDR(N, A, LDA, V, LDV, JPOS, WRK, AS, INFO)
         DO P = 1, N-1
            IF (P .LT. JPOS) THEN
               CALL DSWPXD(N, A, LDA, V, LDV, P, JPOS, W)
-           ELSE ! P >= JPOS
+           ELSE IF (P .GT. JPOS) THEN
               CALL DSWPXD(N, A, LDA, V, LDV, P, N, W)
+           ELSE ! P = JPOS
+              W = JPOS
            END IF
            IF (W .LE. 0) THEN
               INFO = -7
