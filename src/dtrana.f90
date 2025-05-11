@@ -121,7 +121,6 @@ SUBROUTINE DTRANA(N, A, LDA, V, LDV, AX, AS, P, Q, TOL, INFO)
         CALL DSWPC(N, V, LDV, P, Q, INFO)
         CALL DSWPC(N, A, LDA, P, Q, INFO)
         CALL DSWPR(N, A, LDA, P, Q, INFO)
-        TOL = -ZERO
         INFO = 1
      ELSE ! no-op
         INFO = 0
@@ -140,7 +139,7 @@ SUBROUTINE DTRANA(N, A, LDA, V, LDV, AX, AS, P, Q, TOL, INFO)
         CALL DRTRH(N, A, LDA, AX, P, Q, C, S, INFO)
         CALL DRTLH(N, A, LDA, AX, P, Q, C, S, INFO)
      END IF
-     TOL = C
+     TOL = S
      IF (.NOT. (VX .LT. HUGE(VX))) THEN
         INFO = -4
         RETURN
