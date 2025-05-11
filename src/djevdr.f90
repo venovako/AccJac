@@ -1,4 +1,4 @@
-!  IN: AS = max sweeps, INFO = 0 or 1 (sin => tan)
+!  IN: AS = max sweeps, INFO = 0 or 1 (sin => tan) OR 2 (the modified deRijk)
 ! OUT: AS: backscale A by 2**-AS, INFO: #sweeps
 SUBROUTINE DJEVDR(N, A, LDA, V, LDV, JPOS, WRK, AS, INFO)
   USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: INT64, REAL64
@@ -53,9 +53,11 @@ SUBROUTINE DJEVDR(N, A, LDA, V, LDV, JPOS, WRK, AS, INFO)
   REAL(KIND=K), INTENT(INOUT) :: A(LDA,N)
   REAL(KIND=K), INTENT(OUT) :: V(LDV,N), WRK(N,N)
   INTEGER, INTENT(INOUT) :: AS, INFO
+  CHARACTER(LEN=8) :: FN
   REAL(KIND=K) :: AX, TOL
   INTEGER(KIND=INT64) :: TT
-  INTEGER :: O, P, Q, R, S, T, U, W
+  INTEGER :: O, P, Q, R, S, T, U, W, X
+  EXTERNAL :: BFOPEN
   IF ((INFO .LT. 0) .OR. (INFO .GT. 7)) INFO = -9
   IF (AS .LT. 0) INFO = -8
   IF ((JPOS .LT. 0) .OR. (JPOS .GT. N)) INFO = -6
@@ -97,83 +99,134 @@ SUBROUTINE DJEVDR(N, A, LDA, V, LDV, JPOS, WRK, AS, INFO)
   ! main loop
   DO R = 1, S
      T = 0
-     ! the first diagonal block
-     DO P = 1, JPOS-1
-        CALL DSWPXD(N, A, LDA, V, LDV, P, JPOS, W)
-        IF (W .LE. 0) THEN
-           INFO = -7
-           RETURN
-        END IF
-        DO Q = P+1, JPOS
-           W = IAND(INFO, 1)
-           WRK(P,Q) = TOL
-           CALL DTRANA(N, A, LDA, V, LDV, AX, AS, P, Q, WRK(P,Q), W)
-           SELECT CASE (W)
-           CASE (0)
-              CONTINUE
-           CASE (1)
-              T = T + 1
-           CASE (2,3)
-              T = T + 1
-              TT = TT + 1_INT64
-           CASE DEFAULT
-              INFO = -4
+     X = 1
+     WRK(X,X) = R
+     IF (IAND(INFO, 2) .EQ. 0) THEN
+        DO P = 1, N-1
+           IF (P .LT. JPOS) THEN
+              CALL DSWPXD(N, A, LDA, V, LDV, P, JPOS, W)
+           ELSE ! P >= JPOS
+              CALL DSWPXD(N, A, LDA, V, LDV, P, N, W)
+           END IF
+           IF (W .LE. 0) THEN
+              INFO = -7
               RETURN
-           END SELECT
-           IF (IAND(INFO, 4) .NE. 0) CALL DTRCOA(N, A, LDA, AS, R, O, U)
+           END IF
+           X = X + 1
+           WRK(X,X) = W
+           DO Q = P+1, N
+              W = IAND(INFO, 1)
+              IF ((P .LE. JPOS) .AND. (Q .GT. JPOS)) W = IOR(W, 2)
+              WRK(P,Q) = TOL
+              CALL DTRANA(N, A, LDA, V, LDV, AX, AS, P, Q, WRK(P,Q), W)
+              SELECT CASE (W)
+              CASE (0)
+                 CONTINUE
+              CASE (1)
+                 T = T + 1
+              CASE (2,3)
+                 T = T + 1
+                 TT = TT + 1_INT64
+              CASE DEFAULT
+                 INFO = -4
+                 RETURN
+              END SELECT
+              IF (IAND(INFO, 4) .NE. 0) CALL DTRCOA(N, A, LDA, AS, R, O, U)              
+           END DO
         END DO
-     END DO
-     ! the off-diagonal block (hyp)
-     DO P = 1, JPOS
-        DO Q = JPOS+1, N
-           W = IOR(IAND(INFO, 1), 2)
-           WRK(P,Q) = TOL
-           CALL DTRANA(N, A, LDA, V, LDV, AX, AS, P, Q, WRK(P,Q), W)
-           SELECT CASE (W)
-           CASE (0)
-              CONTINUE
-           CASE (1)
-              T = T + 1
-           CASE (2,3)
-              T = T + 1
-              TT = TT + 1_INT64
-           CASE DEFAULT
-              INFO = -4
+     ELSE ! the modified deRijk
+        ! the first diagonal block
+        DO P = 1, JPOS-1
+           CALL DSWPXD(N, A, LDA, V, LDV, P, JPOS, W)
+           IF (W .LE. 0) THEN
+              INFO = -7
               RETURN
-           END SELECT
-           IF (IAND(INFO, 4) .NE. 0) CALL DTRCOA(N, A, LDA, AS, R, O, U)
+           END IF
+           X = X + 1
+           WRK(X,X) = W
+           DO Q = P+1, JPOS
+              W = IAND(INFO, 1)
+              WRK(Q,P) = TOL
+              CALL DTRANA(N, A, LDA, V, LDV, AX, AS, P, Q, WRK(Q,P), W)
+              SELECT CASE (W)
+              CASE (0)
+                 CONTINUE
+              CASE (1)
+                 T = T + 1
+              CASE (2,3)
+                 T = T + 1
+                 TT = TT + 1_INT64
+              CASE DEFAULT
+                 INFO = -4
+                 RETURN
+              END SELECT
+              IF (IAND(INFO, 4) .NE. 0) CALL DTRCOA(N, A, LDA, AS, R, O, U)
+           END DO
         END DO
-     END DO
-     ! the second diagonal block
-     DO P = JPOS+1, N-1
-        CALL DSWPXD(N, A, LDA, V, LDV, P, N, W)
-        IF (W .LE. 0) THEN
-           INFO = -7
-           RETURN
-        END IF
-        DO Q = P+1, N
-           W = IAND(INFO, 1)
-           WRK(P,Q) = TOL
-           CALL DTRANA(N, A, LDA, V, LDV, AX, AS, P, Q, WRK(P,Q), W)
-           SELECT CASE (W)
-           CASE (0)
-              CONTINUE
-           CASE (1)
-              T = T + 1
-           CASE (2,3)
-              T = T + 1
-              TT = TT + 1_INT64
-           CASE DEFAULT
-              INFO = -5
+        ! the off-diagonal block (hyp)
+        DO P = 1, JPOS
+           DO Q = JPOS+1, N
+              W = IOR(IAND(INFO, 1), 2)
+              WRK(Q,P) = TOL
+              CALL DTRANA(N, A, LDA, V, LDV, AX, AS, P, Q, WRK(Q,P), W)
+              SELECT CASE (W)
+              CASE (0)
+                 CONTINUE
+              CASE (1)
+                 T = T + 1
+              CASE (2,3)
+                 T = T + 1
+                 TT = TT + 1_INT64
+              CASE DEFAULT
+                 INFO = -4
+                 RETURN
+              END SELECT
+              IF (IAND(INFO, 4) .NE. 0) CALL DTRCOA(N, A, LDA, AS, R, O, U)
+           END DO
+        END DO
+        ! the second diagonal block
+        DO P = JPOS+1, N-1
+           CALL DSWPXD(N, A, LDA, V, LDV, P, N, W)
+           IF (W .LE. 0) THEN
+              INFO = -7
               RETURN
-           END SELECT
-           IF (IAND(INFO, 4) .NE. 0) CALL DTRCOA(N, A, LDA, AS, R, O, U)
+           END IF
+           X = X + 1
+           WRK(X,X) = W
+           DO Q = P+1, N
+              W = IAND(INFO, 1)
+              WRK(Q,P) = TOL
+              CALL DTRANA(N, A, LDA, V, LDV, AX, AS, P, Q, WRK(Q,P), W)
+              SELECT CASE (W)
+              CASE (0)
+                 CONTINUE
+              CASE (1)
+                 T = T + 1
+              CASE (2,3)
+                 T = T + 1
+                 TT = TT + 1_INT64
+              CASE DEFAULT
+                 INFO = -5
+                 RETURN
+              END SELECT
+              IF (IAND(INFO, 4) .NE. 0) CALL DTRCOA(N, A, LDA, AS, R, O, U)
+           END DO
         END DO
-     END DO
+     END IF
      CALL DTRACE(N, A, LDA, AX, AS, R, T)
+     IF (N .LT. 1000) THEN
+        IF (IAND(INFO, 2) .EQ. 0) THEN
+           WRITE (FN,'(I3.3,A,I2.2,A)') N, '_', R, '.C'
+        ELSE ! the modified deRijk
+           WRITE (FN,'(I3.3,A,I2.2,A)') N, '-', R, '.C'
+        END IF
+        CALL BFOPEN(FN, 'WO', W, X)
+        WRITE (UNIT=W, IOSTAT=X) WRK
+        CLOSE(UNIT=W, IOSTAT=X)
+     END IF
      IF (T .EQ. 0) EXIT
   END DO
   IF (IAND(INFO, 4) .NE. 0) CALL DTRCOA(N, A, LDA, AS, -1, O, U)
   INFO = R
-  WRK(1,1) = TRANSFER(TT, ZERO)
+  WRK(1,1) = TT
 END SUBROUTINE DJEVDR
