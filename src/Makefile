@@ -163,7 +163,8 @@ sjsvdt.exe \
 zjsvdt.exe \
 djevdt.exe \
 zjevdt.exe \
-dpproc.exe
+dpproc.exe \
+zpproc.exe
 
 all: $(LIBS) $(EXES)
 
