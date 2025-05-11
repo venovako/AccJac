@@ -99,14 +99,15 @@ dtrkoa.o ztrkoa.o\
 dtrcoa.o ztrcoa.o\
 cjsvdc.o djsvdc.o sjsvdc.o zjsvdc.o\
 cjsvdr.o djsvdr.o sjsvdr.o zjsvdr.o\
-djevdr.o
+djevdr.o zjevdr.o
 
 LIBD=libjaevd.a
 
 EXED=past.exe\
 cevdj.exe zevdj.exe\
 cjsvdt.exe djsvdt.exe sjsvdt.exe zjsvdt.exe\
-djevdt.exe dpproc.exe
+djevdt.exe zjevdt.exe\
+dpproc.exe
 
 ifeq ($(COMPILER),gfortran)
 ifeq ($(findstring 86,$(ARCH)),86)

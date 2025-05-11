@@ -144,7 +144,8 @@ cjsvdr.obj \
 djsvdr.obj \
 sjsvdr.obj \
 zjsvdr.obj \
-djevdr.obj
+djevdr.obj \
+zjevdr.obj
 LIBS= \
 jaev2.lib \
 jaevd.lib
@@ -161,6 +162,7 @@ djsvdt.exe \
 sjsvdt.exe \
 zjsvdt.exe \
 djevdt.exe \
+zjevdt.exe \
 dpproc.exe
 
 all: $(LIBS) $(EXES)

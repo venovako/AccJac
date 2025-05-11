@@ -1,4 +1,4 @@
-PROGRAM DJEVDT
+PROGRAM ZJEVDT
 #ifdef __GFORTRAN__
   USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
   USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: INT64, OUTPUT_UNIT, REAL64
@@ -26,13 +26,13 @@ PROGRAM DJEVDT
   CHARACTER(LEN=256) :: CLA
   REAL(KIND=KK) :: W
   INTEGER :: N, JPOS, INFO, I, J, AS
-  REAL(KIND=K), ALLOCATABLE :: A(:,:), V(:,:), WRK(:,:)
-  REAL(KIND=KK), ALLOCATABLE :: X(:,:), Y(:,:), Z(:,:)
-  REAL(KIND=K), EXTERNAL :: DNRMF
-  EXTERNAL :: BFOPEN, DJEVDR
+  COMPLEX(KIND=K), ALLOCATABLE :: A(:,:), V(:,:), WRK(:,:)
+  COMPLEX(KIND=KK), ALLOCATABLE :: X(:,:), Y(:,:), Z(:,:)
+  REAL(KIND=K), EXTERNAL :: ZNRMF
+  EXTERNAL :: BFOPEN, ZJEVDR
   ! read the command line arguments
   I = COMMAND_ARGUMENT_COUNT()
-  IF (I .NE. 4) STOP 'djevdt.exe N JPOS OPTS FILE'
+  IF (I .NE. 4) STOP 'zjevdt.exe N JPOS OPTS FILE'
   I = 0
   CALL GET_COMMAND_ARGUMENT(1, CLA)
   READ (CLA,*) N
@@ -61,7 +61,7 @@ PROGRAM DJEVDT
   ALLOCATE(V(N,N))
   ALLOCATE(WRK(N,N))
   AS = HUGE(AS)
-  CALL DJEVDR(N, A, N, V, N, JPOS, WRK, AS, INFO)
+  CALL ZJEVDR(N, A, N, V, N, JPOS, WRK, AS, INFO)
   WRITE (OUTPUT_UNIT,'(I2,A,I6,A,I11,A)',ADVANCE='NO') INFO, ',', AS, ',', INT(WRK(1,1), INT64), ','
   FLUSH(OUTPUT_UNIT)
   CALL BFOPEN(TRIM(CLA)//'.V', 'WO', I, J)
@@ -79,13 +79,13 @@ PROGRAM DJEVDT
         A(I,J) = ZERO
      END DO
      Z(J,J) = A(J,J)
-     A(J,J) = SCALE(A(J,J), INFO)
-     Z(J,J) = SCALE(Z(J,J), INFO)
+     A(J,J) = SCALE(REAL(A(J,J)), INFO)
+     Z(J,J) = SCALE(REAL(Z(J,J)), INFO)
      DO I = J+1, N
         A(I,J) = ZERO
      END DO
   END DO
-  ! V^-T = WRK := J V J
+  ! V^-H = WRK := J V J
   DO J = 1, JPOS
      DO I = 1, JPOS
         WRK(I,J) = V(I,J)
@@ -102,19 +102,19 @@ PROGRAM DJEVDT
         WRK(I,J) = V(I,J)
      END DO
   END DO
-  ! Y := V^-T D
+  ! Y := V^-H D
   DO J = 1, N
      DO I = 1, N
         Y(I,J) = WRK(I,J) * Z(J,J)
      END DO
   END DO
-  ! Z := V^-1 = (V^-T)^T = WRK^T
+  ! Z := V^-1 = (V^-H)^H = WRK^H
   DO J = 1, N
      DO I = 1, N
-        Z(I,J) = WRK(J,I)
+        Z(I,J) = CONJG(WRK(J,I))
      END DO
   END DO
-  ! V^T A V = D ==> A = V^-T D V^-1
+  ! V^H A V = D ==> A = V^-H D V^-1
   X = MATMUL(Y, Z)
   CALL BFOPEN(TRIM(CLA)//'.A', 'RO', I, J)
   IF (J .NE. 0) STOP 'OPEN(A)'
@@ -126,11 +126,11 @@ PROGRAM DJEVDT
   DO J = 1, N
      DO I = 1, N
         Y(I,J) = A(I,J) - X(I,J)
-        W = HYPOTX(W, Y(I,J))
+        W = HYPOTX(W, HYPOTX(REAL(Y(I,J)), AIMAG(Y(I,J))))
      END DO
   END DO
   INFO = N * N
-  IF (W .NE. XZERO) W = W / DNRMF(INFO, A)
+  IF (W .NE. XZERO) W = W / ZNRMF(INFO, A)
   WRITE (OUTPUT_UNIT,'(ES25.17E3)') W
   DEALLOCATE(Z)
   DEALLOCATE(Y)
@@ -138,4 +138,4 @@ PROGRAM DJEVDT
   DEALLOCATE(WRK)
   DEALLOCATE(V)
   DEALLOCATE(A)
-END PROGRAM DJEVDT
+END PROGRAM ZJEVDT
