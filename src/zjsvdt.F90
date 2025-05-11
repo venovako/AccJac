@@ -190,9 +190,24 @@ PROGRAM ZJSVDT
         END DO
      END DO
   END IF
-  DO J = 1, N
+  OPEN(NEWUNIT=I, IOSTAT=J, FILE=TRIM(CLA)//'.E', STATUS='REPLACE', ACTION='WRITE', ACCESS='SEQUENTIAL', FORM='FORMATTED')
+  IF (J .NE. 0) STOP 'OPEN(E)'
+  DO J = 1, JPOS
+     X = SV(J)
      SV(J) = SCALE(SV(J), L)
+     X = SCALE(X, L)
+     X = X * X
+     WRITE (I,'(ES25.17E3)') X
   END DO
+  DO J = JPOS+1, N
+     X = SV(J)
+     SV(J) = SCALE(SV(J), L)
+     X = SCALE(X, L)
+     X = -X * X
+     WRITE (I,'(ES25.17E3)') X
+  END DO
+  CLOSE (UNIT=I, IOSTAT=J)
+  IF (J .NE. 0) STOP 'CLOSE(E)'
   CALL BFOPEN(TRIM(CLA)//'.SY', 'WO', I, J)
   IF (J .NE. 0) STOP 'SY'
   WRITE (UNIT=I, IOSTAT=J) SV

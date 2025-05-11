@@ -161,14 +161,14 @@ PROGRAM PAST
      ALLOCATE(A(N,N))
      DO J = 1, N
         DO I = 1, N
-           A(I,J) = U(I,J)
+           A(I,J) = L(I,J)
         END DO
      END DO
   ELSE ! K >= M
      ALLOCATE(AA(N,N))
      DO J = 1, N
         DO I = 1, N
-           AA(I,J) = U(I,J)
+           AA(I,J) = L(I,J)
         END DO
      END DO
   END IF
