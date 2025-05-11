@@ -41,7 +41,7 @@ PROGRAM DPPROC
   ALLOCATE(A1(N,N))
   ALLOCATE(W3(N,N))
   ALLOCATE(A3(N,N))
-  WRITE (OUTPUT_UNIT,'(A)') '"SWEEP", "P", "Q", "maxRE(sin[h])@PQ", "maxRE(A)"'
+  WRITE (OUTPUT_UNIT,'(A)') '"SWEEP", "P", "Q", "maxRE(tan[h])@PQ", "maxRE(A)"'
   DO L = 1, S
      WRITE (FN,'(A,I3.3,A,I2.2,A)') 'd', N, '_', L, '.txt'
      OPEN(NEWUNIT=U, IOSTAT=J, FILE=FN, STATUS='OLD', ACTION='READ', ACCESS='SEQUENTIAL', FORM='FORMATTED')
