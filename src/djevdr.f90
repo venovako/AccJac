@@ -53,11 +53,10 @@ SUBROUTINE DJEVDR(N, A, LDA, V, LDV, JPOS, WRK, AS, INFO)
   REAL(KIND=K), INTENT(INOUT) :: A(LDA,N)
   REAL(KIND=K), INTENT(OUT) :: V(LDV,N), WRK(N,N)
   INTEGER, INTENT(INOUT) :: AS, INFO
-  CHARACTER(LEN=8) :: FN
   REAL(KIND=K) :: AX, TOL
   INTEGER(KIND=INT64) :: TT
   INTEGER :: O, P, Q, R, S, T, U, W, X
-  EXTERNAL :: BFOPEN
+  CHARACTER(LEN=11) :: FN
   IF ((INFO .LT. 0) .OR. (INFO .GT. 7)) INFO = -9
   IF (AS .LT. 0) INFO = -8
   IF ((JPOS .LT. 0) .OR. (JPOS .GT. N)) INFO = -6
@@ -117,8 +116,8 @@ SUBROUTINE DJEVDR(N, A, LDA, V, LDV, JPOS, WRK, AS, INFO)
            DO Q = P+1, N
               W = IAND(INFO, 1)
               IF ((P .LE. JPOS) .AND. (Q .GT. JPOS)) W = IOR(W, 2)
-              WRK(P,Q) = TOL
-              CALL DTRANA(N, A, LDA, V, LDV, AX, AS, P, Q, WRK(P,Q), W)
+              WRK(Q,P) = TOL
+              CALL DTRANA(N, A, LDA, V, LDV, AX, AS, P, Q, WRK(Q,P), W)
               SELECT CASE (W)
               CASE (0)
                  CONTINUE
@@ -215,13 +214,25 @@ SUBROUTINE DJEVDR(N, A, LDA, V, LDV, JPOS, WRK, AS, INFO)
      END IF
      CALL DTRACE(N, A, LDA, AX, AS, R, T)
      IF (N .LT. 1000) THEN
+        X = -AS
+        DO Q = 1, N
+           DO P = 1, Q
+              WRK(P,Q) = SCALE(A(P,Q), X)
+           END DO
+        END DO
         IF (IAND(INFO, 2) .EQ. 0) THEN
-           WRITE (FN,'(I3.3,A,I2.2,A)') N, '_', R, '.C'
+           WRITE (FN,'(A,I3.3,A,I2.2,A)') 'd', N, '_', R, '.txt'
         ELSE ! the modified deRijk
-           WRITE (FN,'(I3.3,A,I2.2,A)') N, '-', R, '.C'
+           WRITE (FN,'(A,I3.3,A,I2.2,A)') 'd', N, '-', R, '.txt'
         END IF
-        CALL BFOPEN(FN, 'WO', W, X)
-        WRITE (UNIT=W, IOSTAT=X) WRK
+        OPEN(NEWUNIT=W, IOSTAT=X, FILE=FN, STATUS='REPLACE', ACTION='WRITE', ACCESS='SEQUENTIAL', FORM='FORMATTED')
+        DO P = 1, N
+           WRITE (W,'(ES25.17E3)',ADVANCE='NO') WRK(P,1)
+           DO Q = 2, N-1
+              WRITE (W,'(ES26.17E3)',ADVANCE='NO') WRK(P,Q)
+           END DO
+           WRITE (W,'(ES26.17E3)') WRK(P,N)
+        END DO
         CLOSE(UNIT=W, IOSTAT=X)
      END IF
      IF (T .EQ. 0) EXIT

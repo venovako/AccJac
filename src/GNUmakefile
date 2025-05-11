@@ -30,12 +30,30 @@ claev2.o dlaev2.o slaev2.o zlaev2.o
 endif # !LAPACK
 
 OBJ2=\
-cjaev2.o djaev2.o qjaev2.o sjaev2.o yjaev2.o zjaev2.o\
-cjiev2.o djiev2.o qjiev2.o sjiev2.o yjiev2.o zjiev2.o\
-clju2.o dlju2.o slju2.o zlju2.o\
-cljv2.o dljv2.o sljv2.o zljv2.o\
-dljau2.o zljau2.o\
-dljav2.o zljav2.o
+cjaev2.o\
+djaev2.o\
+qjaev2.o\
+sjaev2.o\
+yjaev2.o\
+zjaev2.o\
+cjiev2.o\
+djiev2.o\
+qjiev2.o\
+sjiev2.o\
+yjiev2.o\
+zjiev2.o\
+clju2.o \
+dlju2.o \
+slju2.o \
+zlju2.o \
+cljv2.o \
+dljv2.o \
+sljv2.o \
+zljv2.o \
+dljau2.o\
+zljau2.o\
+dljav2.o\
+zljav2.o
 
 LIB2=libjaev2.a
 
@@ -51,7 +69,9 @@ EXE2 += \
 sth2t.exe
 endif # MPFR
 
-OBJD=bfopen.o pascal.o\
+OBJD=\
+bfopen.o\
+pascal.o\
 cjaevd.o zjaevd.o\
 drsafe.o qrsafe.o srsafe.o\
 qre.o qdetm1.o ydetm1.o\
@@ -72,9 +92,11 @@ cinisv.o dinisv.o sinisv.o zinisv.o\
 ctrans.o dtrans.o strans.o ztrans.o\
 dtrana.o ztrana.o\
 coffa.o doffa.o soffa.o zoffa.o\
-dtrace.o dtrack.o strack.o ztrace.o\
+dtrack.o strack.o\
+dtrace.o ztrace.o\
 dnrmoa.o znrmoa.o\
-dtrcoa.o dtrkoa.o ztrcoa.o ztrkoa.o\
+dtrkoa.o ztrkoa.o\
+dtrcoa.o ztrcoa.o\
 cjsvdc.o djsvdc.o sjsvdc.o zjsvdc.o\
 cjsvdr.o djsvdr.o sjsvdr.o zjsvdr.o\
 djevdr.o
@@ -83,7 +105,8 @@ LIBD=libjaevd.a
 
 EXED=past.exe\
 cevdj.exe zevdj.exe\
-cjsvdt.exe djsvdt.exe sjsvdt.exe zjsvdt.exe
+cjsvdt.exe djsvdt.exe sjsvdt.exe zjsvdt.exe\
+djevdt.exe
 
 ifeq ($(COMPILER),gfortran)
 ifeq ($(findstring 86,$(ARCH)),86)
