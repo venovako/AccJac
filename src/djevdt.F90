@@ -124,7 +124,7 @@ PROGRAM DJEVDT
   Z(1,1) = XZERO
   DO J = 1, N
      DO I = 1, N
-        Y(I,J) = REAL(A(I,J), KK) - X(I,J)
+        Y(I,J) = A(I,J) - X(I,J)
         Z(1,1) = HYPOTX(Z(1,1), Y(I,J))
      END DO
   END DO
