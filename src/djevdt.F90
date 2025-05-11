@@ -69,7 +69,6 @@ PROGRAM DJEVDT
   IF (J .NE. 0) STOP 'WRITE(V)'
   CLOSE (UNIT=I, IOSTAT=J)
   IF (J .NE. 0) STOP 'CLOSE(V)'
-  WRK = TRANSPOSE(V)
   INFO = -AS
   DO J = 1, N
      DO I = 1, J-1
@@ -79,11 +78,38 @@ PROGRAM DJEVDT
      DO I = J+1, N
         A(I,J) = ZERO
      END DO
-     DO I = 1, N
-        V(I,J) = V(I,J) * A(J,J)
+  END DO
+  ! V^T A V = D ==> A = V^-T D V^-1
+  ! V^-T = WRK := J V J
+  DO J = 1, JPOS
+     DO I = 1, JPOS
+        WRK(I,J) = V(I,J)
+     END DO
+     DO I = JPOS+1, N
+        WRK(I,J) = -V(I,J)
      END DO
   END DO
-  A = MATMUL(V, WRK)
+  DO J = JPOS+1, N
+     DO I = 1, JPOS
+        WRK(I,J) = -V(I,J)
+     END DO
+     DO I = JPOS+1, N
+        WRK(I,J) = V(I,J)
+     END DO
+  END DO
+  ! V := V^-1 = (V^-1)^T = WRK^T
+  DO J = 1, N
+     DO I = 1, N
+        V(I,J) = WRK(J,I)
+     END DO
+  END DO
+  ! WRK := V^-T D
+  DO J = 1, N
+     DO I = 1, N
+        WRK(I,J) = WRK(I,J) * A(J,J)
+     END DO
+  END DO
+  A = MATMUL(WRK, V)
   CALL BFOPEN(TRIM(CLA)//'.A', 'RO', I, J)
   IF (J .NE. 0) STOP 'OPEN(A)'
   READ (UNIT=I, IOSTAT=J) WRK
