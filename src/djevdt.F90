@@ -24,9 +24,9 @@ PROGRAM DJEVDT
   REAL(KIND=KK), PARAMETER :: XZERO = 0.0_KK
   REAL(KIND=K), PARAMETER :: ZERO = 0.0_K
   CHARACTER(LEN=256) :: CLA
-  REAL(KIND=KK) :: X
   INTEGER :: N, JPOS, INFO, I, J, AS
   REAL(KIND=K), ALLOCATABLE :: A(:,:), V(:,:), WRK(:,:)
+  REAL(KIND=KK), ALLOCATABLE :: X(:,:), Y(:,:), Z(:,:)
   REAL(KIND=K), EXTERNAL :: DNRMF
   EXTERNAL :: BFOPEN, DJEVDR
   ! read the command line arguments
@@ -69,17 +69,21 @@ PROGRAM DJEVDT
   IF (J .NE. 0) STOP 'WRITE(V)'
   CLOSE (UNIT=I, IOSTAT=J)
   IF (J .NE. 0) STOP 'CLOSE(V)'
+  ALLOCATE(X(N,N))
+  ALLOCATE(Y(N,N))
+  ALLOCATE(Z(N,N))
   INFO = -AS
   DO J = 1, N
      DO I = 1, J-1
         A(I,J) = ZERO
      END DO
+     Z(J,J) = A(J,J)
      A(J,J) = SCALE(A(J,J), INFO)
+     Z(J,J) = SCALE(Z(J,J), INFO)
      DO I = J+1, N
         A(I,J) = ZERO
      END DO
   END DO
-  ! V^T A V = D ==> A = V^-T D V^-1
   ! V^-T = WRK := J V J
   DO J = 1, JPOS
      DO I = 1, JPOS
@@ -97,34 +101,39 @@ PROGRAM DJEVDT
         WRK(I,J) = V(I,J)
      END DO
   END DO
-  ! V := V^-1 = (V^-1)^T = WRK^T
+  ! Y := V^-T D
   DO J = 1, N
      DO I = 1, N
-        V(I,J) = WRK(J,I)
+        Y(I,J) = WRK(I,J) * Z(J,J)
      END DO
   END DO
-  ! WRK := V^-T D
+  ! Z := V^-1 = (V^-1)^T = WRK^T
   DO J = 1, N
      DO I = 1, N
-        WRK(I,J) = WRK(I,J) * A(J,J)
+        Z(I,J) = WRK(J,I)
      END DO
   END DO
-  A = MATMUL(WRK, V)
+  ! V^T A V = D ==> A = V^-T D V^-1
+  X = MATMUL(Y, Z)
   CALL BFOPEN(TRIM(CLA)//'.A', 'RO', I, J)
   IF (J .NE. 0) STOP 'OPEN(A)'
-  READ (UNIT=I, IOSTAT=J) WRK
+  READ (UNIT=I, IOSTAT=J) A
   IF (J .NE. 0) STOP 'READ(A)'
   CLOSE (UNIT=I, IOSTAT=J)
   IF (J .NE. 0) STOP 'CLOSE(A)'
-  X = XZERO
+  Z(1,1) = XZERO
   DO J = 1, N
      DO I = 1, N
-        X = HYPOTX(X, REAL(WRK(I,J), KK) - REAL(A(I,J), KK))
+        Y(I,J) = REAL(A(I,J), KK) - X(I,J)
+        Z(1,1) = HYPOTX(Z(1,1), Y(I,J))
      END DO
   END DO
   INFO = N * N
-  IF (X .NE. XZERO) X = X / DNRMF(INFO, WRK)
-  WRITE (OUTPUT_UNIT,'(ES25.17E3)') X
+  IF (Z(1,1) .NE. XZERO) Z(1,1) = Z(1,1) / DNRMF(INFO, A)
+  WRITE (OUTPUT_UNIT,'(ES25.17E3)') Z(1,1)
+  DEALLOCATE(Z)
+  DEALLOCATE(Y)
+  DEALLOCATE(X)
   DEALLOCATE(WRK)
   DEALLOCATE(V)
   DEALLOCATE(A)

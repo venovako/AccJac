@@ -76,7 +76,7 @@ PROGRAM DPPROC
            W1(J,I) = ABS(W1(I,J) - W3(I,J))
            IF (W1(J,I) .NE. ZERO) W3(J,I) = W1(J,I) / ABS(W1(I,J))
            IF (W3(J,I) .GT. XW) THEN
-              XW = MAX(XW, W3(J,I))
+              XW = W3(J,I)
               U = J
               V = I
            END IF
