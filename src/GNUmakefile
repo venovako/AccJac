@@ -76,7 +76,8 @@ dtrace.o dtrack.o strack.o ztrace.o\
 dnrmoa.o znrmoa.o\
 dtrcoa.o dtrkoa.o ztrcoa.o ztrkoa.o\
 cjsvdc.o djsvdc.o sjsvdc.o zjsvdc.o\
-cjsvdr.o djsvdr.o sjsvdr.o zjsvdr.o
+cjsvdr.o djsvdr.o sjsvdr.o zjsvdr.o\
+djevdr.o
 
 LIBD=libjaevd.a
 

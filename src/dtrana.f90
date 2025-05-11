@@ -97,8 +97,7 @@ SUBROUTINE DTRANA(N, A, LDA, V, LDV, AX, AS, P, Q, TOL, INFO)
   INTEGER, PARAMETER :: K = REAL64
   REAL(KIND=K), PARAMETER :: ZERO = 0.0_K
   INTEGER, INTENT(IN) :: N, LDA, LDV, P, Q
-  REAL(KIND=K), INTENT(INOUT) :: A(LDA,N), V(LDV,N), AX
-  REAL(KIND=K), INTENT(IN) :: TOL
+  REAL(KIND=K), INTENT(INOUT) :: A(LDA,N), V(LDV,N), AX, TOL
   INTEGER, INTENT(INOUT) :: AS, INFO
   REAL(KIND=K) :: A1, A2, VX, C, S, T
   INTEGER :: I
@@ -116,11 +115,13 @@ SUBROUTINE DTRANA(N, A, LDA, V, LDV, AX, AS, P, Q, TOL, INFO)
   A1 = A(P,P)
   A2 = A(Q,Q)
   T = (SQRT(ABS(A1)) * SQRT(ABS(A2))) * TOL
+  TOL = ZERO
   IF (ABS(A(Q,P)) .LT. T) THEN
      IF ((I .EQ. 0) .AND. (A1 .LT. A2)) THEN
         CALL DSWPC(N, V, LDV, P, Q, INFO)
         CALL DSWPC(N, A, LDA, P, Q, INFO)
         CALL DSWPR(N, A, LDA, P, Q, INFO)
+        TOL = -ZERO
         INFO = 1
      ELSE ! no-op
         INFO = 0
@@ -139,6 +140,7 @@ SUBROUTINE DTRANA(N, A, LDA, V, LDV, AX, AS, P, Q, TOL, INFO)
         CALL DRTRH(N, A, LDA, AX, P, Q, C, S, INFO)
         CALL DRTLH(N, A, LDA, AX, P, Q, C, S, INFO)
      END IF
+     TOL = C
      IF (.NOT. (VX .LT. HUGE(VX))) THEN
         INFO = -4
         RETURN

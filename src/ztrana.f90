@@ -111,8 +111,7 @@ SUBROUTINE ZTRANA(N, A, LDA, V, LDV, AX, AS, P, Q, TOL, INFO)
   REAL(KIND=K), PARAMETER :: ZERO = 0.0_K
   INTEGER, INTENT(IN) :: N, LDA, LDV, P, Q
   COMPLEX(KIND=K), INTENT(INOUT) :: A(LDA,N), V(LDV,N)
-  REAL(KIND=K), INTENT(INOUT) :: AX
-  REAL(KIND=K), INTENT(IN) :: TOL
+  REAL(KIND=K), INTENT(INOUT) :: AX, TOL
   INTEGER, INTENT(INOUT) :: AS, INFO
   REAL(KIND=K) :: A1, A2, VX, C, SR, SI, T
   INTEGER :: I
@@ -130,11 +129,13 @@ SUBROUTINE ZTRANA(N, A, LDA, V, LDV, AX, AS, P, Q, TOL, INFO)
   A1 = REAL(A(P,P))
   A2 = REAL(A(Q,Q))
   T = (SQRT(ABS(REAL(A1))) * SQRT(ABS(REAL(A2)))) * TOL
+  TOL = ZERO
   IF (CR_HYPOT(REAL(A(Q,P)), AIMAG(A(Q,P))) .LT. T) THEN
      IF ((I .EQ. 0) .AND. (A1 .LT. A2)) THEN
         CALL ZSWPC(N, V, LDV, P, Q, INFO)
         CALL ZSWPC(N, A, LDA, P, Q, INFO)
         CALL ZSWPR(N, A, LDA, P, Q, INFO)
+        TOL = -ZERO
         INFO = 1
      ELSE ! no-op
         INFO = 0
@@ -153,6 +154,7 @@ SUBROUTINE ZTRANA(N, A, LDA, V, LDV, AX, AS, P, Q, TOL, INFO)
         CALL ZRTRH(N, A, LDA, AX, P, Q, C, SR, SI, INFO)
         CALL ZRTLH(N, A, LDA, AX, P, Q, C, SR, SI, INFO)
      END IF
+     TOL = C
      IF (.NOT. (VX .LT. HUGE(VX))) THEN
         INFO = -4
         RETURN
