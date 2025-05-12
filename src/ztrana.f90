@@ -130,7 +130,7 @@ SUBROUTINE ZTRANA(N, A, LDA, V, LDV, AX, AS, P, Q, TOL, INFO)
   INFO = IAND(INFO, 1)
   A1 = REAL(A(P,P))
   A2 = REAL(A(Q,Q))
-  T = (SQRT(ABS(REAL(A1))) * SQRT(ABS(REAL(A2)))) * T
+  T = (SQRT(ABS(A1)) * SQRT(ABS(A2))) * T
   TOL = ZERO
   IF (CR_HYPOT(REAL(A(Q,P)), AIMAG(A(Q,P))) .LT. T) THEN
      IF ((I .EQ. 0) .AND. (A1 .LT. A2)) THEN

@@ -192,7 +192,7 @@ help:
 %.o : %.f90 $(MKFS)
 	$(FC) $(FCFLAGS) -c $< -o $@
 
-%.exe : %.F90 $(MKFS)
+%.exe : %.F90 $(MKFS) $(LIB2) $(LIBD)
 	$(FC) $(FCFLAGS) $< -o $@ $(LDFLAGS)
 
 clean:

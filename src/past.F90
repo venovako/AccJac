@@ -5,15 +5,25 @@ PROGRAM PAST
   CHARACTER(LEN=256) :: CLA
   INTEGER(KIND=INT64) :: K, M
   INTEGER :: N, I, J
+  LOGICAL :: C
   INTEGER(KIND=INT64), ALLOCATABLE :: L(:,:), U(:,:), S(:,:)
   REAL(KIND=REAL64), ALLOCATABLE :: A(:,:)
   REAL(KIND=c_long_double), ALLOCATABLE :: AA(:,:)
+  COMPLEX(KIND=REAL64), ALLOCATABLE :: Z(:,:)
+  COMPLEX(KIND=c_long_double), ALLOCATABLE :: ZZ(:,:)
   EXTERNAL :: PASCAL
   I = COMMAND_ARGUMENT_COUNT()
   IF (I .NE. 2) STOP 'past.exe N FN'
   CALL GET_COMMAND_ARGUMENT(1, CLA)
   READ (CLA,*) N
-  IF (N .LE. 0) STOP 'N <= 0'
+  IF (N .LT. 0) THEN
+     N = -N
+     C = .TRUE.
+  ELSE IF (N .GT. 0) THEN
+     C = .FALSE.
+  ELSE ! N = 0
+     STOP 'N = 0'
+  END IF
   CALL GET_COMMAND_ARGUMENT(2, CLA)
   IF (LEN_TRIM(CLA) .LE. 0) STOP 'FN empty'
   ALLOCATE(L(N,N))
@@ -158,50 +168,102 @@ PROGRAM PAST
   END IF
   M = ISHFT(1_INT64, 53)
   IF (K .LT. M) THEN
-     ALLOCATE(A(N,N))
-     DO J = 1, N
-        DO I = 1, N
-           A(I,J) = L(I,J)
+     IF (C) THEN
+        ALLOCATE(Z(N,N))
+        DO J = 1, N
+           DO I = 1, N
+              Z(I,J) = L(I,J)
+           END DO
         END DO
-     END DO
+     ELSE ! real
+        ALLOCATE(A(N,N))
+        DO J = 1, N
+           DO I = 1, N
+              A(I,J) = L(I,J)
+           END DO
+        END DO
+     END IF
   ELSE ! K >= M
-     ALLOCATE(AA(N,N))
-     DO J = 1, N
-        DO I = 1, N
-           AA(I,J) = L(I,J)
+     IF (C) THEN
+        ALLOCATE(ZZ(N,N))
+        DO J = 1, N
+           DO I = 1, N
+              ZZ(I,J) = L(I,J)
+           END DO
         END DO
-     END DO
+     ELSE ! real
+        ALLOCATE(AA(N,N))
+        DO J = 1, N
+           DO I = 1, N
+              AA(I,J) = L(I,J)
+           END DO
+        END DO
+     END IF
   END IF
   CALL BFOPEN(TRIM(CLA)//'.Y', 'WO', I, J)
   IF (J .NE. 0) STOP 'BFOPEN(Y)'
   IF (K .LT. M) THEN
-     WRITE (UNIT=I,IOSTAT=J) A
+     IF (C) THEN
+        WRITE (UNIT=I,IOSTAT=J) Z
+     ELSE ! real
+        WRITE (UNIT=I,IOSTAT=J) A
+     END IF
   ELSE ! K >= M
-     WRITE (UNIT=I,IOSTAT=J) AA
+     IF (C) THEN
+        WRITE (UNIT=I,IOSTAT=J) ZZ
+     ELSE ! real
+        WRITE (UNIT=I,IOSTAT=J) AA
+     END IF
   END IF
   IF (J .NE. 0) STOP 'WRITE(Y)'
   CLOSE(I)
   IF (K .LT. M) THEN
-     DO J = 1, N
-        DO I = 1, N
-           A(I,J) = S(I,J)
+     IF (C) THEN
+        DO J = 1, N
+           DO I = 1, N
+              Z(I,J) = S(I,J)
+           END DO
         END DO
-     END DO
+     ELSE ! real
+        DO J = 1, N
+           DO I = 1, N
+              A(I,J) = S(I,J)
+           END DO
+        END DO
+     END IF
   ELSE ! K >= M
-     DO J = 1, N
-        DO I = 1, N
-           AA(I,J) = S(I,J)
+     IF (C) THEN
+        DO J = 1, N
+           DO I = 1, N
+              ZZ(I,J) = S(I,J)
+           END DO
         END DO
-     END DO
+     ELSE ! real
+        DO J = 1, N
+           DO I = 1, N
+              AA(I,J) = S(I,J)
+           END DO
+        END DO
+     END IF
   END IF
   CALL BFOPEN(TRIM(CLA)//'.A', 'WO', I, J)
   IF (J .NE. 0) STOP 'BFOPEN(A)'
   IF (K .LT. M) THEN
-     WRITE (UNIT=I,IOSTAT=J) A
-     DEALLOCATE(A)
+     IF (C) THEN
+        WRITE (UNIT=I,IOSTAT=J) Z
+        DEALLOCATE(Z)
+     ELSE ! real
+        WRITE (UNIT=I,IOSTAT=J) A
+        DEALLOCATE(A)
+     END IF
   ELSE ! K >= M
-     WRITE (UNIT=I,IOSTAT=J) AA
-     DEALLOCATE(AA)
+     IF (C) THEN
+        WRITE (UNIT=I,IOSTAT=J) ZZ
+        DEALLOCATE(ZZ)
+     ELSE ! real
+        WRITE (UNIT=I,IOSTAT=J) AA
+        DEALLOCATE(AA)
+     END IF
   END IF
   IF (J .NE. 0) STOP 'WRITE(A)'
   CLOSE(I)
