@@ -225,7 +225,7 @@ SUBROUTINE ZJEVDR(N, A, LDA, V, LDV, JPOS, WRK, AS, INFO)
            DO P = 1, Q-1
               WRK(P,Q) = CMPLX(SCALE(REAL(A(P,Q)), X), SCALE(AIMAG(A(P,Q)), X), K)
            END DO
-           WRK(Q,Q) = CMPLX(SCALE(REAL(A(Q,Q)), X), AIMAG(WRK(Q,Q)), K)
+           WRK(Q,Q) = CMPLX(SCALE(REAL(A(Q,Q)), X), ZERO, K)
         END DO
         IF (IAND(INFO, 2) .EQ. 0) THEN
            WRITE (FN,'(A,I3.3,A,I2.2,A)') 'z', N, '_', R, '.txt'
@@ -236,9 +236,9 @@ SUBROUTINE ZJEVDR(N, A, LDA, V, LDV, JPOS, WRK, AS, INFO)
         DO P = 1, N
            WRITE (W,'(2(A,ES25.17E3),A)',ADVANCE='NO') '(', REAL(WRK(P,1)), ',', AIMAG(WRK(P,1)), ')'
            DO Q = 2, N-1
-              WRITE (W,'(2(A,ES26.17E3),A)',ADVANCE='NO') ' (', REAL(WRK(P,Q)), ',', AIMAG(WRK(P,Q)), ')'
+              WRITE (W,'(2(A,ES25.17E3),A)',ADVANCE='NO') ' (', REAL(WRK(P,Q)), ',', AIMAG(WRK(P,Q)), ')'
            END DO
-           WRITE (W,'(2(A,ES26.17E3),A)') ' (', REAL(WRK(P,N)), ',', AIMAG(WRK(P,N)), ')'
+           WRITE (W,'(2(A,ES25.17E3),A)') ' (', REAL(WRK(P,N)), ',', AIMAG(WRK(P,N)), ')'
         END DO
         CLOSE(UNIT=W, IOSTAT=X)
      END IF
