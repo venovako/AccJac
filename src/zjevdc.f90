@@ -1,6 +1,6 @@
 !  IN: AS = max sweeps, INFO = 0 or 1 (sin => tan) OR 2 (the modified deRijk)
 ! OUT: AS: backscale A by 2**-AS, INFO: #sweeps
-SUBROUTINE ZJEVDR(N, A, LDA, V, LDV, JPOS, WRK, AS, INFO)
+SUBROUTINE ZJEVDC(N, A, LDA, V, LDV, JPOS, WRK, AS, INFO)
   USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: INT64, REAL64
   IMPLICIT NONE
   INTERFACE
@@ -95,7 +95,7 @@ SUBROUTINE ZJEVDR(N, A, LDA, V, LDV, JPOS, WRK, AS, INFO)
   TOL = SQRT(TOL) * EPS
   ! init trace
   R = 0
-  O = ICHAR('z')
+  O = ICHAR('Z')
   CALL ZTRACE(N, A, LDA, AX, AS, R, S)
   IF (IAND(INFO, 4) .NE. 0) CALL ZTRCOA(N, A, LDA, AS, R, O, U)
   TT = 0_INT64
@@ -106,19 +106,8 @@ SUBROUTINE ZJEVDR(N, A, LDA, V, LDV, JPOS, WRK, AS, INFO)
      WRK(X,X) = CMPLX(ZERO, R, K)
      IF (IAND(INFO, 2) .EQ. 0) THEN
         DO P = 1, N-1
-           IF (P .LT. JPOS) THEN
-              CALL ZSWPXD(N, A, LDA, V, LDV, P, JPOS, W)
-           ELSE IF (P .GT. JPOS) THEN
-              CALL ZSWPXD(N, A, LDA, V, LDV, P, N, W)
-           ELSE ! P = JPOS
-              W = JPOS
-           END IF
-           IF (W .LE. 0) THEN
-              INFO = -7
-              RETURN
-           END IF
            X = X + 1
-           WRK(X,X) = CMPLX(ZERO, W, K)
+           WRK(X,X) = CMPLX(ZERO, P, K)
            DO Q = P+1, N
               W = IAND(INFO, 1)
               IF ((P .LE. JPOS) .AND. (Q .GT. JPOS)) W = IOR(W, 2)
@@ -139,18 +128,13 @@ SUBROUTINE ZJEVDR(N, A, LDA, V, LDV, JPOS, WRK, AS, INFO)
               IF (IAND(INFO, 4) .NE. 0) CALL ZTRCOA(N, A, LDA, AS, R, O, U)
            END DO
         END DO
-     ELSE ! the modified deRijk
-        ! the first diagonal block
-        DO P = 1, JPOS-1
-           CALL ZSWPXD(N, A, LDA, V, LDV, P, JPOS, W)
-           IF (W .LE. 0) THEN
-              INFO = -7
-              RETURN
-           END IF
+     ELSE ! column cyclic
+        DO Q = 2, N
            X = X + 1
-           WRK(X,X) = CMPLX(ZERO, W, K)
-           DO Q = P+1, JPOS
+           WRK(X,X) = CMPLX(ZERO, Q, K)
+           DO P = 1, Q-1
               W = IAND(INFO, 1)
+              IF ((P .LE. JPOS) .AND. (Q .GT. JPOS)) W = IOR(W, 2)
               WRK(Q,P) = TOL
               CALL ZTRANA(N, A, LDA, V, LDV, AX, AS, P, Q, WRK(Q,P), W)
               SELECT CASE (W)
@@ -163,55 +147,6 @@ SUBROUTINE ZJEVDR(N, A, LDA, V, LDV, JPOS, WRK, AS, INFO)
                  TT = TT + 1_INT64
               CASE DEFAULT
                  INFO = -4
-                 RETURN
-              END SELECT
-              IF (IAND(INFO, 4) .NE. 0) CALL ZTRCOA(N, A, LDA, AS, R, O, U)
-           END DO
-        END DO
-        ! the off-diagonal block (hyp)
-        DO P = 1, JPOS
-           DO Q = JPOS+1, N
-              W = IOR(IAND(INFO, 1), 2)
-              WRK(Q,P) = TOL
-              CALL ZTRANA(N, A, LDA, V, LDV, AX, AS, P, Q, WRK(Q,P), W)
-              SELECT CASE (W)
-              CASE (0)
-                 CONTINUE
-              CASE (1)
-                 T = T + 1
-              CASE (2,3)
-                 T = T + 1
-                 TT = TT + 1_INT64
-              CASE DEFAULT
-                 INFO = -4
-                 RETURN
-              END SELECT
-              IF (IAND(INFO, 4) .NE. 0) CALL ZTRCOA(N, A, LDA, AS, R, O, U)
-           END DO
-        END DO
-        ! the second diagonal block
-        DO P = JPOS+1, N-1
-           CALL ZSWPXD(N, A, LDA, V, LDV, P, N, W)
-           IF (W .LE. 0) THEN
-              INFO = -7
-              RETURN
-           END IF
-           X = X + 1
-           WRK(X,X) = CMPLX(ZERO, W, K)
-           DO Q = P+1, N
-              W = IAND(INFO, 1)
-              WRK(Q,P) = TOL
-              CALL ZTRANA(N, A, LDA, V, LDV, AX, AS, P, Q, WRK(Q,P), W)
-              SELECT CASE (W)
-              CASE (0)
-                 CONTINUE
-              CASE (1)
-                 T = T + 1
-              CASE (2,3)
-                 T = T + 1
-                 TT = TT + 1_INT64
-              CASE DEFAULT
-                 INFO = -5
                  RETURN
               END SELECT
               IF (IAND(INFO, 4) .NE. 0) CALL ZTRCOA(N, A, LDA, AS, R, O, U)
@@ -228,9 +163,9 @@ SUBROUTINE ZJEVDR(N, A, LDA, V, LDV, JPOS, WRK, AS, INFO)
            WRK(Q,Q) = CMPLX(SCALE(REAL(A(Q,Q)), X), AIMAG(WRK(Q,Q)), K)
         END DO
         IF (IAND(INFO, 2) .EQ. 0) THEN
-           WRITE (FN,'(A,I3.3,A,I2.2,A)') 'z', N, '_', R, '.txt'
+           WRITE (FN,'(A,I3.3,A,I2.2,A)') 'Z', N, '_', R, '.txt'
         ELSE ! the modified deRijk
-           WRITE (FN,'(A,I3.3,A,I2.2,A)') 'z', N, '-', R, '.txt'
+           WRITE (FN,'(A,I3.3,A,I2.2,A)') 'Z', N, '-', R, '.txt'
         END IF
         OPEN(NEWUNIT=W, IOSTAT=X, FILE=FN, STATUS='REPLACE', ACTION='WRITE', ACCESS='SEQUENTIAL', FORM='FORMATTED')
         DO P = 1, N
@@ -247,4 +182,4 @@ SUBROUTINE ZJEVDR(N, A, LDA, V, LDV, JPOS, WRK, AS, INFO)
   IF (IAND(INFO, 4) .NE. 0) CALL ZTRCOA(N, A, LDA, AS, -1, O, U)
   INFO = R
   WRK(1,1) = TT
-END SUBROUTINE ZJEVDR
+END SUBROUTINE ZJEVDC

@@ -27,7 +27,7 @@ SUBROUTINE DTRCOA(N, A, LDA, AS, S, T, U)
   CHARACTER(LEN=8) :: FN
   IF ((LDA .LT. N) .OR. (N .LE. 1) .OR. (N .GE. 1000)) RETURN
   IF (S .EQ. 0) THEN
-     WRITE (FN,'(A,I3.3,A)') 'd', N, '.csv'
+     WRITE (FN,'(A,I3.3,A)') CHAR(T), N, '.csv'
      OPEN(NEWUNIT=U, IOSTAT=T, FILE=FN, STATUS='REPLACE', ACTION='WRITE', ACCESS='SEQUENTIAL', FORM='FORMATTED')
      IF (T .EQ. 0) THEN
         WRITE (U,'(A)') '"TRANSF", "SWEEP", "off(A)"'

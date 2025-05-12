@@ -24,6 +24,7 @@ PROGRAM ZPPROC
   REAL(KIND=KK), PARAMETER :: XZERO = 0.0_KK
   REAL(KIND=K), PARAMETER :: ZERO = 0.0_K
   CHARACTER(LEN=11) :: FN
+  CHARACTER :: T
   COMPLEX(KIND=KK) :: Z
   REAL(KIND=KK) :: X, Y
   INTEGER :: I, J, L, N, S, U, V
@@ -34,7 +35,14 @@ PROGRAM ZPPROC
   IF (L .NE. 2) STOP 'zpproc.exe N S'
   CALL GET_COMMAND_ARGUMENT(1, FN)
   READ (FN,*) N
-  IF (N .LE. 0) STOP 'N'
+  IF (N .LT. 0) THEN
+     N = -N
+     T = 'Z'
+  ELSE IF (N .GT. 0) THEN
+     T = 'z'
+  ELSE ! N = 0
+     STOP 'N'
+  END IF
   CALL GET_COMMAND_ARGUMENT(2, FN)
   READ (FN,*) S
   IF (S .LE. 0) STOP 'S'
@@ -44,7 +52,7 @@ PROGRAM ZPPROC
   ALLOCATE(A3(N,N))
   WRITE (OUTPUT_UNIT,'(A)') '"SWEEP", "P", "Q", "maxRE(tan[h])@PQ", "maxRE(A)"'
   DO L = 1, S
-     WRITE (FN,'(A,I3.3,A,I2.2,A)') 'z', N, '_', L, '.txt'
+     WRITE (FN,'(A,I3.3,A,I2.2,A)') T, N, '_', L, '.txt'
      OPEN(NEWUNIT=U, IOSTAT=J, FILE=FN, STATUS='OLD', ACTION='READ', ACCESS='SEQUENTIAL', FORM='FORMATTED')
      IF (J .NE. 0) STOP 'OPEN(1)'
      DO I = 1, N
@@ -65,7 +73,7 @@ PROGRAM ZPPROC
            A1(I,J) = CONJG(A1(J,I))
         END DO
      END DO
-     WRITE (FN,'(A,I3.3,A,I2.2,A)') 'z', N, '-', L, '.txt'
+     WRITE (FN,'(A,I3.3,A,I2.2,A)') T, N, '-', L, '.txt'
      OPEN(NEWUNIT=U, IOSTAT=J, FILE=FN, STATUS='OLD', ACTION='READ', ACCESS='SEQUENTIAL', FORM='FORMATTED')
      IF (J .NE. 0) STOP 'OPEN(3)'
      DO I = 1, N

@@ -1,6 +1,6 @@
-!  IN: AS = max sweeps, INFO = 0 or 1 (sin => tan) OR 2 (the modified deRijk)
+!  IN: AS = max sweeps, INFO = 0 or 1 (sin => tan) OR 2 (column-cyclic)
 ! OUT: AS: backscale A by 2**-AS, INFO: #sweeps
-SUBROUTINE DJEVDR(N, A, LDA, V, LDV, JPOS, WRK, AS, INFO)
+SUBROUTINE DJEVDC(N, A, LDA, V, LDV, JPOS, WRK, AS, INFO)
   USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: INT64, REAL64
   IMPLICIT NONE
   INTERFACE
@@ -11,15 +11,6 @@ SUBROUTINE DJEVDR(N, A, LDA, V, LDV, JPOS, WRK, AS, INFO)
        REAL(KIND=REAL64), INTENT(INOUT) :: A(LDA,N), AX
        INTEGER, INTENT(INOUT) :: AS, INFO
      END SUBROUTINE DSCALA
-  END INTERFACE
-  INTERFACE
-     PURE SUBROUTINE DSWPXD(N, A, LDA, V, LDV, B, E, INFO)
-       USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL64
-       IMPLICIT NONE
-       INTEGER, INTENT(IN) :: N, LDA, LDV, B, E
-       REAL(KIND=REAL64), INTENT(INOUT) :: A(LDA,N), V(LDV,N)
-       INTEGER, INTENT(OUT) :: INFO
-     END SUBROUTINE DSWPXD
   END INTERFACE
   INTERFACE
      SUBROUTINE DTRANA(N, A, LDA, V, LDV, AX, AS, P, Q, TOL, INFO)
@@ -92,7 +83,7 @@ SUBROUTINE DJEVDR(N, A, LDA, V, LDV, JPOS, WRK, AS, INFO)
   TOL = SQRT(TOL) * EPS
   ! init trace
   R = 0
-  O = ICHAR('d')
+  O = ICHAR('D')
   CALL DTRACE(N, A, LDA, AX, AS, R, S)
   IF (IAND(INFO, 4) .NE. 0) CALL DTRCOA(N, A, LDA, AS, R, O, U)
   TT = 0_INT64
@@ -103,19 +94,8 @@ SUBROUTINE DJEVDR(N, A, LDA, V, LDV, JPOS, WRK, AS, INFO)
      WRK(X,X) = R
      IF (IAND(INFO, 2) .EQ. 0) THEN
         DO P = 1, N-1
-           IF (P .LT. JPOS) THEN
-              CALL DSWPXD(N, A, LDA, V, LDV, P, JPOS, W)
-           ELSE IF (P .GT. JPOS) THEN
-              CALL DSWPXD(N, A, LDA, V, LDV, P, N, W)
-           ELSE ! P = JPOS
-              W = JPOS
-           END IF
-           IF (W .LE. 0) THEN
-              INFO = -7
-              RETURN
-           END IF
            X = X + 1
-           WRK(X,X) = W
+           WRK(X,X) = P
            DO Q = P+1, N
               W = IAND(INFO, 1)
               IF ((P .LE. JPOS) .AND. (Q .GT. JPOS)) W = IOR(W, 2)
@@ -136,18 +116,13 @@ SUBROUTINE DJEVDR(N, A, LDA, V, LDV, JPOS, WRK, AS, INFO)
               IF (IAND(INFO, 4) .NE. 0) CALL DTRCOA(N, A, LDA, AS, R, O, U)
            END DO
         END DO
-     ELSE ! the modified deRijk
-        ! the first diagonal block
-        DO P = 1, JPOS-1
-           CALL DSWPXD(N, A, LDA, V, LDV, P, JPOS, W)
-           IF (W .LE. 0) THEN
-              INFO = -7
-              RETURN
-           END IF
+     ELSE ! column-cyclic
+        DO Q = 2, N
            X = X + 1
-           WRK(X,X) = W
-           DO Q = P+1, JPOS
+           WRK(X,X) = Q
+           DO P = 1, Q-1
               W = IAND(INFO, 1)
+              IF ((P .LE. JPOS) .AND. (Q .GT. JPOS)) W = IOR(W, 2)
               WRK(Q,P) = TOL
               CALL DTRANA(N, A, LDA, V, LDV, AX, AS, P, Q, WRK(Q,P), W)
               SELECT CASE (W)
@@ -160,55 +135,6 @@ SUBROUTINE DJEVDR(N, A, LDA, V, LDV, JPOS, WRK, AS, INFO)
                  TT = TT + 1_INT64
               CASE DEFAULT
                  INFO = -4
-                 RETURN
-              END SELECT
-              IF (IAND(INFO, 4) .NE. 0) CALL DTRCOA(N, A, LDA, AS, R, O, U)
-           END DO
-        END DO
-        ! the off-diagonal block (hyp)
-        DO P = 1, JPOS
-           DO Q = JPOS+1, N
-              W = IOR(IAND(INFO, 1), 2)
-              WRK(Q,P) = TOL
-              CALL DTRANA(N, A, LDA, V, LDV, AX, AS, P, Q, WRK(Q,P), W)
-              SELECT CASE (W)
-              CASE (0)
-                 CONTINUE
-              CASE (1)
-                 T = T + 1
-              CASE (2,3)
-                 T = T + 1
-                 TT = TT + 1_INT64
-              CASE DEFAULT
-                 INFO = -4
-                 RETURN
-              END SELECT
-              IF (IAND(INFO, 4) .NE. 0) CALL DTRCOA(N, A, LDA, AS, R, O, U)
-           END DO
-        END DO
-        ! the second diagonal block
-        DO P = JPOS+1, N-1
-           CALL DSWPXD(N, A, LDA, V, LDV, P, N, W)
-           IF (W .LE. 0) THEN
-              INFO = -7
-              RETURN
-           END IF
-           X = X + 1
-           WRK(X,X) = W
-           DO Q = P+1, N
-              W = IAND(INFO, 1)
-              WRK(Q,P) = TOL
-              CALL DTRANA(N, A, LDA, V, LDV, AX, AS, P, Q, WRK(Q,P), W)
-              SELECT CASE (W)
-              CASE (0)
-                 CONTINUE
-              CASE (1)
-                 T = T + 1
-              CASE (2,3)
-                 T = T + 1
-                 TT = TT + 1_INT64
-              CASE DEFAULT
-                 INFO = -5
                  RETURN
               END SELECT
               IF (IAND(INFO, 4) .NE. 0) CALL DTRCOA(N, A, LDA, AS, R, O, U)
@@ -224,9 +150,9 @@ SUBROUTINE DJEVDR(N, A, LDA, V, LDV, JPOS, WRK, AS, INFO)
            END DO
         END DO
         IF (IAND(INFO, 2) .EQ. 0) THEN
-           WRITE (FN,'(A,I3.3,A,I2.2,A)') 'd', N, '_', R, '.txt'
-        ELSE ! the modified deRijk
-           WRITE (FN,'(A,I3.3,A,I2.2,A)') 'd', N, '-', R, '.txt'
+           WRITE (FN,'(A,I3.3,A,I2.2,A)') 'D', N, '_', R, '.txt'
+        ELSE ! column-cyclic
+           WRITE (FN,'(A,I3.3,A,I2.2,A)') 'D', N, '-', R, '.txt'
         END IF
         OPEN(NEWUNIT=W, IOSTAT=X, FILE=FN, STATUS='REPLACE', ACTION='WRITE', ACCESS='SEQUENTIAL', FORM='FORMATTED')
         DO P = 1, N
@@ -243,4 +169,4 @@ SUBROUTINE DJEVDR(N, A, LDA, V, LDV, JPOS, WRK, AS, INFO)
   IF (IAND(INFO, 4) .NE. 0) CALL DTRCOA(N, A, LDA, AS, -1, O, U)
   INFO = R
   WRK(1,1) = TT
-END SUBROUTINE DJEVDR
+END SUBROUTINE DJEVDC

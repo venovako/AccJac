@@ -99,6 +99,7 @@ dtrkoa.o ztrkoa.o\
 dtrcoa.o ztrcoa.o\
 cjsvdc.o djsvdc.o sjsvdc.o zjsvdc.o\
 cjsvdr.o djsvdr.o sjsvdr.o zjsvdr.o\
+djevdc.o zjevdc.o\
 djevdr.o zjevdr.o
 
 LIBD=libjaevd.a

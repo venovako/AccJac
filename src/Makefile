@@ -144,6 +144,8 @@ cjsvdr.obj \
 djsvdr.obj \
 sjsvdr.obj \
 zjsvdr.obj \
+djevdc.obj \
+zjevdc.obj \
 djevdr.obj \
 zjevdr.obj
 LIBS= \
