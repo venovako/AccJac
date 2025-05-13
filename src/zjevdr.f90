@@ -233,13 +233,20 @@ SUBROUTINE ZJEVDR(N, A, LDA, V, LDV, JPOS, WRK, AS, INFO)
            WRITE (FN,'(A,I3.3,A,I2.2,A)') 'z', N, '-', R, '.txt'
         END IF
         OPEN(NEWUNIT=W, IOSTAT=X, FILE=FN, STATUS='REPLACE', ACTION='WRITE', ACCESS='SEQUENTIAL', FORM='FORMATTED')
-        DO P = 1, N
-           WRITE (W,'(2(A,ES25.17E3),A)',ADVANCE='NO') '(', REAL(WRK(P,1)), ',', AIMAG(WRK(P,1)), ')'
-           DO Q = 2, N-1
-              WRITE (W,'(2(A,ES25.17E3),A)',ADVANCE='NO') ' (', REAL(WRK(P,Q)), ',', AIMAG(WRK(P,Q)), ')'
+        IF (N .EQ. 1) THEN
+           WRITE (W,'(2(A,ES25.17E3),A)') '(', REAL(WRK(1,1)), ',', AIMAG(WRK(1,1)), ')'
+        ELSE ! N > 1
+           DO P = 1, N
+              DO Q = 1, N-1
+                 IF (Q .EQ. 1) THEN
+                    WRITE (W,'(2(A,ES25.17E3),A)',ADVANCE='NO') '(', REAL(WRK(P,1)), ',', AIMAG(WRK(P,1)), ')'
+                 ELSE ! Q > 1
+                    WRITE (W,'(2(A,ES25.17E3),A)',ADVANCE='NO') ' (', REAL(WRK(P,Q)), ',', AIMAG(WRK(P,Q)), ')'
+                 END IF
+              END DO
+              WRITE (W,'(2(A,ES25.17E3),A)') ' (', REAL(WRK(P,N)), ',', AIMAG(WRK(P,N)), ')'
            END DO
-           WRITE (W,'(2(A,ES25.17E3),A)') ' (', REAL(WRK(P,N)), ',', AIMAG(WRK(P,N)), ')'
-        END DO
+        END IF
         CLOSE(UNIT=W, IOSTAT=X)
      END IF
      IF (T .EQ. 0) EXIT

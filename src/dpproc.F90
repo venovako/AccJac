@@ -21,14 +21,13 @@ PROGRAM DPPROC
   INTEGER, PARAMETER :: KK = REAL128
 #endif
   INTEGER, PARAMETER :: K = REAL64
-  REAL(KIND=KK), PARAMETER :: XZERO = 0.0_KK
+  REAL(KIND=KK), PARAMETER :: XZERO = 0.0_KK, SQRT2 = SQRT(2.0_KK)
   REAL(KIND=K), PARAMETER :: ZERO = 0.0_K
   CHARACTER(LEN=11) :: FN
   CHARACTER :: T
   REAL(KIND=KK) :: X, Y
   INTEGER :: I, J, L, N, S, U, V
   REAL(KIND=K), ALLOCATABLE :: W1(:,:), A1(:,:), W3(:,:), A3(:,:)
-  REAL(KIND=K), EXTERNAL :: DNRMF
   ! read the command line arguments
   L = COMMAND_ARGUMENT_COUNT()
   IF (L .NE. 2) STOP 'dpproc.exe N S'
@@ -49,16 +48,16 @@ PROGRAM DPPROC
   ALLOCATE(A1(N,N))
   ALLOCATE(W3(N,N))
   ALLOCATE(A3(N,N))
-  WRITE (OUTPUT_UNIT,'(A)') '"SWEEP", "P", "Q", "maxRE(tan[h])@PQ", "maxRE(A)"'
+  WRITE (OUTPUT_UNIT,'(A)') '"SWEEP", "P", "Q", "maxRE(TAN[H])@PQ", "maxRE(A)"'
   DO L = 1, S
      WRITE (FN,'(A,I3.3,A,I2.2,A)') T, N, '_', L, '.txt'
-     OPEN(NEWUNIT=U, IOSTAT=J, FILE=FN, STATUS='OLD', ACTION='READ', ACCESS='SEQUENTIAL', FORM='FORMATTED')
-     IF (J .NE. 0) STOP 'OPEN(1)'
+     OPEN(NEWUNIT=U, IOSTAT=V, FILE=FN, STATUS='OLD', ACTION='READ', ACCESS='SEQUENTIAL', FORM='FORMATTED')
+     IF (V .NE. 0) STOP 'OPEN(1)'
      DO I = 1, N
         READ (U,*) (W1(I,J), J=1,N)
      END DO
-     CLOSE(UNIT=U, IOSTAT=J)
-     IF (J .NE. 0) STOP 'CLOSE(1)'
+     CLOSE(UNIT=U, IOSTAT=V)
+     IF (V .NE. 0) STOP 'CLOSE(1)'
      DO J = 1, N
         DO I = 1, J
            A1(I,J) = W1(I,J)
@@ -71,13 +70,13 @@ PROGRAM DPPROC
         END DO
      END DO
      WRITE (FN,'(A,I3.3,A,I2.2,A)') T, N, '-', L, '.txt'
-     OPEN(NEWUNIT=U, IOSTAT=J, FILE=FN, STATUS='OLD', ACTION='READ', ACCESS='SEQUENTIAL', FORM='FORMATTED')
-     IF (J .NE. 0) STOP 'OPEN(3)'
+     OPEN(NEWUNIT=U, IOSTAT=V, FILE=FN, STATUS='OLD', ACTION='READ', ACCESS='SEQUENTIAL', FORM='FORMATTED')
+     IF (V .NE. 0) STOP 'OPEN(3)'
      DO I = 1, N
         READ (U,*) (W3(I,J), J=1,N)
      END DO
-     CLOSE(UNIT=U, IOSTAT=J)
-     IF (J .NE. 0) STOP 'CLOSE(3)'
+     CLOSE(UNIT=U, IOSTAT=V)
+     IF (V .NE. 0) STOP 'CLOSE(3)'
      DO J = 1, N
         DO I = 1, J
            A3(I,J) = W3(I,J)
@@ -95,9 +94,7 @@ PROGRAM DPPROC
      DO J = 1, N-1
         DO I = J+1, N
            Y = ABS(REAL(W1(I,J), KK) - REAL(W3(I,J), KK))
-           W1(J,I) = REAL(Y, K)
            IF (Y .NE. XZERO) Y = Y / ABS(W1(I,J))
-           W3(J,I) = REAL(Y, K)
            IF (Y .GT. X) THEN
               X = Y
               U = J
@@ -114,8 +111,19 @@ PROGRAM DPPROC
            X = HYPOTX(X, Y)
         END DO
      END DO
-     V = N * N
-     IF (X .NE. XZERO) X = X / DNRMF(V, A1)
+     IF (X .NE. XZERO) THEN
+        Y = XZERO
+        DO J = 2, N
+           DO I = 1, J-1
+              Y = HYPOTX(Y, REAL(A1(I,J), KK))
+           END DO
+           Y = Y * SQRT2
+        END DO
+        DO J = 1, N
+           Y = HYPOTX(Y, REAL(A1(J,J), KK))
+        END DO
+        X = X / Y
+     END IF
      WRITE (OUTPUT_UNIT,'(ES25.17E3)') X
   END DO
   DEALLOCATE(A3)
