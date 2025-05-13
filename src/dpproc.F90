@@ -117,8 +117,8 @@ PROGRAM DPPROC
            DO I = 1, J-1
               Y = HYPOTX(Y, REAL(A1(I,J), KK))
            END DO
-           Y = Y * SQRT2
         END DO
+        Y = Y * SQRT2
         DO J = 1, N
            Y = HYPOTX(Y, REAL(A1(J,J), KK))
         END DO
