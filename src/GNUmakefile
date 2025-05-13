@@ -30,30 +30,12 @@ claev2.o dlaev2.o slaev2.o zlaev2.o
 endif # !LAPACK
 
 OBJ2=\
-cjaev2.o\
-djaev2.o\
-qjaev2.o\
-sjaev2.o\
-yjaev2.o\
-zjaev2.o\
-cjiev2.o\
-djiev2.o\
-qjiev2.o\
-sjiev2.o\
-yjiev2.o\
-zjiev2.o\
-clju2.o \
-dlju2.o \
-slju2.o \
-zlju2.o \
-cljv2.o \
-dljv2.o \
-sljv2.o \
-zljv2.o \
-dljau2.o\
-zljau2.o\
-dljav2.o\
-zljav2.o
+cjaev2.o djaev2.o qjaev2.o sjaev2.o yjaev2.o zjaev2.o\
+cjiev2.o djiev2.o qjiev2.o sjiev2.o yjiev2.o zjiev2.o\
+clju2.o dlju2.o slju2.o zlju2.o\
+cljv2.o dljv2.o sljv2.o zljv2.o\
+dljau2.o zljau2.o\
+dljav2.o zljav2.o
 
 LIB2=libjaev2.a
 
@@ -70,8 +52,7 @@ sth2t.exe
 endif # MPFR
 
 OBJD=\
-bfopen.o\
-pascal.o\
+bfopen.o pascal.o\
 cjaevd.o zjaevd.o\
 drsafe.o qrsafe.o srsafe.o\
 qre.o qdetm1.o ydetm1.o\

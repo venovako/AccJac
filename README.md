@@ -14,7 +14,7 @@ The Intel (`icx`) or GNU (`gcc`) C compiler, and the Intel (`ifx`) or GNU (`gfor
 
 First, clone [libpvn](https://github.com/venovako/libpvn) repository, with the same parent directory as this one has (e.g., `venovako/libpvn` and `venovako/AccJac`), and build it, with the `COMPILER` make option set to a C compiler from the same vendor and with the same (no-)debug mode as it is meant to be used here.
 Please, read the repository's notes *carefully*!
-The correctly-rounded `cr_hypot[f]` and `cr_rsqrt[fl]` functions are assumed to be provided by the [CORE-MATH](https://core-math.gitlabpages.inria.fr) project.
+The correctly-rounded `cr_hypot[fl]` and `cr_rsqrt[fl]` functions are assumed to be provided by the [CORE-MATH](https://core-math.gitlabpages.inria.fr) project.
 
 ## Building
 
