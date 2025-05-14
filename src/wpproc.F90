@@ -1,26 +1,10 @@
-PROGRAM ZPPROC
-#ifdef __GFORTRAN__
+PROGRAM WPPROC
   USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
-  USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: OUTPUT_UNIT, REAL64
-#else
   USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: OUTPUT_UNIT, REAL64, REAL128
-#endif
   IMPLICIT NONE
-#ifdef __GFORTRAN__
-  INTERFACE
-     PURE FUNCTION HYPOTX(X, Y) BIND(C,NAME='cr_hypotl')
-       USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
-       IMPLICIT NONE
-       REAL(KIND=c_long_double), INTENT(IN), VALUE :: X, Y
-       REAL(KIND=c_long_double) :: HYPOTX
-     END FUNCTION HYPOTX
-  END INTERFACE
-  INTEGER, PARAMETER :: KK = c_long_double
-#else
 #define HYPOTX HYPOT
   INTEGER, PARAMETER :: KK = REAL128
-#endif
-  INTEGER, PARAMETER :: K = REAL64
+  INTEGER, PARAMETER :: K = c_long_double
   REAL(KIND=KK), PARAMETER :: XZERO = 0.0_KK, SQRT2 = SQRT(2.0_KK)
   REAL(KIND=K), PARAMETER :: ZERO = 0.0_K
   CHARACTER(LEN=11) :: FN
@@ -32,14 +16,14 @@ PROGRAM ZPPROC
   REAL(KIND=K), ALLOCATABLE :: PR(:,:)
   ! read the command line arguments
   L = COMMAND_ARGUMENT_COUNT()
-  IF (L .NE. 2) STOP 'zpproc.exe N S'
+  IF (L .NE. 2) STOP 'wpproc.exe N S'
   CALL GET_COMMAND_ARGUMENT(1, FN)
   READ (FN,*) N
   IF (N .LT. 0) THEN
      N = -N
-     T = 'Z'
+     T = 'W'
   ELSE IF (N .GT. 0) THEN
-     T = 'z'
+     T = 'w'
   ELSE ! N = 0
      STOP 'N'
   END IF
@@ -86,17 +70,17 @@ PROGRAM ZPPROC
      OPEN(NEWUNIT=U, IOSTAT=V, FILE=FN, STATUS='REPLACE', ACTION='WRITE', ACCESS='SEQUENTIAL', FORM='FORMATTED')
      IF (V .NE. 0) STOP 'OPEN(s)'
      IF (N .EQ. 1) THEN
-        WRITE (U,'(ES25.17E3)') PR(1,1)
+        WRITE (U,'(ES30.21E4)') PR(1,1)
      ELSE ! N > 1
         DO I = 1, N
            DO J = 1, N-1
               IF (J .EQ. 1) THEN
-                 WRITE (U,'(ES25.17E3)',ADVANCE='NO') PR(I,1)
+                 WRITE (U,'(ES30.21E4)',ADVANCE='NO') PR(I,1)
               ELSE ! J > 1
-                 WRITE (U,'(ES26.17E3)',ADVANCE='NO') PR(I,J)
+                 WRITE (U,'(ES31.21E4)',ADVANCE='NO') PR(I,J)
               END IF
            END DO
-           WRITE (U,'(ES26.17E3)') PR(I,N)
+           WRITE (U,'(ES31.21E4)') PR(I,N)
         END DO
      END IF
      CLOSE(UNIT=U, IOSTAT=V)
@@ -136,17 +120,17 @@ PROGRAM ZPPROC
      OPEN(NEWUNIT=U, IOSTAT=V, FILE=FN, STATUS='REPLACE', ACTION='WRITE', ACCESS='SEQUENTIAL', FORM='FORMATTED')
      IF (V .NE. 0) STOP 'OPEN(m)'
      IF (N .EQ. 1) THEN
-        WRITE (U,'(ES25.17E3)') PR(1,1)
+        WRITE (U,'(ES30.21E4)') PR(1,1)
      ELSE ! N > 1
         DO I = 1, N
            DO J = 1, N-1
               IF (J .EQ. 1) THEN
-                 WRITE (U,'(ES25.17E3)',ADVANCE='NO') PR(I,1)
+                 WRITE (U,'(ES30.21E4)',ADVANCE='NO') PR(I,1)
               ELSE ! J > 1
-                 WRITE (U,'(ES26.17E3)',ADVANCE='NO') PR(I,J)
+                 WRITE (U,'(ES31.21E4)',ADVANCE='NO') PR(I,J)
               END IF
            END DO
-           WRITE (U,'(ES26.17E3)') PR(I,N)
+           WRITE (U,'(ES31.21E4)') PR(I,N)
         END DO
      END IF
      CLOSE(UNIT=U, IOSTAT=V)
@@ -165,7 +149,7 @@ PROGRAM ZPPROC
            IF (Y .GT. X) X = Y
         END DO
      END DO
-     WRITE (OUTPUT_UNIT,'(I2,A,ES25.17E3,A)',ADVANCE='NO') L, ',', X, ','
+     WRITE (OUTPUT_UNIT,'(I2,A,ES30.21E4,A)',ADVANCE='NO') L, ',', X, ','
      FLUSH(OUTPUT_UNIT)
      X = XZERO
      DO J = 2, N
@@ -175,7 +159,7 @@ PROGRAM ZPPROC
            IF (Y .GT. X) X = Y
         END DO
      END DO
-     WRITE (OUTPUT_UNIT,'(ES25.17E3,A)',ADVANCE='NO') X, ','
+     WRITE (OUTPUT_UNIT,'(ES30.21E4,A)',ADVANCE='NO') X, ','
      FLUSH(OUTPUT_UNIT)
      X = XZERO
      DO J = 2, N
@@ -185,7 +169,7 @@ PROGRAM ZPPROC
            IF (Y .GT. X) X = Y
         END DO
      END DO
-     WRITE (OUTPUT_UNIT,'(ES25.17E3,A)',ADVANCE='NO') X, ','
+     WRITE (OUTPUT_UNIT,'(ES30.21E4,A)',ADVANCE='NO') X, ','
      FLUSH(OUTPUT_UNIT)
      X = XZERO
      DO J = 1, N
@@ -208,11 +192,11 @@ PROGRAM ZPPROC
         END DO
         X = X / Y
      END IF
-     WRITE (OUTPUT_UNIT,'(ES25.17E3)') X
+     WRITE (OUTPUT_UNIT,'(ES30.21E4)') X
   END DO
   DEALLOCATE(PR)
   DEALLOCATE(A3)
   DEALLOCATE(W3)
   DEALLOCATE(A1)
   DEALLOCATE(W1)
-END PROGRAM ZPPROC
+END PROGRAM WPPROC

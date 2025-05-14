@@ -12,7 +12,7 @@ PROGRAM PAST
   END INTERFACE
   REAL(KIND=REAL64), PARAMETER :: DPI = 3.14159265358979323846_REAL64
   CHARACTER(LEN=256) :: CLA
-  INTEGER(KIND=INT64) :: K, M
+  INTEGER(KIND=INT64) :: K
   INTEGER :: N, I, J, R
   LOGICAL :: C
   INTEGER(KIND=INT64), ALLOCATABLE :: L(:,:), U(:,:), S(:,:)
@@ -183,139 +183,106 @@ PROGRAM PAST
         CALL CR_SINCOS(RU(1,J), RU(3,J), RU(2,J))
      END DO
   END IF
-  M = ISHFT(1_INT64, 53)
-  IF (K .LT. M) THEN
-     IF (C) THEN
-        ALLOCATE(Z(N,N))
-        DO J = 1, N-1
-           Z(J,J) = L(J,J)
-           DO I = J+1, N
-              Z(I,J) = CMPLX(RU(2,I), RU(3,I), REAL64) * L(I,J)
-           END DO
+  IF (C) THEN
+     ALLOCATE(Z(N,N))
+     ALLOCATE(ZZ(N,N))
+     DO J = 1, N-1
+        Z(J,J) = L(J,J)
+        ZZ(J,J) = L(J,J)
+        DO I = J+1, N
+           Z(I,J) = CMPLX(RU(2,I), RU(3,I), REAL64) * L(I,J)
+           ZZ(I,J) = CMPLX(RU(2,I), RU(3,I), c_long_double) * L(I,J)
         END DO
-        DO J = 2, N
-           DO I = 1, J-1
-              Z(I,J) = 0.0_REAL64
-           END DO
+     END DO
+     DO J = 2, N
+        DO I = 1, J-1
+           Z(I,J) = 0.0_REAL64
+           ZZ(I,J) = 0.0_c_long_double
         END DO
-        Z(N,N) = L(N,N)
-     ELSE ! real
-        ALLOCATE(A(N,N))
-        DO J = 1, N
-           DO I = 1, N
-              A(I,J) = L(I,J)
-           END DO
+     END DO
+     Z(N,N) = L(N,N)
+     ZZ(N,N) = L(N,N)
+  ELSE ! real
+     ALLOCATE(A(N,N))
+     ALLOCATE(AA(N,N))
+     DO J = 1, N
+        DO I = 1, N
+           A(I,J) = L(I,J)
+           AA(I,J) = L(I,J)
         END DO
-     END IF
-  ELSE ! K >= M
-     IF (C) THEN
-        ALLOCATE(ZZ(N,N))
-        DO J = 1, N-1
-           ZZ(J,J) = L(J,J)
-           DO I = J+1, N
-              ZZ(I,J) = CMPLX(RU(2,I), RU(3,I), REAL64) * REAL(L(I,J), c_long_double)
-           END DO
-        END DO
-        DO J = 2, N
-           DO I = 1, J-1
-              ZZ(I,J) = 0.0_c_long_double
-           END DO
-        END DO
-        ZZ(N,N) = L(N,N)
-     ELSE ! real
-        ALLOCATE(AA(N,N))
-        DO J = 1, N
-           DO I = 1, N
-              AA(I,J) = L(I,J)
-           END DO
-        END DO
-     END IF
+     END DO
   END IF
   CALL BFOPEN(TRIM(CLA)//'.Y', 'WO', I, J)
   IF (J .NE. 0) STOP 'BFOPEN(Y)'
-  IF (K .LT. M) THEN
-     IF (C) THEN
-        WRITE (UNIT=I,IOSTAT=J) Z
-     ELSE ! real
-        WRITE (UNIT=I,IOSTAT=J) A
-     END IF
-  ELSE ! K >= M
-     IF (C) THEN
-        WRITE (UNIT=I,IOSTAT=J) ZZ
-     ELSE ! real
-        WRITE (UNIT=I,IOSTAT=J) AA
-     END IF
+  IF (C) THEN
+     WRITE (UNIT=I,IOSTAT=J) Z
+  ELSE ! real
+     WRITE (UNIT=I,IOSTAT=J) A
   END IF
   IF (J .NE. 0) STOP 'WRITE(Y)'
   CLOSE(I)
+  CALL BFOPEN(TRIM(CLA)//'.YX', 'WO', I, J)
+  IF (J .NE. 0) STOP 'BFOPEN(YX)'
+  IF (C) THEN
+     WRITE (UNIT=I,IOSTAT=J) ZZ
+  ELSE ! real
+     WRITE (UNIT=I,IOSTAT=J) AA
+  END IF
+  IF (J .NE. 0) STOP 'WRITE(YX)'
+  CLOSE(I)
   ! e^{i(2(I-1)π/N)} * e^{-i(2(J-1)π/N)} = e^{i(2(I-J)π/N)}}
-  IF (K .LT. M) THEN
-     IF (C) THEN
-        DO J = 1, N-1
-           Z(J,J) = S(J,J)
-           DO I = J+1, N
-              R = I - J + 1
-              Z(I,J) = CMPLX(RU(2,R), RU(3,R), REAL64) * S(I,J)
-           END DO
+  IF (C) THEN
+     DO J = 1, N-1
+        Z(J,J) = S(J,J)
+        ZZ(J,J) = S(J,J)
+        DO I = J+1, N
+           R = I - J + 1
+           Z(I,J) = CMPLX(RU(2,R), RU(3,R), REAL64) * S(I,J)
+           ZZ(I,J) = CMPLX(RU(2,R), RU(3,R), c_long_double) * S(I,J)
         END DO
-        DO J = 2, N
-           DO I = 1, J-1
-              Z(I,J) = CONJG(Z(J,I))
-           END DO
+     END DO
+     DO J = 2, N
+        DO I = 1, J-1
+           Z(I,J) = CONJG(Z(J,I))
+           ZZ(I,J) = CONJG(ZZ(J,I))
         END DO
-        Z(N,N) = S(N,N)
-     ELSE ! real
-        DO J = 1, N
-           DO I = 1, N
-              A(I,J) = S(I,J)
-           END DO
+     END DO
+     Z(N,N) = S(N,N)
+     ZZ(N,N) = S(N,N)
+  ELSE ! real
+     DO J = 1, N
+        DO I = 1, N
+           A(I,J) = S(I,J)
+           AA(I,J) = S(I,J)
         END DO
-     END IF
-  ELSE ! K >= M
-     IF (C) THEN
-        DO J = 1, N-1
-           ZZ(J,J) = S(J,J)
-           DO I = J+1, N
-              R = I - J + 1
-              ZZ(I,J) = CMPLX(RU(2,R), RU(3,R), REAL64) * REAL(S(I,J), c_long_double)
-           END DO
-        END DO
-        DO J = 2, N
-           DO I = 1, J-1
-              ZZ(I,J) = CONJG(ZZ(J,I))
-           END DO
-        END DO
-        ZZ(N,N) = S(N,N)
-     ELSE ! real
-        DO J = 1, N
-           DO I = 1, N
-              AA(I,J) = S(I,J)
-           END DO
-        END DO
-     END IF
+     END DO
   END IF
   CALL BFOPEN(TRIM(CLA)//'.A', 'WO', I, J)
   IF (J .NE. 0) STOP 'BFOPEN(A)'
-  IF (K .LT. M) THEN
-     IF (C) THEN
-        WRITE (UNIT=I,IOSTAT=J) Z
-        DEALLOCATE(Z)
-     ELSE ! real
-        WRITE (UNIT=I,IOSTAT=J) A
-        DEALLOCATE(A)
-     END IF
-  ELSE ! K >= M
-     IF (C) THEN
-        WRITE (UNIT=I,IOSTAT=J) ZZ
-        DEALLOCATE(ZZ)
-     ELSE ! real
-        WRITE (UNIT=I,IOSTAT=J) AA
-        DEALLOCATE(AA)
-     END IF
+  IF (C) THEN
+     WRITE (UNIT=I,IOSTAT=J) Z
+  ELSE ! real
+     WRITE (UNIT=I,IOSTAT=J) A
   END IF
   IF (J .NE. 0) STOP 'WRITE(A)'
   CLOSE(I)
-  IF (C) DEALLOCATE(RU)
+  CALL BFOPEN(TRIM(CLA)//'.AX', 'WO', I, J)
+  IF (J .NE. 0) STOP 'BFOPEN(AX)'
+  IF (C) THEN
+     WRITE (UNIT=I,IOSTAT=J) ZZ
+  ELSE ! real
+     WRITE (UNIT=I,IOSTAT=J) AA
+  END IF
+  IF (J .NE. 0) STOP 'WRITE(AX)'
+  CLOSE(I)
+  IF (C) THEN
+     DEALLOCATE(ZZ)
+     DEALLOCATE(Z)
+     DEALLOCATE(RU)
+  ELSE ! real
+     DEALLOCATE(AA)
+     DEALLOCATE(A)
+  END IF
   DEALLOCATE(S)
   DEALLOCATE(U)
   DEALLOCATE(L)

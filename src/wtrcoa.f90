@@ -1,0 +1,43 @@
+SUBROUTINE WTRCOA(N, A, LDA, AS, S, T, U)
+  USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
+  IMPLICIT NONE
+  INTERFACE
+     PURE FUNCTION WNRMOA(N, A, LDA, AS)
+       USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
+       USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL128
+       IMPLICIT NONE
+       INTEGER, INTENT(IN) :: N, LDA, AS
+       COMPLEX(KIND=c_long_double), INTENT(IN) :: A(LDA,N)
+       REAL(KIND=REAL128) :: WNRMOA
+     END FUNCTION WNRMOA
+  END INTERFACE
+  INTEGER, PARAMETER :: K = c_long_double
+  INTEGER, INTENT(IN) :: N, LDA, AS, S
+  COMPLEX(KIND=K), INTENT(IN) :: A(LDA,N)
+  INTEGER, INTENT(INOUT) :: T, U
+  INTEGER :: NS, MD, H1
+  CHARACTER(LEN=8) :: FN
+  IF ((LDA .LT. N) .OR. (N .LE. 1) .OR. (N .GE. 1000)) RETURN
+  IF (S .EQ. 0) THEN
+     WRITE (FN,'(A,I3.3,A)') CHAR(T), N, '.csv'
+     OPEN(NEWUNIT=U, IOSTAT=T, FILE=FN, STATUS='REPLACE', ACTION='WRITE', ACCESS='SEQUENTIAL', FORM='FORMATTED')
+     IF (T .EQ. 0) THEN
+        WRITE (U,'(A)') '"TRANSF", "SWEEP", "off(A)"'
+        FLUSH(U)
+     ELSE ! ERROR
+        RETURN
+     END IF
+  END IF
+  NS = (N * (N - 1)) / 2
+  MD = MOD(T, NS)
+  H1 = N / 2
+  IF ((MD .EQ. 0) .OR. (MD .EQ. 1) .OR. (MOD(MD, H1) .EQ. 0)) THEN
+     WRITE (U,'(I11,A,I3,A,ES30.21E4)') T, ',', S, ',', WNRMOA(N, A, LDA, AS)
+     FLUSH(U)
+  END IF
+  IF (S .LT. 0) THEN
+     CLOSE(U)
+  ELSE ! S >= 0
+     T = T + 1
+  END IF
+END SUBROUTINE WTRCOA

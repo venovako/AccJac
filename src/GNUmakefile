@@ -30,6 +30,7 @@ claev2.o dlaev2.o slaev2.o zlaev2.o
 endif # !LAPACK
 
 OBJ2=\
+zfma.o\
 cjaev2.o djaev2.o qjaev2.o sjaev2.o yjaev2.o zjaev2.o\
 cjiev2.o djiev2.o qjiev2.o sjiev2.o yjiev2.o zjiev2.o\
 clju2.o dlju2.o slju2.o zlju2.o\
@@ -56,7 +57,6 @@ bfopen.o pascal.o\
 cjaevd.o zjaevd.o\
 drsafe.o qrsafe.o srsafe.o\
 qre.o qdetm1.o ydetm1.o\
-zfma.o\
 croth.o droth.o sroth.o zroth.o\
 crott.o drott.o srott.o zrott.o\
 crtvh.o drtvh.o srtvh.o zrtvh.o\
@@ -98,10 +98,12 @@ OBJL += \
 wlaev2.o xlaev2.o
 
 OBJ2 += \
+wfma.o\
 wjaev2.o xjaev2.o\
 wjiev2.o xjiev2.o\
 wlju2.o xlju2.o\
-xljv2.o wljv2.o
+xljv2.o wljv2.o\
+wljau2.o wljav2.o
 
 EXE2 += \
 wtest.exe xtest.exe\
@@ -112,19 +114,29 @@ wroth.o xroth.o\
 wrott.o xrott.o\
 wrtvh.o xrtvh.o\
 wrtvt.o xrtvt.o\
+wrtlh.o wrtlt.o\
+wrtrh.o wrtrt.o\
 wnrmf.o xnrmf.o\
 wsdp.o xsdp.o\
 wgram.o xgram.o\
 wscalg.o xscalg.o\
+wscala.o xscala.o\
+wswpc.o wswpr.o\
 winisv.o xinisv.o\
 wtrans.o xtrans.o\
+wswpxd.o wtrana.o\
 woffa.o xoffa.o\
 xtrack.o\
+wtrace.o\
+wnrmoa.o\
+wtrcoa.o\
 wjsvdc.o xjsvdc.o\
-wjsvdr.o xjsvdr.o
+wjsvdr.o xjsvdr.o\
+wjevdc.o wjevdr.o
 
 EXED += \
-wjsvdt.exe xjsvdt.exe
+wjsvdt.exe xjsvdt.exe\
+wjevdt.exe wpproc.exe
 endif # x86_64 or i86pc
 endif # gfortran
 

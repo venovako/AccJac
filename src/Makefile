@@ -15,6 +15,7 @@ FCFLAGS=$(FCFLAGS) /4I8
 LDFLAGS=/link /RELEASE /LIBPATH:. jaevd.lib jaev2.lib /LIBPATH:..\..\libpvn\src pvn.lib
 
 OBJ2= \
+zfma.obj \
 cjaev2.obj djaev2.obj qjaev2.obj sjaev2.obj yjaev2.obj zjaev2.obj \
 cjiev2.obj djiev2.obj qjiev2.obj sjiev2.obj yjiev2.obj zjiev2.obj \
 clju2.obj dlju2.obj slju2.obj zlju2.obj \
@@ -36,7 +37,6 @@ bfopen.obj pascal.obj \
 cjaevd.obj zjaevd.obj \
 drsafe.obj qrsafe.obj srsafe.obj \
 qre.obj qdetm1.obj ydetm1.obj \
-zfma.obj \
 croth.obj droth.obj sroth.obj zroth.obj \
 crott.obj drott.obj srott.obj zrott.obj \
 crtvh.obj drtvh.obj srtvh.obj zrtvh.obj \
