@@ -6,14 +6,6 @@ PROGRAM ZPPROC
   USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: OUTPUT_UNIT, REAL64, REAL128
 #endif
   IMPLICIT NONE
-  INTERFACE
-     PURE FUNCTION HYPOTD(X, Y) BIND(C,NAME='cr_hypot')
-       USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_double
-       IMPLICIT NONE
-       REAL(KIND=c_double), INTENT(IN), VALUE :: X, Y
-       REAL(KIND=c_double) :: HYPOTD
-     END FUNCTION HYPOTD
-  END INTERFACE
 #ifdef __GFORTRAN__
   INTERFACE
      PURE FUNCTION HYPOTX(X, Y) BIND(C,NAME='cr_hypotl')
@@ -35,7 +27,6 @@ PROGRAM ZPPROC
   CHARACTER :: T
   COMPLEX(KIND=KK) :: Z
   REAL(KIND=KK) :: X, Y
-  REAL(KIND=K) :: D, R
   INTEGER :: I, J, L, N, S, U, V
   COMPLEX(KIND=K), ALLOCATABLE :: W1(:,:), A1(:,:), W3(:,:), A3(:,:)
   REAL(KIND=K), ALLOCATABLE :: PR(:,:)
@@ -76,10 +67,11 @@ PROGRAM ZPPROC
      DO J = 1, N
         DO I = 1, J-1
            A1(I,J) = W1(I,J)
-           R = HYPOTD(REAL(W1(J,I)), AIMAG(W1(J,I)))
-           D = AIMAG(W1(J,I))
-           IF (D .NE. ZERO) D = D / REAL(W1(J,I))
-           W1(I,J) = CMPLX(R, D, K)
+           X = REAL(W1(J,I))
+           Y = AIMAG(W1(J,I))
+           X = HYPOTX(X, Y)
+           IF (Y .NE. XZERO) Y = Y / REAL(W1(J,I))
+           W1(I,J) = CMPLX(REAL(X, K), REAL(Y, K), K)
         END DO
         A1(J,J) = REAL(W1(J,J))
         W1(J,J) = ZERO
@@ -125,10 +117,11 @@ PROGRAM ZPPROC
      DO J = 1, N
         DO I = 1, J-1
            A3(I,J) = W3(I,J)
-           R = HYPOTD(REAL(W3(J,I)), AIMAG(W3(J,I)))
-           D = AIMAG(W3(J,I))
-           IF (D .NE. ZERO) D = D / REAL(W3(J,I))
-           W3(I,J) = CMPLX(R, D, K)
+           X = REAL(W3(J,I))
+           Y = AIMAG(W3(J,I))
+           X = HYPOTX(X, Y)
+           IF (Y .NE. XZERO) Y = Y / REAL(W3(J,I))
+           W3(I,J) = CMPLX(REAL(X, K), REAL(Y, K), K)
         END DO
         A3(J,J) = REAL(W3(J,J))
         W3(J,J) = ZERO
