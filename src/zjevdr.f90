@@ -224,6 +224,7 @@ SUBROUTINE ZJEVDR(N, A, LDA, V, LDV, JPOS, WRK, AS, INFO)
         DO Q = 1, N
            DO P = 1, Q-1
               WRK(P,Q) = CMPLX(SCALE(REAL(A(P,Q)), X), SCALE(AIMAG(A(P,Q)), X), K)
+              IF (A(P,Q) .NE. CONJG(A(Q,P))) STOP 'H'
            END DO
            WRK(Q,Q) = CMPLX(SCALE(REAL(A(Q,Q)), X), ZERO, K)
         END DO

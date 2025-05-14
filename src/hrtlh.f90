@@ -13,8 +13,10 @@
   ELSE IF (IAND(INFO, 4) .EQ. 0) THEN
      ! SH => TH
      DO J = 1, N
-        XX = CH * (A(P,J) + HS * A(Q,J))
-        YY = CH * (SH * A(P,J) + A(Q,J))
+        !XX = CH * (A(P,J) + HS * A(Q,J))
+        XX = CH * CXFMA(HS, A(Q,J), A(P,J))
+        !YY = CH * (SH * A(P,J) + A(Q,J))
+        YY = CH * CXFMA(SH, A(P,J), A(Q,J))
         A(P,J) = XX
         A(Q,J) = YY
         AX = MAX(AX, CR_HYPOT(REAL(XX), AIMAG(XX)), CR_HYPOT(REAL(YY), AIMAG(YY)))

@@ -36,6 +36,7 @@ bfopen.obj pascal.obj \
 cjaevd.obj zjaevd.obj \
 drsafe.obj qrsafe.obj srsafe.obj \
 qre.obj qdetm1.obj ydetm1.obj \
+zfma.obj \
 croth.obj droth.obj sroth.obj zroth.obj \
 crott.obj drott.obj srott.obj zrott.obj \
 crtvh.obj drtvh.obj srtvh.obj zrtvh.obj \

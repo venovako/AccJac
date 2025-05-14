@@ -56,6 +56,7 @@ bfopen.o pascal.o\
 cjaevd.o zjaevd.o\
 drsafe.o qrsafe.o srsafe.o\
 qre.o qdetm1.o ydetm1.o\
+zfma.o\
 croth.o droth.o sroth.o zroth.o\
 crott.o drott.o srott.o zrott.o\
 crtvh.o drtvh.o srtvh.o zrtvh.o\

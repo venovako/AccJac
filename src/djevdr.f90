@@ -219,9 +219,11 @@ SUBROUTINE DJEVDR(N, A, LDA, V, LDV, JPOS, WRK, AS, INFO)
      IF (N .LT. 1000) THEN
         X = -AS
         DO Q = 1, N
-           DO P = 1, Q
+           DO P = 1, Q-1
               WRK(P,Q) = SCALE(A(P,Q), X)
+              IF (A(P,Q) .NE. A(Q,P)) STOP 'T'
            END DO
+           WRK(Q,Q) = SCALE(A(Q,Q), X)
         END DO
         IF (IAND(INFO, 2) .EQ. 0) THEN
            WRITE (FN,'(A,I3.3,A,I2.2,A)') 'd', N, '_', R, '.txt'
