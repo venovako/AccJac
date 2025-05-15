@@ -21,7 +21,6 @@ claev2.o dlaev2.o slaev2.o zlaev2.o
 endif # !LAPACK
 
 OBJ2=\
-zfma.o wfma.o\
 cjaev2.o djaev2.o qjaev2.o sjaev2.o yjaev2.o zjaev2.o\
 cjiev2.o djiev2.o qjiev2.o sjiev2.o yjiev2.o zjiev2.o\
 clju2.o dlju2.o slju2.o zlju2.o\

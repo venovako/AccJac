@@ -14,31 +14,9 @@ PURE SUBROUTINE WRTRH(N, A, LDA, AX, P, Q, CH, SHR, SHI, INFO)
        REAL(KIND=c_long_double) :: CR_HYPOT
      END FUNCTION CR_HYPOT
   END INTERFACE
-#else
-#define CR_HYPOT HYPOT
-#endif
-  INTERFACE
-     PURE FUNCTION WFMA(A, B, C, D)
-#ifdef __GFORTRAN__
-       USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
-#else
-       USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL128
-#endif
-       IMPLICIT NONE
-#ifdef __GFORTRAN__
-       COMPLEX(KIND=c_long_double), INTENT(IN) :: A, B, C
-       REAL(KIND=c_long_double), INTENT(IN) :: D
-       COMPLEX(KIND=c_long_double) :: WFMA
-#else
-       COMPLEX(KIND=REAL128), INTENT(IN) :: A, B, C
-       REAL(KIND=REAL128), INTENT(IN) :: D
-       COMPLEX(KIND=REAL128) :: WFMA
-#endif
-     END FUNCTION WFMA
-  END INTERFACE
-#ifdef __GFORTRAN__
   INTEGER, PARAMETER :: K = c_long_double
 #else
+#define CR_HYPOT HYPOT
   INTEGER, PARAMETER :: K = REAL128
 #endif
   INTEGER, INTENT(IN) :: N, LDA, P, Q
@@ -48,6 +26,5 @@ PURE SUBROUTINE WRTRH(N, A, LDA, AX, P, Q, CH, SHR, SHI, INFO)
   INTEGER, INTENT(INOUT) :: INFO
   COMPLEX(KIND=K) :: SH, HS, XX, YY
   INTEGER :: I
-#define CXFMA WFMA
-#include "hrtrh.f90"
+  INCLUDE 'hrtrh.f90'
 END SUBROUTINE WRTRH
