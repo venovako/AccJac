@@ -1,6 +1,11 @@
 PURE SUBROUTINE WRTLH(N, A, LDA, AX, P, Q, CH, SHR, SHI, INFO)
+#ifdef __GFORTRAN__
   USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
+#else
+  USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL128
+#endif
   IMPLICIT NONE
+#ifdef __GFORTRAN__
   INTERFACE
      PURE FUNCTION CR_HYPOT(X, Y) BIND(C,NAME='cr_hypotl')
        USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
@@ -9,15 +14,31 @@ PURE SUBROUTINE WRTLH(N, A, LDA, AX, P, Q, CH, SHR, SHI, INFO)
        REAL(KIND=c_long_double) :: CR_HYPOT
      END FUNCTION CR_HYPOT
   END INTERFACE
+#else
+#define CR_HYPOT HYPOT
+#endif
   INTERFACE
      PURE FUNCTION WFMA(A, B, C)
+#ifdef __GFORTRAN__
        USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
+#else
+       USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL128
+#endif
        IMPLICIT NONE
+#ifdef __GFORTRAN__
        COMPLEX(KIND=c_long_double), INTENT(IN) :: A, B, C
        COMPLEX(KIND=c_long_double) :: WFMA
+#else
+       COMPLEX(KIND=REAL128), INTENT(IN) :: A, B, C
+       COMPLEX(KIND=REAL128) :: WFMA
+#endif
      END FUNCTION WFMA
   END INTERFACE
+#ifdef __GFORTRAN__
   INTEGER, PARAMETER :: K = c_long_double
+#else
+  INTEGER, PARAMETER :: K = REAL128
+#endif
   INTEGER, INTENT(IN) :: N, LDA, P, Q
   COMPLEX(KIND=K), INTENT(INOUT) :: A(LDA,N)
   REAL(KIND=K), INTENT(INOUT) :: AX

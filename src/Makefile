@@ -15,13 +15,13 @@ FCFLAGS=$(FCFLAGS) /4I8
 LDFLAGS=/link /RELEASE /LIBPATH:. jaevd.lib jaev2.lib /LIBPATH:..\..\libpvn\src pvn.lib
 
 OBJ2= \
-zfma.obj \
+zfma.obj wfma.obj \
 cjaev2.obj djaev2.obj qjaev2.obj sjaev2.obj yjaev2.obj zjaev2.obj \
 cjiev2.obj djiev2.obj qjiev2.obj sjiev2.obj yjiev2.obj zjiev2.obj \
 clju2.obj dlju2.obj slju2.obj zlju2.obj \
 cljv2.obj dljv2.obj sljv2.obj zljv2.obj \
-dljau2.obj zljau2.obj \
-dljav2.obj zljav2.obj \
+dljau2.obj zljau2.obj wljau2.obj \
+dljav2.obj zljav2.obj wljav2.obj \
 qlaev2.obj ylaev2.obj
 
 # e.g., LAPACK=/Qmkl:sequential
@@ -41,28 +41,28 @@ croth.obj droth.obj sroth.obj zroth.obj \
 crott.obj drott.obj srott.obj zrott.obj \
 crtvh.obj drtvh.obj srtvh.obj zrtvh.obj \
 crtvt.obj drtvt.obj srtvt.obj zrtvt.obj \
-drtlt.obj drtrt.obj zrtlt.obj zrtrt.obj \
-drtlh.obj drtrh.obj zrtlh.obj zrtrh.obj \
+drtlt.obj drtrt.obj zrtlt.obj zrtrt.obj wrtlt.obj wrtrt.obj \
+drtlh.obj drtrh.obj zrtlh.obj zrtrh.obj wrtlh.obj wrtrh.obj \
 cnrmf.obj dnrmf.obj snrmf.obj znrmf.obj \
 csdp.obj dsdp.obj ssdp.obj zsdp.obj \
 cgram.obj dgram.obj sgram.obj zgram.obj \
 cscalg.obj dscalg.obj sscalg.obj zscalg.obj \
-dscala.obj zscala.obj \
-dswpc.obj dswpr.obj zswpc.obj zswpr.obj \
-dswpxd.obj zswpxd.obj \
+dscala.obj zscala.obj wscala.obj \
+dswpc.obj dswpr.obj zswpc.obj zswpr.obj wswpc.obj wswpr.obj \
+dswpxd.obj zswpxd.obj wswpxd.obj \
 cinisv.obj dinisv.obj sinisv.obj zinisv.obj \
 ctrans.obj dtrans.obj strans.obj ztrans.obj \
-dtrana.obj ztrana.obj \
+dtrana.obj ztrana.obj wtrana.obj \
 coffa.obj doffa.obj soffa.obj zoffa.obj \
 dtrack.obj strack.obj \
-dtrace.obj ztrace.obj \
-dnrmoa.obj znrmoa.obj \
+dtrace.obj ztrace.obj wtrace.obj \
+dnrmoa.obj znrmoa.obj wnrmoa.obj \
 dtrkoa.obj ztrkoa.obj \
-dtrcoa.obj ztrcoa.obj \
+dtrcoa.obj ztrcoa.obj wtrcoa.obj \
 cjsvdc.obj djsvdc.obj sjsvdc.obj zjsvdc.obj \
 cjsvdr.obj djsvdr.obj sjsvdr.obj zjsvdr.obj \
-djevdc.obj zjevdc.obj \
-djevdr.obj zjevdr.obj
+djevdc.obj zjevdc.obj wjevdc.obj \
+djevdr.obj zjevdr.obj wjevdr.obj
 LIBS= \
 jaev2.lib \
 jaevd.lib
@@ -71,8 +71,8 @@ past.exe \
 cevdj.exe zevdj.exe \
 cljv2t.exe dljv2t.exe sljv2t.exe zljv2t.exe \
 cjsvdt.exe djsvdt.exe sjsvdt.exe zjsvdt.exe \
-djevdt.exe zjevdt.exe \
-dpproc.exe zpproc.exe
+djevdt.exe zjevdt.exe wjevdt.exe \
+dpproc.exe zpproc.exe wpproc.exe
 
 all: $(LIBS) $(EXES)
 

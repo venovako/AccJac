@@ -1,6 +1,10 @@
 PROGRAM PAST
+#ifdef __GFORTRAN__
   USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
   USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: INT64, OUTPUT_UNIT, REAL64
+#else
+  USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: INT64, OUTPUT_UNIT, REAL64, REAL128
+#endif
   IMPLICIT NONE
   INTERFACE
      PURE SUBROUTINE CR_SINCOS(X, S, C) BIND(C,NAME='cr_sincos')
@@ -10,6 +14,11 @@ PROGRAM PAST
        REAL(KIND=c_double), INTENT(OUT) :: S, C
      END SUBROUTINE CR_SINCOS
   END INTERFACE
+#ifdef __GFORTRAN__
+  INTEGER, PARAMETER :: KK = c_long_double
+#else
+  INTEGER, PARAMETER :: KK = REAL128
+#endif
   REAL(KIND=REAL64), PARAMETER :: DPI = 3.14159265358979323846_REAL64
   CHARACTER(LEN=256) :: CLA
   INTEGER(KIND=INT64) :: K
@@ -17,9 +26,9 @@ PROGRAM PAST
   LOGICAL :: C
   INTEGER(KIND=INT64), ALLOCATABLE :: L(:,:), U(:,:), S(:,:)
   REAL(KIND=REAL64), ALLOCATABLE :: A(:,:), RU(:,:)
-  REAL(KIND=c_long_double), ALLOCATABLE :: AA(:,:)
+  REAL(KIND=KK), ALLOCATABLE :: AA(:,:)
   COMPLEX(KIND=REAL64), ALLOCATABLE :: Z(:,:)
-  COMPLEX(KIND=c_long_double), ALLOCATABLE :: ZZ(:,:)
+  COMPLEX(KIND=KK), ALLOCATABLE :: ZZ(:,:)
   EXTERNAL :: PASCAL
   I = COMMAND_ARGUMENT_COUNT()
   IF (I .NE. 2) STOP 'past.exe N FN'
@@ -191,13 +200,13 @@ PROGRAM PAST
         ZZ(J,J) = L(J,J)
         DO I = J+1, N
            Z(I,J) = CMPLX(RU(2,I), RU(3,I), REAL64) * L(I,J)
-           ZZ(I,J) = CMPLX(RU(2,I), RU(3,I), c_long_double) * L(I,J)
+           ZZ(I,J) = CMPLX(RU(2,I), RU(3,I), KK) * L(I,J)
         END DO
      END DO
      DO J = 2, N
         DO I = 1, J-1
            Z(I,J) = 0.0_REAL64
-           ZZ(I,J) = 0.0_c_long_double
+           ZZ(I,J) = 0.0_KK
         END DO
      END DO
      Z(N,N) = L(N,N)
@@ -238,7 +247,7 @@ PROGRAM PAST
         DO I = J+1, N
            R = I - J + 1
            Z(I,J) = CMPLX(RU(2,R), RU(3,R), REAL64) * S(I,J)
-           ZZ(I,J) = CMPLX(RU(2,R), RU(3,R), c_long_double) * S(I,J)
+           ZZ(I,J) = CMPLX(RU(2,R), RU(3,R), KK) * S(I,J)
         END DO
      END DO
      DO J = 2, N
