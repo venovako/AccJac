@@ -131,11 +131,11 @@ SUBROUTINE WJEVDC(N, A, LDA, V, LDV, JPOS, WRK, AS, INFO)
   AX = ZERO
   AS = 0
   R = 0
-  CALL WSCALA(N, A, LDA, AX, AS, R)
-  IF (R .LT. 0) THEN
-     INFO = -2
-     RETURN
-  END IF
+  ! CALL WSCALA(N, A, LDA, AX, AS, R)
+  ! IF (R .LT. 0) THEN
+  !    INFO = -2
+  !    RETURN
+  ! END IF
   ! init V
   DO Q = 1, N
      DO P = 1, Q-1

@@ -24,7 +24,7 @@
      ! SN => TG
      IF (IAND(INFO, 8) .EQ. 0) THEN
         DO I = 1, N
-           XX = (A(I,P) + A(I,Q) * SN) * CS
+           XX = (A(I,Q) * SN + A(I,P)) * CS
            YY = (A(I,P) * HS + A(I,Q)) * CS
            A(I,P) = XX
            A(I,Q) = YY
@@ -32,7 +32,7 @@
         END DO
      ELSE ! swap
         DO I = 1, N
-           XX = (A(I,P) + A(I,Q) * SN) * CS
+           XX = (A(I,Q) * SN + A(I,P)) * CS
            YY = (A(I,P) * HS + A(I,Q)) * CS
            A(I,P) = YY
            A(I,Q) = XX

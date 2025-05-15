@@ -268,17 +268,17 @@ SUBROUTINE WTRANA(N, A, LDA, V, LDV, AX, AS, P, Q, TOL, INFO)
         A(Q,P) = ZERO
         A(P,Q) = CONJG(A(Q,P))
      END IF
-     IF (AX .GT. T) THEN
-        INFO = 1
-        CALL WSCALA(N, A, LDA, AX, AS, INFO)
-        IF (INFO .LT. 0) THEN
-           I = -7
-        ELSE IF (INFO .GT. 0) THEN
-           I = 3
-        ELSE ! no downscaling
-           I = 2
-        END IF
-     END IF
+     ! IF (AX .GT. T) THEN
+     !    INFO = 1
+     !    CALL WSCALA(N, A, LDA, AX, AS, INFO)
+     !    IF (INFO .LT. 0) THEN
+     !       I = -7
+     !    ELSE IF (INFO .GT. 0) THEN
+     !       I = 3
+     !    ELSE ! no downscaling
+     !       I = 2
+     !    END IF
+     ! END IF
      INFO = I
   END IF
 #ifdef __GFORTRAN__

@@ -13,7 +13,7 @@
   ELSE IF (IAND(INFO, 4) .EQ. 0) THEN
      ! SH => TH
      DO J = 1, N
-        XX = CH * (A(P,J) + HS * A(Q,J))
+        XX = CH * (HS * A(Q,J) + A(P,J))
         YY = CH * (SH * A(P,J) + A(Q,J))
         A(P,J) = XX
         A(Q,J) = YY
