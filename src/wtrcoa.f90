@@ -46,7 +46,11 @@ SUBROUTINE WTRCOA(N, A, LDA, AS, S, T, U)
   MD = MOD(T, NS)
   H1 = N / 2
   IF ((MD .EQ. 0) .OR. (MD .EQ. 1) .OR. (MOD(MD, H1) .EQ. 0)) THEN
+#ifdef __GFORTRAN__
      WRITE (U,'(I11,A,I3,A,ES30.21E4)') T, ',', S, ',', WNRMOA(N, A, LDA, AS)
+#else
+     WRITE (U,'(I11,A,I3,A,ES45.36E4)') T, ',', S, ',', WNRMOA(N, A, LDA, AS)
+#endif
      FLUSH(U)
   END IF
   IF (S .LT. 0) THEN

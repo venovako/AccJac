@@ -76,17 +76,33 @@ PROGRAM WPPROC
      OPEN(NEWUNIT=U, IOSTAT=V, FILE=FN, STATUS='REPLACE', ACTION='WRITE', ACCESS='SEQUENTIAL', FORM='FORMATTED')
      IF (V .NE. 0) STOP 'OPEN(s)'
      IF (N .EQ. 1) THEN
+#ifdef __GFORTRAN__
         WRITE (U,'(ES30.21E4)') PR(1,1)
+#else
+        WRITE (U,'(ES45.36E4)') PR(1,1)
+#endif
      ELSE ! N > 1
         DO I = 1, N
            DO J = 1, N-1
               IF (J .EQ. 1) THEN
+#ifdef __GFORTRAN__
                  WRITE (U,'(ES30.21E4)',ADVANCE='NO') PR(I,1)
+#else
+                 WRITE (U,'(ES45.36E4)',ADVANCE='NO') PR(I,1)
+#endif
               ELSE ! J > 1
+#ifdef __GFORTRAN__
                  WRITE (U,'(ES31.21E4)',ADVANCE='NO') PR(I,J)
+#else
+                 WRITE (U,'(ES46.36E4)',ADVANCE='NO') PR(I,J)
+#endif
               END IF
            END DO
+#ifdef __GFORTRAN__
            WRITE (U,'(ES31.21E4)') PR(I,N)
+#else
+           WRITE (U,'(ES46.36E4)') PR(I,N)
+#endif
         END DO
      END IF
      CLOSE(UNIT=U, IOSTAT=V)
@@ -126,17 +142,33 @@ PROGRAM WPPROC
      OPEN(NEWUNIT=U, IOSTAT=V, FILE=FN, STATUS='REPLACE', ACTION='WRITE', ACCESS='SEQUENTIAL', FORM='FORMATTED')
      IF (V .NE. 0) STOP 'OPEN(m)'
      IF (N .EQ. 1) THEN
+#ifdef __GFORTRAN__
         WRITE (U,'(ES30.21E4)') PR(1,1)
+#else
+        WRITE (U,'(ES45.36E4)') PR(1,1)
+#endif
      ELSE ! N > 1
         DO I = 1, N
            DO J = 1, N-1
               IF (J .EQ. 1) THEN
+#ifdef __GFORTRAN__
                  WRITE (U,'(ES30.21E4)',ADVANCE='NO') PR(I,1)
+#else
+                 WRITE (U,'(ES45.36E4)',ADVANCE='NO') PR(I,1)
+#endif
               ELSE ! J > 1
+#ifdef __GFORTRAN__
                  WRITE (U,'(ES31.21E4)',ADVANCE='NO') PR(I,J)
+#else
+                 WRITE (U,'(ES46.36E4)',ADVANCE='NO') PR(I,J)
+#endif
               END IF
            END DO
+#ifdef __GFORTRAN__
            WRITE (U,'(ES31.21E4)') PR(I,N)
+#else
+           WRITE (U,'(ES46.36E4)') PR(I,N)
+#endif
         END DO
      END IF
      CLOSE(UNIT=U, IOSTAT=V)
@@ -155,7 +187,11 @@ PROGRAM WPPROC
            IF (Y .GT. X) X = Y
         END DO
      END DO
+#ifdef __GFORTRAN__
      WRITE (OUTPUT_UNIT,'(I2,A,ES30.21E4,A)',ADVANCE='NO') L, ',', X, ','
+#else
+     WRITE (OUTPUT_UNIT,'(I2,A,ES45.36E4,A)',ADVANCE='NO') L, ',', X, ','
+#endif
      FLUSH(OUTPUT_UNIT)
      X = XZERO
      DO J = 2, N
@@ -165,7 +201,11 @@ PROGRAM WPPROC
            IF (Y .GT. X) X = Y
         END DO
      END DO
+#ifdef __GFORTRAN__
      WRITE (OUTPUT_UNIT,'(ES30.21E4,A)',ADVANCE='NO') X, ','
+#else
+     WRITE (OUTPUT_UNIT,'(ES45.36E4,A)',ADVANCE='NO') X, ','
+#endif
      FLUSH(OUTPUT_UNIT)
      X = XZERO
      DO J = 2, N
@@ -175,7 +215,11 @@ PROGRAM WPPROC
            IF (Y .GT. X) X = Y
         END DO
      END DO
+#ifdef __GFORTRAN__
      WRITE (OUTPUT_UNIT,'(ES30.21E4,A)',ADVANCE='NO') X, ','
+#else
+     WRITE (OUTPUT_UNIT,'(ES45.36E4,A)',ADVANCE='NO') X, ','
+#endif
      FLUSH(OUTPUT_UNIT)
      X = XZERO
      DO J = 1, N
@@ -198,7 +242,11 @@ PROGRAM WPPROC
         END DO
         X = X / Y
      END IF
+#ifdef __GFORTRAN__
      WRITE (OUTPUT_UNIT,'(ES30.21E4)') X
+#else
+     WRITE (OUTPUT_UNIT,'(ES45.36E4)') X
+#endif
   END DO
   DEALLOCATE(PR)
   DEALLOCATE(A3)

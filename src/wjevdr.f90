@@ -287,17 +287,17 @@ SUBROUTINE WJEVDR(N, A, LDA, V, LDV, JPOS, WRK, AS, INFO)
         END IF
         OPEN(NEWUNIT=W, IOSTAT=X, FILE=FN, STATUS='REPLACE', ACTION='WRITE', ACCESS='SEQUENTIAL', FORM='FORMATTED')
         IF (N .EQ. 1) THEN
-           WRITE (W,'(2(A,ES30.21E4),A)') '(', REAL(WRK(1,1)), ',', AIMAG(WRK(1,1)), ')'
+           WRITE (W,9) '(', REAL(WRK(1,1)), ',', AIMAG(WRK(1,1)), ')'
         ELSE ! N > 1
            DO P = 1, N
               DO Q = 1, N-1
                  IF (Q .EQ. 1) THEN
-                    WRITE (W,'(2(A,ES30.21E4),A)',ADVANCE='NO') '(', REAL(WRK(P,1)), ',', AIMAG(WRK(P,1)), ')'
+                    WRITE (W,9,ADVANCE='NO') '(', REAL(WRK(P,1)), ',', AIMAG(WRK(P,1)), ')'
                  ELSE ! Q > 1
-                    WRITE (W,'(2(A,ES30.21E4),A)',ADVANCE='NO') ' (', REAL(WRK(P,Q)), ',', AIMAG(WRK(P,Q)), ')'
+                    WRITE (W,9,ADVANCE='NO') ' (', REAL(WRK(P,Q)), ',', AIMAG(WRK(P,Q)), ')'
                  END IF
               END DO
-              WRITE (W,'(2(A,ES30.21E4),A)') ' (', REAL(WRK(P,N)), ',', AIMAG(WRK(P,N)), ')'
+              WRITE (W,9) ' (', REAL(WRK(P,N)), ',', AIMAG(WRK(P,N)), ')'
            END DO
         END IF
         CLOSE(UNIT=W, IOSTAT=X)
@@ -307,4 +307,9 @@ SUBROUTINE WJEVDR(N, A, LDA, V, LDV, JPOS, WRK, AS, INFO)
   IF (IAND(INFO, 4) .NE. 0) CALL WTRCOA(N, A, LDA, AS, -1, O, U)
   INFO = R
   WRK(1,1) = TT
+#ifdef __GFORTRAN__
+9 FORMAT(2(A,ES30.21E4),A)
+#else
+9 FORMAT(2(A,ES45.36E4),A)
+#endif
 END SUBROUTINE WJEVDR

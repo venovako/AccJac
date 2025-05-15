@@ -13,12 +13,20 @@ SUBROUTINE WTRACE(N, A, LDA, AX, AS, SWP, NTR)
   COMPLEX(KIND=K), INTENT(IN) :: A(LDA,N)
   REAL(KIND=K), INTENT(IN) :: AX
   INTEGER :: I, J
+#ifdef __GFORTRAN__
   WRITE (ERROR_UNIT,'(I10,A,I11,A,I6,A,ES30.21E4)') SWP, ',', NTR, ',', AS, ',', AX
+#else
+  WRITE (ERROR_UNIT,'(I10,A,I11,A,I6,A,ES45.36E4)') SWP, ',', NTR, ',', AS, ',', AX
+#endif
   FLUSH(ERROR_UNIT)
   IF (N .LT. 1000) THEN
      I = -AS
      DO J = 1, N
+#ifdef __GFORTRAN__
         WRITE (ERROR_UNIT,'(I3,A,ES30.21E4)') J, ',', SCALE(REAL(REAL(A(J,J)), REAL128), I)
+#else
+        WRITE (ERROR_UNIT,'(I3,A,ES45.36E4)') J, ',', SCALE(REAL(REAL(A(J,J)), REAL128), I)
+#endif
         FLUSH(ERROR_UNIT)
      END DO
   END IF
