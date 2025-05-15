@@ -1,13 +1,4 @@
 include system.mk
-ifdef MPFR
-ifndef GMP
-GMP=/usr
-endif # !GMP
-else # !MPFR
-ifdef GMP
-MPFR=/usr
-endif # GMP
-endif # ?MPFR
 include $(COMPILER).mk
 include debug.mk
 ifneq ($(ABI),lp64)
@@ -30,13 +21,13 @@ claev2.o dlaev2.o slaev2.o zlaev2.o
 endif # !LAPACK
 
 OBJ2=\
-zfma.o\
+zfma.o wfma.o\
 cjaev2.o djaev2.o qjaev2.o sjaev2.o yjaev2.o zjaev2.o\
 cjiev2.o djiev2.o qjiev2.o sjiev2.o yjiev2.o zjiev2.o\
 clju2.o dlju2.o slju2.o zlju2.o\
 cljv2.o dljv2.o sljv2.o zljv2.o\
-dljau2.o zljau2.o\
-dljav2.o zljav2.o
+dljau2.o zljau2.o wljau2.o\
+dljav2.o zljav2.o wljav2.o
 
 LIB2=libjaev2.a
 
@@ -52,6 +43,11 @@ EXE2 += \
 sth2t.exe
 endif # MPFR
 
+ifdef MPC
+OBJ2 += \
+mpcfma.obj
+endif # MPC
+
 OBJD=\
 bfopen.o pascal.o\
 cjaevd.o zjaevd.o\
@@ -61,36 +57,36 @@ croth.o droth.o sroth.o zroth.o\
 crott.o drott.o srott.o zrott.o\
 crtvh.o drtvh.o srtvh.o zrtvh.o\
 crtvt.o drtvt.o srtvt.o zrtvt.o\
-drtlt.o drtrt.o zrtlt.o zrtrt.o\
-drtlh.o drtrh.o zrtlh.o zrtrh.o\
+drtlt.o drtrt.o zrtlt.o zrtrt.o wrtlt.o wrtrt.o\
+drtlh.o drtrh.o zrtlh.o zrtrh.o wrtlh.o wrtrh.o\
 cnrmf.o dnrmf.o snrmf.o znrmf.o\
 csdp.o dsdp.o ssdp.o zsdp.o\
 cgram.o dgram.o sgram.o zgram.o\
 cscalg.o dscalg.o sscalg.o zscalg.o\
-dscala.o zscala.o\
-dswpc.o dswpr.o zswpc.o zswpr.o\
-dswpxd.o zswpxd.o\
+dscala.o zscala.o wscala.o xscala.o\
+dswpc.o dswpr.o zswpc.o zswpr.o wswpc.o wswpr.o\
+dswpxd.o zswpxd.o wswpxd.o\
 cinisv.o dinisv.o sinisv.o zinisv.o\
 ctrans.o dtrans.o strans.o ztrans.o\
-dtrana.o ztrana.o\
+dtrana.o ztrana.o wtrana.o\
 coffa.o doffa.o soffa.o zoffa.o\
 dtrack.o strack.o\
-dtrace.o ztrace.o\
-dnrmoa.o znrmoa.o\
+dtrace.o ztrace.o wtrace.o\
+dnrmoa.o znrmoa.o wnrmoa.o\
 dtrkoa.o ztrkoa.o\
-dtrcoa.o ztrcoa.o\
+dtrcoa.o ztrcoa.o wtrcoa.o\
 cjsvdc.o djsvdc.o sjsvdc.o zjsvdc.o\
 cjsvdr.o djsvdr.o sjsvdr.o zjsvdr.o\
-djevdc.o zjevdc.o\
-djevdr.o zjevdr.o
+djevdc.o zjevdc.o wjevdc.o\
+djevdr.o zjevdr.o wjevdr.o
 
 LIBD=libjaevd.a
 
 EXED=past.exe\
 cevdj.exe zevdj.exe\
 cjsvdt.exe djsvdt.exe sjsvdt.exe zjsvdt.exe\
-djevdt.exe zjevdt.exe\
-dpproc.exe zpproc.exe
+djevdt.exe zjevdt.exe wjevdt.exe\
+dpproc.exe zpproc.exe wpproc.exe
 
 ifeq ($(COMPILER),gfortran)
 ifeq ($(findstring 86,$(ARCH)),86)
@@ -98,12 +94,10 @@ OBJL += \
 wlaev2.o xlaev2.o
 
 OBJ2 += \
-wfma.o\
 wjaev2.o xjaev2.o\
 wjiev2.o xjiev2.o\
 wlju2.o xlju2.o\
-xljv2.o wljv2.o\
-wljau2.o wljav2.o
+xljv2.o wljv2.o
 
 EXE2 += \
 wtest.exe xtest.exe\
@@ -114,29 +108,20 @@ wroth.o xroth.o\
 wrott.o xrott.o\
 wrtvh.o xrtvh.o\
 wrtvt.o xrtvt.o\
-wrtlh.o wrtlt.o\
-wrtrh.o wrtrt.o\
 wnrmf.o xnrmf.o\
 wsdp.o xsdp.o\
 wgram.o xgram.o\
 wscalg.o xscalg.o\
-wscala.o xscala.o\
-wswpc.o wswpr.o\
 winisv.o xinisv.o\
 wtrans.o xtrans.o\
-wswpxd.o wtrana.o\
 woffa.o xoffa.o\
 xtrack.o\
-wtrace.o\
-wnrmoa.o\
-wtrcoa.o\
 wjsvdc.o xjsvdc.o\
 wjsvdr.o xjsvdr.o\
 wjevdc.o wjevdr.o
 
 EXED += \
-wjsvdt.exe xjsvdt.exe\
-wjevdt.exe wpproc.exe
+wjsvdt.exe xjsvdt.exe
 endif # x86_64 or i86pc
 endif # gfortran
 
@@ -150,6 +135,9 @@ ifeq ($(COMPILER),gfortran)
 LDFLAGS += -static-libgfortran -static-libquadmath
 endif # gfortran
 LDFLAGS += -L. -ljaevd -ljaev2 -L../../libpvn/src -lpvn $(LAPACK)
+ifdef MPC
+LDFLAGS += -L$(MPC)/lib -lmpc
+endif # MPC
 ifdef MPFR
 LDFLAGS += -L$(MPFR)/lib -lmpfr
 endif # MPFR
@@ -178,7 +166,7 @@ $(LIBD): $(OBJD)
 	$(AR) $(ARFLAGS) $@ $(OBJD)
 
 help:
-	@echo $(MAKE) "[COMPILER=gfortran|ifx] [COMPILER_PREFIX=...] [COMPILER_SUFFIX=...] [MARCH=...] [ABI=lp64|ilp64] [NDEBUG=optimization_level] [LAPACK=...] [MPFR=...] [GMP=...] [PROFILE=...] [ANIMATE=ppe] [all|help|clean]"
+	@echo $(MAKE) "[COMPILER=gfortran|ifx] [COMPILER_PREFIX=...] [COMPILER_SUFFIX=...] [MARCH=...] [ABI=lp64|ilp64] [NDEBUG=optimization_level] [LAPACK=...] [GMP=...] [MPFR=...] [MPC=...] [PROFILE=...] [ANIMATE=ppe] [all|help|clean]"
 
 %.obj : %.c $(MKFS)
 	$(CC) $(CFLAGS) -c $< -o $@

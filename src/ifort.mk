@@ -29,6 +29,10 @@ FCFLAGS += -debug emit_column -debug extended -debug inline-debug-info -debug pu
 CFLAGS += -debug extended -debug inline-debug-info -debug pubnames
 endif # ?NDEBUG
 CFLAGS += -diag-disable=10441
+ifdef MPC
+FCFLAGS += -DMPC="\"$(MPC)\""
+CFLAGS += -I$(MPC)/include
+endif # MPC
 ifdef MPFR
 FCFLAGS += -DMPFR="\"$(MPFR)\""
 CFLAGS += -I$(MPFR)/include

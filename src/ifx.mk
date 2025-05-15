@@ -28,6 +28,10 @@ else # !NDEBUG
 FCFLAGS += -debug emit_column -debug extended -debug inline-debug-info -debug pubnames -check all
 CFLAGS += -debug extended -debug inline-debug-info -debug pubnames
 endif # ?NDEBUG
+ifdef MPC
+FCFLAGS += -DMPC="\"$(MPC)\""
+CFLAGS += -I$(MPC)/include
+endif # MPC
 ifdef MPFR
 FCFLAGS += -DMPFR="\"$(MPFR)\""
 CFLAGS += -I$(MPFR)/include

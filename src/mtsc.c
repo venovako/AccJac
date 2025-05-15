@@ -1,5 +1,9 @@
 #ifndef NDEBUG
+#ifdef __cplusplus
+#include <cassert>
+#else /* !__cplusplus */
 #include <assert.h>
+#endif /* ?__cplusplus */
 #endif /* !NDEBUG */
 #include "gmp.h"
 #include "mpfr.h"

@@ -160,9 +160,9 @@ SUBROUTINE DTRANA(N, A, LDA, V, LDV, AX, AS, P, Q, TOL, INFO)
      END IF
      A(P,P) = A1
      A(Q,Q) = A2
-     IF (IAND(INFO, 2) .EQ. 0) THEN
-        A(P,Q) = ZERO
+     IF ((I .EQ. 2) .AND. (IAND(INFO, 2) .EQ. 0)) THEN
         A(Q,P) = ZERO
+        A(P,Q) = A(Q,P)
      END IF
      IF (AX .GT. T) THEN
         INFO = 1

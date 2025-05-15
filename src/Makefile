@@ -47,7 +47,7 @@ cnrmf.obj dnrmf.obj snrmf.obj znrmf.obj \
 csdp.obj dsdp.obj ssdp.obj zsdp.obj \
 cgram.obj dgram.obj sgram.obj zgram.obj \
 cscalg.obj dscalg.obj sscalg.obj zscalg.obj \
-dscala.obj zscala.obj wscala.obj \
+dscala.obj zscala.obj wscala.obj xscala.obj \
 dswpc.obj dswpr.obj zswpc.obj zswpr.obj wswpc.obj wswpr.obj \
 dswpxd.obj zswpxd.obj wswpxd.obj \
 cinisv.obj dinisv.obj sinisv.obj zinisv.obj \
