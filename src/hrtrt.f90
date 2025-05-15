@@ -25,9 +25,9 @@
      IF (IAND(INFO, 8) .EQ. 0) THEN
         DO I = 1, N
            !XX = (A(I,P) + A(I,Q) * SN) * CS
-           XX = CXFMA(A(I,Q), SN, A(I,P)) * CS
+           XX = CXFMA(A(I,Q), SN, A(I,P), CS)
            !YY = (A(I,P) * HS + A(I,Q)) * CS
-           YY = CXFMA(A(I,P), HS, A(I,Q)) * CS
+           YY = CXFMA(A(I,P), HS, A(I,Q), CS)
            A(I,P) = XX
            A(I,Q) = YY
            AX = MAX(AX, CR_HYPOT(REAL(XX), AIMAG(XX)), CR_HYPOT(REAL(YY), AIMAG(YY)))
@@ -35,9 +35,9 @@
      ELSE ! swap
         DO I = 1, N
            !XX = (A(I,P) + A(I,Q) * SN) * CS
-           XX = CXFMA(A(I,Q), SN, A(I,P)) * CS
+           XX = CXFMA(A(I,Q), SN, A(I,P), CS)
            !YY = (A(I,P) * HS + A(I,Q)) * CS
-           YY = CXFMA(A(I,P), HS, A(I,Q)) * CS
+           YY = CXFMA(A(I,P), HS, A(I,Q), CS)
            A(I,P) = YY
            A(I,Q) = XX
            AX = MAX(AX, CR_HYPOT(REAL(XX), AIMAG(XX)), CR_HYPOT(REAL(YY), AIMAG(YY)))

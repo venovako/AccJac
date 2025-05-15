@@ -14,9 +14,9 @@
      ! SH => TH
      DO J = 1, N
         !XX = CH * (A(P,J) + HS * A(Q,J))
-        XX = CH * CXFMA(HS, A(Q,J), A(P,J))
+        XX = CXFMA(HS, A(Q,J), A(P,J), CH)
         !YY = CH * (SH * A(P,J) + A(Q,J))
-        YY = CH * CXFMA(SH, A(P,J), A(Q,J))
+        YY = CXFMA(SH, A(P,J), A(Q,J), CH)
         A(P,J) = XX
         A(Q,J) = YY
         AX = MAX(AX, CR_HYPOT(REAL(XX), AIMAG(XX)), CR_HYPOT(REAL(YY), AIMAG(YY)))

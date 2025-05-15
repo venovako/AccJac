@@ -18,7 +18,7 @@ PURE SUBROUTINE WRTLH(N, A, LDA, AX, P, Q, CH, SHR, SHI, INFO)
 #define CR_HYPOT HYPOT
 #endif
   INTERFACE
-     PURE FUNCTION WFMA(A, B, C)
+     PURE FUNCTION WFMA(A, B, C, D)
 #ifdef __GFORTRAN__
        USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
 #else
@@ -27,9 +27,11 @@ PURE SUBROUTINE WRTLH(N, A, LDA, AX, P, Q, CH, SHR, SHI, INFO)
        IMPLICIT NONE
 #ifdef __GFORTRAN__
        COMPLEX(KIND=c_long_double), INTENT(IN) :: A, B, C
+       REAL(KIND=c_long_double), INTENT(IN) :: D
        COMPLEX(KIND=c_long_double) :: WFMA
 #else
        COMPLEX(KIND=REAL128), INTENT(IN) :: A, B, C
+       REAL(KIND=REAL128), INTENT(IN) :: D
        COMPLEX(KIND=REAL128) :: WFMA
 #endif
      END FUNCTION WFMA

@@ -21,7 +21,7 @@
 #include "mpfr.h"
 #include "mpc.h"
 
-static mpc_t A, B, C, D;
+static mpc_t A, B, C, D, E;
 
 extern void mpc_start_(int *const p)
 {
@@ -32,27 +32,32 @@ extern void mpc_start_(int *const p)
   mpc_init2(B, *p);
   mpc_init2(C, *p);
   mpc_init2(D, *p);
+  mpc_init2(E, *p);
 }
 
 extern void mpc_stop_()
 {
+  mpc_clear(E);
   mpc_clear(D);
   mpc_clear(C);
   mpc_clear(B);
   mpc_clear(A);
 }
 
-extern void mpc_wfma_(LONG_DOUBLE_COMPLEX *const d, const LONG_DOUBLE_COMPLEX *const a, const LONG_DOUBLE_COMPLEX *const b, const LONG_DOUBLE_COMPLEX *const c)
+extern void mpc_wfma_(LONG_DOUBLE_COMPLEX *const e, const LONG_DOUBLE_COMPLEX *const a, const LONG_DOUBLE_COMPLEX *const b, const LONG_DOUBLE_COMPLEX *const c, const long double *const d)
 {
 #ifndef NDEBUG
-  assert(d);
+  assert(e);
   assert(a);
   assert(b);
   assert(c);
+  assert(d);
 #endif /* !NDEBUG */
   (void)mpc_set_ldc(A, *a, MPC_RNDNN);
   (void)mpc_set_ldc(B, *b, MPC_RNDNN);
   (void)mpc_set_ldc(C, *c, MPC_RNDNN);
-  (void)mpc_fma(D, A, B, C, MPC_RNDNN);
-  *d = mpc_get_ldc(D, MPC_RNDNN);
+  (void)mpc_fma(E, A, B, C, MPC_RNDNN);
+  (void)mpc_set_ld(D, *d, MPC_RNDNN);
+  (void)mpc_mul(E, E, D, MPC_RNDNN);
+  *e = mpc_get_ldc(E, MPC_RNDNN);
 }
