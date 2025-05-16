@@ -25,8 +25,8 @@ FCFLAGS += -inline-level=2
 CFLAGS += -inline-level=2
 endif # !PROFILE
 else # !NDEBUG
-FCFLAGS += -debug emit_column -debug extended -debug inline-debug-info -debug pubnames -check all
-CFLAGS += -debug extended -debug inline-debug-info -debug pubnames
+FCFLAGS += -debug -check all
+CFLAGS += -debug
 endif # ?NDEBUG
 ifdef MPC
 FCFLAGS += -DMPC="\"$(MPC)\""
