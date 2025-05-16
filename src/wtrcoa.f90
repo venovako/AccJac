@@ -1,26 +1,25 @@
 SUBROUTINE WTRCOA(N, A, LDA, AS, S, T, U)
 #ifdef __GFORTRAN__
   USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
-#else
+#endif
   USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL128
-#endif
   IMPLICIT NONE
-  INTERFACE
-     PURE FUNCTION WNRMOA(N, A, LDA, AS)
-#ifdef __GFORTRAN__
-       USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
-#endif
-       USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL128
-       IMPLICIT NONE
-       INTEGER, INTENT(IN) :: N, LDA, AS
-#ifdef __GFORTRAN__
-       COMPLEX(KIND=c_long_double), INTENT(IN) :: A(LDA,N)
-#else
-       COMPLEX(KIND=REAL128), INTENT(IN) :: A(LDA,N)
-#endif
-       REAL(KIND=REAL128) :: WNRMOA
-     END FUNCTION WNRMOA
-  END INTERFACE
+!   INTERFACE
+!      PURE FUNCTION WNRMOA(N, A, LDA, AS)
+! #ifdef __GFORTRAN__
+!        USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
+! #endif
+!        USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL128
+!        IMPLICIT NONE
+!        INTEGER, INTENT(IN) :: N, LDA, AS
+! #ifdef __GFORTRAN__
+!        COMPLEX(KIND=c_long_double), INTENT(IN) :: A(LDA,N)
+! #else
+!        COMPLEX(KIND=REAL128), INTENT(IN) :: A(LDA,N)
+! #endif
+!        REAL(KIND=REAL128) :: WNRMOA
+!      END FUNCTION WNRMOA
+!   END INTERFACE
 #ifdef __GFORTRAN__
   INTEGER, PARAMETER :: K = c_long_double
 #else
@@ -31,6 +30,7 @@ SUBROUTINE WTRCOA(N, A, LDA, AS, S, T, U)
   INTEGER, INTENT(INOUT) :: T, U
   INTEGER :: NS, MD, H1
   CHARACTER(LEN=8) :: FN
+  REAL(KIND=REAL128), EXTERNAL :: WNRMOA
   IF ((LDA .LT. N) .OR. (N .LE. 1) .OR. (N .GE. 1000)) RETURN
   IF (S .EQ. 0) THEN
      WRITE (FN,'(A,I3.3,A)') CHAR(T), N, '.csv'

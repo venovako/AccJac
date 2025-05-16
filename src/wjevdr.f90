@@ -8,96 +8,96 @@ SUBROUTINE WJEVDR(N, A, LDA, V, LDV, JPOS, WRK, AS, INFO)
   USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: INT64, REAL128
 #endif
   IMPLICIT NONE
-  INTERFACE
-     PURE SUBROUTINE WSCALA(N, A, LDA, AX, AS, INFO)
-#ifdef __GFORTRAN__
-       USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
-#else
-       USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL128
-#endif
-       IMPLICIT NONE
-       INTEGER, INTENT(IN) :: N, LDA
-#ifdef __GFORTRAN__
-       COMPLEX(KIND=c_long_double), INTENT(INOUT) :: A(LDA,N)
-       REAL(KIND=c_long_double), INTENT(INOUT) :: AX
-#else
-       COMPLEX(KIND=REAL128), INTENT(INOUT) :: A(LDA,N)
-       REAL(KIND=REAL128), INTENT(INOUT) :: AX
-#endif
-       INTEGER, INTENT(INOUT) :: AS, INFO
-     END SUBROUTINE WSCALA
-  END INTERFACE
-  INTERFACE
-     PURE SUBROUTINE WSWPXD(N, A, LDA, V, LDV, B, E, INFO)
-#ifdef __GFORTRAN__
-       USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
-#else
-       USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL128
-#endif
-       IMPLICIT NONE
-       INTEGER, INTENT(IN) :: N, LDA, LDV, B, E
-#ifdef __GFORTRAN__
-       COMPLEX(KIND=c_long_double), INTENT(INOUT) :: A(LDA,N), V(LDV,N)
-#else
-       COMPLEX(KIND=REAL128), INTENT(INOUT) :: A(LDA,N), V(LDV,N)
-#endif
-       INTEGER, INTENT(OUT) :: INFO
-     END SUBROUTINE WSWPXD
-  END INTERFACE
-  INTERFACE
-     SUBROUTINE WTRANA(N, A, LDA, V, LDV, AX, AS, P, Q, TOL, INFO)
-#ifdef __GFORTRAN__
-       USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
-#else
-       USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL128
-#endif
-       IMPLICIT NONE
-       INTEGER, INTENT(IN) :: N, LDA, LDV, P, Q
-#ifdef __GFORTRAN__
-       COMPLEX(KIND=c_long_double), INTENT(INOUT) :: A(LDA,N), V(LDV,N), TOL
-       REAL(KIND=c_long_double), INTENT(INOUT) :: AX
-#else
-       COMPLEX(KIND=REAL128), INTENT(INOUT) :: A(LDA,N), V(LDV,N), TOL
-       REAL(KIND=REAL128), INTENT(INOUT) :: AX
-#endif
-       INTEGER, INTENT(INOUT) :: AS, INFO
-     END SUBROUTINE WTRANA
-  END INTERFACE
-  INTERFACE
-     SUBROUTINE WTRACE(N, A, LDA, AX, AS, SWP, NTR)
-#ifdef __GFORTRAN__
-       USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
-#else
-       USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL128
-#endif
-       IMPLICIT NONE
-       INTEGER, INTENT(IN) :: N, LDA, AS, SWP, NTR
-#ifdef __GFORTRAN__
-       COMPLEX(KIND=c_long_double), INTENT(IN) :: A(LDA,N)
-       REAL(KIND=c_long_double), INTENT(IN) :: AX
-#else
-       COMPLEX(KIND=REAL128), INTENT(IN) :: A(LDA,N)
-       REAL(KIND=REAL128), INTENT(IN) :: AX
-#endif
-     END SUBROUTINE WTRACE
-  END INTERFACE
-  INTERFACE
-     SUBROUTINE WTRCOA(N, A, LDA, AS, S, T, U)
-#ifdef __GFORTRAN__
-       USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
-#else
-       USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL128
-#endif
-       IMPLICIT NONE
-       INTEGER, INTENT(IN) :: N, LDA, AS, S
-#ifdef __GFORTRAN__
-       COMPLEX(KIND=c_long_double), INTENT(IN) :: A(LDA,N)
-#else
-       COMPLEX(KIND=REAL128), INTENT(IN) :: A(LDA,N)
-#endif
-       INTEGER, INTENT(INOUT) :: T, U
-     END SUBROUTINE WTRCOA
-  END INTERFACE
+!   INTERFACE
+!      PURE SUBROUTINE WSCALA(N, A, LDA, AX, AS, INFO)
+! #ifdef __GFORTRAN__
+!        USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
+! #else
+!        USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL128
+! #endif
+!        IMPLICIT NONE
+!        INTEGER, INTENT(IN) :: N, LDA
+! #ifdef __GFORTRAN__
+!        COMPLEX(KIND=c_long_double), INTENT(INOUT) :: A(LDA,N)
+!        REAL(KIND=c_long_double), INTENT(INOUT) :: AX
+! #else
+!        COMPLEX(KIND=REAL128), INTENT(INOUT) :: A(LDA,N)
+!        REAL(KIND=REAL128), INTENT(INOUT) :: AX
+! #endif
+!        INTEGER, INTENT(INOUT) :: AS, INFO
+!      END SUBROUTINE WSCALA
+!   END INTERFACE
+!   INTERFACE
+!      PURE SUBROUTINE WSWPXD(N, A, LDA, V, LDV, B, E, INFO)
+! #ifdef __GFORTRAN__
+!        USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
+! #else
+!        USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL128
+! #endif
+!        IMPLICIT NONE
+!        INTEGER, INTENT(IN) :: N, LDA, LDV, B, E
+! #ifdef __GFORTRAN__
+!        COMPLEX(KIND=c_long_double), INTENT(INOUT) :: A(LDA,N), V(LDV,N)
+! #else
+!        COMPLEX(KIND=REAL128), INTENT(INOUT) :: A(LDA,N), V(LDV,N)
+! #endif
+!        INTEGER, INTENT(OUT) :: INFO
+!      END SUBROUTINE WSWPXD
+!   END INTERFACE
+!   INTERFACE
+!      SUBROUTINE WTRANA(N, A, LDA, V, LDV, AX, AS, P, Q, TOL, INFO)
+! #ifdef __GFORTRAN__
+!        USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
+! #else
+!        USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL128
+! #endif
+!        IMPLICIT NONE
+!        INTEGER, INTENT(IN) :: N, LDA, LDV, P, Q
+! #ifdef __GFORTRAN__
+!        COMPLEX(KIND=c_long_double), INTENT(INOUT) :: A(LDA,N), V(LDV,N), TOL
+!        REAL(KIND=c_long_double), INTENT(INOUT) :: AX
+! #else
+!        COMPLEX(KIND=REAL128), INTENT(INOUT) :: A(LDA,N), V(LDV,N), TOL
+!        REAL(KIND=REAL128), INTENT(INOUT) :: AX
+! #endif
+!        INTEGER, INTENT(INOUT) :: AS, INFO
+!      END SUBROUTINE WTRANA
+!   END INTERFACE
+!   INTERFACE
+!      SUBROUTINE WTRACE(N, A, LDA, AX, AS, SWP, NTR)
+! #ifdef __GFORTRAN__
+!        USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
+! #else
+!        USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL128
+! #endif
+!        IMPLICIT NONE
+!        INTEGER, INTENT(IN) :: N, LDA, AS, SWP, NTR
+! #ifdef __GFORTRAN__
+!        COMPLEX(KIND=c_long_double), INTENT(IN) :: A(LDA,N)
+!        REAL(KIND=c_long_double), INTENT(IN) :: AX
+! #else
+!        COMPLEX(KIND=REAL128), INTENT(IN) :: A(LDA,N)
+!        REAL(KIND=REAL128), INTENT(IN) :: AX
+! #endif
+!      END SUBROUTINE WTRACE
+!   END INTERFACE
+!   INTERFACE
+!      SUBROUTINE WTRCOA(N, A, LDA, AS, S, T, U)
+! #ifdef __GFORTRAN__
+!        USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
+! #else
+!        USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL128
+! #endif
+!        IMPLICIT NONE
+!        INTEGER, INTENT(IN) :: N, LDA, AS, S
+! #ifdef __GFORTRAN__
+!        COMPLEX(KIND=c_long_double), INTENT(IN) :: A(LDA,N)
+! #else
+!        COMPLEX(KIND=REAL128), INTENT(IN) :: A(LDA,N)
+! #endif
+!        INTEGER, INTENT(INOUT) :: T, U
+!      END SUBROUTINE WTRCOA
+!   END INTERFACE
 #ifdef __GFORTRAN__
   INTEGER, PARAMETER :: K = c_long_double
 #else
@@ -114,7 +114,7 @@ SUBROUTINE WJEVDR(N, A, LDA, V, LDV, JPOS, WRK, AS, INFO)
   CHARACTER(LEN=11) :: FN
 #ifdef __GFORTRAN__
 #ifdef MPC
-  EXTERNAL :: MPC_START, MPC_STOP
+  ! EXTERNAL :: MPC_START, MPC_STOP
   CALL MPC_START(1024)
 #endif
 #endif
@@ -131,11 +131,11 @@ SUBROUTINE WJEVDR(N, A, LDA, V, LDV, JPOS, WRK, AS, INFO)
   AX = ZERO
   AS = 0
   R = 0
-  ! CALL WSCALA(N, A, LDA, AX, AS, R)
-  ! IF (R .LT. 0) THEN
-  !    INFO = -2
-  !    RETURN
-  ! END IF
+  CALL WSCALA(N, A, LDA, AX, AS, R)
+  IF (R .LT. 0) THEN
+     INFO = -2
+     RETURN
+  END IF
   ! init V
   DO Q = 1, N
      DO P = 1, Q-1
