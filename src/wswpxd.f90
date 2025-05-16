@@ -1,45 +1,44 @@
-! PURE
-SUBROUTINE WSWPXD(N, A, LDA, V, LDV, B, E, INFO)
+PURE SUBROUTINE WSWPXD(N, A, LDA, V, LDV, B, E, INFO)
 #ifdef __GFORTRAN__
   USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
 #else
   USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL128
 #endif
   IMPLICIT NONE
-!   INTERFACE
-!      PURE SUBROUTINE WSWPC(N, A, LDA, P, Q, INFO)
-! #ifdef __GFORTRAN__
-!        USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
-! #else
-!        USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL128
-! #endif
-!        IMPLICIT NONE
-!        INTEGER, INTENT(IN) :: N, LDA, P, Q
-! #ifdef __GFORTRAN__
-!        COMPLEX(KIND=c_long_double), INTENT(INOUT) :: A(LDA,N)
-! #else
-!        COMPLEX(KIND=REAL128), INTENT(INOUT) :: A(LDA,N)
-! #endif
-!        INTEGER, INTENT(OUT) :: INFO
-!      END SUBROUTINE WSWPC
-!   END INTERFACE
-!   INTERFACE
-!      PURE SUBROUTINE WSWPR(N, A, LDA, P, Q, INFO)
-! #ifdef __GFORTRAN__
-!        USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
-! #else
-!        USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL128
-! #endif
-!        IMPLICIT NONE
-!        INTEGER, INTENT(IN) :: N, LDA, P, Q
-! #ifdef __GFORTRAN__
-!        COMPLEX(KIND=c_long_double), INTENT(INOUT) :: A(LDA,N)
-! #else
-!        COMPLEX(KIND=REAL128), INTENT(INOUT) :: A(LDA,N)
-! #endif
-!        INTEGER, INTENT(OUT) :: INFO
-!      END SUBROUTINE WSWPR
-!   END INTERFACE
+  INTERFACE
+     PURE SUBROUTINE WSWPC(N, A, LDA, P, Q, INFO)
+#ifdef __GFORTRAN__
+       USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
+#else
+       USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL128
+#endif
+       IMPLICIT NONE
+       INTEGER, INTENT(IN) :: N, LDA, P, Q
+#ifdef __GFORTRAN__
+       COMPLEX(KIND=c_long_double), INTENT(INOUT) :: A(LDA,N)
+#else
+       COMPLEX(KIND=REAL128), INTENT(INOUT) :: A(LDA,N)
+#endif
+       INTEGER, INTENT(OUT) :: INFO
+     END SUBROUTINE WSWPC
+  END INTERFACE
+  INTERFACE
+     PURE SUBROUTINE WSWPR(N, A, LDA, P, Q, INFO)
+#ifdef __GFORTRAN__
+       USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
+#else
+       USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL128
+#endif
+       IMPLICIT NONE
+       INTEGER, INTENT(IN) :: N, LDA, P, Q
+#ifdef __GFORTRAN__
+       COMPLEX(KIND=c_long_double), INTENT(INOUT) :: A(LDA,N)
+#else
+       COMPLEX(KIND=REAL128), INTENT(INOUT) :: A(LDA,N)
+#endif
+       INTEGER, INTENT(OUT) :: INFO
+     END SUBROUTINE WSWPR
+  END INTERFACE
 #ifdef __GFORTRAN__
   INTEGER, PARAMETER :: K = c_long_double
 #else

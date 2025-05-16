@@ -18,7 +18,7 @@ PROGRAM WJEVDT
   INTEGER :: N, JPOS, INFO, I, J, AS
   COMPLEX(KIND=K), ALLOCATABLE :: A(:,:), V(:,:), WRK(:,:)
   COMPLEX(KIND=KK), ALLOCATABLE :: X(:,:), Y(:,:), Z(:,:)
-  ! EXTERNAL :: BFOPEN, WJEVDC, WJEVDR
+  EXTERNAL :: BFOPEN, WJEVDC, WJEVDR
   ! read the command line arguments
   I = COMMAND_ARGUMENT_COUNT()
   IF (I .NE. 4) STOP 'wjevdt.exe N JPOS OPTS FILE'

@@ -6,6 +6,7 @@
   IF ((N .LE. 0) .OR. (N .GT. MIN(LDV, LDA))) INFO = -1
   IF (INFO .NE. 0) RETURN
   X = ZERO
+  INFO = B
   DO J = B, E
      T = ABS(REAL(A(J,J)))
      IF (T .GT. X) THEN
