@@ -9,8 +9,8 @@ PROGRAM DLJV2T
   ! This has been observed in single precision, and is more unlikely in higher precisions.
   REAL(KIND=REAL64), PARAMETER :: DAMP = 1.0_REAL64 - 4 * EPSILON(ZERO)
   CHARACTER(LEN=256) :: CLA
-  REAL(KIND=KK) :: Q(10)
-  REAL(KIND=REAL64) :: D(5)
+  REAL(KIND=KK) :: Q(10), W
+  REAL(KIND=REAL64) :: D(5), T
   INTEGER, ALLOCATABLE :: ISEED(:)
   !DIR$ ATTRIBUTES ALIGN: 64:: ISEED
   INTEGER :: I, N, SSIZE
@@ -64,7 +64,7 @@ PROGRAM DLJV2T
      IF (.NOT. (D(3) .LE. HUGE(ZERO))) GOTO 1
      IF (SSIZE .NE. 0) D(3) = -D(3)
      ES = 0_c_int
-     SSIZE = INT(PVN_DLJV2(D(1), D(2), D(3), D(4), D(5), ES))
+     SSIZE = INT(PVN_DLJV2(D(1), D(2), D(3), D(4), D(5), T, ES))
      IF (SSIZE .LT. 0) THEN
         WRITE (ERROR_UNIT,'(I11,A,I3)') I, ': error', SSIZE
         GOTO 2
@@ -82,7 +82,7 @@ PROGRAM DLJV2T
      Q(9) = D(2)
      Q(10) = D(3)
      ES = 0_c_int
-     SSIZE = INT(PVN_QLJV2(Q(8), Q(9), Q(10), Q(6), Q(7), ES))
+     SSIZE = INT(PVN_QLJV2(Q(8), Q(9), Q(10), Q(6), Q(7), W, ES))
      IF (SSIZE .LT. 0) THEN
         WRITE (ERROR_UNIT,'(I11,A,I3)') I, ': ERROR', SSIZE
         GOTO 2

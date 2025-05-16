@@ -35,7 +35,7 @@ PROGRAM CLJV2T
   ! This has been observed in single precision, and is more unlikely in higher precisions.
   REAL(KIND=REAL32), PARAMETER :: DAMP = 1.0_REAL32 - 8 * EPSILON(ZERO)
   CHARACTER(LEN=256) :: CLA
-  REAL(KIND=KK) :: Q(14)
+  REAL(KIND=KK) :: Q(14), W
   REAL(KIND=REAL32) :: D(7), T
   INTEGER, ALLOCATABLE :: ISEED(:)
   !DIR$ ATTRIBUTES ALIGN: 64:: ISEED
@@ -105,7 +105,7 @@ PROGRAM CLJV2T
         D(4) = D(4) * D(7)
      END DO
      ES = 0_c_int
-     SSIZE = INT(PVN_CLJV2(D(1), D(2), D(3), D(4), D(5), D(6), D(7), ES))
+     SSIZE = INT(PVN_CLJV2(D(1), D(2), D(3), D(4), D(5), D(6), D(7), T, ES))
      IF (SSIZE .LT. 0) THEN
         WRITE (ERROR_UNIT,'(I11,A,I3)') I, ': error', SSIZE
         GOTO 2
@@ -127,9 +127,9 @@ PROGRAM CLJV2T
      Q(14) = D(4)
      ES = 0_c_int
 #ifdef __GFORTRAN__
-     SSIZE = INT(PVN_WLJV2(Q(11), Q(12), Q(13), Q(14), Q(8), Q(9), Q(10), ES))
+     SSIZE = INT(PVN_WLJV2(Q(11), Q(12), Q(13), Q(14), Q(8), Q(9), Q(10), W, ES))
 #else
-     SSIZE = INT(PVN_YLJV2(Q(11), Q(12), Q(13), Q(14), Q(8), Q(9), Q(10), ES))
+     SSIZE = INT(PVN_YLJV2(Q(11), Q(12), Q(13), Q(14), Q(8), Q(9), Q(10), W, ES))
 #endif
      IF (SSIZE .LT. 0) THEN
         WRITE (ERROR_UNIT,'(I11,A,I3)') I, ': ERROR', SSIZE

@@ -3,16 +3,13 @@
   ELSE ! (ch,th)
      ES = -2_c_int
   END IF
-  RT = LJV2(A11, A22, A21R, A21I, CH, SHR, SHI, ES)
+  RT = LJV2(A11, A22, A21R, A21I, CH, SHR, SHI, TH, ES)
   IF (RT .LT. 0_c_int) THEN
      INFO = INT(RT)
   ELSE ! OK
      A = CR_HYPOT(SHR, SHI)
      IF ((.NOT. (A .LE. HUGE(A))) .OR. ((CH .EQ. ONE) .AND. (A .EQ. ZERO))) THEN
         ! identity or |TH| >= 1 => skip the transformation
-        CH = ONE
-        SHR = ZERO
-        SHI = ZERO
         INFO = IOR(INFO, 4)
      ELSE IF (INFO .EQ. 0) THEN
         IF (A .GE. (CUTTH * CH)) THEN

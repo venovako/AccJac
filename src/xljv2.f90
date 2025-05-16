@@ -2,10 +2,10 @@ SUBROUTINE XLJV2(A11, A22, A21, CH, SH, INFO)
   USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_int, c_long_double
   IMPLICIT NONE
   INTERFACE
-     FUNCTION PVN_XLJV2(A11, A22, A21, CH, SH, ES)
+     FUNCTION PVN_XLJV2(A11, A22, A21, CH, SH, TH, ES)
        USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_int, c_long_double
        REAL(KIND=c_long_double), INTENT(IN) :: A11, A22, A21
-       REAL(KIND=c_long_double), INTENT(OUT) :: CH, SH
+       REAL(KIND=c_long_double), INTENT(OUT) :: CH, SH, TH
        INTEGER(KIND=c_int), INTENT(INOUT) :: ES
        INTEGER(KIND=c_int) :: PVN_XLJV2
      END FUNCTION PVN_XLJV2
@@ -18,7 +18,7 @@ SUBROUTINE XLJV2(A11, A22, A21, CH, SH, INFO)
   REAL(KIND=K), INTENT(IN) :: A11, A22, A21
   REAL(KIND=K), INTENT(OUT) :: CH, SH
   INTEGER, INTENT(INOUT) :: INFO
-  REAL(KIND=K) :: A
+  REAL(KIND=K) :: A, TH
   INTEGER(KIND=c_int) :: ES, RT
 #define LJV2 PVN_XLJV2
 #include "gljv2.f90"

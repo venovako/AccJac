@@ -17,7 +17,7 @@ PROGRAM WLJV2T
   ! This has been observed in single precision, and is more unlikely in higher precisions.
   REAL(KIND=c_long_double), PARAMETER :: DAMP = 1.0_c_long_double - 8 * EPSILON(ZERO)
   CHARACTER(LEN=256) :: CLA
-  REAL(KIND=REAL128) :: Q(14)
+  REAL(KIND=REAL128) :: Q(14), W
   REAL(KIND=c_long_double) :: D(7), T
   INTEGER, ALLOCATABLE :: ISEED(:)
   !DIR$ ATTRIBUTES ALIGN: 64:: ISEED
@@ -92,7 +92,7 @@ PROGRAM WLJV2T
         D(4) = D(4) * D(7)
      END DO
      ES = 0_c_int
-     SSIZE = INT(PVN_WLJV2(D(1), D(2), D(3), D(4), D(5), D(6), D(7), ES))
+     SSIZE = INT(PVN_WLJV2(D(1), D(2), D(3), D(4), D(5), D(6), D(7), T, ES))
      IF (SSIZE .LT. 0) THEN
         WRITE (ERROR_UNIT,'(I11,A,I3)') I, ': error', SSIZE
         GOTO 9
@@ -113,7 +113,7 @@ PROGRAM WLJV2T
      Q(13) = D(3)
      Q(14) = D(4)
      ES = 0_c_int
-     SSIZE = INT(PVN_YLJV2(Q(11), Q(12), Q(13), Q(14), Q(8), Q(9), Q(10), ES))
+     SSIZE = INT(PVN_YLJV2(Q(11), Q(12), Q(13), Q(14), Q(8), Q(9), Q(10), W, ES))
      IF (SSIZE .LT. 0) THEN
         WRITE (ERROR_UNIT,'(I11,A,I3)') I, ': ERROR', SSIZE
         GOTO 9
