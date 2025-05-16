@@ -1,4 +1,5 @@
-PURE FUNCTION WNRMOA(N, A, LDA, AS)
+! PURE
+FUNCTION WNRMOA(N, A, LDA, AS)
 #ifdef __GFORTRAN__
   USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
 #endif
