@@ -12,7 +12,7 @@
      ! SH => TH
      DO J = 1, N
         !DIR$ FMA
-        XX = CH * (A(P,J) + SH * A(Q,J))
+        XX = CH * (SH * A(Q,J) + A(P,J))
         !DIR$ FMA
         YY = CH * (SH * A(P,J) + A(Q,J))
         A(P,J) = XX

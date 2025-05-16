@@ -21,7 +21,7 @@
      MY = ZERO
      ! SH => TH
      DO I = 1, M
-        ! XX = (X(I) + Y(I) * SH) * CH
+        ! XX = (Y(I) * SH + X(I)) * CH
         XX = CMPLX(&
              (REAL(Y(I)) * REAL(SH) + (REAL(X(I)) - AIMAG(Y(I)) * AIMAG(SH))) * CH,&
              (REAL(Y(I)) * AIMAG(SH) + (AIMAG(X(I)) + AIMAG(Y(I)) * REAL(SH))) * CH, K)

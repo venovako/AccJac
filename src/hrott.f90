@@ -21,7 +21,7 @@
      MY = ZERO
      ! SN => TG
      DO I = 1, M
-        ! XX = (X(I) + Y(I) * SN) * CS
+        ! XX = (Y(I) * SN + X(I)) * CS
         XX = CMPLX(&
              (REAL(Y(I)) * REAL(SN) + (REAL(X(I)) - AIMAG(Y(I)) * AIMAG(SN))) * CS,&
              (REAL(Y(I)) * AIMAG(SN) + (AIMAG(X(I)) + AIMAG(Y(I)) * REAL(SN))) * CS, K)

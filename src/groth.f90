@@ -18,7 +18,7 @@
      ! SH => TH
      DO I = 1, M
         !DIR$ FMA
-        XX = (X(I) + Y(I) * SH) * CH
+        XX = (Y(I) * SH + X(I)) * CH
         !DIR$ FMA
         YY = (X(I) * SH + Y(I)) * CH
         X(I) = XX

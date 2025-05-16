@@ -12,7 +12,9 @@
         INFO = IOR(INFO, 4)
      ELSE ! not identity
         A = CR_HYPOT(A21R, A21I)
+        !DIR$ FMA
         A11 = TH * A + A11
+        !DIR$ FMA
         A22 = TH * A + A22
      END IF
   END IF
