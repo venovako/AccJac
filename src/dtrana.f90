@@ -8,24 +8,6 @@ SUBROUTINE DTRANA(N, A, LDA, V, LDV, AX, AS, P, Q, TOL, INFO)
   USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL64
   IMPLICIT NONE
   INTERFACE
-     SUBROUTINE DSWPC(N, A, LDA, P, Q, INFO)
-       USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL64
-       IMPLICIT NONE
-       INTEGER, INTENT(IN) :: N, LDA, P, Q
-       REAL(KIND=REAL64), INTENT(INOUT) :: A(LDA,N)
-       INTEGER, INTENT(OUT) :: INFO
-     END SUBROUTINE DSWPC
-  END INTERFACE
-  INTERFACE
-     SUBROUTINE DSWPR(N, A, LDA, P, Q, INFO)
-       USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL64
-       IMPLICIT NONE
-       INTEGER, INTENT(IN) :: N, LDA, P, Q
-       REAL(KIND=REAL64), INTENT(INOUT) :: A(LDA,N)
-       INTEGER, INTENT(OUT) :: INFO
-     END SUBROUTINE DSWPR
-  END INTERFACE
-  INTERFACE
      SUBROUTINE DLJAU2(A11, A22, A21, CS, SN, INFO)
        USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL64
        IMPLICIT NONE
@@ -44,6 +26,26 @@ SUBROUTINE DTRANA(N, A, LDA, V, LDV, AX, AS, P, Q, TOL, INFO)
        REAL(KIND=REAL64), INTENT(OUT) :: CH, SH
        INTEGER, INTENT(INOUT) :: INFO
      END SUBROUTINE DLJAV2
+  END INTERFACE
+  INTERFACE
+     PURE SUBROUTINE DRTVT(M, X, Y, CS, SN, INFO)
+       USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL64
+       IMPLICIT NONE
+       INTEGER, INTENT(IN) :: M
+       REAL(KIND=REAL64), INTENT(INOUT) :: X(M), Y(M)
+       REAL(KIND=REAL64), INTENT(IN) :: CS, SN
+       INTEGER, INTENT(INOUT) :: INFO
+     END SUBROUTINE DRTVT
+  END INTERFACE
+  INTERFACE
+     PURE SUBROUTINE DRTVH(M, X, Y, CH, SH, INFO)
+       USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL64
+       IMPLICIT NONE
+       INTEGER, INTENT(IN) :: M
+       REAL(KIND=REAL64), INTENT(INOUT) :: X(M), Y(M)
+       REAL(KIND=REAL64), INTENT(IN) :: CH, SH
+       INTEGER, INTENT(INOUT) :: INFO
+     END SUBROUTINE DRTVH
   END INTERFACE
   INTERFACE
      PURE SUBROUTINE DRTLT(N, A, LDA, AX, P, Q, CS, SN, INFO)
@@ -99,7 +101,7 @@ SUBROUTINE DTRANA(N, A, LDA, V, LDV, AX, AS, P, Q, TOL, INFO)
   INTEGER, INTENT(IN) :: N, LDA, LDV, P, Q
   REAL(KIND=K), INTENT(INOUT) :: A(LDA,N), V(LDV,N), AX, TOL
   INTEGER, INTENT(INOUT) :: AS, INFO
-  REAL(KIND=K) :: A1, A2, VX, C, S, T
+  REAL(KIND=K) :: A1, A2, C, S, T
   INTEGER :: I
   IF ((INFO .LT. 0) .OR. (INFO .GT. 3)) INFO = -11
   IF (TOL .LT. ZERO) INFO = -10
@@ -117,58 +119,41 @@ SUBROUTINE DTRANA(N, A, LDA, V, LDV, AX, AS, P, Q, TOL, INFO)
   A2 = A(Q,Q)
   T = (SQRT(ABS(A1)) * SQRT(ABS(A2))) * TOL
   TOL = ZERO
+  C = ZERO
+  S = ZERO
   IF (ABS(A(Q,P)) .LT. T) THEN
-     IF ((I .EQ. 0) .AND. (A1 .LT. A2)) THEN
-        CALL DSWPC(N, V, LDV, P, Q, INFO)
-        CALL DSWPC(N, A, LDA, P, Q, INFO)
-        CALL DSWPR(N, A, LDA, P, Q, INFO)
-        INFO = 1
-     ELSE ! no-op
-        INFO = 0
-     END IF
+     INFO = 0
   ELSE ! rotate
-     VX = ZERO
      T = AX
      IF (I .EQ. 0) THEN
         CALL DLJAU2(A1, A2, A(Q,P), C, S, INFO)
-        CALL DRTRT(N, V, LDV, VX, P, Q, C, S, INFO)
+        CALL DRTVT(N, V(1,P), V(1,Q), C, S, INFO)
         CALL DRTRT(N, A, LDA, AX, P, Q, C, S, INFO)
         CALL DRTLT(N, A, LDA, AX, P, Q, C, S, INFO)
      ELSE ! hyp
         CALL DLJAV2(A1, A2, A(Q,P), C, S, INFO)
-        CALL DRTRH(N, V, LDV, VX, P, Q, C, S, INFO)
+        CALL DRTVH(N, V(1,P), V(1,Q), C, S, INFO)
         CALL DRTRH(N, A, LDA, AX, P, Q, C, S, INFO)
         CALL DRTLH(N, A, LDA, AX, P, Q, C, S, INFO)
      END IF
      TOL = S
-     IF (.NOT. (VX .LT. HUGE(VX))) THEN
+     IF (INFO .LT. 0) THEN
         INFO = -4
         RETURN
      END IF
-     IF (INFO .LT. 0) THEN
-        INFO = -2
-        RETURN
-     END IF
      IF (IAND(INFO, 4) .NE. 0) THEN
-        IF (IAND(INFO, 8) .EQ. 0) THEN
-           I = 0
-        ELSE ! swap
-           I = 1
-        END IF
+        I = 0
      ELSE ! transf
         I = 2
      END IF
      A(P,P) = A1
      A(Q,Q) = A2
-     IF ((I .EQ. 2) .AND. (IAND(INFO, 2) .EQ. 0)) THEN
-        A(Q,P) = ZERO
-        A(P,Q) = A(Q,P)
-     END IF
+     IF ((I .EQ. 2) .AND. (IAND(INFO, 2) .EQ. 0)) A(Q,P) = ZERO
      IF (AX .GT. T) THEN
         INFO = 1
         CALL DSCALA(N, A, LDA, AX, AS, INFO)
         IF (INFO .LT. 0) THEN
-           I = -7
+           I = -2
         ELSE IF (INFO .GT. 0) THEN
            I = 3
         ELSE ! no downscaling

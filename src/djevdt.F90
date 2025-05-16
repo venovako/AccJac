@@ -24,11 +24,10 @@ PROGRAM DJEVDT
   REAL(KIND=KK), PARAMETER :: XZERO = 0.0_KK
   REAL(KIND=K), PARAMETER :: ZERO = 0.0_K
   CHARACTER(LEN=256) :: CLA
-  REAL(KIND=KK) :: W
+  REAL(KIND=KK) :: W, M
   INTEGER :: N, JPOS, INFO, I, J, AS
   REAL(KIND=K), ALLOCATABLE :: A(:,:), V(:,:), WRK(:,:)
   REAL(KIND=KK), ALLOCATABLE :: X(:,:), Y(:,:), Z(:,:)
-  REAL(KIND=K), EXTERNAL :: DNRMF
   EXTERNAL :: BFOPEN, DJEVDC, DJEVDR
   ! read the command line arguments
   I = COMMAND_ARGUMENT_COUNT()
@@ -140,8 +139,15 @@ PROGRAM DJEVDT
         W = HYPOTX(W, Y(I,J))
      END DO
   END DO
-  INFO = N * N
-  IF (W .NE. XZERO) W = W / DNRMF(INFO, A)
+  IF (W .NE. XZERO) THEN
+     M = XZERO
+     DO J = 1, N
+        DO I = 1, N
+           M = HYPOTX(M, REAL(A(I,J), KK))
+        END DO
+     END DO
+     W = W / M
+  END IF
   WRITE (OUTPUT_UNIT,'(ES25.17E3)') W
   DEALLOCATE(Z)
   DEALLOCATE(Y)

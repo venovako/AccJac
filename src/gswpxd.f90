@@ -15,11 +15,11 @@
      END IF
   END DO
   IF (INFO .GT. B) THEN
-     CALL SWPC(N, V, LDV, B, INFO, J)
-     IF (J .NE. 0) THEN
-        INFO = -4
-        RETURN
-     END IF
+     DO J = 1, N
+        T = V(J,B)
+        V(J,B) = V(J,INFO)
+        V(J,INFO) = T
+     END DO
      CALL SWPC(N, A, LDA, B, INFO, J)
      IF (J .NE. 0) THEN
         INFO = -2
@@ -27,7 +27,7 @@
      END IF
      CALL SWPR(N, A, LDA, B, INFO, J)
      IF (J .NE. 0) THEN
-        INFO = -8
+        INFO = -4
         RETURN
      END IF
   END IF

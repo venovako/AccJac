@@ -5,7 +5,7 @@
   IF (INFO .EQ. 0) THEN
      AX = ZERO
      DO J = 1, N
-        DO I = 1, N
+        DO I = J, N
            X = CR_HYPOT(REAL(A(I,J)), AIMAG(A(I,J)))
            IF (.NOT. (X .LE. HUGE(X))) THEN
               INFO = -3
@@ -28,7 +28,7 @@
      ! downscale (S < 0)
      S = EXPONENT(X) - EXPONENT(AX) - 1
      DO J = 1, N
-        DO I = 1, N
+        DO I = J, N
            A(I,J) = CMPLX(SCALE(REAL(A(I,J)), S), SCALE(AIMAG(A(I,J)), S), K)
         END DO
      END DO
@@ -39,7 +39,7 @@
      S = EXPONENT(X) - EXPONENT(AX) - 1
      IF (S .GT. 0) THEN
         DO J = 1, N
-           DO I = 1, N
+           DO I = J, N
               A(I,J) = CMPLX(SCALE(REAL(A(I,J)), S), SCALE(AIMAG(A(I,J)), S), K)
            END DO
         END DO

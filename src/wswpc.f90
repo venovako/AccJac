@@ -15,5 +15,5 @@ PURE SUBROUTINE WSWPC(N, A, LDA, P, Q, INFO)
   INTEGER, INTENT(OUT) :: INFO
   COMPLEX(KIND=K) :: T
   INTEGER :: I
-#include "gswpc.f90"
+#include "hswpc.f90"
 END SUBROUTINE WSWPC

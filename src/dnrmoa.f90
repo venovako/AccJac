@@ -29,8 +29,8 @@ PURE FUNCTION DNRMOA(N, A, LDA, AS)
   DNRMOA = ZERO
   IF (N .LE. 1) RETURN
   L = -AS
-  DO J = 2, N
-     DO I = 1, J-1
+  DO J = 1, N-1
+     DO I = J+1, N
         DNRMOA = HYPOTX(DNRMOA, SCALE(REAL(A(I,J), KK), L))
      END DO
   END DO

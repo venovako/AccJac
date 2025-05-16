@@ -24,11 +24,10 @@ PROGRAM ZJEVDT
   REAL(KIND=KK), PARAMETER :: XZERO = 0.0_KK
   REAL(KIND=K), PARAMETER :: ZERO = 0.0_K
   CHARACTER(LEN=256) :: CLA
-  REAL(KIND=KK) :: W
+  REAL(KIND=KK) :: W, M
   INTEGER :: N, JPOS, INFO, I, J, AS
   COMPLEX(KIND=K), ALLOCATABLE :: A(:,:), V(:,:), WRK(:,:)
   COMPLEX(KIND=KK), ALLOCATABLE :: X(:,:), Y(:,:), Z(:,:)
-  REAL(KIND=K), EXTERNAL :: ZNRMF
   EXTERNAL :: BFOPEN, ZJEVDC, ZJEVDR
   ! read the command line arguments
   I = COMMAND_ARGUMENT_COUNT()
@@ -140,8 +139,15 @@ PROGRAM ZJEVDT
         W = HYPOTX(W, HYPOTX(REAL(Y(I,J)), AIMAG(Y(I,J))))
      END DO
   END DO
-  INFO = N * N
-  IF (W .NE. XZERO) W = W / ZNRMF(INFO, A)
+  IF (W .NE. XZERO) THEN
+     M = XZERO
+     DO J = 1, N
+        DO I = 1, N
+           M = HYPOTX(M, HYPOTX(REAL(REAL(A(I,J)), KK), REAL(AIMAG(A(I,J)), KK)))
+        END DO
+     END DO
+     W = W / M
+  END IF
   WRITE (OUTPUT_UNIT,'(ES25.17E3)') W
   DEALLOCATE(Z)
   DEALLOCATE(Y)

@@ -19,8 +19,8 @@ PURE FUNCTION WNRMOA(N, A, LDA, AS)
   WNRMOA = ZERO
   IF (N .LE. 1) RETURN
   L = -AS
-  DO J = 2, N
-     DO I = 1, J-1
+  DO J = 1, N-1
+     DO I = J+1, N
         WNRMOA = HYPOTX(WNRMOA, HYPOTX(SCALE(REAL(REAL(A(I,J)), KK), L), SCALE(REAL(AIMAG(A(I,J)), KK), L)))
      END DO
   END DO

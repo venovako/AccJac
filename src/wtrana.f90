@@ -14,40 +14,6 @@ SUBROUTINE WTRANA(N, A, LDA, V, LDV, AX, AS, P, Q, TOL, INFO)
   IMPLICIT NONE
 #define CR_HYPOT HYPOT
   INTERFACE
-     SUBROUTINE WSWPC(N, A, LDA, P, Q, INFO)
-#ifdef __GFORTRAN__
-       USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
-#else
-       USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL128
-#endif
-       IMPLICIT NONE
-       INTEGER, INTENT(IN) :: N, LDA, P, Q
-#ifdef __GFORTRAN__
-       COMPLEX(KIND=c_long_double), INTENT(INOUT) :: A(LDA,N)
-#else
-       COMPLEX(KIND=REAL128), INTENT(INOUT) :: A(LDA,N)
-#endif
-       INTEGER, INTENT(OUT) :: INFO
-     END SUBROUTINE WSWPC
-  END INTERFACE
-  INTERFACE
-     SUBROUTINE WSWPR(N, A, LDA, P, Q, INFO)
-#ifdef __GFORTRAN__
-       USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
-#else
-       USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL128
-#endif
-       IMPLICIT NONE
-       INTEGER, INTENT(IN) :: N, LDA, P, Q
-#ifdef __GFORTRAN__
-       COMPLEX(KIND=c_long_double), INTENT(INOUT) :: A(LDA,N)
-#else
-       COMPLEX(KIND=REAL128), INTENT(INOUT) :: A(LDA,N)
-#endif
-       INTEGER, INTENT(OUT) :: INFO
-     END SUBROUTINE WSWPR
-  END INTERFACE
-  INTERFACE
      SUBROUTINE WLJAU2(A11, A22, A21R, A21I, CS, SNR, SNI, INFO)
 #ifdef __GFORTRAN__
        USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
@@ -86,6 +52,44 @@ SUBROUTINE WTRANA(N, A, LDA, V, LDV, AX, AS, P, Q, TOL, INFO)
 #endif
        INTEGER, INTENT(INOUT) :: INFO
      END SUBROUTINE WLJAV2
+  END INTERFACE
+  INTERFACE
+     PURE SUBROUTINE WRTVT(M, X, Y, CS, SNR, SNI, INFO)
+#ifdef __GFORTRAN__
+       USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
+#else
+       USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL128
+#endif
+       IMPLICIT NONE
+       INTEGER, INTENT(IN) :: M
+#ifdef __GFORTRAN__
+       COMPLEX(KIND=c_long_double), INTENT(INOUT) :: X(M), Y(M)
+       REAL(KIND=c_long_double), INTENT(IN) :: CS, SNR, SNI
+#else
+       COMPLEX(KIND=REAL128), INTENT(INOUT) :: X(M), Y(M)
+       REAL(KIND=REAL128), INTENT(IN) :: CS, SNR, SNI
+#endif
+       INTEGER, INTENT(INOUT) :: INFO
+     END SUBROUTINE WRTVT
+  END INTERFACE
+  INTERFACE
+     PURE SUBROUTINE WRTVH(M, X, Y, CH, SHR, SHI, INFO)
+#ifdef __GFORTRAN__
+       USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
+#else
+       USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL128
+#endif
+       IMPLICIT NONE
+       INTEGER, INTENT(IN) :: M
+#ifdef __GFORTRAN__
+       COMPLEX(KIND=c_long_double), INTENT(INOUT) :: X(M), Y(M)
+       REAL(KIND=c_long_double), INTENT(IN) :: CH, SHR, SHI
+#else
+       COMPLEX(KIND=REAL128), INTENT(INOUT) :: X(M), Y(M)
+       REAL(KIND=REAL128), INTENT(IN) :: CH, SHR, SHI
+#endif
+       INTEGER, INTENT(INOUT) :: INFO
+     END SUBROUTINE WRTVH
   END INTERFACE
   INTERFACE
      PURE SUBROUTINE WRTLT(N, A, LDA, AX, P, Q, CS, SNR, SNI, INFO)
@@ -200,7 +204,7 @@ SUBROUTINE WTRANA(N, A, LDA, V, LDV, AX, AS, P, Q, TOL, INFO)
   COMPLEX(KIND=K), INTENT(INOUT) :: A(LDA,N), V(LDV,N), TOL
   REAL(KIND=K), INTENT(INOUT) :: AX
   INTEGER, INTENT(INOUT) :: AS, INFO
-  REAL(KIND=K) :: A1, A2, VX, C, SR, SI, T
+  REAL(KIND=K) :: A1, A2, C, SR, SI, T
   INTEGER :: I
   T = REAL(TOL)
   IF ((INFO .LT. 0) .OR. (INFO .GT. 3)) INFO = -11
@@ -225,57 +229,38 @@ SUBROUTINE WTRANA(N, A, LDA, V, LDV, AX, AS, P, Q, TOL, INFO)
   SR = ZERO
   SI = ZERO
   IF (CR_HYPOT(REAL(A(Q,P)), AIMAG(A(Q,P))) .LT. T) THEN
-     IF ((I .EQ. 0) .AND. (A1 .LT. A2)) THEN
-        CALL WSWPC(N, V, LDV, P, Q, INFO)
-        CALL WSWPC(N, A, LDA, P, Q, INFO)
-        CALL WSWPR(N, A, LDA, P, Q, INFO)
-        INFO = 1
-     ELSE ! no-op
-        INFO = 0
-     END IF
+     INFO = 0
   ELSE ! rotate
-     VX = ZERO
      T = AX
      IF (I .EQ. 0) THEN
         CALL WLJAU2(A1, A2, REAL(A(Q,P)), AIMAG(A(Q,P)), C, SR, SI, INFO)
-        CALL WRTRT(N, V, LDV, VX, P, Q, C, SR, SI, INFO)
+        CALL WRTVT(N, V(1,P), V(1,Q), C, SR, SI, INFO)
         CALL WRTRT(N, A, LDA, AX, P, Q, C, SR, SI, INFO)
         CALL WRTLT(N, A, LDA, AX, P, Q, C, SR, SI, INFO)
      ELSE ! hyp
         CALL WLJAV2(A1, A2, REAL(A(Q,P)), AIMAG(A(Q,P)), C, SR, SI, INFO)
-        CALL WRTRH(N, V, LDV, VX, P, Q, C, SR, SI, INFO)
+        CALL WRTVH(N, V(1,P), V(1,Q), C, SR, SI, INFO)
         CALL WRTRH(N, A, LDA, AX, P, Q, C, SR, SI, INFO)
         CALL WRTLH(N, A, LDA, AX, P, Q, C, SR, SI, INFO)
      END IF
      TOL = CMPLX(SR, SI, K)
-     IF (.NOT. (VX .LT. HUGE(VX))) THEN
+     IF (INFO .LT. 0) THEN
         INFO = -4
         RETURN
      END IF
-     IF (INFO .LT. 0) THEN
-        INFO = -2
-        RETURN
-     END IF
      IF (IAND(INFO, 4) .NE. 0) THEN
-        IF (IAND(INFO, 8) .EQ. 0) THEN
-           I = 0
-        ELSE ! swap
-           I = 1
-        END IF
+        I = 0
      ELSE ! transf
         I = 2
      END IF
-     A(P,P) = A1
-     A(Q,Q) = A2
-     IF ((I .EQ. 2) .AND. (IAND(INFO, 2) .EQ. 0)) THEN
-        A(Q,P) = ZERO
-        A(P,Q) = CONJG(A(Q,P))
-     END IF
+     A(P,P) = CMPLX(A1, ZERO, K)
+     A(Q,Q) = CMPLX(A2, ZERO, K)
+     IF ((I .EQ. 2) .AND. (IAND(INFO, 2) .EQ. 0)) A(Q,P) = CMPLX(ZERO, ZERO, K)
      IF (AX .GT. T) THEN
         INFO = 1
         CALL WSCALA(N, A, LDA, AX, AS, INFO)
         IF (INFO .LT. 0) THEN
-           I = -7
+           I = -2
         ELSE IF (INFO .GT. 0) THEN
            I = 3
         ELSE ! no downscaling
@@ -284,8 +269,6 @@ SUBROUTINE WTRANA(N, A, LDA, V, LDV, AX, AS, P, Q, TOL, INFO)
      END IF
      INFO = I
   END IF
-  WRITE (ERROR_UNIT,9) P, C, REAL(INFO, K)
-  WRITE (ERROR_UNIT,9) Q, SR, SI
 #ifdef __GFORTRAN__
 9 FORMAT(I1,2(ES31.21E4))
 #else

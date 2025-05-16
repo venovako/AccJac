@@ -102,8 +102,6 @@ SUBROUTINE ZJEVDR(N, A, LDA, V, LDV, JPOS, WRK, AS, INFO)
   ! main loop
   DO R = 1, S
      T = 0
-     X = 1
-     WRK(X,X) = CMPLX(ZERO, R, K)
      IF (IAND(INFO, 2) .EQ. 0) THEN
         DO P = 1, N-1
            IF (P .LT. JPOS) THEN
@@ -117,8 +115,6 @@ SUBROUTINE ZJEVDR(N, A, LDA, V, LDV, JPOS, WRK, AS, INFO)
               INFO = -7
               RETURN
            END IF
-           X = X + 1
-           WRK(X,X) = CMPLX(ZERO, W, K)
            DO Q = P+1, N
               W = IAND(INFO, 1)
               IF ((P .LE. JPOS) .AND. (Q .GT. JPOS)) W = IOR(W, 2)
@@ -147,8 +143,6 @@ SUBROUTINE ZJEVDR(N, A, LDA, V, LDV, JPOS, WRK, AS, INFO)
               INFO = -7
               RETURN
            END IF
-           X = X + 1
-           WRK(X,X) = CMPLX(ZERO, W, K)
            DO Q = P+1, JPOS
               W = IAND(INFO, 1)
               WRK(Q,P) = TOL
@@ -196,8 +190,6 @@ SUBROUTINE ZJEVDR(N, A, LDA, V, LDV, JPOS, WRK, AS, INFO)
               INFO = -7
               RETURN
            END IF
-           X = X + 1
-           WRK(X,X) = CMPLX(ZERO, W, K)
            DO Q = P+1, N
               W = IAND(INFO, 1)
               WRK(Q,P) = TOL
@@ -223,8 +215,7 @@ SUBROUTINE ZJEVDR(N, A, LDA, V, LDV, JPOS, WRK, AS, INFO)
         X = -AS
         DO Q = 1, N
            DO P = 1, Q-1
-              WRK(P,Q) = CMPLX(SCALE(REAL(A(P,Q)), X), SCALE(AIMAG(A(P,Q)), X), K)
-              IF (A(P,Q) .NE. CONJG(A(Q,P))) STOP 'H'
+              WRK(P,Q) = CMPLX(SCALE(REAL(A(Q,P)), X), SCALE(-AIMAG(A(Q,P)), X), K)
            END DO
            WRK(Q,Q) = CMPLX(SCALE(REAL(A(Q,Q)), X), ZERO, K)
         END DO

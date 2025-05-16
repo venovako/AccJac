@@ -99,8 +99,6 @@ SUBROUTINE DJEVDR(N, A, LDA, V, LDV, JPOS, WRK, AS, INFO)
   ! main loop
   DO R = 1, S
      T = 0
-     X = 1
-     WRK(X,X) = R
      IF (IAND(INFO, 2) .EQ. 0) THEN
         DO P = 1, N-1
            IF (P .LT. JPOS) THEN
@@ -114,8 +112,6 @@ SUBROUTINE DJEVDR(N, A, LDA, V, LDV, JPOS, WRK, AS, INFO)
               INFO = -7
               RETURN
            END IF
-           X = X + 1
-           WRK(X,X) = W
            DO Q = P+1, N
               W = IAND(INFO, 1)
               IF ((P .LE. JPOS) .AND. (Q .GT. JPOS)) W = IOR(W, 2)
@@ -144,8 +140,6 @@ SUBROUTINE DJEVDR(N, A, LDA, V, LDV, JPOS, WRK, AS, INFO)
               INFO = -7
               RETURN
            END IF
-           X = X + 1
-           WRK(X,X) = W
            DO Q = P+1, JPOS
               W = IAND(INFO, 1)
               WRK(Q,P) = TOL
@@ -193,8 +187,6 @@ SUBROUTINE DJEVDR(N, A, LDA, V, LDV, JPOS, WRK, AS, INFO)
               INFO = -7
               RETURN
            END IF
-           X = X + 1
-           WRK(X,X) = W
            DO Q = P+1, N
               W = IAND(INFO, 1)
               WRK(Q,P) = TOL
@@ -220,8 +212,7 @@ SUBROUTINE DJEVDR(N, A, LDA, V, LDV, JPOS, WRK, AS, INFO)
         X = -AS
         DO Q = 1, N
            DO P = 1, Q-1
-              WRK(P,Q) = SCALE(A(P,Q), X)
-              IF (A(P,Q) .NE. A(Q,P)) STOP 'T'
+              WRK(P,Q) = SCALE(A(Q,P), X)
            END DO
            WRK(Q,Q) = SCALE(A(Q,Q), X)
         END DO

@@ -5,7 +5,12 @@
   IF ((N .LE. 0) .OR. (N .GT. LDA)) INFO = -1
   IF (INFO .NE. 0) RETURN
   IF (P .EQ. Q) RETURN
-  DO I = 1, N
+  DO I = P, Q-1
+     T = A(I,P)
+     A(I,P) = A(Q,I)
+     A(Q,I) = T
+  END DO
+  DO I = Q, N
      T = A(I,P)
      A(I,P) = A(I,Q)
      A(I,Q) = T

@@ -15,5 +15,5 @@ PURE SUBROUTINE WSWPR(N, A, LDA, P, Q, INFO)
   INTEGER, INTENT(OUT) :: INFO
   COMPLEX(KIND=K) :: T
   INTEGER :: J
-#include "gswpr.f90"
+#include "hswpr.f90"
 END SUBROUTINE WSWPR

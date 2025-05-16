@@ -16,24 +16,6 @@ SUBROUTINE ZTRANA(N, A, LDA, V, LDV, AX, AS, P, Q, TOL, INFO)
      END FUNCTION CR_HYPOT
   END INTERFACE
   INTERFACE
-     SUBROUTINE ZSWPC(N, A, LDA, P, Q, INFO)
-       USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL64
-       IMPLICIT NONE
-       INTEGER, INTENT(IN) :: N, LDA, P, Q
-       COMPLEX(KIND=REAL64), INTENT(INOUT) :: A(LDA,N)
-       INTEGER, INTENT(OUT) :: INFO
-     END SUBROUTINE ZSWPC
-  END INTERFACE
-  INTERFACE
-     SUBROUTINE ZSWPR(N, A, LDA, P, Q, INFO)
-       USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL64
-       IMPLICIT NONE
-       INTEGER, INTENT(IN) :: N, LDA, P, Q
-       COMPLEX(KIND=REAL64), INTENT(INOUT) :: A(LDA,N)
-       INTEGER, INTENT(OUT) :: INFO
-     END SUBROUTINE ZSWPR
-  END INTERFACE
-  INTERFACE
      SUBROUTINE ZLJAU2(A11, A22, A21R, A21I, CS, SNR, SNI, INFO)
        USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL64
        IMPLICIT NONE
@@ -52,6 +34,26 @@ SUBROUTINE ZTRANA(N, A, LDA, V, LDV, AX, AS, P, Q, TOL, INFO)
        REAL(KIND=REAL64), INTENT(OUT) :: CH, SHR, SHI
        INTEGER, INTENT(INOUT) :: INFO
      END SUBROUTINE ZLJAV2
+  END INTERFACE
+  INTERFACE
+     PURE SUBROUTINE ZRTVT(M, X, Y, CS, SNR, SNI, INFO)
+       USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL64
+       IMPLICIT NONE
+       INTEGER, INTENT(IN) :: M
+       COMPLEX(KIND=REAL64), INTENT(INOUT) :: X(M), Y(M)
+       REAL(KIND=REAL64), INTENT(IN) :: CS, SNR, SNI
+       INTEGER, INTENT(INOUT) :: INFO
+     END SUBROUTINE ZRTVT
+  END INTERFACE
+  INTERFACE
+     PURE SUBROUTINE ZRTVH(M, X, Y, CH, SHR, SHI, INFO)
+       USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL64
+       IMPLICIT NONE
+       INTEGER, INTENT(IN) :: M
+       COMPLEX(KIND=REAL64), INTENT(INOUT) :: X(M), Y(M)
+       REAL(KIND=REAL64), INTENT(IN) :: CH, SHR, SHI
+       INTEGER, INTENT(INOUT) :: INFO
+     END SUBROUTINE ZRTVH
   END INTERFACE
   INTERFACE
      PURE SUBROUTINE ZRTLT(N, A, LDA, AX, P, Q, CS, SNR, SNI, INFO)
@@ -113,7 +115,7 @@ SUBROUTINE ZTRANA(N, A, LDA, V, LDV, AX, AS, P, Q, TOL, INFO)
   COMPLEX(KIND=K), INTENT(INOUT) :: A(LDA,N), V(LDV,N), TOL
   REAL(KIND=K), INTENT(INOUT) :: AX
   INTEGER, INTENT(INOUT) :: AS, INFO
-  REAL(KIND=K) :: A1, A2, VX, C, SR, SI, T
+  REAL(KIND=K) :: A1, A2, C, SR, SI, T
   INTEGER :: I
   T = REAL(TOL)
   IF ((INFO .LT. 0) .OR. (INFO .GT. 3)) INFO = -11
@@ -132,58 +134,42 @@ SUBROUTINE ZTRANA(N, A, LDA, V, LDV, AX, AS, P, Q, TOL, INFO)
   A2 = REAL(A(Q,Q))
   T = (SQRT(ABS(A1)) * SQRT(ABS(A2))) * T
   TOL = ZERO
+  C = ZERO
+  SR = ZERO
+  SI = ZERO
   IF (CR_HYPOT(REAL(A(Q,P)), AIMAG(A(Q,P))) .LT. T) THEN
-     IF ((I .EQ. 0) .AND. (A1 .LT. A2)) THEN
-        CALL ZSWPC(N, V, LDV, P, Q, INFO)
-        CALL ZSWPC(N, A, LDA, P, Q, INFO)
-        CALL ZSWPR(N, A, LDA, P, Q, INFO)
-        INFO = 1
-     ELSE ! no-op
-        INFO = 0
-     END IF
+     INFO = 0
   ELSE ! rotate
-     VX = ZERO
      T = AX
      IF (I .EQ. 0) THEN
         CALL ZLJAU2(A1, A2, REAL(A(Q,P)), AIMAG(A(Q,P)), C, SR, SI, INFO)
-        CALL ZRTRT(N, V, LDV, VX, P, Q, C, SR, SI, INFO)
+        CALL ZRTVT(N, V(1,P), V(1,Q), C, SR, SI, INFO)
         CALL ZRTRT(N, A, LDA, AX, P, Q, C, SR, SI, INFO)
         CALL ZRTLT(N, A, LDA, AX, P, Q, C, SR, SI, INFO)
      ELSE ! hyp
         CALL ZLJAV2(A1, A2, REAL(A(Q,P)), AIMAG(A(Q,P)), C, SR, SI, INFO)
-        CALL ZRTRH(N, V, LDV, VX, P, Q, C, SR, SI, INFO)
+        CALL ZRTVH(N, V(1,P), V(1,Q), C, SR, SI, INFO)
         CALL ZRTRH(N, A, LDA, AX, P, Q, C, SR, SI, INFO)
         CALL ZRTLH(N, A, LDA, AX, P, Q, C, SR, SI, INFO)
      END IF
      TOL = CMPLX(SR, SI, K)
-     IF (.NOT. (VX .LT. HUGE(VX))) THEN
+     IF (INFO .LT. 0) THEN
         INFO = -4
         RETURN
      END IF
-     IF (INFO .LT. 0) THEN
-        INFO = -2
-        RETURN
-     END IF
      IF (IAND(INFO, 4) .NE. 0) THEN
-        IF (IAND(INFO, 8) .EQ. 0) THEN
-           I = 0
-        ELSE ! swap
-           I = 1
-        END IF
+        I = 0
      ELSE ! transf
         I = 2
      END IF
      A(P,P) = A1
      A(Q,Q) = A2
-     IF ((I .EQ. 2) .AND. (IAND(INFO, 2) .EQ. 0)) THEN
-        A(Q,P) = ZERO
-        A(P,Q) = CONJG(A(Q,P))
-     END IF
+     IF ((I .EQ. 2) .AND. (IAND(INFO, 2) .EQ. 0)) A(Q,P) = ZERO
      IF (AX .GT. T) THEN
         INFO = 1
         CALL ZSCALA(N, A, LDA, AX, AS, INFO)
         IF (INFO .LT. 0) THEN
-           I = -7
+           I = -2
         ELSE IF (INFO .GT. 0) THEN
            I = 3
         ELSE ! no downscaling
