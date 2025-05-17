@@ -40,10 +40,10 @@ drsafe.obj qrsafe.obj srsafe.obj \
 qre.obj qdetm1.obj ydetm1.obj \
 croth.obj droth.obj sroth.obj zroth.obj \
 crott.obj drott.obj srott.obj zrott.obj \
-crtvh.obj drtvh.obj srtvh.obj zrtvh.obj \
-crtvt.obj drtvt.obj srtvt.obj zrtvt.obj \
-drtlt.obj drtrt.obj zrtlt.obj zrtrt.obj wrtlt.obj wrtrt.obj \
-drtlh.obj drtrh.obj zrtlh.obj zrtrh.obj wrtlh.obj wrtrh.obj \
+crtvh.obj drtvh.obj srtvh.obj wrtvh.obj zrtvh.obj \
+crtvt.obj drtvt.obj srtvt.obj wrtvt.obj zrtvt.obj \
+drtlt.obj drtrt.obj wrtlt.obj wrtrt.obj zrtlt.obj zrtrt.obj \
+drtlh.obj drtrh.obj wrtlh.obj wrtrh.obj zrtlh.obj zrtrh.obj \
 cnrmf.obj dnrmf.obj snrmf.obj znrmf.obj \
 csdp.obj dsdp.obj ssdp.obj zsdp.obj \
 cgram.obj dgram.obj sgram.obj zgram.obj \

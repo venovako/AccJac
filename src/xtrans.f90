@@ -45,21 +45,21 @@ SUBROUTINE XTRANS(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, TOL, INFO)
      END SUBROUTINE XLJV2
   END INTERFACE
   INTERFACE
-     PURE SUBROUTINE XRTVT(M, X, Y, CS, SN, INFO)
+     PURE SUBROUTINE XRTVT(N, X, Y, CS, SN, INFO)
        USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
        IMPLICIT NONE
-       INTEGER, INTENT(IN) :: M
-       REAL(KIND=c_long_double), INTENT(INOUT) :: X(M), Y(M)
+       INTEGER, INTENT(IN) :: N
+       REAL(KIND=c_long_double), INTENT(INOUT) :: X(N), Y(N)
        REAL(KIND=c_long_double), INTENT(IN) :: CS, SN
        INTEGER, INTENT(INOUT) :: INFO
      END SUBROUTINE XRTVT
   END INTERFACE
   INTERFACE
-     PURE SUBROUTINE XRTVH(M, X, Y, CH, SH, INFO)
+     PURE SUBROUTINE XRTVH(N, X, Y, CH, SH, INFO)
        USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
        IMPLICIT NONE
-       INTEGER, INTENT(IN) :: M
-       REAL(KIND=c_long_double), INTENT(INOUT) :: X(M), Y(M)
+       INTEGER, INTENT(IN) :: N
+       REAL(KIND=c_long_double), INTENT(INOUT) :: X(N), Y(N)
        REAL(KIND=c_long_double), INTENT(IN) :: CH, SH
        INTEGER, INTENT(INOUT) :: INFO
      END SUBROUTINE XRTVH

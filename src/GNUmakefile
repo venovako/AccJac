@@ -56,10 +56,10 @@ drsafe.o qrsafe.o srsafe.o\
 qre.o qdetm1.o ydetm1.o\
 croth.o droth.o sroth.o zroth.o\
 crott.o drott.o srott.o zrott.o\
-crtvh.o drtvh.o srtvh.o zrtvh.o\
-crtvt.o drtvt.o srtvt.o zrtvt.o\
-drtlt.o drtrt.o zrtlt.o zrtrt.o wrtlt.o wrtrt.o\
-drtlh.o drtrh.o zrtlh.o zrtrh.o wrtlh.o wrtrh.o\
+crtvh.o drtvh.o srtvh.o wrtvh.o zrtvh.o\
+crtvt.o drtvt.o srtvt.o wrtvt.o zrtvt.o\
+drtlt.o drtrt.o wrtlt.o wrtrt.o zrtlt.o zrtrt.o\
+drtlh.o drtrh.o wrtlh.o wrtrh.o zrtlh.o zrtrh.o\
 cnrmf.o dnrmf.o snrmf.o znrmf.o\
 csdp.o dsdp.o ssdp.o zsdp.o\
 cgram.o dgram.o sgram.o zgram.o\
@@ -107,8 +107,7 @@ wljv2t.exe xljv2t.exe
 OBJD += xrsafe.o\
 wroth.o xroth.o\
 wrott.o xrott.o\
-wrtvh.o xrtvh.o\
-wrtvt.o xrtvt.o\
+xrtvh.o xrtvt.o\
 wnrmf.o xnrmf.o\
 wsdp.o xsdp.o\
 wgram.o xgram.o\
