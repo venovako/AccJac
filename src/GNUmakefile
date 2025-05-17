@@ -53,28 +53,30 @@ croth.o droth.o sroth.o zroth.o\
 crott.o drott.o srott.o zrott.o\
 crtvh.o drtvh.o srtvh.o wrtvh.o xrtvh.o zrtvh.o\
 crtvt.o drtvt.o srtvt.o wrtvt.o xrtvt.o zrtvt.o\
-drtlt.o drtrt.o wrtlt.o wrtrt.o zrtlt.o zrtrt.o\
-drtlh.o drtrh.o wrtlh.o wrtrh.o zrtlh.o zrtrh.o\
+drtlt.o wrtlt.o xrtlt.o zrtlt.o\
+drtrt.o wrtrt.o xrtrt.o zrtrt.o\
+drtlh.o wrtlh.o xrtlh.o zrtlh.o\
+drtrh.o wrtrh.o xrtrh.o zrtrh.o\
 cnrmf.o dnrmf.o snrmf.o znrmf.o\
 csdp.o dsdp.o ssdp.o zsdp.o\
 cgram.o dgram.o sgram.o zgram.o\
 cscalg.o dscalg.o sscalg.o zscalg.o\
-dscala.o zscala.o wscala.o xscala.o\
-dswpc.o dswpr.o zswpc.o zswpr.o wswpc.o wswpr.o\
-dswpxd.o zswpxd.o wswpxd.o\
+dscala.o wscala.o xscala.o zscala.o\
+dswpc.o dswpr.o wswpc.o wswpr.o zswpc.o zswpr.o\
+dswpxd.o wswpxd.o zswpxd.o\
 cinisv.o dinisv.o sinisv.o zinisv.o\
 ctrans.o dtrans.o strans.o ztrans.o\
 dtrana.o ztrana.o wtrana.o\
 coffa.o doffa.o soffa.o zoffa.o\
 dtrack.o strack.o\
-dtrace.o ztrace.o wtrace.o\
-dnrmoa.o znrmoa.o wnrmoa.o\
+dtrace.o wtrace.o ztrace.o\
+dnrmoa.o wnrmoa.o znrmoa.o\
 dtrkoa.o ztrkoa.o\
-dtrcoa.o ztrcoa.o wtrcoa.o\
+dtrcoa.o wtrcoa.o ztrcoa.o\
 cjsvdc.o djsvdc.o sjsvdc.o zjsvdc.o\
 cjsvdr.o djsvdr.o sjsvdr.o zjsvdr.o\
-djevdc.o zjevdc.o wjevdc.o\
-djevdr.o zjevdr.o wjevdr.o
+djevdc.o wjevdc.o zjevdc.o\
+djevdr.o wjevdr.o zjevdr.o
 
 LIBD=libjaevd.a
 

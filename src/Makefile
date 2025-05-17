@@ -42,28 +42,30 @@ croth.obj droth.obj sroth.obj zroth.obj \
 crott.obj drott.obj srott.obj zrott.obj \
 crtvh.obj drtvh.obj srtvh.obj wrtvh.obj xrtvh.obj zrtvh.obj \
 crtvt.obj drtvt.obj srtvt.obj wrtvt.obj xrtvt.obj zrtvt.obj \
-drtlt.obj drtrt.obj wrtlt.obj wrtrt.obj zrtlt.obj zrtrt.obj \
-drtlh.obj drtrh.obj wrtlh.obj wrtrh.obj zrtlh.obj zrtrh.obj \
+drtlt.obj wrtlt.obj xrtlt.obj zrtlt.obj \
+drtrt.obj wrtrt.obj xrtrt.obj zrtrt.obj \
+drtlh.obj wrtlh.obj xrtlh.obj zrtlh.obj \
+drtrh.obj wrtrh.obj xrtrh.obj zrtrh.obj \
 cnrmf.obj dnrmf.obj snrmf.obj znrmf.obj \
 csdp.obj dsdp.obj ssdp.obj zsdp.obj \
 cgram.obj dgram.obj sgram.obj zgram.obj \
 cscalg.obj dscalg.obj sscalg.obj zscalg.obj \
-dscala.obj zscala.obj wscala.obj xscala.obj \
-dswpc.obj dswpr.obj zswpc.obj zswpr.obj wswpc.obj wswpr.obj \
-dswpxd.obj zswpxd.obj wswpxd.obj \
+dscala.obj wscala.obj xscala.obj zscala.obj \
+dswpc.obj dswpr.obj wswpc.obj wswpr.obj zswpc.obj zswpr.obj \
+dswpxd.obj wswpxd.obj zswpxd.obj \
 cinisv.obj dinisv.obj sinisv.obj zinisv.obj \
 ctrans.obj dtrans.obj strans.obj ztrans.obj \
-dtrana.obj ztrana.obj wtrana.obj \
+dtrana.obj wtrana.obj xtrana.obj ztrana.obj \
 coffa.obj doffa.obj soffa.obj zoffa.obj \
 dtrack.obj strack.obj \
-dtrace.obj ztrace.obj wtrace.obj \
-dnrmoa.obj znrmoa.obj wnrmoa.obj \
+dtrace.obj wtrace.obj ztrace.obj \
+dnrmoa.obj wnrmoa.obj znrmoa.obj \
 dtrkoa.obj ztrkoa.obj \
-dtrcoa.obj ztrcoa.obj wtrcoa.obj \
+dtrcoa.obj wtrcoa.obj ztrcoa.obj \
 cjsvdc.obj djsvdc.obj sjsvdc.obj zjsvdc.obj \
 cjsvdr.obj djsvdr.obj sjsvdr.obj zjsvdr.obj \
-djevdc.obj zjevdc.obj wjevdc.obj \
-djevdr.obj zjevdr.obj wjevdr.obj
+djevdc.obj wjevdc.obj zjevdc.obj \
+djevdr.obj wjevdr.obj zjevdr.obj
 LIBS= \
 jaev2.lib \
 jaevd.lib

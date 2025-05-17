@@ -1,0 +1,38 @@
+PURE SUBROUTINE XRTLT(N, A, LDA, AX, P, Q, CS, SN, INFO)
+#ifdef __GFORTRAN__
+  USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
+#else
+  USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL128
+#endif
+  IMPLICIT NONE
+  INTERFACE
+     PURE FUNCTION XFMA(A, B, C)
+#ifdef __GFORTRAN__
+       USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
+#else
+       USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL128
+#endif
+       IMPLICIT NONE
+#ifdef __GFORTRAN__
+       REAL(KIND=c_long_double), INTENT(IN) :: A, B, C
+       REAL(KIND=c_long_double) :: XFMA
+#else
+       REAL(KIND=REAL128), INTENT(IN) :: A, B, C
+       REAL(KIND=REAL128) :: XFMA
+#endif
+     END FUNCTION XFMA
+  END INTERFACE
+#ifdef __GFORTRAN__
+  INTEGER, PARAMETER :: K = c_long_double
+#else
+  INTEGER, PARAMETER :: K = REAL128
+#endif
+  INTEGER, INTENT(IN) :: N, LDA, P, Q
+  REAL(KIND=K), INTENT(INOUT) :: A(LDA,N), AX
+  REAL(KIND=K), INTENT(IN) :: CS, SN
+  INTEGER, INTENT(INOUT) :: INFO
+  REAL(KIND=K) :: XX, YY
+  INTEGER :: J
+#define GFMA XFMA
+#include "grtlt.f90"
+END SUBROUTINE XRTLT
