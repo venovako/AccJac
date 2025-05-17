@@ -1,0 +1,31 @@
+PURE FUNCTION XFMA(A, B, C)
+#ifdef __GFORTRAN__
+  USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
+#else
+  USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL128
+#endif
+  IMPLICIT NONE
+  INTERFACE
+#ifdef __GFORTRAN__
+     PURE FUNCTION C_FMA(X, Y, Z) BIND(C,NAME='fmal')
+       USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
+       REAL(KIND=c_long_double), INTENT(IN), VALUE :: X, Y, Z
+       REAL(KIND=c_long_double) :: C_FMA
+     END FUNCTION C_FMA
+#else
+     PURE FUNCTION C_FMA(X, Y, Z) BIND(C,NAME='__fmaq')
+       USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL128
+       REAL(KIND=REAL128), INTENT(IN), VALUE :: X, Y, Z
+       REAL(KIND=REAL128) :: C_FMA
+     END FUNCTION C_FMA
+#endif
+  END INTERFACE
+#ifdef __GFORTRAN__
+  REAL(KIND=c_long_double), INTENT(IN) :: A, B, C
+  REAL(KIND=c_long_double) :: XFMA
+#else
+  REAL(KIND=REAL128), INTENT(IN) :: A, B, C
+  REAL(KIND=REAL128) :: XFMA
+#endif
+  XFMA = C_FMA(A, B, C)
+END FUNCTION XFMA
