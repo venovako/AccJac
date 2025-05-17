@@ -6,6 +6,7 @@ PURE FUNCTION WFMA(A, B, C)
 #endif
   IMPLICIT NONE
 #ifdef __GFORTRAN__
+#ifdef CARITH_PVN
   INTERFACE
      PURE SUBROUTINE PVN_WFMA(DR, DI, AR, AI, BR, BI, CR, CI)
        USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
@@ -13,10 +14,14 @@ PURE FUNCTION WFMA(A, B, C)
        REAL(KIND=c_long_double), INTENT(IN) :: AR, AI, BR, BI, CR, CI
      END SUBROUTINE PVN_WFMA
   END INTERFACE
+#endif
   COMPLEX(KIND=c_long_double), INTENT(IN) :: A, B, C
   COMPLEX(KIND=c_long_double) :: WFMA
+#ifdef CARITH_PVN
   REAL(KIND=c_long_double) :: AR, AI, BR, BI, CR, CI, DR, DI
+#endif
 #else
+#ifdef CARITH_PVN
   INTERFACE
      PURE SUBROUTINE PVN_YFMA(DR, DI, AR, AI, BR, BI, CR, CI)
        USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL128
@@ -24,10 +29,14 @@ PURE FUNCTION WFMA(A, B, C)
        REAL(KIND=REAL128), INTENT(IN) :: AR, AI, BR, BI, CR, CI
      END SUBROUTINE PVN_YFMA
   END INTERFACE
+#endif
   COMPLEX(KIND=REAL128), INTENT(IN) :: A, B, C
   COMPLEX(KIND=REAL128) :: WFMA
+#ifdef CARITH_PVN
   REAL(KIND=REAL128) :: AR, AI, BR, BI, CR, CI, DR, DI
 #endif
+#endif
+#ifdef CARITH_PVN
   AR = REAL(A)
   AI = AIMAG(A)
   BR = REAL(B)
@@ -40,5 +49,8 @@ PURE FUNCTION WFMA(A, B, C)
 #else
   CALL PVN_YFMA(DR, DI, AR, AI, BR, BI, CR, CI)
   WFMA = CMPLX(DR, DI, REAL128)
+#endif
+#else
+  WFMA = A * B + C
 #endif
 END FUNCTION WFMA
