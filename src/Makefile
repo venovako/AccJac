@@ -59,8 +59,8 @@ ctrans.obj dtrans.obj strans.obj ztrans.obj \
 dtrana.obj wtrana.obj xtrana.obj ztrana.obj \
 coffa.obj doffa.obj soffa.obj zoffa.obj \
 dtrack.obj strack.obj \
-dtrace.obj wtrace.obj ztrace.obj \
-dnrmoa.obj wnrmoa.obj znrmoa.obj \
+dtrace.obj wtrace.obj xtrace.obj ztrace.obj \
+dnrmoa.obj wnrmoa.obj xnrmoa.obj znrmoa.obj \
 dtrkoa.obj ztrkoa.obj \
 dtrcoa.obj wtrcoa.obj ztrcoa.obj \
 cjsvdc.obj djsvdc.obj sjsvdc.obj zjsvdc.obj \

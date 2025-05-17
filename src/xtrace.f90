@@ -1,0 +1,32 @@
+SUBROUTINE XTRACE(N, A, LDA, AX, AS, SWP, NTR)
+#ifdef __GFORTRAN__
+  USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
+#endif
+  USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: ERROR_UNIT, REAL128
+  IMPLICIT NONE
+#ifdef __GFORTRAN__
+  INTEGER, PARAMETER :: K = c_long_double
+#else
+  INTEGER, PARAMETER :: K = REAL128
+#endif
+  INTEGER, INTENT(IN) :: N, LDA, AS, SWP, NTR
+  REAL(KIND=K), INTENT(IN) :: A(LDA,N), AX
+  INTEGER :: I, J
+#ifdef __GFORTRAN__
+  WRITE (ERROR_UNIT,'(I10,A,I11,A,I6,A,ES30.21E4)') SWP, ',', NTR, ',', AS, ',', AX
+#else
+  WRITE (ERROR_UNIT,'(I10,A,I11,A,I6,A,ES45.36E4)') SWP, ',', NTR, ',', AS, ',', AX
+#endif
+  FLUSH(ERROR_UNIT)
+  IF (N .LT. 1000) THEN
+     I = -AS
+     DO J = 1, N
+#ifdef __GFORTRAN__
+        WRITE (ERROR_UNIT,'(I3,A,ES30.21E4)') J, ',', SCALE(REAL(A(J,J), REAL128), I)
+#else
+        WRITE (ERROR_UNIT,'(I3,A,ES45.36E4)') J, ',', SCALE(REAL(A(J,J), REAL128), I)
+#endif
+        FLUSH(ERROR_UNIT)
+     END DO
+  END IF
+END SUBROUTINE XTRACE

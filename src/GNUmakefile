@@ -70,8 +70,8 @@ ctrans.o dtrans.o strans.o ztrans.o\
 dtrana.o wtrana.o xtrana.o ztrana.o\
 coffa.o doffa.o soffa.o zoffa.o\
 dtrack.o strack.o\
-dtrace.o wtrace.o ztrace.o\
-dnrmoa.o wnrmoa.o znrmoa.o\
+dtrace.o wtrace.o xtrace.o ztrace.o\
+dnrmoa.o wnrmoa.o xnrmoa.o znrmoa.o\
 dtrkoa.o ztrkoa.o\
 dtrcoa.o wtrcoa.o ztrcoa.o\
 cjsvdc.o djsvdc.o sjsvdc.o zjsvdc.o\
