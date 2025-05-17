@@ -76,8 +76,8 @@ dtrkoa.o ztrkoa.o\
 dtrcoa.o wtrcoa.o xtrcoa.o ztrcoa.o\
 cjsvdc.o djsvdc.o sjsvdc.o zjsvdc.o\
 cjsvdr.o djsvdr.o sjsvdr.o zjsvdr.o\
-djevdc.o wjevdc.o zjevdc.o\
-djevdr.o wjevdr.o zjevdr.o
+djevdc.o wjevdc.o xjevdc.o zjevdc.o\
+djevdr.o wjevdr.o xjevdr.o zjevdr.o
 
 LIBD=libjaevd.a
 

@@ -65,8 +65,8 @@ dtrkoa.obj ztrkoa.obj \
 dtrcoa.obj wtrcoa.obj xtrcoa.obj ztrcoa.obj \
 cjsvdc.obj djsvdc.obj sjsvdc.obj zjsvdc.obj \
 cjsvdr.obj djsvdr.obj sjsvdr.obj zjsvdr.obj \
-djevdc.obj wjevdc.obj zjevdc.obj \
-djevdr.obj wjevdr.obj zjevdr.obj
+djevdc.obj wjevdc.obj xjevdc.obj zjevdc.obj \
+djevdr.obj wjevdr.obj xjevdr.obj zjevdr.obj
 LIBS= \
 jaev2.lib \
 jaevd.lib
