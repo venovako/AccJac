@@ -25,9 +25,9 @@ PROGRAM XPPROC
   READ (FN,*) N
   IF (N .LT. 0) THEN
      N = -N
-     T = 'D'
+     T = 'X'
   ELSE IF (N .GT. 0) THEN
-     T = 'd'
+     T = 'x'
   ELSE ! N = 0
      STOP 'N'
   END IF
