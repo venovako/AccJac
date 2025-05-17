@@ -48,7 +48,7 @@ PROGRAM DPPROC
   ALLOCATE(A1(N,N))
   ALLOCATE(W3(N,N))
   ALLOCATE(A3(N,N))
-  WRITE (OUTPUT_UNIT,'(A)') '"SWEEP", "P", "Q", "maxRE(TAN[H])@PQ", "maxRE(A)"'
+  WRITE (OUTPUT_UNIT,'(A)') '"SWEEP", "maxRE(TAN[H])", "maxRE(A)"'
   DO L = 1, S
      WRITE (FN,'(A,I3.3,A,I2.2,A)') T, N, '_', L, '.txt'
      OPEN(NEWUNIT=U, IOSTAT=V, FILE=FN, STATUS='OLD', ACTION='READ', ACCESS='SEQUENTIAL', FORM='FORMATTED')
@@ -89,20 +89,14 @@ PROGRAM DPPROC
         END DO
      END DO
      X = XZERO
-     U = 0
-     V = 0
      DO J = 1, N-1
         DO I = J+1, N
            Y = ABS(REAL(W1(I,J), KK) - REAL(W3(I,J), KK))
            IF (Y .NE. XZERO) Y = Y / ABS(W1(I,J))
-           IF (Y .GT. X) THEN
-              X = Y
-              U = J
-              V = I
-           END IF
+           IF (Y .GT. X) X = Y
         END DO
      END DO
-     WRITE (OUTPUT_UNIT,'(I2,A,2(I4,A),ES25.17E3,A)',ADVANCE='NO') L, ',', U, ',', V, ',', X, ','
+     WRITE (OUTPUT_UNIT,'(I2,A,ES25.17E3,A)',ADVANCE='NO') L, ',', X, ','
      FLUSH(OUTPUT_UNIT)
      X = XZERO
      DO J = 1, N
