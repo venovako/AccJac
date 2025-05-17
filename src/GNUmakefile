@@ -44,11 +44,6 @@ EXE2 += \
 sth2t.exe
 endif # MPFR
 
-ifdef MPC
-OBJ2 += \
-mpcfma.obj
-endif # MPC
-
 OBJD=\
 bfopen.o pascal.o\
 cjaevd.o zjaevd.o\
@@ -135,9 +130,6 @@ ifeq ($(COMPILER),gfortran)
 LDFLAGS += -static-libgfortran -static-libquadmath
 endif # gfortran
 LDFLAGS += -L. -ljaevd -ljaev2 -L../../libpvn/src -lpvn $(LAPACK)
-ifdef MPC
-LDFLAGS += -L$(MPC)/lib -lmpc
-endif # MPC
 ifdef MPFR
 LDFLAGS += -L$(MPFR)/lib -lmpfr
 endif # MPFR
@@ -166,7 +158,7 @@ $(LIBD): $(OBJD)
 	$(AR) $(ARFLAGS) $@ $(OBJD)
 
 help:
-	@echo $(MAKE) "[COMPILER=gfortran|ifx] [COMPILER_PREFIX=...] [COMPILER_SUFFIX=...] [MARCH=...] [ABI=lp64|ilp64] [NDEBUG=optimization_level] [LAPACK=...] [GMP=...] [MPFR=...] [MPC=...] [PROFILE=...] [ANIMATE=ppe] [all|help|clean]"
+	@echo $(MAKE) "[COMPILER=gfortran|ifx] [COMPILER_PREFIX=...] [COMPILER_SUFFIX=...] [MARCH=...] [ABI=lp64|ilp64] [NDEBUG=optimization_level] [LAPACK=...] [GMP=...] [MPFR=...] [PROFILE=...] [ANIMATE=ppe] [all|help|clean]"
 
 %.obj : %.c $(MKFS)
 	$(CC) $(CFLAGS) -c $< -o $@

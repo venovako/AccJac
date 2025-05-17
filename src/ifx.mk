@@ -28,10 +28,6 @@ else # !NDEBUG
 FCFLAGS += -debug -check all
 CFLAGS += -debug
 endif # ?NDEBUG
-ifdef MPC
-FCFLAGS += -DMPC="\"$(MPC)\""
-CFLAGS += -I$(MPC)/include
-endif # MPC
 ifdef MPFR
 FCFLAGS += -DMPFR="\"$(MPFR)\""
 CFLAGS += -I$(MPFR)/include
