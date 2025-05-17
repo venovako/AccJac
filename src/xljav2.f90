@@ -1,0 +1,64 @@
+SUBROUTINE XLJAV2(A11, A22, A21, CH, SH, INFO)
+#ifdef __GFORTRAN__
+  USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_int, c_long_double
+#else
+  USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_int
+  USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL128
+#endif
+  IMPLICIT NONE
+  INTERFACE
+     PURE FUNCTION XFMA(A, B, C)
+#ifdef __GFORTRAN__
+       USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
+#else
+       USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL128
+#endif
+       IMPLICIT NONE
+#ifdef __GFORTRAN__
+       REAL(KIND=c_long_double), INTENT(IN) :: A, B, C
+       REAL(KIND=c_long_double) :: XFMA
+#else
+       REAL(KIND=REAL128), INTENT(IN) :: A, B, C
+       REAL(KIND=REAL128) :: XFMA
+#endif
+     END FUNCTION XFMA
+  END INTERFACE
+#ifdef __GFORTRAN__
+  INTERFACE
+     FUNCTION PVN_XLJV2(A11, A22, A21, CH, SH, TH, ES)
+       USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_int, c_long_double
+       REAL(KIND=c_long_double), INTENT(IN) :: A11, A22, A21
+       REAL(KIND=c_long_double), INTENT(OUT) :: CH, SH, TH
+       INTEGER(KIND=c_int), INTENT(INOUT) :: ES
+       INTEGER(KIND=c_int) :: PVN_XLJV2
+     END FUNCTION PVN_XLJV2
+  END INTERFACE
+  INTEGER, PARAMETER :: K = c_long_double
+#else
+  INTERFACE
+     FUNCTION PVN_QLJV2(A11, A22, A21, CH, SH, TH, ES)
+       USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_int, c_long_double
+       USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL128
+       REAL(KIND=REAL128), INTENT(IN) :: A11, A22, A21
+       REAL(KIND=REAL128), INTENT(OUT) :: CH, SH, TH
+       INTEGER(KIND=c_int), INTENT(INOUT) :: ES
+       INTEGER(KIND=c_int) :: PVN_QLJV2
+     END FUNCTION PVN_QLJV2
+  END INTERFACE
+  INTEGER, PARAMETER :: K = REAL128
+#endif
+  REAL(KIND=K), PARAMETER :: ZERO = 0.0_K, ONE = 1.0_K
+  REAL(KIND=K), INTENT(INOUT) :: A11, A22
+  REAL(KIND=K), INTENT(IN) :: A21
+  REAL(KIND=K), INTENT(OUT) :: CH, SH
+  INTEGER, INTENT(INOUT) :: INFO
+  REAL(KIND=K) :: A, TH
+  INTEGER(KIND=c_int) :: ES, RT
+#define GFMA XFMA
+#ifdef __GFORTRAN__
+#define LJV2 PVN_XLJV2
+#else
+#define LJV2 PVN_QLJV2
+#endif
+#include "gljav2.f90"
+END SUBROUTINE XLJAV2
