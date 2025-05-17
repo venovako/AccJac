@@ -75,8 +75,8 @@ past.exe \
 cevdj.exe zevdj.exe \
 cljv2t.exe dljv2t.exe sljv2t.exe zljv2t.exe \
 cjsvdt.exe djsvdt.exe sjsvdt.exe zjsvdt.exe \
-djevdt.exe zjevdt.exe wjevdt.exe \
-dpproc.exe zpproc.exe wpproc.exe
+djevdt.exe wjevdt.exe xjevdt.exe zjevdt.exe \
+dpproc.exe wjevdt.exe xpproc.exe zpproc.exe
 
 all: $(LIBS) $(EXES)
 
