@@ -67,7 +67,7 @@ dswpr.o wswpr.o xswpr.o zswpr.o\
 dswpxd.o wswpxd.o xswpxd.o zswpxd.o\
 cinisv.o dinisv.o sinisv.o zinisv.o\
 ctrans.o dtrans.o strans.o ztrans.o\
-dtrana.o ztrana.o wtrana.o\
+dtrana.o wtrana.o xtrana.o ztrana.o\
 coffa.o doffa.o soffa.o zoffa.o\
 dtrack.o strack.o\
 dtrace.o wtrace.o ztrace.o\
