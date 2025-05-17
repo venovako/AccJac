@@ -62,8 +62,9 @@ csdp.o dsdp.o ssdp.o zsdp.o\
 cgram.o dgram.o sgram.o zgram.o\
 cscalg.o dscalg.o sscalg.o zscalg.o\
 dscala.o wscala.o xscala.o zscala.o\
-dswpc.o dswpr.o wswpc.o wswpr.o zswpc.o zswpr.o\
-dswpxd.o wswpxd.o zswpxd.o\
+dswpc.o wswpc.o xswpc.o zswpc.o\
+dswpr.o wswpr.o xswpr.o zswpr.o\
+dswpxd.o wswpxd.o xswpxd.o zswpxd.o\
 cinisv.o dinisv.o sinisv.o zinisv.o\
 ctrans.o dtrans.o strans.o ztrans.o\
 dtrana.o ztrana.o wtrana.o\

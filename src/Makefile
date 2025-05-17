@@ -51,8 +51,9 @@ csdp.obj dsdp.obj ssdp.obj zsdp.obj \
 cgram.obj dgram.obj sgram.obj zgram.obj \
 cscalg.obj dscalg.obj sscalg.obj zscalg.obj \
 dscala.obj wscala.obj xscala.obj zscala.obj \
-dswpc.obj dswpr.obj wswpc.obj wswpr.obj zswpc.obj zswpr.obj \
-dswpxd.obj wswpxd.obj zswpxd.obj \
+dswpc.obj wswpc.obj xswpc.obj zswpc.obj \
+dswpr.obj wswpr.obj xswpr.obj zswpr.obj \
+dswpxd.obj wswpxd.obj xswpxd.obj zswpxd.obj \
 cinisv.obj dinisv.obj sinisv.obj zinisv.obj \
 ctrans.obj dtrans.obj strans.obj ztrans.obj \
 dtrana.obj wtrana.obj xtrana.obj ztrana.obj \
