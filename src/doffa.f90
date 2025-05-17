@@ -2,15 +2,28 @@ FUNCTION DOFFA(M, N, G, LDG, GS, WRK)
 #ifdef __GFORTRAN__
   USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
   USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL64
+#else
+  USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL64, REAL128
+#endif
   IMPLICIT NONE
   INTERFACE
-     PURE FUNCTION C_FMA(X, Y, Z) BIND(C,NAME='fmal')
+     PURE FUNCTION XFMA(A, B, C)
+#ifdef __GFORTRAN__
        USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
+#else
+       USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL128
+#endif
        IMPLICIT NONE
-       REAL(KIND=c_long_double), INTENT(IN), VALUE :: X, Y, Z
-       REAL(KIND=c_long_double) :: C_FMA
-     END FUNCTION C_FMA
+#ifdef __GFORTRAN__
+       REAL(KIND=c_long_double), INTENT(IN) :: A, B, C
+       REAL(KIND=c_long_double) :: XFMA
+#else
+       REAL(KIND=REAL128), INTENT(IN) :: A, B, C
+       REAL(KIND=REAL128) :: XFMA
+#endif
+     END FUNCTION XFMA
   END INTERFACE
+#ifdef __GFORTRAN__
   INTERFACE
      PURE FUNCTION CR_HYPOT(X, Y) BIND(C,NAME='cr_hypotl')
        USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
@@ -21,10 +34,6 @@ FUNCTION DOFFA(M, N, G, LDG, GS, WRK)
   END INTERFACE
   INTEGER, PARAMETER :: KK = c_long_double
 #else
-  USE, INTRINSIC :: IEEE_ARITHMETIC, ONLY: IEEE_FMA
-  USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL64, REAL128
-  IMPLICIT NONE
-#define C_FMA IEEE_FMA
 #define CR_HYPOT HYPOT
   INTEGER, PARAMETER :: KK = REAL128
 #endif
@@ -49,7 +58,7 @@ FUNCTION DOFFA(M, N, G, LDG, GS, WRK)
      DO I = 1, J-1
         D = ZERO
         DO L = 1, M
-           D = C_FMA(WRK(L,I), WRK(L,J), D)
+           D = XFMA(WRK(L,I), WRK(L,J), D)
         END DO
         O = CR_HYPOT(O, D)
      END DO

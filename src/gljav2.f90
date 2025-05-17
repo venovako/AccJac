@@ -12,9 +12,7 @@
         INFO = IOR(INFO, 4)
      ELSE ! not identity
         A = ABS(A21)
-        !DIR$ FMA
-        A11 = TH * A + A11
-        !DIR$ FMA
-        A22 = TH * A + A22
+        A11 = GFMA(TH, A, A11)
+        A22 = GFMA(TH, A, A22)
      END IF
   END IF

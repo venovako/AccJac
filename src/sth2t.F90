@@ -3,12 +3,20 @@
 PROGRAM STH2T
   USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: OUTPUT_UNIT, INT32, REAL32, REAL64
   IMPLICIT NONE
+  INTERFACE
+     PURE FUNCTION DFMA(A, B, C)
+       USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL64
+       IMPLICIT NONE
+       REAL(KIND=REAL64), INTENT(IN) :: A, B, C
+       REAL(KIND=REAL64) :: DFMA
+     END FUNCTION DFMA
+  END INTERFACE
   REAL(KIND=REAL32), PARAMETER :: ZERO = 0.0_REAL32, ONE = 1.0_REAL32, TWO = 2.0_REAL32
   REAL(KIND=REAL32), PARAMETER :: CUTOFF = 40.0_REAL32 / 41.0_REAL32, EPS = EPSILON(ZERO) / TWO
   REAL(KIND=REAL64), PARAMETER :: DZERO = 0.0_REAL64
   INTEGER, PARAMETER :: ETH = 1, ECH = 2, ESH = 3, STH = 4, SCH = 5, SSH = 6, ARE = 1, MRE = 2
   CHARACTER(LEN=256) :: CLA
-  REAL(KIND=REAL64) :: Q(2,6), QD, QT, QC, QS
+  REAL(KIND=REAL64) :: Q(2,6), QD, QT, QC, QS, J
   REAL(KIND=REAL32) :: D, T, C, S, U
   INTEGER :: I, NEXP
   INTEGER(KIND=INT32) :: ID
@@ -32,26 +40,21 @@ PROGRAM STH2T
   DO WHILE (D .LT. U)
      CALL TCS_NEW(D, T, C, S, QT, QC, QS)
      QD = I - 1
-     QD = QD / I
-     !DIR$ FMA
-     Q(ARE,ETH) = Q(ARE,ETH) * QD + (QT / I)
+     J = I
+     QD = QD / J
+     Q(ARE,ETH) = DFMA(Q(ARE,ETH), QD, (QT / J))
      Q(MRE,ETH) = MAX(Q(MRE,ETH), QT)
-     !DIR$ FMA
-     Q(ARE,ECH) = Q(ARE,ECH) * QD + (QC / I)
+     Q(ARE,ECH) = DFMA(Q(ARE,ECH), QD, (QC / J))
      Q(MRE,ECH) = MAX(Q(MRE,ECH), QC)
-     !DIR$ FMA
-     Q(ARE,ESH) = Q(ARE,ESH) * QD + (QS / I)
+     Q(ARE,ESH) = DFMA(Q(ARE,ESH), QD, (QS / J))
      Q(MRE,ESH) = MAX(Q(MRE,ESH), QS)
      ! "standard" formulas
      CALL TCS_OLD(D, T, C, S, QT, QC, QS)
-     !DIR$ FMA
-     Q(ARE,STH) = Q(ARE,STH) * QD + (QT / I)
+     Q(ARE,STH) = DFMA(Q(ARE,STH), QD, (QT / J))
      Q(MRE,STH) = MAX(Q(MRE,STH), QT)
-     !DIR$ FMA
-     Q(ARE,SCH) = Q(ARE,SCH) * QD + (QC / I)
+     Q(ARE,SCH) = DFMA(Q(ARE,SCH), QD, (QC / J))
      Q(MRE,SCH) = MAX(Q(MRE,SCH), QC)
-     !DIR$ FMA
-     Q(ARE,SSH) = Q(ARE,SSH) * QD + (QS / I)
+     Q(ARE,SSH) = DFMA(Q(ARE,SSH), QD, (QS / J))
      Q(MRE,SSH) = MAX(Q(MRE,SSH), QS)
      ! increment
      ID = ID + 1

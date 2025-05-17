@@ -6,6 +6,23 @@ SUBROUTINE WLJAV2(A11, A22, A21R, A21I, CH, SHR, SHI, INFO)
   USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL128
 #endif
   IMPLICIT NONE
+  INTERFACE
+     PURE FUNCTION XFMA(A, B, C)
+#ifdef __GFORTRAN__
+       USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
+#else
+       USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL128
+#endif
+       IMPLICIT NONE
+#ifdef __GFORTRAN__
+       REAL(KIND=c_long_double), INTENT(IN) :: A, B, C
+       REAL(KIND=c_long_double) :: XFMA
+#else
+       REAL(KIND=REAL128), INTENT(IN) :: A, B, C
+       REAL(KIND=REAL128) :: XFMA
+#endif
+     END FUNCTION XFMA
+  END INTERFACE
 #ifdef __GFORTRAN__
   INTERFACE
      PURE FUNCTION CR_HYPOT(X, Y) BIND(C,NAME='cr_hypotl')
@@ -46,11 +63,10 @@ SUBROUTINE WLJAV2(A11, A22, A21R, A21I, CH, SHR, SHI, INFO)
   INTEGER, INTENT(INOUT) :: INFO
   REAL(KIND=K) :: A, TH
   INTEGER(KIND=c_int) :: ES, RT
+#define GFMA XFMA
 #ifdef __GFORTRAN__
-  ! INTEGER(KIND=c_int), EXTERNAL :: PVN_WLJV2
 #define LJV2 PVN_WLJV2
 #else
-  ! INTEGER(KIND=c_int), EXTERNAL :: PVN_YLJV2
 #define LJV2 PVN_YLJV2
 #endif
 #include "hljav2.f90"

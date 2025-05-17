@@ -2,6 +2,14 @@ FUNCTION COFFA(M, N, G, LDG, GS, WRK)
   USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL32, REAL64
   IMPLICIT NONE
   INTERFACE
+     PURE FUNCTION ZFMA(A, B, C)
+       USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL64
+       IMPLICIT NONE
+       COMPLEX(KIND=REAL64), INTENT(IN) :: A, B, C
+       COMPLEX(KIND=REAL64) :: ZFMA
+     END FUNCTION ZFMA
+  END INTERFACE
+  INTERFACE
      PURE FUNCTION CR_HYPOT(X, Y) BIND(C,NAME='cr_hypot')
        USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_double
        IMPLICIT NONE
@@ -33,10 +41,7 @@ FUNCTION COFFA(M, N, G, LDG, GS, WRK)
         DO L = 1, M
            X = CONJG(WRK(L,I))
            Y = WRK(L,J)
-           !DIR$ FMA
-           D = CMPLX(&
-                (REAL(X) *  REAL(Y) + (REAL(D)  - AIMAG(X) * AIMAG(Y))),&
-                (REAL(X) * AIMAG(Y) + (AIMAG(D) + AIMAG(X) *  REAL(Y))), KK)
+           D = ZFMA(X, Y, D)
         END DO
         O = CR_HYPOT(O, CR_HYPOT(REAL(D), AIMAG(D)))
      END DO

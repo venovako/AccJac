@@ -3,20 +3,45 @@ PROGRAM CJSVDT
   USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long, c_long_double
   USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: INT64, OUTPUT_UNIT, REAL32
 #else
-  USE, INTRINSIC :: IEEE_ARITHMETIC, ONLY: IEEE_FMA
   USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long
   USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: INT64, OUTPUT_UNIT, REAL32, REAL128
 #endif
   IMPLICIT NONE
-#ifdef __GFORTRAN__
   INTERFACE
-     PURE FUNCTION X_FMA(X, Y, Z) BIND(C,NAME='fmal')
+     PURE FUNCTION XFMA(A, B, C)
+#ifdef __GFORTRAN__
        USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
+#else
+       USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL128
+#endif
        IMPLICIT NONE
-       REAL(KIND=c_long_double), INTENT(IN), VALUE :: X, Y, Z
-       REAL(KIND=c_long_double) :: X_FMA
-     END FUNCTION X_FMA
+#ifdef __GFORTRAN__
+       REAL(KIND=c_long_double), INTENT(IN) :: A, B, C
+       REAL(KIND=c_long_double) :: XFMA
+#else
+       REAL(KIND=REAL128), INTENT(IN) :: A, B, C
+       REAL(KIND=REAL128) :: XFMA
+#endif
+     END FUNCTION XFMA
   END INTERFACE
+  INTERFACE
+     PURE FUNCTION WFMA(A, B, C)
+#ifdef __GFORTRAN__
+       USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
+#else
+       USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL128
+#endif
+       IMPLICIT NONE
+#ifdef __GFORTRAN__
+       COMPLEX(KIND=c_long_double), INTENT(IN) :: A, B, C
+       COMPLEX(KIND=c_long_double) :: WFMA
+#else
+       COMPLEX(KIND=REAL128), INTENT(IN) :: A, B, C
+       COMPLEX(KIND=REAL128) :: WFMA
+#endif
+     END FUNCTION WFMA
+  END INTERFACE
+#ifdef __GFORTRAN__
   INTERFACE
      PURE FUNCTION HYPOTX(X, Y) BIND(C,NAME='cr_hypotl')
        USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
@@ -27,7 +52,6 @@ PROGRAM CJSVDT
   END INTERFACE
   INTEGER, PARAMETER :: KK = c_long_double
 #else
-#define X_FMA IEEE_FMA
 #define HYPOTX HYPOT
   INTEGER, PARAMETER :: KK = REAL128
 #endif
@@ -174,9 +198,7 @@ PROGRAM CJSVDT
            DO L = 1, N
               ! W(I,J) = W(I,J) - U(I,L) * V(L,J)
               H = CMPLX(REAL(-REAL(V(L,J)), KK), REAL(-AIMAG(V(L,J)), KK), KK)
-              W(I,J) = CMPLX(&
-                   X_FMA(REAL(U(I,L)), REAL(H), X_FMA(-AIMAG(U(I,L)), AIMAG(H), REAL(W(I,J)))),&
-                   X_FMA(REAL(U(I,L)), AIMAG(H), X_FMA(AIMAG(U(I,L)), REAL(H), AIMAG(W(I,J)))), KK)
+              W(I,J) = WFMA(U(I,L), H, W(I,J))
            END DO
            Y = HYPOTX(Y, HYPOTX(REAL(W(I,J)), AIMAG(W(I,J))))
         END DO

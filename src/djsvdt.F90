@@ -3,20 +3,28 @@ PROGRAM DJSVDT
   USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long, c_long_double
   USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: INT64, OUTPUT_UNIT, REAL64
 #else
-  USE, INTRINSIC :: IEEE_ARITHMETIC, ONLY: IEEE_FMA
   USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long
   USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: INT64, OUTPUT_UNIT, REAL64, REAL128
 #endif
   IMPLICIT NONE
-#ifdef __GFORTRAN__
   INTERFACE
-     PURE FUNCTION X_FMA(X, Y, Z) BIND(C,NAME='fmal')
+     PURE FUNCTION XFMA(A, B, C)
+#ifdef __GFORTRAN__
        USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
+#else
+       USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL128
+#endif
        IMPLICIT NONE
-       REAL(KIND=c_long_double), INTENT(IN), VALUE :: X, Y, Z
-       REAL(KIND=c_long_double) :: X_FMA
-     END FUNCTION X_FMA
+#ifdef __GFORTRAN__
+       REAL(KIND=c_long_double), INTENT(IN) :: A, B, C
+       REAL(KIND=c_long_double) :: XFMA
+#else
+       REAL(KIND=REAL128), INTENT(IN) :: A, B, C
+       REAL(KIND=REAL128) :: XFMA
+#endif
+     END FUNCTION XFMA
   END INTERFACE
+#ifdef __GFORTRAN__
   INTERFACE
      PURE FUNCTION HYPOTX(X, Y) BIND(C,NAME='cr_hypotl')
        USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
@@ -27,7 +35,6 @@ PROGRAM DJSVDT
   END INTERFACE
   INTEGER, PARAMETER :: KK = c_long_double
 #else
-#define X_FMA IEEE_FMA
 #define HYPOTX HYPOT
   INTEGER, PARAMETER :: KK = REAL128
 #endif
@@ -260,12 +267,12 @@ PROGRAM DJSVDT
      X = QZERO
      DO J = 1, JPOS
         Y = SV(J)
-        Y = ABS(X_FMA(Y, Y, REAL(-LY(J), KK)) / LY(J))
+        Y = ABS(XFMA(Y, Y, REAL(-LY(J), KK)) / LY(J))
         X = MAX(X, Y)
      END DO
      DO J = JPOS+1, N
         Y = SV(J)
-        Y = ABS(X_FMA(Y, Y, REAL(LY(J), KK)) / LY(J))
+        Y = ABS(XFMA(Y, Y, REAL(LY(J), KK)) / LY(J))
         X = MAX(X, Y)
      END DO
      DEALLOCATE(LY)
@@ -289,7 +296,7 @@ PROGRAM DJSVDT
            Z = HYPOTX(Z, W(I,J))
            DO L = 1, N
               ! W(I,J) = W(I,J) - U(I,L) * REAL(V(L,J), KK)
-              W(I,J) = X_FMA(U(I,L), REAL(-V(L,J), KK), W(I,J))
+              W(I,J) = XFMA(U(I,L), REAL(-V(L,J), KK), W(I,J))
            END DO
            Y = HYPOTX(Y, W(I,J))
         END DO
