@@ -73,7 +73,7 @@ dtrack.o strack.o\
 dtrace.o wtrace.o xtrace.o ztrace.o\
 dnrmoa.o wnrmoa.o xnrmoa.o znrmoa.o\
 dtrkoa.o ztrkoa.o\
-dtrcoa.o wtrcoa.o ztrcoa.o\
+dtrcoa.o wtrcoa.o xtrcoa.o ztrcoa.o\
 cjsvdc.o djsvdc.o sjsvdc.o zjsvdc.o\
 cjsvdr.o djsvdr.o sjsvdr.o zjsvdr.o\
 djevdc.o wjevdc.o zjevdc.o\

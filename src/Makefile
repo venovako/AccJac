@@ -62,7 +62,7 @@ dtrack.obj strack.obj \
 dtrace.obj wtrace.obj xtrace.obj ztrace.obj \
 dnrmoa.obj wnrmoa.obj xnrmoa.obj znrmoa.obj \
 dtrkoa.obj ztrkoa.obj \
-dtrcoa.obj wtrcoa.obj ztrcoa.obj \
+dtrcoa.obj wtrcoa.obj xtrcoa.obj ztrcoa.obj \
 cjsvdc.obj djsvdc.obj sjsvdc.obj zjsvdc.obj \
 cjsvdr.obj djsvdr.obj sjsvdr.obj zjsvdr.obj \
 djevdc.obj wjevdc.obj zjevdc.obj \
