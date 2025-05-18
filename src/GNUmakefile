@@ -53,10 +53,10 @@ croth.o droth.o sroth.o zroth.o\
 crott.o drott.o srott.o zrott.o\
 crtvh.o drtvh.o srtvh.o wrtvh.o xrtvh.o zrtvh.o\
 crtvt.o drtvt.o srtvt.o wrtvt.o xrtvt.o zrtvt.o\
-crtlt.o drtlt.o wrtlt.o xrtlt.o zrtlt.o\
-crtrt.o drtrt.o wrtrt.o xrtrt.o zrtrt.o\
-crtlh.o drtlh.o wrtlh.o xrtlh.o zrtlh.o\
-crtrh.o drtrh.o wrtrh.o xrtrh.o zrtrh.o\
+crtlt.o drtlt.o srtlt.o wrtlt.o xrtlt.o zrtlt.o\
+crtrt.o drtrt.o srtrt.o wrtrt.o xrtrt.o zrtrt.o\
+crtlh.o drtlh.o srtlh.o wrtlh.o xrtlh.o zrtlh.o\
+crtrh.o drtrh.o srtrh.o wrtrh.o xrtrh.o zrtrh.o\
 cnrmf.o dnrmf.o snrmf.o znrmf.o\
 csdp.o dsdp.o ssdp.o zsdp.o\
 cgram.o dgram.o sgram.o zgram.o\

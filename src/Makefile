@@ -42,10 +42,10 @@ croth.obj droth.obj sroth.obj zroth.obj \
 crott.obj drott.obj srott.obj zrott.obj \
 crtvh.obj drtvh.obj srtvh.obj wrtvh.obj xrtvh.obj zrtvh.obj \
 crtvt.obj drtvt.obj srtvt.obj wrtvt.obj xrtvt.obj zrtvt.obj \
-crtlt.obj drtlt.obj wrtlt.obj xrtlt.obj zrtlt.obj \
-crtrt.obj drtrt.obj wrtrt.obj xrtrt.obj zrtrt.obj \
-crtlh.obj drtlh.obj wrtlh.obj xrtlh.obj zrtlh.obj \
-crtrh.obj drtrh.obj wrtrh.obj xrtrh.obj zrtrh.obj \
+crtlt.obj drtlt.obj srtlt.obj wrtlt.obj xrtlt.obj zrtlt.obj \
+crtrt.obj drtrt.obj srtrt.obj wrtrt.obj xrtrt.obj zrtrt.obj \
+crtlh.obj drtlh.obj srtlh.obj wrtlh.obj xrtlh.obj zrtlh.obj \
+crtrh.obj drtrh.obj srtrh.obj wrtrh.obj xrtrh.obj zrtrh.obj \
 cnrmf.obj dnrmf.obj snrmf.obj znrmf.obj \
 csdp.obj dsdp.obj ssdp.obj zsdp.obj \
 cgram.obj dgram.obj sgram.obj zgram.obj \
