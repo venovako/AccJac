@@ -21,8 +21,8 @@ cjaev2.obj djaev2.obj qjaev2.obj sjaev2.obj yjaev2.obj zjaev2.obj \
 cjiev2.obj djiev2.obj qjiev2.obj sjiev2.obj yjiev2.obj zjiev2.obj \
 clju2.obj dlju2.obj slju2.obj zlju2.obj \
 cljv2.obj dljv2.obj sljv2.obj zljv2.obj \
-cljau2.obj dljau2.obj wljau2.obj xljau2.obj zljau2.obj \
-cljav2.obj dljav2.obj wljav2.obj xljav2.obj zljav2.obj \
+cljau2.obj dljau2.obj sljau2.obj wljau2.obj xljau2.obj zljau2.obj \
+cljav2.obj dljav2.obj sljav2.obj wljav2.obj xljav2.obj zljav2.obj \
 qlaev2.obj ylaev2.obj
 
 # e.g., LAPACK=/Qmkl:sequential
@@ -42,10 +42,10 @@ croth.obj droth.obj sroth.obj zroth.obj \
 crott.obj drott.obj srott.obj zrott.obj \
 crtvh.obj drtvh.obj srtvh.obj wrtvh.obj xrtvh.obj zrtvh.obj \
 crtvt.obj drtvt.obj srtvt.obj wrtvt.obj xrtvt.obj zrtvt.obj \
-drtlt.obj wrtlt.obj xrtlt.obj zrtlt.obj \
-drtrt.obj wrtrt.obj xrtrt.obj zrtrt.obj \
-drtlh.obj wrtlh.obj xrtlh.obj zrtlh.obj \
-drtrh.obj wrtrh.obj xrtrh.obj zrtrh.obj \
+crtlt.obj drtlt.obj wrtlt.obj xrtlt.obj zrtlt.obj \
+crtrt.obj drtrt.obj wrtrt.obj xrtrt.obj zrtrt.obj \
+crtlh.obj drtlh.obj wrtlh.obj xrtlh.obj zrtlh.obj \
+crtrh.obj drtrh.obj wrtrh.obj xrtrh.obj zrtrh.obj \
 cnrmf.obj dnrmf.obj snrmf.obj znrmf.obj \
 csdp.obj dsdp.obj ssdp.obj zsdp.obj \
 cgram.obj dgram.obj sgram.obj zgram.obj \

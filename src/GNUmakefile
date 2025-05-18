@@ -27,8 +27,8 @@ cjaev2.o djaev2.o qjaev2.o sjaev2.o yjaev2.o zjaev2.o\
 cjiev2.o djiev2.o qjiev2.o sjiev2.o yjiev2.o zjiev2.o\
 clju2.o dlju2.o slju2.o zlju2.o\
 cljv2.o dljv2.o sljv2.o zljv2.o\
-cljau2.o dljau2.o zljau2.o wljau2.o xljau2.o\
-cljav2.o dljav2.o zljav2.o wljav2.o xljav2.o
+cljau2.o dljau2.o sljau2.o wljau2.o xljau2.o zljau2.o\
+cljav2.o dljav2.o sljav2.o wljav2.o xljav2.o zljav2.o
 
 LIB2=libjaev2.a
 
@@ -53,10 +53,10 @@ croth.o droth.o sroth.o zroth.o\
 crott.o drott.o srott.o zrott.o\
 crtvh.o drtvh.o srtvh.o wrtvh.o xrtvh.o zrtvh.o\
 crtvt.o drtvt.o srtvt.o wrtvt.o xrtvt.o zrtvt.o\
-drtlt.o wrtlt.o xrtlt.o zrtlt.o\
-drtrt.o wrtrt.o xrtrt.o zrtrt.o\
-drtlh.o wrtlh.o xrtlh.o zrtlh.o\
-drtrh.o wrtrh.o xrtrh.o zrtrh.o\
+crtlt.o drtlt.o wrtlt.o xrtlt.o zrtlt.o\
+crtrt.o drtrt.o wrtrt.o xrtrt.o zrtrt.o\
+crtlh.o drtlh.o wrtlh.o xrtlh.o zrtlh.o\
+crtrh.o drtrh.o wrtrh.o xrtrh.o zrtrh.o\
 cnrmf.o dnrmf.o snrmf.o znrmf.o\
 csdp.o dsdp.o ssdp.o zsdp.o\
 cgram.o dgram.o sgram.o zgram.o\
