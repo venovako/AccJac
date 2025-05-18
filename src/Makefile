@@ -53,13 +53,13 @@ cscalg.obj dscalg.obj sscalg.obj zscalg.obj \
 cscala.obj dscala.obj sscala.obj wscala.obj xscala.obj zscala.obj \
 cswpc.obj dswpc.obj sswpc.obj wswpc.obj xswpc.obj zswpc.obj \
 cswpr.obj dswpr.obj sswpr.obj wswpr.obj xswpr.obj zswpr.obj \
-dswpxd.obj wswpxd.obj xswpxd.obj zswpxd.obj \
+cswpxd.obj dswpxd.obj sswpxd.obj wswpxd.obj xswpxd.obj zswpxd.obj \
 cinisv.obj dinisv.obj sinisv.obj zinisv.obj \
 ctrans.obj dtrans.obj strans.obj ztrans.obj \
-dtrana.obj wtrana.obj xtrana.obj ztrana.obj \
+ctrana.obj dtrana.obj strana.obj wtrana.obj xtrana.obj ztrana.obj \
 coffa.obj doffa.obj soffa.obj zoffa.obj \
 dtrack.obj strack.obj \
-dtrace.obj wtrace.obj xtrace.obj ztrace.obj \
+ctrace.obj dtrace.obj strace.obj wtrace.obj xtrace.obj ztrace.obj \
 dnrmoa.obj wnrmoa.obj xnrmoa.obj znrmoa.obj \
 dtrkoa.obj ztrkoa.obj \
 dtrcoa.obj wtrcoa.obj xtrcoa.obj ztrcoa.obj \

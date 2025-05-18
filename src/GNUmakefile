@@ -64,13 +64,13 @@ cscalg.o dscalg.o sscalg.o zscalg.o\
 cscala.o dscala.o sscala.o wscala.o xscala.o zscala.o\
 cswpc.o dswpc.o sswpc.o wswpc.o xswpc.o zswpc.o\
 cswpr.o dswpr.o sswpr.o wswpr.o xswpr.o zswpr.o\
-dswpxd.o wswpxd.o xswpxd.o zswpxd.o\
+cswpxd.o dswpxd.o sswpxd.o wswpxd.o xswpxd.o zswpxd.o\
 cinisv.o dinisv.o sinisv.o zinisv.o\
 ctrans.o dtrans.o strans.o ztrans.o\
-dtrana.o wtrana.o xtrana.o ztrana.o\
+ctrana.o dtrana.o strana.o wtrana.o xtrana.o ztrana.o\
 coffa.o doffa.o soffa.o zoffa.o\
 dtrack.o strack.o\
-dtrace.o wtrace.o xtrace.o ztrace.o\
+ctrace.o dtrace.o strace.o wtrace.o xtrace.o ztrace.o\
 dnrmoa.o wnrmoa.o xnrmoa.o znrmoa.o\
 dtrkoa.o ztrkoa.o\
 dtrcoa.o wtrcoa.o xtrcoa.o ztrcoa.o\
