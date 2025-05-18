@@ -50,9 +50,9 @@ cnrmf.obj dnrmf.obj snrmf.obj znrmf.obj \
 csdp.obj dsdp.obj ssdp.obj zsdp.obj \
 cgram.obj dgram.obj sgram.obj zgram.obj \
 cscalg.obj dscalg.obj sscalg.obj zscalg.obj \
-dscala.obj wscala.obj xscala.obj zscala.obj \
-dswpc.obj wswpc.obj xswpc.obj zswpc.obj \
-dswpr.obj wswpr.obj xswpr.obj zswpr.obj \
+cscala.obj dscala.obj sscala.obj wscala.obj xscala.obj zscala.obj \
+cswpc.obj dswpc.obj sswpc.obj wswpc.obj xswpc.obj zswpc.obj \
+cswpr.obj dswpr.obj sswpr.obj wswpr.obj xswpr.obj zswpr.obj \
 dswpxd.obj wswpxd.obj xswpxd.obj zswpxd.obj \
 cinisv.obj dinisv.obj sinisv.obj zinisv.obj \
 ctrans.obj dtrans.obj strans.obj ztrans.obj \

@@ -61,9 +61,9 @@ cnrmf.o dnrmf.o snrmf.o znrmf.o\
 csdp.o dsdp.o ssdp.o zsdp.o\
 cgram.o dgram.o sgram.o zgram.o\
 cscalg.o dscalg.o sscalg.o zscalg.o\
-dscala.o wscala.o xscala.o zscala.o\
-dswpc.o wswpc.o xswpc.o zswpc.o\
-dswpr.o wswpr.o xswpr.o zswpr.o\
+cscala.o dscala.o sscala.o wscala.o xscala.o zscala.o\
+cswpc.o dswpc.o sswpc.o wswpc.o xswpc.o zswpc.o\
+cswpr.o dswpr.o sswpr.o wswpr.o xswpr.o zswpr.o\
 dswpxd.o wswpxd.o xswpxd.o zswpxd.o\
 cinisv.o dinisv.o sinisv.o zinisv.o\
 ctrans.o dtrans.o strans.o ztrans.o\
