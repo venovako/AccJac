@@ -60,13 +60,13 @@ ctrana.obj dtrana.obj strana.obj wtrana.obj xtrana.obj ztrana.obj \
 coffa.obj doffa.obj soffa.obj zoffa.obj \
 dtrack.obj strack.obj \
 ctrace.obj dtrace.obj strace.obj wtrace.obj xtrace.obj ztrace.obj \
-dnrmoa.obj wnrmoa.obj xnrmoa.obj znrmoa.obj \
+cnrmoa.obj dnrmoa.obj snrmoa.obj wnrmoa.obj xnrmoa.obj znrmoa.obj \
 dtrkoa.obj ztrkoa.obj \
-dtrcoa.obj wtrcoa.obj xtrcoa.obj ztrcoa.obj \
+ctrcoa.obj dtrcoa.obj strcoa.obj wtrcoa.obj xtrcoa.obj ztrcoa.obj \
 cjsvdc.obj djsvdc.obj sjsvdc.obj zjsvdc.obj \
 cjsvdr.obj djsvdr.obj sjsvdr.obj zjsvdr.obj \
-djevdc.obj wjevdc.obj xjevdc.obj zjevdc.obj \
-djevdr.obj wjevdr.obj xjevdr.obj zjevdr.obj
+cjevdc.obj djevdc.obj sjevdc.obj wjevdc.obj xjevdc.obj zjevdc.obj \
+cjevdr.obj djevdr.obj sjevdr.obj wjevdr.obj xjevdr.obj zjevdr.obj
 LIBS= \
 jaev2.lib \
 jaevd.lib
@@ -75,7 +75,7 @@ past.exe \
 cevdj.exe zevdj.exe \
 cljv2t.exe dljv2t.exe sljv2t.exe zljv2t.exe \
 cjsvdt.exe djsvdt.exe sjsvdt.exe zjsvdt.exe \
-djevdt.exe wjevdt.exe xjevdt.exe zjevdt.exe \
+cjevdt.exe djevdt.exe sjevdt.exe wjevdt.exe xjevdt.exe zjevdt.exe \
 dpproc.exe wjevdt.exe xpproc.exe zpproc.exe
 
 all: $(LIBS) $(EXES)
