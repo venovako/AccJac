@@ -85,7 +85,7 @@ EXED=past.exe\
 cevdj.exe zevdj.exe\
 cjsvdt.exe djsvdt.exe sjsvdt.exe zjsvdt.exe\
 cjevdt.exe djevdt.exe sjevdt.exe wjevdt.exe xjevdt.exe zjevdt.exe\
-dpproc.exe wpproc.exe xpproc.exe zpproc.exe
+cpproc.exe dpproc.exe spproc.exe wpproc.exe xpproc.exe zpproc.exe
 
 ifeq ($(COMPILER),gfortran)
 ifeq ($(findstring 86,$(ARCH)),86)
