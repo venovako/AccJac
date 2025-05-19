@@ -8,7 +8,7 @@ MARCH=Host
 !IFNDEF NDEBUG
 NDEBUG=d
 !ENDIF # NDEBUG
-FCFLAGS=/nologo /fpp /recursive /standard-semantics /traceback /DNDEBUG=$(NDEBUG) /I. /MT /O$(NDEBUG) /Qx$(MARCH) /fp:precise /Qfma /Qftz- /Qprec-div /Qprotect-parens /Qopt-report:3 /Qvec-threshold:0
+FCFLAGS=/nologo /fpp /recursive /standard-semantics /traceback /DNDEBUG=$(NDEBUG) /DCARITH_PVN="cma" /I. /MT /O$(NDEBUG) /Qx$(MARCH) /fp:precise /Qfma /Qftz- /Qprec-div /Qprotect-parens /Qopt-report:3 /Qvec-threshold:0
 !IF "$(ABI)"=="ilp64"
 FCFLAGS=$(FCFLAGS) /4I8
 !ENDIF # ilp64
