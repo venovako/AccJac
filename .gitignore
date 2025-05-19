@@ -35,4 +35,5 @@
 *.dSYM
 *.optrpt
 *.opt.yaml
+*.pdb
 old
