@@ -44,6 +44,4 @@ With the [MPFR](https://www.mpfr.org) and [GMP](https://gmplib.org) libraries, a
 
 Additional material is available in the `etc` subdirectory.
 
-TODO: the real variants of `CJAEVD` and `ZJAEVD` remain to be written.
-
 This work has been supported in part by Croatian Science Foundation under the project IP-2014-09-3670 ([MFBDA](https://web.math.pmf.unizg.hr/mfbda/)).
