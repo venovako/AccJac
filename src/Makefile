@@ -8,7 +8,8 @@ MARCH=Host
 !IFNDEF NDEBUG
 NDEBUG=d
 !ENDIF # NDEBUG
-FCFLAGS=/nologo /fpp /recursive /standard-semantics /traceback /DNDEBUG=$(NDEBUG) /DCARITH_PVN="cma" /I. /MT /O$(NDEBUG) /Qx$(MARCH) /fp:precise /Qfma /Qftz- /Qprec-div /Qprotect-parens /Qopt-report:3 /Qvec-threshold:0
+FCFLAGS=/nologo /fpp /recursive /standard-semantics /traceback /DNDEBUG=$(NDEBUG) /I. /MT /O$(NDEBUG) /Qx$(MARCH) /fp:precise /Qfma /Qftz- /Qprec-div /Qprotect-parens /Qopt-report:3 /Qvec-threshold:0
+# /DCARITH_PVN="cma"
 !IF "$(ABI)"=="ilp64"
 FCFLAGS=$(FCFLAGS) /4I8
 !ENDIF # ilp64
@@ -25,7 +26,6 @@ cljau2.obj dljau2.obj sljau2.obj wljau2.obj xljau2.obj zljau2.obj \
 cljav2.obj dljav2.obj sljav2.obj wljav2.obj xljav2.obj zljav2.obj \
 qlaev2.obj ylaev2.obj
 
-# e.g., LAPACK=/Qmkl:sequential
 !IFDEF LAPACK
 FCFLAGS=$(FCFLAGS) $(LAPACK)
 !ELSE # !LAPACK
@@ -87,7 +87,7 @@ jaevd.lib: $(OBJD) Makefile
 	$(AR) $(ARFLAGS) /OUT:$@ $(OBJD)
 
 help:
-	@echo "nmake.exe [MARCH=Host|...] [NDEBUG=d|1|2|3|...] [ABI=lp64|ilp64] [LAPACK=...] [all|help|clean]"
+	@echo "nmake.exe [MARCH=Host|...] [NDEBUG=d|1|2|3|...] [ABI=lp64|ilp64] [LAPACK=/Qmkl:sequential] [all|help|clean]"
 
 .f90.obj:
 	$(FC) $(FCFLAGS) /c $< /Fo$@

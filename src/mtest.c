@@ -97,13 +97,14 @@ void fini_mpfr_()
   mpfr_free_cache();
 }
 
-/*
+#ifdef MTEST_MAIN
 int main(int argc, char *argv[])
 {
   if (argc != 2) {
     (void)fprintf(stderr, "%s p\n", *argv);
     return EXIT_FAILURE;
   }
+  (void)printf("sizeof(mpfr_t)=%zu\n", sizeof(mpfr_t));
   const mpfr_prec_t p = (mpfr_prec_t)atoi(argv[1]);
   (void)printf("MPFR_PREC_MIN=%zu\n", (size_t)MPFR_PREC_MIN);
   (void)printf("MPFR_PREC_MAX=%zu\n", (size_t)MPFR_PREC_MAX);
@@ -115,4 +116,4 @@ int main(int argc, char *argv[])
   fini_mpfr_();
   return EXIT_SUCCESS;
 }
-*/
+#endif /* MTEST_MAIN */
