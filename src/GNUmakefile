@@ -39,7 +39,8 @@ cljv2t.exe dljv2t.exe sljv2t.exe zljv2t.exe
 ifdef MPFR
 OBJ2 += \
 mtest.obj \
-mtsc.obj
+mtsc.obj \
+mpfr_f.o
 EXE2 += \
 sth2t.exe
 endif # MPFR
@@ -81,7 +82,7 @@ cjevdr.o djevdr.o sjevdr.o wjevdr.o xjevdr.o zjevdr.o
 
 LIBD=libjaevd.a
 
-EXED=past.exe\
+EXED=past.exe ransym.exe\
 cevdj.exe zevdj.exe\
 cjsvdt.exe djsvdt.exe sjsvdt.exe zjsvdt.exe\
 cjevdt.exe djevdt.exe sjevdt.exe wjevdt.exe xjevdt.exe zjevdt.exe\
@@ -175,6 +176,7 @@ clean:
 	-$(DEL) *.o
 	-$(DEL) *.a
 	-$(DEL) *.exe
+	-$(DEL) *.mod
 	-$(DEL) *.obj
 	-$(DEL) *.dSYM
 	-$(DEL) *.optrpt

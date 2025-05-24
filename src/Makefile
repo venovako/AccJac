@@ -71,7 +71,7 @@ LIBS= \
 jaev2.lib \
 jaevd.lib
 EXES= \
-past.exe \
+past.exe ransym.exe \
 cevdj.exe zevdj.exe \
 cljv2t.exe dljv2t.exe sljv2t.exe zljv2t.exe \
 cjsvdt.exe djsvdt.exe sjsvdt.exe zjsvdt.exe \
@@ -98,6 +98,7 @@ help:
 clean:
 	-$(RM) *.exe
 	-$(RM) *.lib
+	-$(FM) *.mod
 	-$(RM) *.obj
 	-$(RM) *.optrpt
 	-$(RM) *.pdb
