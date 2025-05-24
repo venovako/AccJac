@@ -20,7 +20,13 @@ OBJL += \
 claev2.o dlaev2.o slaev2.o zlaev2.o
 endif # !LAPACK
 
-OBJ2=\
+ifdef MPFR
+OBJ2=mpfr_f.o
+else # !MPFR
+OBJ2=
+endif # ?MPFR
+
+OBJ2 += \
 sfma.o dfma.o xfma.o\
 cfma.o zfma.o wfma.o\
 cjaev2.o djaev2.o qjaev2.o sjaev2.o yjaev2.o zjaev2.o\
@@ -38,9 +44,8 @@ cljv2t.exe dljv2t.exe sljv2t.exe zljv2t.exe
 
 ifdef MPFR
 OBJ2 += \
-mtest.obj \
-mtsc.obj \
-mpfr_f.o
+mtest.obj mtsc.obj\
+mljau2.o mljav2.o
 EXE2 += \
 sth2t.exe
 endif # MPFR
