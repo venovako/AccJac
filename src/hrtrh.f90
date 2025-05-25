@@ -23,7 +23,7 @@
      END DO
   ELSE IF (IAND(INFO, 4) .EQ. 0) THEN
      ! SH => TH
-     YY = CMPLX(REAL(A(Q,I)), -AIMAG(A(Q,I)), K)
+     YY = CMPLX(REAL(A(Q,P)), -AIMAG(A(Q,P)), K)
      A(P,P) = HFMA(YY, SH, A(P,P)) * CH
      DO I = P+1, Q-1
         YY = CMPLX(REAL(A(Q,I)), -AIMAG(A(Q,I)), K)
