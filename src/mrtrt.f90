@@ -15,6 +15,8 @@ PURE SUBROUTINE MRTRT(N, A, LDA, P, Q, CS, SN, INFO)
      CALL MPFR_INIT_M(HS)
      CALL MPFR_NEG_F(HS, SN)
      ! SN => TG
+     CALL MPFR_FMA_F(XX, A(Q,P), SN, A(P,P))
+     CALL MPFR_MUL_F(A(P,P), XX, CS)
      DO I = P+1, Q-1
         CALL MPFR_FMA_F(XX, A(Q,I), SN, A(I,P))
         CALL MPFR_MUL_F(XX, XX, CS)

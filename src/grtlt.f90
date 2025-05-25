@@ -8,7 +8,7 @@
         A(Q,J) = YY
         AX = MAX(AX, ABS(XX), ABS(YY))
      END DO
-     A(Q,P) = CS * A(Q,P) - SN * A(P,Q)
+     A(Q,P) = CS * A(Q,P) - SN * A(P,P)
   ELSE IF (IAND(INFO, 4) .EQ. 0) THEN
      ! SN => TG
      DO J = 1, P-1

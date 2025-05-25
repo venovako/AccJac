@@ -13,6 +13,8 @@ PURE SUBROUTINE MRTRH(N, A, LDA, P, Q, CH, SH, INFO)
      CALL MPFR_INIT_M(XX)
      CALL MPFR_INIT_M(YY)
      ! SH => TH
+     CALL MPFR_FMA_F(XX, A(Q,P), SH, A(P,P))
+     CALL MPFR_MUL_F(A(P,P), XX, CH)
      DO I = P+1, Q-1
         CALL MPFR_FMA_F(XX, A(Q,I), SH, A(I,P))
         CALL MPFR_MUL_F(XX, XX, CH)

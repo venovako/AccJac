@@ -1,6 +1,7 @@
   IF (N .LT. 0) INFO = -1
   IF (INFO .LT. 0) RETURN
   IF (IAND(INFO, 5) .EQ. 0) THEN
+     A(P,P) = A(P,P) * CH + A(Q,P) * SH
      DO I = P+1, Q-1
         XX = A(I,P) * CH + A(Q,I) * SH
         YY = A(I,P) * SH + A(Q,I) * CH
@@ -18,6 +19,7 @@
      END DO
   ELSE IF (IAND(INFO, 4) .EQ. 0) THEN
      ! SH => TH
+     A(P,P) = GFMA(A(Q,P), SH, A(P,P)) * CH
      DO I = P+1, Q-1
         XX = GFMA(A(Q,I), SH, A(I,P)) * CH
         YY = GFMA(A(I,P), SH, A(Q,I)) * CH

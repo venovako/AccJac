@@ -3,6 +3,8 @@
   SN = CMPLX( SNR, SNI, K)
   HS = CMPLX(-SNR, SNI, K)
   IF (IAND(INFO, 5) .EQ. 0) THEN
+     YY = CMPLX(REAL(A(Q,P)), -AIMAG(A(Q,P)), K)
+     A(P,P) = YY * SN + A(P,P) * CS
      DO I = P+1, Q-1
         YY = CMPLX(REAL(A(Q,I)), -AIMAG(A(Q,I)), K)
         XX = YY * SN + A(I,P) * CS
@@ -21,6 +23,8 @@
      END DO
   ELSE IF (IAND(INFO, 4) .EQ. 0) THEN
      ! SN => TG
+     YY = CMPLX(REAL(A(Q,P)), -AIMAG(A(Q,P)), K)
+     A(P,P) = HFMA(YY, SN, A(P,P)) * CS
      DO I = P+1, Q-1
         YY = CMPLX(REAL(A(Q,I)), -AIMAG(A(Q,I)), K)
         XX = HFMA(YY, SN, A(I,P)) * CS
