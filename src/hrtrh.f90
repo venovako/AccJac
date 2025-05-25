@@ -3,7 +3,7 @@
   SH = CMPLX(SHR,  SHI, K)
   HS = CMPLX(SHR, -SHI, K)
   IF (IAND(INFO, 5) .EQ. 0) THEN
-     YY = CMPLX(REAL(A(Q,I)), -AIMAG(A(Q,I)), K)
+     YY = CMPLX(REAL(A(Q,P)), -AIMAG(A(Q,P)), K)
      A(P,P) = YY * SH + A(P,P) * CH
      DO I = P+1, Q-1
         YY = CMPLX(REAL(A(Q,I)), -AIMAG(A(Q,I)), K)
