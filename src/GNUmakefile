@@ -85,6 +85,12 @@ cjsvdr.o djsvdr.o sjsvdr.o zjsvdr.o\
 cjevdc.o djevdc.o sjevdc.o wjevdc.o xjevdc.o zjevdc.o\
 cjevdr.o djevdr.o sjevdr.o wjevdr.o xjevdr.o zjevdr.o
 
+ifdef MPFR
+OBJD += \
+mrtvh.o mrtvt.o\
+mrtlt.o
+endif # MPFR
+
 LIBD=libjaevd.a
 
 EXED=past.exe ransym.exe\
