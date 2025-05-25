@@ -89,7 +89,7 @@ ifdef MPFR
 OBJD += \
 mrtvh.o mrtvt.o\
 mrtlt.o mrtrt.o mrtlh.o mrtrh.o\
-mswpc.o mswpr.o
+mswpc.o mswpr.o mswpxd.o
 endif # MPFR
 
 LIBD=libjaevd.a
