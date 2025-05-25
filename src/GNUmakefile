@@ -85,14 +85,6 @@ cjsvdr.o djsvdr.o sjsvdr.o zjsvdr.o\
 cjevdc.o djevdc.o sjevdc.o wjevdc.o xjevdc.o zjevdc.o\
 cjevdr.o djevdr.o sjevdr.o wjevdr.o xjevdr.o zjevdr.o
 
-ifdef MPFR
-OBJD += \
-mrtvh.o mrtvt.o\
-mrtlt.o mrtrt.o mrtlh.o mrtrh.o\
-mswpc.o mswpr.o mswpxd.o\
-mtrana.o
-endif # MPFR
-
 LIBD=libjaevd.a
 
 EXED=past.exe ransym.exe\
@@ -100,6 +92,16 @@ cevdj.exe zevdj.exe\
 cjsvdt.exe djsvdt.exe sjsvdt.exe zjsvdt.exe\
 cjevdt.exe djevdt.exe sjevdt.exe wjevdt.exe xjevdt.exe zjevdt.exe\
 cpproc.exe dpproc.exe spproc.exe wpproc.exe xpproc.exe zpproc.exe
+
+ifdef MPFR
+OBJD += \
+mrtvh.o mrtvt.o\
+mrtlt.o mrtrt.o mrtlh.o mrtrh.o\
+mswpc.o mswpr.o mswpxd.o\
+mtrana.o mtrace.o\
+mjevdr.o
+EXED += mjevdt.exe
+endif # MPFR
 
 ifeq ($(COMPILER),gfortran)
 ifeq ($(findstring 86,$(ARCH)),86)

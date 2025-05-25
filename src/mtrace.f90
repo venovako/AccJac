@@ -1,0 +1,25 @@
+SUBROUTINE MTRACE(N, A, LDA, SWP, NTR)
+  USE MPFR_F
+  IMPLICIT NONE
+  INTEGER, INTENT(IN) :: N, LDA, SWP, NTR
+  TYPE(MPFR_T), INTENT(IN) :: A(LDA,N)
+#ifdef __GFORTRAN__
+  REAL(KIND=c_long_double) :: X
+#else
+  REAL(KIND=REAL128) :: X
+#endif
+  INTEGER :: J
+  WRITE (ERROR_UNIT,'(I10,A,I11)') SWP, ',', NTR
+  FLUSH(ERROR_UNIT)
+  IF (N .LT. 1000) THEN
+     DO J = 1, N
+        X = A(J,J)
+#ifdef __GFORTRAN__
+        WRITE (ERROR_UNIT,'(I3,A,ES30.21E4)') J, ',', X
+#else
+        WRITE (ERROR_UNIT,'(I3,A,ES45.36E4)') J, ',', X
+#endif
+        FLUSH(ERROR_UNIT)
+     END DO
+  END IF
+END SUBROUTINE MTRACE
