@@ -88,7 +88,7 @@ cjevdr.o djevdr.o sjevdr.o wjevdr.o xjevdr.o zjevdr.o
 ifdef MPFR
 OBJD += \
 mrtvh.o mrtvt.o\
-mrtlt.o mrtrt.o
+mrtlt.o mrtrt.o mrtlh.o mrtrh.o
 endif # MPFR
 
 LIBD=libjaevd.a

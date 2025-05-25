@@ -14,10 +14,10 @@ PURE SUBROUTINE MRTVH(N, X, Y, CH, SH, INFO)
      CALL MPFR_INIT_M(YY)
      ! SH => TH
      DO I = 1, N
-        CALL MPFR_FMA_F(XX, Y(I), SH, X(I), MPFR_RNDN)
-        CALL MPFR_MUL_F(XX, XX, CH, MPFR_RNDN)
-        CALL MPFR_FMA_F(YY, X(I), SH, Y(I), MPFR_RNDN)
-        CALL MPFR_MUL_F(YY, YY, CH, MPFR_RNDN)
+        CALL MPFR_FMA_F(XX, Y(I), SH, X(I))
+        CALL MPFR_MUL_F(XX, XX, CH)
+        CALL MPFR_FMA_F(YY, X(I), SH, Y(I))
+        CALL MPFR_MUL_F(YY, YY, CH)
         X(I) = XX
         Y(I) = YY
      END DO

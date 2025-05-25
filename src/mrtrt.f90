@@ -13,23 +13,23 @@ PURE SUBROUTINE MRTRT(N, A, LDA, P, Q, CS, SN, INFO)
      CALL MPFR_INIT_M(XX)
      CALL MPFR_INIT_M(YY)
      CALL MPFR_INIT_M(HS)
-     CALL MPFR_NEG_F(HS, SN, MPFR_RNDN)
+     CALL MPFR_NEG_F(HS, SN)
      ! SN => TG
      DO I = P+1, Q-1
-        CALL MPFR_FMA_F(XX, A(Q,I), SN, A(I,P), MPFR_RNDN)
-        CALL MPFR_MUL_F(XX, XX, CS, MPFR_RNDN)
-        CALL MPFR_FMA_F(YY, A(I,P), HS, A(Q,I), MPFR_RNDN)
-        CALL MPFR_MUL_F(YY, YY, CS, MPFR_RNDN)
+        CALL MPFR_FMA_F(XX, A(Q,I), SN, A(I,P))
+        CALL MPFR_MUL_F(XX, XX, CS)
+        CALL MPFR_FMA_F(YY, A(I,P), HS, A(Q,I))
+        CALL MPFR_MUL_F(YY, YY, CS)
         A(I,P) = XX
         A(Q,I) = YY
      END DO
-     CALL MPFR_FMA_F(XX, A(Q,Q), SN, A(Q,P), MPFR_RNDN)
-     CALL MPFR_MUL_F(A(Q,P), XX, CS, MPFR_RNDN)
+     CALL MPFR_FMA_F(XX, A(Q,Q), SN, A(Q,P))
+     CALL MPFR_MUL_F(A(Q,P), XX, CS)
      DO I = Q+1, N
-        CALL MPFR_FMA_F(XX, A(I,Q), SN, A(I,P), MPFR_RNDN)
-        CALL MPFR_MUL_F(XX, XX, CS, MPFR_RNDN)
-        CALL MPFR_FMA_F(YY, A(I,P), HS, A(I,Q), MPFR_RNDN)
-        CALL MPFR_MUL_F(YY, YY, CS, MPFR_RNDN)
+        CALL MPFR_FMA_F(XX, A(I,Q), SN, A(I,P))
+        CALL MPFR_MUL_F(XX, XX, CS)
+        CALL MPFR_FMA_F(YY, A(I,P), HS, A(I,Q))
+        CALL MPFR_MUL_F(YY, YY, CS)
         A(I,P) = XX
         A(I,Q) = YY
      END DO

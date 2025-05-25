@@ -13,13 +13,13 @@ PURE SUBROUTINE MRTVT(N, X, Y, CS, SN, INFO)
      CALL MPFR_INIT_M(XX)
      CALL MPFR_INIT_M(YY)
      CALL MPFR_INIT_M(HS)
-     CALL MPFR_NEG_F(HS, SN, MPFR_RNDN)
+     CALL MPFR_NEG_F(HS, SN)
      ! SN => TG
      DO I = 1, N
-        CALL MPFR_FMA_F(XX, Y(I), SN, X(I), MPFR_RNDN)
-        CALL MPFR_MUL_F(XX, XX, CS, MPFR_RNDN)
-        CALL MPFR_FMA_F(YY, X(I), HS, Y(I), MPFR_RNDN)
-        CALL MPFR_MUL_F(YY, YY, CS, MPFR_RNDN)
+        CALL MPFR_FMA_F(XX, Y(I), SN, X(I))
+        CALL MPFR_MUL_F(XX, XX, CS)
+        CALL MPFR_FMA_F(YY, X(I), HS, Y(I))
+        CALL MPFR_MUL_F(YY, YY, CS)
         X(I) = XX
         Y(I) = YY
      END DO

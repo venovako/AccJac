@@ -1,0 +1,37 @@
+PURE SUBROUTINE MRTRH(N, A, LDA, P, Q, CH, SH, INFO)
+  USE MPFR_F
+  IMPLICIT NONE
+  INTEGER, INTENT(IN) :: N, LDA, P, Q
+  TYPE(MPFR_T), INTENT(INOUT) :: A(LDA,N)
+  TYPE(MPFR_T), INTENT(IN) :: CH, SH
+  INTEGER, INTENT(INOUT) :: INFO
+  TYPE(MPFR_T) :: XX, YY
+  INTEGER :: I
+  IF (N .LT. 0) INFO = -1
+  IF (INFO .LT. 0) RETURN
+  IF (IAND(INFO, 4) .EQ. 0) THEN
+     CALL MPFR_INIT_M(XX)
+     CALL MPFR_INIT_M(YY)
+     ! SH => TH
+     DO I = P+1, Q-1
+        CALL MPFR_FMA_F(XX, A(Q,I), SH, A(I,P))
+        CALL MPFR_MUL_F(XX, XX, CH)
+        CALL MPFR_FMA_F(YY, A(I,P), SH, A(Q,I))
+        CALL MPFR_MUL_F(YY, YY, CH)
+        A(I,P) = XX
+        A(Q,I) = YY
+     END DO
+     CALL MPFR_FMA_F(XX, A(Q,Q), SH, A(Q,P))
+     CALL MPFR_MUL_F(A(Q,P), XX, CH)
+     DO I = Q+1, N
+        CALL MPFR_FMA_F(XX, A(I,Q), SH, A(I,P))
+        CALL MPFR_MUL_F(XX, XX, CH)
+        CALL MPFR_FMA_F(YY, A(I,P), SH, A(I,Q))
+        CALL MPFR_MUL_F(YY, YY, CH)
+        A(I,P) = XX
+        A(I,Q) = YY
+     END DO
+     CALL MPFR_CLEAR_M(YY)
+     CALL MPFR_CLEAR_M(XX)
+  END IF
+END SUBROUTINE MRTRH
