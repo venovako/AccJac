@@ -1,31 +1,23 @@
 AR=ar
 ARFLAGS=rsv
 FC=$(COMPILER_PREFIX)gfortran$(COMPILER_SUFFIX)
-CC=$(COMPILER_PREFIX)gcc$(COMPILER_SUFFIX)
 FCFLAGS=-cpp
-CFLAGS=-std=gnu$(shell if [ `$(CC) -dumpversion | cut -f1 -d.` -ge 14 ]; then echo 23; else echo 18; fi)
 ifdef NDEBUG
 FCFLAGS += -O$(NDEBUG)
-CFLAGS += -O$(NDEBUG)
 else # !NDEBUG
 FCFLAGS += -Og -ggdb3
-CFLAGS += -Og -ggdb3
 endif # ?NDEBUG
 ifndef MARCH
 MARCH=native
 endif # !MARCH
 ifeq ($(ARCH),ppc64le)
 FCFLAGS += -mcpu=$(MARCH) -mpower8-fusion -mtraceback=full
-CFLAGS += -mcpu=$(MARCH) -mpower8-fusion -mtraceback=full
 else # !ppc64le
 FCFLAGS += -march=$(MARCH)
-CFLAGS += -march=$(MARCH)
 endif # ?ppc64le
 FCFLAGS += -fPIC -fexceptions -fasynchronous-unwind-tables -fno-omit-frame-pointer -fvect-cost-model=unlimited -ffp-contract=fast
-CFLAGS += -fPIC -fexceptions -fasynchronous-unwind-tables -fno-omit-frame-pointer -fvect-cost-model=unlimited -ffp-contract=fast
 ifdef NDEBUG
 FCFLAGS += -fno-math-errno
-CFLAGS += -fno-math-errno
 else # !NDEBUG
 FCFLAGS += -fcheck=all -finit-local-zero -finit-real=snan -finit-derived
 endif # ?NDEBUG
@@ -33,9 +25,7 @@ FCFLAGS += -ffree-line-length-none -fprotect-parens -frecursive -fstack-arrays -
 # -DCARITH_PVN="cma"
 ifdef MPFR
 FCFLAGS += -DMPFR="\"$(MPFR)\""
-CFLAGS += -I$(MPFR)/include
 endif # MPFR
 ifdef GMP
 FCFLAGS += -DGMP="\"$(GMP)\""
-CFLAGS += -I$(GMP)/include
 endif # GMP

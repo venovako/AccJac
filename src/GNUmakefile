@@ -43,11 +43,8 @@ ctest.exe dtest.exe qtest.exe stest.exe ytest.exe ztest.exe\
 cljv2t.exe dljv2t.exe sljv2t.exe zljv2t.exe
 
 ifdef MPFR
-OBJ2 += \
-mtest.obj mtsc.obj\
-mljau2.o mljav2.o
-EXE2 += \
-sth2t.exe
+OBJ2 += mljau2.o mljav2.o
+EXE2 += sth2t.exe
 endif # MPFR
 
 OBJD=\
@@ -105,8 +102,7 @@ endif # MPFR
 
 ifeq ($(COMPILER),gfortran)
 ifeq ($(findstring 86,$(ARCH)),86)
-OBJL += \
-wlaev2.o xlaev2.o
+OBJL += wlaev2.o xlaev2.o
 
 OBJ2 += \
 wjaev2.o xjaev2.o\
@@ -177,9 +173,6 @@ $(LIBD): $(OBJD)
 
 help:
 	@echo $(MAKE) "[COMPILER=gfortran|ifx] [COMPILER_PREFIX=...] [COMPILER_SUFFIX=...] [MARCH=...] [ABI=lp64|ilp64] [NDEBUG=optimization_level] [LAPACK=...] [GMP=...] [MPFR=...] [PROFILE=...] [ANIMATE=ppe] [all|help|clean]"
-
-%.obj : %.c $(MKFS)
-	$(CC) $(CFLAGS) -c $< -o $@
 
 %.o : %.f90 $(MKFS)
 	$(FC) $(FCFLAGS) -c $< -o $@
