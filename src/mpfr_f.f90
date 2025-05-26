@@ -1,6 +1,6 @@
 ! Inspired by:
 ! https://github.com/tkoenig1/FMPFR
-! but without any allocatable components.
+! but without any allocatable components.  *** DOES NOT WORK ON WINDOWS ***
 ! It is expected that all MPFR variables are explicitly cleared after the last use,
 ! and that the arithmetic is done by calling the C functions directly, instead of
 ! having overloaded arithmetic operators (except for assignments and comparisons).
