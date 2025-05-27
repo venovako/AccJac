@@ -8,10 +8,6 @@ MKFS=GNUmakefile system.mk $(COMPILER).mk debug.mk
 ifneq ($(ABI),lp64)
 MKFS += $(ABI).mk
 endif # !lp64
-ifneq ($(wildcard local.mk),)
-include local.mk
-MKFS += local.mk
-endif # local.mk
 
 OBJL=\
 qlaev2.o ylaev2.o
@@ -185,7 +181,6 @@ clean:
 	-$(DEL) *.a
 	-$(DEL) *.exe
 	-$(DEL) *.mod
-	-$(DEL) *.obj
 	-$(DEL) *.dSYM
 	-$(DEL) *.optrpt
 	-$(DEL) *.opt.yaml
