@@ -183,4 +183,3 @@ clean:
 	-$(DEL) *.mod
 	-$(DEL) *.dSYM
 	-$(DEL) *.optrpt
-	-$(DEL) *.opt.yaml
