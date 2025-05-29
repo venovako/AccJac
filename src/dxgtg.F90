@@ -34,7 +34,6 @@ PROGRAM DXGTG
   REAL(KIND=KK) :: X, Y, Z
   INTEGER :: I, J, L, N
   REAL(KIND=K), ALLOCATABLE :: G(:,:), A(:,:)
-  REAL(KIND=KK), ALLOCATABLE :: GG(:,:)
   EXTERNAL :: BFOPEN
   ! random seed may be given
   I = COMMAND_ARGUMENT_COUNT()
