@@ -31,6 +31,18 @@
 *.out
 *.app
 
+# Data
+*.A
+*.V
+*.Y
+*.AX
+*.YX
+*.YU
+*.YV
+*.ZZ
+*.SY
+*.SS
+
 # Other
 *.dSYM
 *.optrpt
