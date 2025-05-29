@@ -1,0 +1,79 @@
+PROGRAM ZWGHG
+#ifdef __GFORTRAN__
+  USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
+  USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: ERROR_UNIT, REAL64
+#else
+  USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: ERROR_UNIT, REAL64, REAL128
+#endif
+  IMPLICIT NONE
+  INTERFACE
+     PURE FUNCTION WFMA(A, B, C)
+#ifdef __GFORTRAN__
+       USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
+#else
+       USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL128
+#endif
+       IMPLICIT NONE
+#ifdef __GFORTRAN__
+       COMPLEX(KIND=c_long_double), INTENT(IN) :: A, B, C
+       COMPLEX(KIND=c_long_double) :: WFMA
+#else
+       COMPLEX(KIND=REAL128), INTENT(IN) :: A, B, C
+       COMPLEX(KIND=REAL128) :: WFMA
+#endif
+     END FUNCTION WFMA
+  END INTERFACE
+#ifdef __GFORTRAN__
+  INTEGER, PARAMETER :: KK = c_long_double
+#else
+  INTEGER, PARAMETER :: KK = REAL128
+#endif
+  INTEGER, PARAMETER :: K = REAL64
+  REAL(KIND=KK), PARAMETER :: ZERO = 0.0_KK
+  CHARACTER(LEN=256) :: CLA
+  COMPLEX(KIND=KK) :: X, Y, Z
+  INTEGER :: I, J, L, N
+  COMPLEX(KIND=K), ALLOCATABLE :: G(:,:), A(:,:)
+  EXTERNAL :: BFOPEN
+  ! random seed may be given
+  I = COMMAND_ARGUMENT_COUNT()
+  IF (I .NE. 2) STOP 'zwghg.exe N FN'
+  CALL GET_COMMAND_ARGUMENT(1, CLA)
+  READ (CLA,*) N
+  IF (N .LE. 0) STOP 'N <= 0'
+  CALL GET_COMMAND_ARGUMENT(2, CLA)
+  IF (LEN_TRIM(CLA) .LE. 0) STOP 'FN'
+  ALLOCATE(G(N,N))
+  CALL BFOPEN(TRIM(CLA)//'.Y', 'RO', I, J)
+  IF (J .NE. 0) STOP 'BFOPEN(Y)'
+  READ (UNIT=I,IOSTAT=J) G
+  IF (J .NE. 0) STOP 'READ(Y)'
+  CLOSE(UNIT=I, IOSTAT=J)
+  IF (J .NE. 0) STOP 'CLOSE(Y)'
+  ALLOCATE(A(N,N))
+  DO J = 1, N
+     DO I = J, N
+        Z = ZERO
+        DO L = 1, N
+           X = CONJG(G(L,I))
+           Y = WRK(L,J)
+           Z = WFMA(X, Y, Z)
+        END DO
+        A(I,J) = CMPLX(REAL(REAL(Z), K), REAL(AIMAG(Z), K), K)
+     END DO
+  END DO
+  DO J = 2, N
+     DO I = 1, J-1
+        A(I,J) = CONJG(A(J,I))
+     END DO
+     A(J,J) = CMPLX(REAL(A(J,J)), ZERO, K)
+  END DO
+  CALL BFOPEN(TRIM(CLA)//'.A', 'WO', I, J)
+  IF (J .NE. 0) STOP 'BFOPEN(A)'
+  WRITE (UNIT=I,IOSTAT=J) A
+  IF (J .NE. 0) STOP 'WRITE(A)'
+  CLOSE(UNIT=I, IOSTAT=J)
+  IF (J .NE. 0) STOP 'CLOSE(A)'
+  DEALLOCATE(A)
+  DEALLOCATE(G)
+END PROGRAM ZWGHG

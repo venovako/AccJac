@@ -81,6 +81,7 @@ cjevdr.o djevdr.o sjevdr.o wjevdr.o xjevdr.o zjevdr.o
 LIBD=libjaevd.a
 
 EXED=past.exe ransym.exe\
+dxgtg.exe zwghg.exe\
 cevdj.exe zevdj.exe\
 cjsvdt.exe djsvdt.exe sjsvdt.exe zjsvdt.exe\
 cjevdt.exe djevdt.exe sjevdt.exe wjevdt.exe xjevdt.exe zjevdt.exe\

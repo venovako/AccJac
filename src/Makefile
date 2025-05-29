@@ -72,6 +72,7 @@ jaev2.lib \
 jaevd.lib
 EXES= \
 past.exe ransym.exe \
+dxgtg.exe zwghg.exe \
 cevdj.exe zevdj.exe \
 cljv2t.exe dljv2t.exe sljv2t.exe zljv2t.exe \
 cjsvdt.exe djsvdt.exe sjsvdt.exe zjsvdt.exe \
