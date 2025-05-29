@@ -56,7 +56,7 @@ PROGRAM ZWGHG
         Z = ZERO
         DO L = 1, N
            X = CONJG(G(L,I))
-           Y = WRK(L,J)
+           Y = G(L,J)
            Z = WFMA(X, Y, Z)
         END DO
         A(I,J) = CMPLX(REAL(REAL(Z), K), REAL(AIMAG(Z), K), K)
