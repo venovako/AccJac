@@ -33,15 +33,18 @@
 
 # Data
 *.A
+*.E
+*.J
 *.V
 *.Y
 *.AX
-*.YX
+*.LY
+*.SS
+*.SY
 *.YU
 *.YV
+*.YX
 *.ZZ
-*.SY
-*.SS
 
 # Other
 *.dSYM
