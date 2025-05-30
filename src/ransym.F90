@@ -1,9 +1,38 @@
 PROGRAM RANSYM
+#ifdef __GFORTRAN__
+  USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
   USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: ERROR_UNIT, REAL64
+#else
+  USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: ERROR_UNIT, REAL64, REAL128
+#endif
   IMPLICIT NONE
+  INTERFACE
+     PURE FUNCTION XFMA(A, B, C)
+#ifdef __GFORTRAN__
+       USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
+#else
+       USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL128
+#endif
+       IMPLICIT NONE
+#ifdef __GFORTRAN__
+       REAL(KIND=c_long_double), INTENT(IN) :: A, B, C
+       REAL(KIND=c_long_double) :: XFMA
+#else
+       REAL(KIND=REAL128), INTENT(IN) :: A, B, C
+       REAL(KIND=REAL128) :: XFMA
+#endif
+     END FUNCTION XFMA
+  END INTERFACE
+#ifdef __GFORTRAN__
+  INTEGER, PARAMETER :: KK = c_long_double
+#else
+  INTEGER, PARAMETER :: KK = REAL128
+#endif
   INTEGER, PARAMETER :: K = REAL64
+  REAL(KIND=KK), PARAMETER :: ZERO = 0.0_KK
   CHARACTER(LEN=256) :: CLA
-  INTEGER :: I, J, N
+  REAL(KIND=KK) :: X, Y, Z
+  INTEGER :: I, J, L, N
   INTEGER, ALLOCATABLE :: ISEED(:)
   REAL(KIND=K), ALLOCATABLE :: G(:,:), A(:,:)
   EXTERNAL :: BFOPEN
@@ -47,7 +76,17 @@ PROGRAM RANSYM
   CLOSE(UNIT=I, IOSTAT=J)
   IF (J .NE. 0) STOP 'CLOSE(Y)'
   ALLOCATE(A(N,N))
-  A = MATMUL(TRANSPOSE(G), G)
+  DO J = 1, N
+     DO I = J, N
+        Z = ZERO
+        DO L = 1, N
+           X = G(L,I)
+           Y = G(L,J)
+           Z = XFMA(X, Y, Z)
+        END DO
+        A(I,J) = REAL(Z, K)
+     END DO
+  END DO
   DO J = 2, N
      DO I = 1, J-1
         A(I,J) = A(J,I)
