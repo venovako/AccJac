@@ -11,24 +11,6 @@ SUBROUTINE ZJEVDM(N, A, LDA, V, LDV, JPOS, WRK, AS, ORD, INFO)
      END SUBROUTINE JSTEP
   END INTERFACE
   INTERFACE
-     PURE SUBROUTINE ZSWPC(N, A, LDA, P, Q, INFO)
-       USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL64
-       IMPLICIT NONE
-       INTEGER, INTENT(IN) :: N, LDA, P, Q
-       COMPLEX(KIND=REAL64), INTENT(INOUT) :: A(LDA,N)
-       INTEGER, INTENT(OUT) :: INFO
-     END SUBROUTINE ZSWPC
-  END INTERFACE
-  INTERFACE
-     PURE SUBROUTINE ZSWPR(N, A, LDA, P, Q, INFO)
-       USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL64
-       IMPLICIT NONE
-       INTEGER, INTENT(IN) :: N, LDA, P, Q
-       COMPLEX(KIND=REAL64), INTENT(INOUT) :: A(LDA,N)
-       INTEGER, INTENT(OUT) :: INFO
-     END SUBROUTINE ZSWPR
-  END INTERFACE
-  INTERFACE
      PURE SUBROUTINE ZSCALA(N, A, LDA, AX, AS, INFO)
        USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL64
        IMPLICIT NONE
@@ -74,7 +56,7 @@ SUBROUTINE ZJEVDM(N, A, LDA, V, LDV, JPOS, WRK, AS, ORD, INFO)
   INTEGER, INTENT(INOUT) :: AS, ORD(2,*), INFO
   REAL(KIND=K) :: AX, TOL
   INTEGER(KIND=INT64) :: TT
-  INTEGER :: L, O, P, Q, R, S, T, U, W, X, JJ, JS, ST
+  INTEGER :: O, P, Q, R, S, T, U, W, X, JJ, JS, ST
   CHARACTER(LEN=11) :: FN
   IF ((INFO .LT. 0) .OR. (INFO .GT. 7)) INFO = -10
   IF (AS .LT. 0) INFO = -8
@@ -136,24 +118,8 @@ SUBROUTINE ZJEVDM(N, A, LDA, V, LDV, JPOS, WRK, AS, ORD, INFO)
         DO Q = 1, P
            W = IAND(INFO, 1)
            WRK(ORD(2,Q),ORD(1,Q)) = TOL
-           IF ((ORD(1,Q) .LE. JPOS) .AND. (ORD(2,Q) .GT. JPOS)) THEN
-              W = IOR(W, 2)
-              CALL ZTRANA(N, A, LDA, V, LDV, AX, AS, ORD(1,Q), ORD(2,Q), WRK(ORD(2,Q),ORD(1,Q)), W)
-           ELSE ! trig
-              CALL ZTRANA(N, A, LDA, V, LDV, AX, AS, ORD(1,Q), ORD(2,Q), WRK(ORD(2,Q),ORD(1,Q)), W)
-              IF (REAL(A(ORD(1,Q),ORD(1,Q))) .LT. REAL(A(ORD(2,Q),ORD(2,Q)))) THEN
-                 DO L = 1, N
-                    WRK(ORD(1,Q),ORD(2,Q)) = V(L,ORD(1,Q))
-                    V(L,ORD(1,Q)) = V(L,ORD(2,Q))
-                    V(L,ORD(2,Q)) = WRK(ORD(1,Q),ORD(2,Q))
-                 END DO
-                 CALL ZSWPC(N, A, LDA, ORD(1,Q), ORD(2,Q), L)
-                 IF (L .NE. 0) STOP 'ZSWPC(A)'
-                 CALL ZSWPR(N, A, LDA, ORD(1,Q), ORD(2,Q), L)
-                 IF (L .NE. 0) STOP 'ZSWPR(A)'
-                 IF (W .GE. 0) W = MAX(W, 1)
-              END IF
-           END IF
+           IF ((ORD(1,Q) .LE. JPOS) .AND. (ORD(2,Q) .GT. JPOS)) W = IOR(W, 2)
+           CALL ZTRANA(N, A, LDA, V, LDV, AX, AS, ORD(1,Q), ORD(2,Q), WRK(ORD(2,Q),ORD(1,Q)), W)
            SELECT CASE (W)
            CASE (0)
               CONTINUE
