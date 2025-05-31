@@ -11,24 +11,6 @@ SUBROUTINE DJEVDM(N, A, LDA, V, LDV, JPOS, WRK, AS, ORD, INFO)
      END SUBROUTINE JSTEP
   END INTERFACE
   INTERFACE
-     PURE SUBROUTINE DSWPC(N, A, LDA, P, Q, INFO)
-       USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL64
-       IMPLICIT NONE
-       INTEGER, INTENT(IN) :: N, LDA, P, Q
-       REAL(KIND=REAL64), INTENT(INOUT) :: A(LDA,N)
-       INTEGER, INTENT(OUT) :: INFO
-     END SUBROUTINE DSWPC
-  END INTERFACE
-  INTERFACE
-     PURE SUBROUTINE DSWPR(N, A, LDA, P, Q, INFO)
-       USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL64
-       IMPLICIT NONE
-       INTEGER, INTENT(IN) :: N, LDA, P, Q
-       REAL(KIND=REAL64), INTENT(INOUT) :: A(LDA,N)
-       INTEGER, INTENT(OUT) :: INFO
-     END SUBROUTINE DSWPR
-  END INTERFACE
-  INTERFACE
      PURE SUBROUTINE DSCALA(N, A, LDA, AX, AS, INFO)
        USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL64
        IMPLICIT NONE
@@ -71,7 +53,7 @@ SUBROUTINE DJEVDM(N, A, LDA, V, LDV, JPOS, WRK, AS, ORD, INFO)
   INTEGER, INTENT(INOUT) :: AS, ORD(2,*), INFO
   REAL(KIND=K) :: AX, TOL
   INTEGER(KIND=INT64) :: TT
-  INTEGER :: L, O, P, Q, R, S, T, U, W, X, JJ, JS, ST
+  INTEGER :: O, P, Q, R, S, T, U, W, X, JJ, JS, ST
   CHARACTER(LEN=11) :: FN
   IF ((INFO .LT. 0) .OR. (INFO .GT. 7)) INFO = -10
   IF (AS .LT. 0) INFO = -8
@@ -133,21 +115,8 @@ SUBROUTINE DJEVDM(N, A, LDA, V, LDV, JPOS, WRK, AS, ORD, INFO)
         DO Q = 1, P
            W = IAND(INFO, 1)
            WRK(ORD(2,Q),ORD(1,Q)) = TOL
-           IF ((ORD(1,Q) .LE. JPOS) .AND. (ORD(2,Q) .GT. JPOS)) THEN
-              W = IOR(W, 2)
-              CALL DTRANA(N, A, LDA, V, LDV, AX, AS, ORD(1,Q), ORD(2,Q), WRK(ORD(2,Q),ORD(1,Q)), W)
-           ELSE ! trig
-              CALL DTRANA(N, A, LDA, V, LDV, AX, AS, ORD(1,Q), ORD(2,Q), WRK(ORD(2,Q),ORD(1,Q)), W)
-              IF (A(ORD(1,Q),ORD(1,Q)) .LT. A(ORD(2,Q),ORD(2,Q))) THEN
-                 CALL DSWPC(N, V, LDV, ORD(1,Q), ORD(2,Q), L)
-                 IF (L .NE. 0) STOP 'DSWPC(V)'
-                 CALL DSWPC(N, A, LDA, ORD(1,Q), ORD(2,Q), L)
-                 IF (L .NE. 0) STOP 'DSWPC(A)'
-                 CALL DSWPR(N, A, LDA, ORD(1,Q), ORD(2,Q), L)
-                 IF (L .NE. 0) STOP 'DSWPR(A)'
-                 IF (W .GE. 0) W = MAX(W, 1)
-              END IF
-           END IF
+           IF ((ORD(1,Q) .LE. JPOS) .AND. (ORD(2,Q) .GT. JPOS)) W = IOR(W, 2)
+           CALL DTRANA(N, A, LDA, V, LDV, AX, AS, ORD(1,Q), ORD(2,Q), WRK(ORD(2,Q),ORD(1,Q)), W)
            SELECT CASE (W)
            CASE (0)
               CONTINUE
