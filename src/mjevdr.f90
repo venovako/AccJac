@@ -43,7 +43,7 @@ SUBROUTINE MJEVDR(N, A, LDA, V, LDV, JPOS, WRK, INFO)
   INTEGER(KIND=INT64) :: TT
   INTEGER :: O, P, Q, R, S, T, W, X
   CHARACTER(LEN=11) :: FN
-  IF ((INFO .LT. 0) .OR. (INFO .GT. 7)) INFO = -8
+  IF ((INFO .LT. 0) .OR. (INFO .GT. 3)) INFO = -8
   IF ((JPOS .LT. 0) .OR. (JPOS .GT. N)) INFO = -6
   IF (LDV .LT. N) INFO = -5
   IF (LDA .LT. N) INFO = -3

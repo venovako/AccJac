@@ -46,7 +46,8 @@ PROGRAM DJEVDT
   INTEGER :: N, JPOS, INFO, I, J, AS
   REAL(KIND=K), ALLOCATABLE :: A(:,:), V(:,:), WRK(:,:)
   REAL(KIND=KK), ALLOCATABLE :: X(:,:), Y(:,:), Z(:,:)
-  EXTERNAL :: BFOPEN, DJEVDC, DJEVDR
+  INTEGER, ALLOCATABLE :: ORD(:,:)
+  EXTERNAL :: BFOPEN, DJEVDC, DJEVDR, DJEVDM
   ! read the command line arguments
   I = COMMAND_ARGUMENT_COUNT()
   IF (I .NE. 4) STOP 'djevdt.exe N JPOS OPTS FILE'
@@ -64,13 +65,16 @@ PROGRAM DJEVDT
   IF ((JPOS .LT. 0) .OR. (JPOS .GT. N)) STOP 'JPOS'
   CALL GET_COMMAND_ARGUMENT(3, CLA)
   READ (CLA,*) AS
+  INFO = IOR(IAND(AS, 3), I)
   SELECT CASE (AS)
   CASE (0,1,2,3)
-     INFO = IOR(AS, I)
-     AS = HUGE(AS)
+     AS = 0
   CASE (4,5,6,7)
-     INFO = IOR(IAND(AS, 3), I)
-     AS = HUGE(AS) - 1
+     AS = 1
+  CASE (8,9)
+     AS = 5
+  CASE (10,11)
+     AS = 7
   CASE DEFAULT
      STOP 'OPTS'
   END SELECT
@@ -85,10 +89,26 @@ PROGRAM DJEVDT
   IF (J .NE. 0) STOP 'CLOSE(A)'
   ALLOCATE(V(N,N))
   ALLOCATE(WRK(N,N))
-  IF (AS .EQ. HUGE(AS)) THEN
+  IF (AS .EQ. 0) THEN
+     AS = HUGE(AS)
      CALL DJEVDC(N, A, N, V, N, JPOS, WRK, AS, INFO)
-  ELSE ! deRijk
+  ELSE IF (AS .EQ. 1) THEN
+     AS = HUGE(AS)
      CALL DJEVDR(N, A, N, V, N, JPOS, WRK, AS, INFO)
+  ELSE ! parallel
+     J = N / 2
+     IF (AS .EQ. 5) THEN
+        I = N - 1
+     ELSE ! modified modulus
+        I = N
+     END IF
+     ALLOCATE(ORD(2,J*(1+I)))
+     ORD = 0
+     CALL JSWEEP(AS, N, I, J, ORD(1,1+J), ORD(1,1))
+     IF (ORD(1,1) .NE. 0) STOP 'JSWEEP'
+     AS = HUGE(AS)
+     CALL DJEVDM(N, A, N, V, N, JPOS, WRK, AS, ORD, INFO)
+     DEALLOCATE(ORD)
   END IF
   WRITE (OUTPUT_UNIT,'(I2,A,I6,A,I11,A)',ADVANCE='NO') INFO, ',', AS, ',', INT(WRK(1,1), INT64), ','
   FLUSH(OUTPUT_UNIT)
