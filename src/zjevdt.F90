@@ -7,6 +7,13 @@ PROGRAM ZJEVDT
 #endif
   IMPLICIT NONE
   INTERFACE
+     SUBROUTINE JSWEEP(J, N, S, P, O, INFO)
+       IMPLICIT NONE
+       INTEGER, INTENT(IN) :: J, N
+       INTEGER, INTENT(OUT) :: S, P, O(2,*), INFO
+     END SUBROUTINE JSWEEP
+  END INTERFACE
+  INTERFACE
      PURE SUBROUTINE WMMMSQ(N, A, LDA, B, LDB, C, LDC)
 #ifdef __GFORTRAN__
        USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
@@ -46,7 +53,8 @@ PROGRAM ZJEVDT
   INTEGER :: N, JPOS, INFO, I, J, AS
   COMPLEX(KIND=K), ALLOCATABLE :: A(:,:), V(:,:), WRK(:,:)
   COMPLEX(KIND=KK), ALLOCATABLE :: X(:,:), Y(:,:), Z(:,:)
-  EXTERNAL :: BFOPEN, ZJEVDC, ZJEVDR
+  INTEGER, ALLOCATABLE :: ORD(:,:)
+  EXTERNAL :: BFOPEN, ZJEVDC, ZJEVDR, ZJEVDM
   ! read the command line arguments
   I = COMMAND_ARGUMENT_COUNT()
   IF (I .NE. 4) STOP 'zjevdt.exe N JPOS OPTS FILE'
@@ -64,13 +72,16 @@ PROGRAM ZJEVDT
   IF ((JPOS .LT. 0) .OR. (JPOS .GT. N)) STOP 'JPOS'
   CALL GET_COMMAND_ARGUMENT(3, CLA)
   READ (CLA,*) AS
+  INFO = IOR(IAND(AS, 3), I)
   SELECT CASE (AS)
   CASE (0,1,2,3)
-     INFO = IOR(AS, I)
-     AS = HUGE(AS)
+     AS = 0
   CASE (4,5,6,7)
-     INFO = IOR(IAND(AS, 3), I)
-     AS = HUGE(AS) - 1
+     AS = 1
+  CASE (8,9)
+     AS = 5
+  CASE (10,11)
+     AS = 7
   CASE DEFAULT
      STOP 'OPTS'
   END SELECT
@@ -85,10 +96,26 @@ PROGRAM ZJEVDT
   IF (J .NE. 0) STOP 'CLOSE(A)'
   ALLOCATE(V(N,N))
   ALLOCATE(WRK(N,N))
-  IF (AS .EQ. HUGE(AS)) THEN
+  IF (AS .EQ. 0) THEN
+     AS = HUGE(AS)
      CALL ZJEVDC(N, A, N, V, N, JPOS, WRK, AS, INFO)
-  ELSE ! deRijk
+  ELSE IF (AS .EQ. 1) THEN
+     AS = HUGE(AS)
      CALL ZJEVDR(N, A, N, V, N, JPOS, WRK, AS, INFO)
+  ELSE ! parallel
+     J = N / 2
+     IF (AS .EQ. 5) THEN
+        I = N - 1
+     ELSE ! modified modulus
+        I = N
+     END IF
+     ALLOCATE(ORD(2,J*(1+I)))
+     ORD = 0
+     CALL JSWEEP(AS, N, I, J, ORD(1,1+J), ORD(1,1))
+     IF (ORD(1,1) .NE. 0) STOP 'JSWEEP'
+     AS = HUGE(AS)
+     CALL ZJEVDM(N, A, N, V, N, JPOS, WRK, AS, ORD, INFO)
+     DEALLOCATE(ORD)
   END IF
   WRITE (OUTPUT_UNIT,'(I2,A,I6,A,I11,A)',ADVANCE='NO') INFO, ',', AS, ',', INT(WRK(1,1), INT64), ','
   FLUSH(OUTPUT_UNIT)
