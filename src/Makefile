@@ -34,7 +34,7 @@ claev2.obj dlaev2.obj slaev2.obj zlaev2.obj
 !ENDIF # ?LAPACK
 
 OBJD= \
-bfopen.obj pascal.obj \
+bfopen.obj crn.obj pascal.obj wrn.obj zrn.obj \
 cjaevd.obj zjaevd.obj \
 drsafe.obj qrsafe.obj srsafe.obj \
 qre.obj qdetm1.obj ydetm1.obj \
@@ -76,7 +76,7 @@ jaev2.lib \
 jaevd.lib
 
 EXES= \
-past.exe ransym.exe \
+past.exe ransym.exe ranher.exe \
 dxgtg.exe zwghg.exe \
 cevdj.exe zevdj.exe \
 cljv2t.exe dljv2t.exe sljv2t.exe zljv2t.exe \

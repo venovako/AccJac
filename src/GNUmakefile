@@ -44,7 +44,7 @@ EXE2 += sth2t.exe
 endif # MPFR
 
 OBJD=\
-bfopen.o pascal.o\
+bfopen.o crn.o pascal.o wrn.o zrn.o\
 cjaevd.o zjaevd.o\
 drsafe.o qrsafe.o srsafe.o\
 qre.o qdetm1.o ydetm1.o\
@@ -83,7 +83,7 @@ jstep.o jsweep.o djevdm.o zjevdm.o
 
 LIBD=libjaevd.a
 
-EXED=past.exe ransym.exe\
+EXED=past.exe ransym.exe ranher.exe\
 dxgtg.exe zwghg.exe\
 cevdj.exe zevdj.exe\
 cjsvdt.exe djsvdt.exe sjsvdt.exe zjsvdt.exe\
