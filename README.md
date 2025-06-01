@@ -24,7 +24,7 @@ make [COMPILER=gfortran|ifx] [COMPILER_PREFIX=...] [COMPILER_SUFFIX=...] [MARCH=
 ```
 
 The `COMPILER` and `NDEBUG` variables have to be compatible with those for building the `libpvn` repository; e.g., if `COMPILER=gcc` for `libpvn`, then `COMPILER=gfortran` here.
-It is recommended to set `NDEBUG=3` for both repositories, unless debugging.
+It is recommended to set `NDEBUG=g` for both repositories, since higher optimization levels might not work properly.
 Other variables should not be set unless their effects are fully understood.
 
 ## Running
