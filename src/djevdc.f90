@@ -65,7 +65,7 @@ SUBROUTINE DJEVDC(N, A, LDA, V, LDV, JPOS, WRK, AS, INFO)
   IF (N .LT. 0) INFO = -1
   IF (INFO .LT. 0) RETURN
   IF (N .EQ. 0) RETURN
-  L = INT(W(1,1))
+  L = INT(WRK(1,1))
   S = AS
   ! prescale G
   AX = ZERO
