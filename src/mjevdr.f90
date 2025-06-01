@@ -189,7 +189,7 @@ SUBROUTINE MJEVDR(N, A, LDA, V, LDV, JPOS, WRK, INFO)
                  T = T + 1
                  TT = TT + 1_INT64
               CASE DEFAULT
-                 INFO = -5
+                 INFO = -4
                  RETURN
               END SELECT
            END DO

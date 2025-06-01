@@ -277,7 +277,7 @@ SUBROUTINE WJEVDR(N, A, LDA, V, LDV, JPOS, WRK, AS, INFO)
                  T = T + 1
                  TT = TT + 1_INT64
               CASE DEFAULT
-                 INFO = -5
+                 INFO = -4
                  RETURN
               END SELECT
               IF (IAND(INFO, 4) .NE. 0) CALL WTRCOA(N, A, LDA, AS, R, O, U)
