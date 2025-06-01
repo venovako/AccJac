@@ -1,42 +1,23 @@
-PROGRAM RANHER
-#ifdef __GFORTRAN__
-  USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
-  USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: ERROR_UNIT, REAL64
-#else
-  USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: ERROR_UNIT, REAL64, REAL128
-#endif
+PROGRAM SRNSYM
+  USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: ERROR_UNIT, REAL32, REAL64
   IMPLICIT NONE
   INTERFACE
-     PURE FUNCTION WFMA(A, B, C)
-#ifdef __GFORTRAN__
-       USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
-#else
-       USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL128
-#endif
+     PURE FUNCTION DFMA(A, B, C)
+       USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL64
        IMPLICIT NONE
-#ifdef __GFORTRAN__
-       COMPLEX(KIND=c_long_double), INTENT(IN) :: A, B, C
-       COMPLEX(KIND=c_long_double) :: WFMA
-#else
-       COMPLEX(KIND=REAL128), INTENT(IN) :: A, B, C
-       COMPLEX(KIND=REAL128) :: WFMA
-#endif
-     END FUNCTION WFMA
+       REAL(KIND=REAL64), INTENT(IN) :: A, B, C
+       REAL(KIND=REAL64) :: DFMA
+     END FUNCTION DFMA
   END INTERFACE
-#ifdef __GFORTRAN__
-  INTEGER, PARAMETER :: KK = c_long_double
-#else
-  INTEGER, PARAMETER :: KK = REAL128
-#endif
-  INTEGER, PARAMETER :: K = REAL64
-  REAL(KIND=KK), PARAMETER :: XZERO = 0.0_KK
-  REAL(KIND=K), PARAMETER :: ZERO = 0.0_K
+  INTEGER, PARAMETER :: KK = REAL64
+  INTEGER, PARAMETER :: K = REAL32
+  REAL(KIND=KK), PARAMETER :: ZERO = 0.0_KK
   CHARACTER(LEN=256) :: CLA
-  COMPLEX(KIND=KK) :: X, Y, Z
+  REAL(KIND=KK) :: X, Y, Z
   INTEGER :: I, J, L, N
   INTEGER, ALLOCATABLE :: ISEED(:)
-  COMPLEX(KIND=K), ALLOCATABLE :: G(:,:), A(:,:)
-  EXTERNAL :: BFOPEN, ZRN
+  REAL(KIND=K), ALLOCATABLE :: G(:,:), A(:,:)
+  EXTERNAL :: BFOPEN
   ! random seed may be given
   CALL RANDOM_SEED(SIZE=J)
   IF (J .LE. 0) STOP 'seed size non-positive'
@@ -69,7 +50,7 @@ PROGRAM RANHER
   READ (CLA,*) N
   IF (N .LE. 0) STOP 'N <= 0'
   ALLOCATE(G(N,N))
-  CALL ZRN(N, N, G)
+  CALL RANDOM_NUMBER(G)
   CALL BFOPEN(TRIM(CLA)//'.Y', 'WO', I, J)
   IF (J .NE. 0) STOP 'BFOPEN(Y)'
   WRITE (UNIT=I,IOSTAT=J) G
@@ -79,20 +60,19 @@ PROGRAM RANHER
   ALLOCATE(A(N,N))
   DO J = 1, N
      DO I = J, N
-        Z = XZERO
+        Z = ZERO
         DO L = 1, N
-           X = CONJG(G(L,I))
+           X = G(L,I)
            Y = G(L,J)
-           Z = WFMA(X, Y, Z)
+           Z = DFMA(X, Y, Z)
         END DO
-        A(I,J) = CMPLX(REAL(REAL(Z), K), REAL(AIMAG(Z), K), K)
+        A(I,J) = REAL(Z, K)
      END DO
   END DO
-  DO J = 1, N
+  DO J = 2, N
      DO I = 1, J-1
-        A(I,J) = CONJG(A(J,I))
+        A(I,J) = A(J,I)
      END DO
-     A(J,J) = CMPLX(REAL(A(J,J)), ZERO, K)
   END DO
   CALL BFOPEN(TRIM(CLA)//'.A', 'WO', I, J)
   IF (J .NE. 0) STOP 'BFOPEN(A)'
@@ -103,4 +83,4 @@ PROGRAM RANHER
   DEALLOCATE(A)
   DEALLOCATE(G)
   DEALLOCATE(ISEED)
-END PROGRAM RANHER
+END PROGRAM SRNSYM
