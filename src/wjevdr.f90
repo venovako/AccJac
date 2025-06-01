@@ -9,6 +9,23 @@ SUBROUTINE WJEVDR(N, A, LDA, V, LDV, JPOS, WRK, AS, INFO)
 #endif
   IMPLICIT NONE
   INTERFACE
+     PURE SUBROUTINE WDSORT(N, A, LDA, V, LDV, JPOS, INFO)
+#ifdef __GFORTRAN__
+       USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
+#else
+       USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL128
+#endif
+       IMPLICIT NONE
+       INTEGER, INTENT(IN) :: N, LDA, LDV, JPOS
+#ifdef __GFORTRAN__
+       COMPLEX(KIND=c_long_double), INTENT(INOUT) :: A(LDA,N), V(LDV,N)
+#else
+       COMPLEX(KIND=REAL128), INTENT(INOUT) :: A(LDA,N), V(LDV,N)
+#endif
+       INTEGER, INTENT(OUT) :: INFO
+     END SUBROUTINE WDSORT
+  END INTERFACE
+  INTERFACE
      PURE SUBROUTINE WSCALA(N, A, LDA, AX, AS, INFO)
 #ifdef __GFORTRAN__
        USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
@@ -153,6 +170,12 @@ SUBROUTINE WJEVDR(N, A, LDA, V, LDV, JPOS, WRK, AS, INFO)
   ! main loop
   DO R = 1, S
      T = 0
+     W = 0
+     IF (L .NE. 0) CALL WDSORT(N, A, LDA, V, LDV, JPOS, W)
+     IF (W .LT. 0) THEN
+        INFO = -7
+        RETURN
+     END IF
      IF (IAND(INFO, 2) .EQ. 0) THEN
         DO P = 1, N-1
            IF (P .LT. JPOS) THEN
