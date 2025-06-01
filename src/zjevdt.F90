@@ -117,7 +117,7 @@ PROGRAM ZJEVDT
      ALLOCATE(ORD(2,J*(1+I)))
      ORD = 0
      O = 1 + J
-     CALL JSWEEP(AS, N, I, J, ORD(1,O), O)
+     CALL JSWEEP(L, N, I, J, ORD(1,O), O)
      IF (O .NE. 0) STOP 'JSWEEP'
      CALL ZJEVDM(N, A, N, V, N, JPOS, WRK, AS, ORD, INFO)
      DEALLOCATE(ORD)
