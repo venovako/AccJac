@@ -4,8 +4,8 @@ set output "zs512off.tex"
 set key bottom left vertical spacing 2 box width 2
 set logscale y
 
-set xrange [-47000:1753609]
-set xtics ("1" 1, "2" 130817, "3" 261633, "4" 392449, "5" 523265, "6" 654081, "7" 784897, "8" 915713, "9" 1046529, "10" 1177345, "11" 1308161, "12" 1438977, "13" 1569793, "$\\rightarrow$" 1700609)
+set xrange [-47000:1622793]
+set xtics ("1" 1, "2" 130817, "3" 261633, "4" 392449, "5" 523265, "6" 654081, "7" 784897, "8" 915713, "9" 1046529, "10" 1177345, "11" 1308161, "12" 1438977, "$\\rightarrow$" 1569793)
 set xlabel "cycle (complex double precision)"
 
 set yrange [1e-14:4e3]
