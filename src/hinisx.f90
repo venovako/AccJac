@@ -22,7 +22,7 @@
   DO J = 1, N
      IX(J) = J
   END DO
-  ! init GX (with checking)
+  ! init GX (with checking; see hscalg.f90 for the explanation)
   ! SV will hold the column norms later; for now, set it to something sensible
   DO J = 1, N
      SV(J) = ZERO
