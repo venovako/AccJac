@@ -23,6 +23,7 @@ cjiev2.obj djiev2.obj qjiev2.obj sjiev2.obj yjiev2.obj zjiev2.obj \
 clju2.obj dlju2.obj slju2.obj zlju2.obj \
 cljv2.obj dljv2.obj sljv2.obj zljv2.obj \
 cljtu2.obj dljtu2.obj sljtu2.obj wljtu2.obj xljtu2.obj zljtu2.obj \
+cljtv2.obj dljtv2.obj sljtv2.obj wljtv2.obj xljtv2.obj zljtv2.obj \
 cljau2.obj dljau2.obj sljau2.obj wljau2.obj xljau2.obj zljau2.obj \
 cljav2.obj dljav2.obj sljav2.obj wljav2.obj xljav2.obj zljav2.obj \
 qlaev2.obj ylaev2.obj
