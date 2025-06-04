@@ -51,9 +51,9 @@ crtlt.obj drtlt.obj srtlt.obj wrtlt.obj xrtlt.obj zrtlt.obj \
 crtrt.obj drtrt.obj srtrt.obj wrtrt.obj xrtrt.obj zrtrt.obj \
 crtlh.obj drtlh.obj srtlh.obj wrtlh.obj xrtlh.obj zrtlh.obj \
 crtrh.obj drtrh.obj srtrh.obj wrtrh.obj xrtrh.obj zrtrh.obj \
-cnrmf.obj dnrmf.obj snrmf.obj znrmf.obj \
-csdp.obj dsdp.obj ssdp.obj zsdp.obj \
-cgram.obj dgram.obj sgram.obj zgram.obj \
+cnrmf.obj dnrmf.obj snrmf.obj wnrmf.obj xnrmf.obj znrmf.obj \
+csdp.obj dsdp.obj ssdp.obj wsdp.obj xsdp.obj zsdp.obj \
+cgram.obj dgram.obj sgram.obj wgram.obj xgram.obj zgram.obj \
 cscalg.obj dscalg.obj sscalg.obj zscalg.obj \
 cscala.obj dscala.obj sscala.obj wscala.obj xscala.obj zscala.obj \
 cswpc.obj dswpc.obj sswpc.obj wswpc.obj xswpc.obj zswpc.obj \

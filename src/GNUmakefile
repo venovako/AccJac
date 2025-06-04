@@ -59,9 +59,9 @@ crtlt.o drtlt.o srtlt.o wrtlt.o xrtlt.o zrtlt.o\
 crtrt.o drtrt.o srtrt.o wrtrt.o xrtrt.o zrtrt.o\
 crtlh.o drtlh.o srtlh.o wrtlh.o xrtlh.o zrtlh.o\
 crtrh.o drtrh.o srtrh.o wrtrh.o xrtrh.o zrtrh.o\
-cnrmf.o dnrmf.o snrmf.o znrmf.o\
-csdp.o dsdp.o ssdp.o zsdp.o\
-cgram.o dgram.o sgram.o zgram.o\
+cnrmf.o dnrmf.o snrmf.o wnrmf.o xnrmf.o znrmf.o\
+csdp.o dsdp.o ssdp.o wsdp.o xsdp.o zsdp.o\
+cgram.o dgram.o sgram.o wgram.o xgram.o zgram.o\
 cscalg.o dscalg.o sscalg.o zscalg.o\
 cscala.o dscala.o sscala.o wscala.o xscala.o zscala.o\
 cswpc.o dswpc.o sswpc.o wswpc.o xswpc.o zswpc.o\
@@ -125,9 +125,6 @@ wljv2t.exe xljv2t.exe
 OBJD += xrsafe.o\
 wroth.o xroth.o\
 wrott.o xrott.o\
-wnrmf.o xnrmf.o\
-wsdp.o xsdp.o\
-wgram.o xgram.o\
 wscalg.o xscalg.o\
 winisv.o xinisv.o\
 wtrans.o xtrans.o\
