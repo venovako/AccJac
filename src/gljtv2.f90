@@ -1,3 +1,4 @@
+  WD = (INFO .NE. 0)
   ES = -1_c_int
   INFO = INT(LJV2(A11, A22, A21, CH, TH, TG, ES))
   IF (INFO .LT. 0) RETURN
@@ -7,5 +8,10 @@
      INFO = 0
   ELSE ! neither identity nor big th
      INFO = 1
+  END IF
+  IF (WD) THEN
+     A21 = ABS(A21)
+     A11 = GFMA(TG, A21, A11)
+     A22 = GFMA(TG, A21, A22)
   END IF
   A21 = TG
