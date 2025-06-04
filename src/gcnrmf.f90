@@ -16,5 +16,11 @@
         DO I = 2, M
            SV(J) = CR_HYPOT(SV(J), G(I,L))
         END DO
+#ifndef NDEBUG
+        IF (.NOT. (SV(J) .LE. HUGE(ZERO))) THEN
+           INFO = J
+           RETURN
+        END IF
+#endif
      END DO
   END IF

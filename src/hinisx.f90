@@ -22,7 +22,8 @@
   DO J = 1, N
      IX(J) = J
   END DO
-  ! init SV, GX
+  ! init GX (with checking)
+  ! SV will hold the column norms later; for now, set it to something sensible
   DO J = 1, N
      SV(J) = ZERO
      DO I = 1, M

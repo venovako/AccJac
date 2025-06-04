@@ -29,6 +29,7 @@ cjaev2.o djaev2.o qjaev2.o sjaev2.o yjaev2.o zjaev2.o\
 cjiev2.o djiev2.o qjiev2.o sjiev2.o yjiev2.o zjiev2.o\
 clju2.o dlju2.o slju2.o zlju2.o\
 cljv2.o dljv2.o sljv2.o zljv2.o\
+cljtu2.o dljtu2.o sljtu2.o wljtu2.o xljtu2.o zljtu2.o\
 cljau2.o dljau2.o sljau2.o wljau2.o xljau2.o zljau2.o\
 cljav2.o dljav2.o sljav2.o wljav2.o xljav2.o zljav2.o
 
