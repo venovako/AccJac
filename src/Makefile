@@ -41,6 +41,8 @@ crn.obj wrn.obj zrn.obj \
 cjaevd.obj zjaevd.obj \
 drsafe.obj qrsafe.obj srsafe.obj \
 qre.obj qdetm1.obj ydetm1.obj \
+crth.obj drth.obj srth.obj wrth.obj xrth.obj zrth.obj \
+crtt.obj drtt.obj srtt.obj wrtt.obj xrtt.obj zrtt.obj \
 croth.obj droth.obj sroth.obj zroth.obj \
 crott.obj drott.obj srott.obj zrott.obj \
 crtvh.obj drtvh.obj srtvh.obj wrtvh.obj xrtvh.obj zrtvh.obj \
@@ -110,7 +112,6 @@ help:
 clean:
 	-$(RM) *.exe
 	-$(RM) *.lib
-	-$(FM) *.mod
 	-$(RM) *.obj
 	-$(RM) *.optrpt
 	-$(RM) *.pdb

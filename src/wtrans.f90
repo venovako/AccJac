@@ -22,7 +22,7 @@ SUBROUTINE WTRANS(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, TOL, INFO)
        INTEGER, INTENT(IN) :: M
        COMPLEX(KIND=c_long_double), INTENT(IN) :: X(M), Y(M)
        REAL(KIND=c_long_double), INTENT(IN) :: MX, MY
-       INTEGER, INTENT(OUT) :: INFO
+       INTEGER, INTENT(INOUT) :: INFO
        COMPLEX(KIND=c_long_double) :: WSDP
      END FUNCTION WSDP
   END INTERFACE

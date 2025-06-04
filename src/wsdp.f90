@@ -2,26 +2,38 @@ FUNCTION WSDP(M, X, Y, MX, MY, INFO)
   USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
   IMPLICIT NONE
   INTEGER, PARAMETER :: K = c_long_double
-  REAL(KIND=K), PARAMETER :: ZERO = 0.0_K
+  REAL(KIND=K), PARAMETER :: ZERO = 0.0_K, ONE = 1.0_K
   INTEGER, INTENT(IN) :: M
   COMPLEX(KIND=K), INTENT(IN) :: X(M), Y(M)
   REAL(KIND=K), INTENT(IN) :: MX, MY
-  INTEGER, INTENT(OUT) :: INFO
+  INTEGER, INTENT(INOUT) :: INFO
   COMPLEX(KIND=K) :: WSDP, XX, YY
+  REAL(KIND=K) :: NX, NY
   INTEGER :: I
-  INFO = 0
-  WSDP = ZERO
+#ifndef NDEBUG
   IF (.NOT. (MY .GT. ZERO)) INFO = -5
   IF (.NOT. (MX .GT. ZERO)) INFO = -4
   IF (M .LT. 0) INFO = -1
-  IF (INFO .NE. 0) RETURN
-  DO I = 1, M
-     ! WSDP = WSDP + (CONJG(X(I)) / MX) * (Y(I) / MY)
-     XX = CMPLX(REAL(X(I)) / MX, -AIMAG(X(I)) / MX, K)
-     YY = CMPLX(REAL(Y(I)) / MY,  AIMAG(Y(I)) / MY, K)
-     !DIR$ FMA
-     WSDP = CMPLX(&
-          (REAL(XX) * REAL(YY) + (REAL(WSDP) - AIMAG(XX) * AIMAG(YY))),&
-          (REAL(XX) * AIMAG(YY) + (AIMAG(WSDP) + AIMAG(XX) * REAL(YY))), K)
-  END DO
+  IF (INFO .LT. 0) RETURN
+#endif  
+  WSDP = ZERO
+  IF (INFO .EQ. 0) THEN
+     DO I = 1, M
+        ! WSDP = WSDP + (CONJG(X(I)) / MX) * (Y(I) / MY)
+        XX = CMPLX(REAL(X(I)) / MX, -AIMAG(X(I)) / MX, K)
+        YY = CMPLX(REAL(Y(I)) / MY,  AIMAG(Y(I)) / MY, K)
+        WSDP = CMPLX((REAL(XX) * REAL(YY) + (REAL(WSDP) - AIMAG(XX) * AIMAG(YY))),&
+             (REAL(XX) * AIMAG(YY) + (AIMAG(WSDP) + AIMAG(XX) * REAL(YY))), K)
+     END DO
+  ELSE IF (M .GE. 1) THEN
+     NX = ONE / MX
+     NY = ONE / MY
+     DO I = 1, M
+        ! WSDP = WSDP + (CONJG(X(I)) * NX) * (Y(I) * NY)
+        XX = CMPLX(REAL(X(I)) * NX, -AIMAG(X(I)) * NX, K)
+        YY = CMPLX(REAL(Y(I)) * NY,  AIMAG(Y(I)) * NY, K)
+        WSDP = CMPLX((REAL(XX) * REAL(YY) + (REAL(WSDP) - AIMAG(XX) * AIMAG(YY))),&
+             (REAL(XX) * AIMAG(YY) + (AIMAG(WSDP) + AIMAG(XX) * REAL(YY))), K)
+     END DO
+  END IF
 END FUNCTION WSDP

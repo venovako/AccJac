@@ -2,20 +2,30 @@ FUNCTION SSDP(M, X, Y, MX, MY, INFO)
   USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL32
   IMPLICIT NONE
   INTEGER, PARAMETER :: K = REAL32
-  REAL(KIND=K), PARAMETER :: ZERO = 0.0_K
+  REAL(KIND=K), PARAMETER :: ZERO = 0.0_K, ONE = 1.0_K
   INTEGER, INTENT(IN) :: M
   REAL(KIND=K), INTENT(IN) :: X(M), Y(M), MX, MY
-  INTEGER, INTENT(OUT) :: INFO
-  REAL(KIND=K) :: SSDP
+  INTEGER, INTENT(INOUT) :: INFO
+  REAL(KIND=K) :: SSDP, NX, NY
   INTEGER :: I
-  INFO = 0
-  SSDP = ZERO
+#ifndef NDEBUG
   IF (.NOT. (MY .GT. ZERO)) INFO = -5
   IF (.NOT. (MX .GT. ZERO)) INFO = -4
   IF (M .LT. 0) INFO = -1
-  IF (INFO .NE. 0) RETURN
-  DO I = 1, M
-     !DIR$ FMA
-     SSDP = SSDP + (X(I) / MX) * (Y(I) / MY)
-  END DO
+  IF (INFO .LT. 0) RETURN
+#endif
+  SSDP = ZERO
+  IF (INFO .EQ. 0) THEN
+     DO I = 1, M
+        !DIR$ FMA
+        SSDP = SSDP + (X(I) / MX) * (Y(I) / MY)
+     END DO
+  ELSE IF (M .GE. 1) THEN
+     NX = ONE / MX
+     NY = ONE / MY
+     DO I = 1, M
+        !DIR$ FMA
+        SSDP = SSDP + (X(I) * NX) * (Y(I) * NY)
+     END DO
+  END IF
 END FUNCTION SSDP

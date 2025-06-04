@@ -13,7 +13,7 @@ SUBROUTINE XTRANS(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, TOL, INFO)
        IMPLICIT NONE
        INTEGER, INTENT(IN) :: M
        REAL(KIND=c_long_double), INTENT(IN) :: X(M), Y(M), MX, MY
-       INTEGER, INTENT(OUT) :: INFO
+       INTEGER, INTENT(INOUT) :: INFO
        REAL(KIND=c_long_double) :: XSDP
      END FUNCTION XSDP
   END INTERFACE
