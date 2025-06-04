@@ -5,25 +5,34 @@ PURE SUBROUTINE XCNRMF(M, N, G, LDG, SV, IX, INFO)
   USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL128
 #endif
   IMPLICIT NONE
-#ifdef __GFORTRAN__
   INTERFACE
-     PURE FUNCTION CR_HYPOT(X, Y) BIND(C,NAME='cr_hypotl')
+     PURE FUNCTION XNRMF(M, X)
+#ifdef __GFORTRAN__
        USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
+#else
+       USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL128
+#endif
        IMPLICIT NONE
-       REAL(KIND=c_long_double), INTENT(IN), VALUE :: X, Y
-       REAL(KIND=c_long_double) :: CR_HYPOT
-     END FUNCTION CR_HYPOT
+       INTEGER, INTENT(IN) :: M
+#ifdef __GFORTRAN__
+       REAL(KIND=c_long_double), INTENT(IN) :: X(M)
+       REAL(KIND=c_long_double) :: XNRMF
+#else
+       REAL(KIND=REAL128), INTENT(IN) :: X(M)
+       REAL(KIND=REAL128) :: XNRMF
+#endif
+     END FUNCTION XNRMF
   END INTERFACE
+#ifdef __GFORTRAN__
   INTEGER, PARAMETER :: K = c_long_double
 #else
-#define CR_HYPOT HYPOT
   INTEGER, PARAMETER :: K = REAL128
 #endif
-  REAL(KIND=K), PARAMETER :: ZERO = 0.0_K
   INTEGER, INTENT(IN) :: M, N, LDG, IX(N)
   REAL(KIND=K), INTENT(IN) :: G(LDG,N)
   REAL(KIND=K), INTENT(OUT) :: SV(N)
   INTEGER, INTENT(OUT) :: INFO
-  INTEGER :: I, J, L
+  INTEGER :: J, L
+#define NRMF XNRMF
 #include "gcnrmf.f90"
 END SUBROUTINE XCNRMF

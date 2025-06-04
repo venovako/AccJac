@@ -5,25 +5,34 @@ PURE SUBROUTINE WCNRMF(M, N, G, LDG, SV, IX, INFO)
   USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL128
 #endif
   IMPLICIT NONE
-#ifdef __GFORTRAN__
   INTERFACE
-     PURE FUNCTION CR_HYPOT(X, Y) BIND(C,NAME='cr_hypotl')
+     PURE FUNCTION WNRMF(M, X)
+#ifdef __GFORTRAN__
        USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
+#else
+       USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL128
+#endif
        IMPLICIT NONE
-       REAL(KIND=c_long_double), INTENT(IN), VALUE :: X, Y
-       REAL(KIND=c_long_double) :: CR_HYPOT
-     END FUNCTION CR_HYPOT
+       INTEGER, INTENT(IN) :: M
+#ifdef __GFORTRAN__
+       COMPLEX(KIND=c_long_double), INTENT(IN) :: X(M)
+       REAL(KIND=c_long_double) :: WNRMF
+#else
+       COMPLEX(KIND=REAL128), INTENT(IN) :: X(M)
+       REAL(KIND=REAL128) :: WNRMF
+#endif
+     END FUNCTION WNRMF
   END INTERFACE
+#ifdef __GFORTRAN__
   INTEGER, PARAMETER :: K = c_long_double
 #else
-#define CR_HYPOT HYPOT
   INTEGER, PARAMETER :: K = REAL128
 #endif
-  REAL(KIND=K), PARAMETER :: ZERO = 0.0_K
   INTEGER, INTENT(IN) :: M, N, LDG, IX(N)
   COMPLEX(KIND=K), INTENT(IN) :: G(LDG,N)
   REAL(KIND=K), INTENT(OUT) :: SV(N)
   INTEGER, INTENT(OUT) :: INFO
-  INTEGER :: I, J, L
-#include "hcnrmf.f90"
+  INTEGER :: J, L
+#define NRMF WNRMF
+#include "gcnrmf.f90"
 END SUBROUTINE WCNRMF
