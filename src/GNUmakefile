@@ -22,7 +22,7 @@ else # !MPFR
 OBJ2=
 endif # ?MPFR
 
-OBJ2 += \
+OBJ2 += xsqrt.o\
 sfma.o dfma.o xfma.o\
 cfma.o zfma.o wfma.o\
 cjaev2.o djaev2.o qjaev2.o sjaev2.o yjaev2.o zjaev2.o\

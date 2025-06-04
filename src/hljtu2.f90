@@ -6,3 +6,5 @@
   ELSE ! not identity
      INFO = 1
   END IF
+  A21R =  TG
+  A21I = -TG

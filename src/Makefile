@@ -15,7 +15,7 @@ FCFLAGS=$(FCFLAGS) /4I8
 !ENDIF # ilp64
 LDFLAGS=/link /RELEASE /LIBPATH:. jaevd.lib jaev2.lib /LIBPATH:..\..\libpvn\src pvn.lib
 
-OBJ2= \
+OBJ2=xsqrt.obj \
 sfma.obj dfma.obj xfma.obj \
 cfma.obj zfma.obj wfma.obj \
 cjaev2.obj djaev2.obj qjaev2.obj sjaev2.obj yjaev2.obj zjaev2.obj \

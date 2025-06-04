@@ -6,3 +6,4 @@
   ELSE ! not identity
      INFO = 1
   END IF
+  A21 = TG
