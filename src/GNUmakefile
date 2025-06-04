@@ -66,6 +66,10 @@ cswpc.o dswpc.o sswpc.o wswpc.o xswpc.o zswpc.o\
 cswpr.o dswpr.o sswpr.o wswpr.o xswpr.o zswpr.o\
 cswpxd.o dswpxd.o sswpxd.o wswpxd.o xswpxd.o zswpxd.o\
 cinisv.o dinisv.o sinisv.o zinisv.o\
+cinisx.o dinisx.o sinisx.o winisx.o xinisx.o zinisx.o\
+ccnrmf.o dcnrmf.o scnrmf.o wcnrmf.o xcnrmf.o zcnrmf.o\
+dnsort.o snsort.o xnsort.o\
+cprcyc.o dprcyc.o sprcyc.o wprcyc.o xprcyc.o zprcyc.o\
 ctrans.o dtrans.o strans.o ztrans.o\
 ctrana.o dtrana.o strana.o wtrana.o xtrana.o ztrana.o\
 coffa.o doffa.o soffa.o zoffa.o\

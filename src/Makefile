@@ -56,6 +56,9 @@ cswpc.obj dswpc.obj sswpc.obj wswpc.obj xswpc.obj zswpc.obj \
 cswpr.obj dswpr.obj sswpr.obj wswpr.obj xswpr.obj zswpr.obj \
 cswpxd.obj dswpxd.obj sswpxd.obj wswpxd.obj xswpxd.obj zswpxd.obj \
 cinisv.obj dinisv.obj sinisv.obj zinisv.obj \
+cinisx.obj dinisx.obj sinisx.obj winisx.obj xinisx.obj zinisx.obj \
+ccnrmf.obj dcnrmf.obj scnrmf.obj wcnrmf.obj xcnrmf.obj zcnrmf.obj \
+dnsort.obj snsort.obj xnsort.obj \
 ctrans.obj dtrans.obj strans.obj ztrans.obj \
 ctrana.obj dtrana.obj strana.obj wtrana.obj xtrana.obj ztrana.obj \
 coffa.obj doffa.obj soffa.obj zoffa.obj \
