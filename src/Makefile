@@ -54,7 +54,7 @@ crtrh.obj drtrh.obj srtrh.obj wrtrh.obj xrtrh.obj zrtrh.obj \
 cnrmf.obj dnrmf.obj snrmf.obj wnrmf.obj xnrmf.obj znrmf.obj \
 csdp.obj dsdp.obj ssdp.obj wsdp.obj xsdp.obj zsdp.obj \
 cgram.obj dgram.obj sgram.obj wgram.obj xgram.obj zgram.obj \
-cscalg.obj dscalg.obj sscalg.obj zscalg.obj \
+cscalg.obj dscalg.obj sscalg.obj wscalg.obj xscalg.obj zscalg.obj \
 cscala.obj dscala.obj sscala.obj wscala.obj xscala.obj zscala.obj \
 cswpc.obj dswpc.obj sswpc.obj wswpc.obj xswpc.obj zswpc.obj \
 cswpr.obj dswpr.obj sswpr.obj wswpr.obj xswpr.obj zswpr.obj \

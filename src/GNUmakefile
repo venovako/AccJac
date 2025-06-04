@@ -62,7 +62,7 @@ crtrh.o drtrh.o srtrh.o wrtrh.o xrtrh.o zrtrh.o\
 cnrmf.o dnrmf.o snrmf.o wnrmf.o xnrmf.o znrmf.o\
 csdp.o dsdp.o ssdp.o wsdp.o xsdp.o zsdp.o\
 cgram.o dgram.o sgram.o wgram.o xgram.o zgram.o\
-cscalg.o dscalg.o sscalg.o zscalg.o\
+cscalg.o dscalg.o sscalg.o wscalg.o xscalg.o zscalg.o\
 cscala.o dscala.o sscala.o wscala.o xscala.o zscala.o\
 cswpc.o dswpc.o sswpc.o wswpc.o xswpc.o zswpc.o\
 cswpr.o dswpr.o sswpr.o wswpr.o xswpr.o zswpr.o\
@@ -125,17 +125,14 @@ wljv2t.exe xljv2t.exe
 OBJD += xrsafe.o\
 wroth.o xroth.o\
 wrott.o xrott.o\
-wscalg.o xscalg.o\
 winisv.o xinisv.o\
 wtrans.o xtrans.o\
 woffa.o xoffa.o\
 xtrack.o\
 wjsvdc.o xjsvdc.o\
-wjsvdr.o xjsvdr.o\
-wjevdc.o wjevdr.o
+wjsvdr.o xjsvdr.o
 
-EXED += \
-wjsvdt.exe xjsvdt.exe
+EXED += wjsvdt.exe xjsvdt.exe
 endif # x86_64 or i86pc
 endif # gfortran
 
