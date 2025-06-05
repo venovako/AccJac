@@ -1,5 +1,6 @@
 !  IN: GS = max sweeps, INFO = 0 or 1 (SLOW)
 ! OUT: GS: backscale SV by 2**-GS, INFO: #sweeps
+! *** FAST IS NOT RECOMMENDED FOR NOW; USE SLOW ***
 SUBROUTINE DJSVDF(M, N, G, LDG, V, LDV, JPOS, SV, GS, IX, WRK, INFO)
   USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: INT64, REAL64
   IMPLICIT NONE
@@ -91,7 +92,7 @@ SUBROUTINE DJSVDF(M, N, G, LDG, V, LDV, JPOS, SV, GS, IX, WRK, INFO)
      INFO = -10
      GOTO 9
   END IF
-  CALL DTRACK(N, SV, GX, GS, R, -S)
+  IF (INFO .NE. 0) CALL DTRACK(N, SV, GX, GS, R, -S)
   TOL = M
   TOL = SQRT(TOL) * EPS  
   DO R = 1, S
@@ -208,7 +209,7 @@ SUBROUTINE DJSVDF(M, N, G, LDG, V, LDV, JPOS, SV, GS, IX, WRK, INFO)
            END SELECT
         END DO
      END DO
-     CALL DTRACK(N, SV, GX, GS, R, -T)
+     IF (INFO .NE. 0) CALL DTRACK(N, SV, GX, GS, R, -T)
      IF (T .EQ. 0) EXIT
   END DO
   IF (R .LE. S) THEN
