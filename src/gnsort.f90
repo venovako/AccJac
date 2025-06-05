@@ -2,7 +2,7 @@
 #ifndef NDEBUG
   IF ((JPOS .LT. 0) .OR. (JPOS .GT. N)) INFO = -2
   IF (N .LT. 0) INFO = -1
-  IF (INFO .NE. 0) RETURN
+  IF (INFO .LT. 0) RETURN
 #endif
   IF (N .LE. 1) RETURN
   I = 1

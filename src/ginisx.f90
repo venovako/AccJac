@@ -1,4 +1,3 @@
-  INFO = 0
 #ifndef NDEBUG
   IF (LDV .LT. N) INFO = -6
   IF (LDG .LT. M) INFO = -4
@@ -6,8 +5,6 @@
   IF (M .LT. 0) INFO = -1
   IF (INFO .LT. 0) RETURN
 #endif
-  GX = ZERO
-  IF (N .LE. 0) RETURN
   ! init V
   DO J = 1, N
      DO I = 1, J-1
@@ -22,19 +19,14 @@
   DO J = 1, N
      IX(J) = J
   END DO
-  ! init GX (with checking)
-  ! SV will hold the column norms later; for now, set it to something sensible
-  DO J = 1, N
-     SV(J) = ZERO
-     DO I = 1, M
-        W = ABS(G(I,J))
-        IF (.NOT. (W .LE. HUGE(W))) THEN
-           GX = J
-           SV(J) = I
-           INFO = -3
-           RETURN
-        END IF
-        SV(J) = MAX(SV(J), W)
+  ! init SV
+  IF (INFO .EQ. 0) THEN
+     DO J = 1, N
+        SV(J) = ZERO
      END DO
-     GX = MAX(GX, SV(J))
-  END DO
+  ELSE ! SLOW
+     DO J = 1, N
+        SV(J) = NRMF(M, G(1,J))
+     END DO
+  END IF
+  INFO = 0

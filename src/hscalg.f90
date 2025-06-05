@@ -18,7 +18,15 @@
      IF (S .EQ. 5) THEN
         DO J = 1, N
            DO I = 1, M
-              X = MAX(ABS(REAL(G(I,J))), ABS(AIMAG(G(I,J))))
+              X = ABS(REAL(G(I,J)))
+#ifndef NDEBUG
+              IF (.NOT. (X .LE. HUGE(X))) THEN
+                 INFO = -3
+                 RETURN
+              END IF
+#endif
+              GX = MAX(GX, X)
+              X = ABS(AIMAG(G(I,J)))
 #ifndef NDEBUG
               IF (.NOT. (X .LE. HUGE(X))) THEN
                  INFO = -3
