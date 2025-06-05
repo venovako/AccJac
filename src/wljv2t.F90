@@ -1,8 +1,11 @@
 ! meant to be compiled with gfortran and ABI=lp64
 PROGRAM WLJV2T
+#ifdef __GFORTRAN__
   USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_int, c_long_double
   USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: ERROR_UNIT, OUTPUT_UNIT, REAL128
+#endif
   IMPLICIT NONE
+#ifdef __GFORTRAN__
   INTERFACE
      PURE FUNCTION CR_HYPOT(X, Y) BIND(C,NAME='cr_hypotl')
        USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
@@ -139,4 +142,7 @@ PROGRAM WLJV2T
   WRITE (OUTPUT_UNIT,'(4(A,ES30.21E4))') ',',&
        REAL(Q(1),c_long_double), ',', REAL(Q(2),c_long_double), ',', REAL(Q(3),c_long_double), ',', REAL(Q(4),c_long_double)
 9 DEALLOCATE(ISEED)
+#else
+  STOP 'wljv2t.exe must be compiled with GNU Fortran on x64'
+#endif
 END PROGRAM WLJV2T

@@ -1,49 +1,94 @@
 !  IN: GS = max sweeps, INFO = 0 or 1 (sin => tan) OR 2 (dsc/asc)
 ! OUT: GS: backscale SV by 2**-GS, INFO: #sweeps
 SUBROUTINE WJSVDR(M, N, G, LDG, V, LDV, JPOS, SV, WRK, GS, INFO)
+#ifdef __GFORTRAN__
   USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
+#else
+  USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL128
+#endif
   IMPLICIT NONE
   INTERFACE
      PURE SUBROUTINE WSCALG(M, N, G, LDG, GX, GS, INFO)
+#ifdef __GFORTRAN__
        USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
+#else
+       USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL128
+#endif
        IMPLICIT NONE
        INTEGER, INTENT(IN) :: M, N, LDG
+#ifdef __GFORTRAN__
        COMPLEX(KIND=c_long_double), INTENT(INOUT) :: G(LDG,N)
        REAL(KIND=c_long_double), INTENT(INOUT) :: GX
+#else
+       COMPLEX(KIND=REAL128), INTENT(INOUT) :: G(LDG,N)
+       REAL(KIND=REAL128), INTENT(INOUT) :: GX
+#endif
        INTEGER, INTENT(INOUT) :: GS, INFO
      END SUBROUTINE WSCALG
   END INTERFACE
   INTERFACE
      PURE SUBROUTINE WINISV(M, N, G, LDG, V, LDV, JPOS, SV, WRK, INFO)
+#ifdef __GFORTRAN__
        USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
+#else
+       USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL128
+#endif
        IMPLICIT NONE
        INTEGER, INTENT(IN) :: M, N, LDG, LDV, JPOS
+#ifdef __GFORTRAN__
        COMPLEX(KIND=c_long_double), INTENT(INOUT) :: G(LDG,N)
        COMPLEX(KIND=c_long_double), INTENT(OUT) :: V(LDV,N), WRK(M,N)
        REAL(KIND=c_long_double), INTENT(OUT) :: SV(N)
+#else
+       COMPLEX(KIND=REAL128), INTENT(INOUT) :: G(LDG,N)
+       COMPLEX(KIND=REAL128), INTENT(OUT) :: V(LDV,N), WRK(M,N)
+       REAL(KIND=REAL128), INTENT(OUT) :: SV(N)
+#endif
        INTEGER, INTENT(INOUT) :: INFO
      END SUBROUTINE WINISV
   END INTERFACE
   INTERFACE
      SUBROUTINE WTRANS(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, TOL, INFO)
+#ifdef __GFORTRAN__
        USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
+#else
+       USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL128
+#endif
        IMPLICIT NONE
        INTEGER, INTENT(IN) :: M, N, LDG, LDV, P, Q
+#ifdef __GFORTRAN__
        COMPLEX(KIND=c_long_double), INTENT(INOUT) :: G(LDG,N), V(LDV,N)
        REAL(KIND=c_long_double), INTENT(INOUT) :: SV(N), GX
        REAL(KIND=c_long_double), INTENT(IN) :: TOL
+#else
+       COMPLEX(KIND=REAL128), INTENT(INOUT) :: G(LDG,N), V(LDV,N)
+       REAL(KIND=REAL128), INTENT(INOUT) :: SV(N), GX
+       REAL(KIND=REAL128), INTENT(IN) :: TOL
+#endif
        INTEGER, INTENT(INOUT) :: GS, INFO
      END SUBROUTINE WTRANS
   END INTERFACE
   INTERFACE
-     SUBROUTINE DTRACK(N, SV, GX, GS, SWP, NTR)
+     SUBROUTINE XTRACK(N, SV, GX, GS, SWP, NTR)
+#ifdef __GFORTRAN__
        USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
+#else
+       USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL128
+#endif
        IMPLICIT NONE
        INTEGER, INTENT(IN) :: N, GS, SWP, NTR
+#ifdef __GFORTRAN__
        REAL(KIND=c_long_double), INTENT(IN) :: SV(N), GX
-     END SUBROUTINE DTRACK
+#else
+       REAL(KIND=REAL128), INTENT(IN) :: SV(N), GX
+#endif
+     END SUBROUTINE XTRACK
   END INTERFACE
+#ifdef __GFORTRAN__
   INTEGER, PARAMETER :: K = c_long_double
+#else
+  INTEGER, PARAMETER :: K = REAL128
+#endif
   REAL(KIND=K), PARAMETER :: ZERO = 0.0_K, ONE = 1.0_K, EPS = EPSILON(EPS) / 2
   INTEGER, INTENT(IN) :: M, N, LDG, LDV, JPOS
   COMPLEX(KIND=K), INTENT(INOUT) :: G(LDG,N)
@@ -81,7 +126,7 @@ SUBROUTINE WJSVDR(M, N, G, LDG, V, LDV, JPOS, SV, WRK, GS, INFO)
   END IF
   TOL = M
   TOL = SQRT(TOL) * EPS
-  CALL DTRACK(N, SV, GX, GS, -R, S)
+  CALL XTRACK(N, SV, GX, GS, -R, S)
   DO R = 1, S
      T = 0
      ! the first diagonal block
@@ -222,7 +267,7 @@ SUBROUTINE WJSVDR(M, N, G, LDG, V, LDV, JPOS, SV, WRK, GS, INFO)
            END DO
         END DO
      END IF
-     CALL DTRACK(N, SV, GX, GS, R, T)
+     CALL XTRACK(N, SV, GX, GS, R, T)
      IF (T .EQ. 0) EXIT
   END DO
   ! rescale U

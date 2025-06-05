@@ -1,16 +1,33 @@
 PURE SUBROUTINE WINISV(M, N, G, LDG, V, LDV, JPOS, SV, WRK, INFO)
+#ifdef __GFORTRAN__
   USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
+#else
+  USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL128
+#endif
   IMPLICIT NONE
   INTERFACE
      PURE FUNCTION WNRMF(M, X)
+#ifdef __GFORTRAN__
        USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
+#else
+       USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL128
+#endif
        IMPLICIT NONE
        INTEGER, INTENT(IN) :: M
+#ifdef __GFORTRAN__
        COMPLEX(KIND=c_long_double), INTENT(IN) :: X(M)
        REAL(KIND=c_long_double) :: WNRMF
+#else
+       COMPLEX(KIND=REAL128), INTENT(IN) :: X(M)
+       REAL(KIND=REAL128) :: WNRMF
+#endif
      END FUNCTION WNRMF
   END INTERFACE
+#ifdef __GFORTRAN__
   INTEGER, PARAMETER :: K = c_long_double
+#else
+  INTEGER, PARAMETER :: K = REAL128
+#endif
   REAL(KIND=K), PARAMETER :: ZERO = 0.0_K, ONE = 1.0_K
   INTEGER, INTENT(IN) :: M, N, LDG, LDV, JPOS
   COMPLEX(KIND=K), INTENT(INOUT) :: G(LDG,N)

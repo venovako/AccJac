@@ -27,8 +27,8 @@ sfma.o dfma.o xfma.o\
 cfma.o zfma.o wfma.o\
 cjaev2.o djaev2.o qjaev2.o sjaev2.o yjaev2.o zjaev2.o\
 cjiev2.o djiev2.o qjiev2.o sjiev2.o yjiev2.o zjiev2.o\
-clju2.o dlju2.o slju2.o zlju2.o\
-cljv2.o dljv2.o sljv2.o zljv2.o\
+clju2.o dlju2.o slju2.o wlju2.o xlju2.o zlju2.o\
+cljv2.o dljv2.o sljv2.o xljv2.o wljv2.o zljv2.o\
 cljtu2.o dljtu2.o sljtu2.o wljtu2.o xljtu2.o zljtu2.o\
 cljtv2.o dljtv2.o sljtv2.o wljtv2.o xljtv2.o zljtv2.o\
 cljau2.o dljau2.o sljau2.o wljau2.o xljau2.o zljau2.o\
@@ -36,8 +36,7 @@ cljav2.o dljav2.o sljav2.o wljav2.o xljav2.o zljav2.o
 
 LIB2=libjaev2.a
 
-EXE2=\
-ctest.exe dtest.exe qtest.exe stest.exe ytest.exe ztest.exe\
+EXE2=ctest.exe dtest.exe qtest.exe stest.exe ytest.exe ztest.exe\
 cljv2t.exe dljv2t.exe sljv2t.exe zljv2t.exe
 
 ifdef MPFR
@@ -45,8 +44,7 @@ OBJ2 += mljau2.o mljav2.o
 EXE2 += sth2t.exe
 endif # MPFR
 
-OBJD=\
-bfopen.o pascal.o\
+OBJD=bfopen.o pascal.o\
 crn.o wrn.o zrn.o\
 cjaevd.o zjaevd.o\
 drsafe.o qrsafe.o srsafe.o\
@@ -69,15 +67,15 @@ cscala.o dscala.o sscala.o wscala.o xscala.o zscala.o\
 cswpc.o dswpc.o sswpc.o wswpc.o xswpc.o zswpc.o\
 cswpr.o dswpr.o sswpr.o wswpr.o xswpr.o zswpr.o\
 cswpxd.o dswpxd.o sswpxd.o wswpxd.o xswpxd.o zswpxd.o\
-cinisv.o dinisv.o sinisv.o zinisv.o\
+cinisv.o dinisv.o sinisv.o winisv.o xinisv.o zinisv.o\
 cinisx.o dinisx.o sinisx.o winisx.o xinisx.o zinisx.o\
 ccnrmf.o dcnrmf.o scnrmf.o wcnrmf.o xcnrmf.o zcnrmf.o\
 dnsort.o snsort.o xnsort.o\
 cprcyc.o dprcyc.o sprcyc.o wprcyc.o xprcyc.o zprcyc.o\
-ctrans.o dtrans.o strans.o ztrans.o\
+ctrans.o dtrans.o strans.o wtrans.o xtrans.o ztrans.o\
 ctrana.o dtrana.o strana.o wtrana.o xtrana.o ztrana.o\
 dtrnsf.o strnsf.o\
-coffa.o doffa.o soffa.o zoffa.o\
+coffa.o doffa.o soffa.o woffa.o xoffa.o zoffa.o\
 dtrack.o strack.o xtrack.o\
 ctrace.o dtrace.o strace.o wtrace.o xtrace.o ztrace.o\
 cnrmoa.o dnrmoa.o snrmoa.o wnrmoa.o xnrmoa.o znrmoa.o\
@@ -85,8 +83,8 @@ dtrkoa.o ztrkoa.o\
 ctrcoa.o dtrcoa.o strcoa.o wtrcoa.o xtrcoa.o ztrcoa.o\
 dmmmsq.o jmmmsq.o qmmmsq.o wmmmsq.o xmmmsq.o ymmmsq.o zmmmsq.o\
 cdsort.o ddsort.o sdsort.o wdsort.o xdsort.o zdsort.o\
-cjsvdc.o djsvdc.o sjsvdc.o zjsvdc.o\
-cjsvdr.o djsvdr.o sjsvdr.o zjsvdr.o\
+cjsvdc.o djsvdc.o sjsvdc.o wjsvdc.o xjsvdc.o zjsvdc.o\
+cjsvdr.o djsvdr.o sjsvdr.o wjsvdr.o xjsvdr.o zjsvdr.o\
 djsvdf.o\
 cjevdc.o djevdc.o sjevdc.o wjevdc.o xjevdc.o zjevdc.o\
 cjevdr.o djevdr.o sjevdr.o wjevdr.o xjevdr.o zjevdr.o\
@@ -119,20 +117,13 @@ OBJL += wlaev2.o xlaev2.o
 
 OBJ2 += \
 wjaev2.o xjaev2.o\
-wjiev2.o xjiev2.o\
-wlju2.o xlju2.o\
-xljv2.o wljv2.o
+wjiev2.o xjiev2.o
 
 EXE2 += \
 wtest.exe xtest.exe\
 wljv2t.exe xljv2t.exe
 
-OBJD += xrsafe.o\
-winisv.o xinisv.o\
-wtrans.o xtrans.o\
-woffa.o xoffa.o\
-wjsvdc.o xjsvdc.o\
-wjsvdr.o xjsvdr.o
+OBJD += xrsafe.o
 
 EXED += wjsvdt.exe xjsvdt.exe
 endif # x86_64 or i86pc

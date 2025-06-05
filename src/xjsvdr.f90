@@ -1,46 +1,88 @@
 !  IN: GS = max sweeps, INFO = 0 or 1 (sin => tan) OR 2 (dsc/asc)
 ! OUT: GS: backscale SV by 2**-GS, INFO: #sweeps
 SUBROUTINE XJSVDR(M, N, G, LDG, V, LDV, JPOS, SV, WRK, GS, INFO)
+#ifdef __GFORTRAN__
   USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
+#else
+  USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL128
+#endif
   IMPLICIT NONE
   INTERFACE
      PURE SUBROUTINE XSCALG(M, N, G, LDG, GX, GS, INFO)
+#ifdef __GFORTRAN__
        USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
+#else
+       USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL128
+#endif
        IMPLICIT NONE
        INTEGER, INTENT(IN) :: M, N, LDG
+#ifdef __GFORTRAN__
        REAL(KIND=c_long_double), INTENT(INOUT) :: G(LDG,N), GX
+#else
+       REAL(KIND=REAL128), INTENT(INOUT) :: G(LDG,N), GX
+#endif
        INTEGER, INTENT(INOUT) :: GS, INFO
      END SUBROUTINE XSCALG
   END INTERFACE
   INTERFACE
      PURE SUBROUTINE XINISV(M, N, G, LDG, V, LDV, JPOS, SV, WRK, INFO)
+#ifdef __GFORTRAN__
        USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
+#else
+       USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL128
+#endif
        IMPLICIT NONE
        INTEGER, INTENT(IN) :: M, N, LDG, LDV, JPOS
+#ifdef __GFORTRAN__
        REAL(KIND=c_long_double), INTENT(INOUT) :: G(LDG,N)
        REAL(KIND=c_long_double), INTENT(OUT) :: V(LDV,N), SV(N), WRK(M,N)
+#else
+       REAL(KIND=REAL128), INTENT(INOUT) :: G(LDG,N)
+       REAL(KIND=REAL128), INTENT(OUT) :: V(LDV,N), SV(N), WRK(M,N)
+#endif
        INTEGER, INTENT(INOUT) :: INFO
      END SUBROUTINE XINISV
   END INTERFACE
   INTERFACE
      SUBROUTINE XTRANS(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, TOL, INFO)
+#ifdef __GFORTRAN__
        USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
+#else
+       USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL128
+#endif
        IMPLICIT NONE
        INTEGER, INTENT(IN) :: M, N, LDG, LDV, P, Q
+#ifdef __GFORTRAN__
        REAL(KIND=c_long_double), INTENT(INOUT) :: G(LDG,N), V(LDV,N), SV(N), GX
        REAL(KIND=c_long_double), INTENT(IN) :: TOL
+#else
+       REAL(KIND=REAL128), INTENT(INOUT) :: G(LDG,N), V(LDV,N), SV(N), GX
+       REAL(KIND=REAL128), INTENT(IN) :: TOL
+#endif
        INTEGER, INTENT(INOUT) :: GS, INFO
      END SUBROUTINE XTRANS
   END INTERFACE
   INTERFACE
      SUBROUTINE XTRACK(N, SV, GX, GS, SWP, NTR)
+#ifdef __GFORTRAN__
        USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
+#else
+       USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL128
+#endif
        IMPLICIT NONE
        INTEGER, INTENT(IN) :: N, GS, SWP, NTR
+#ifdef __GFORTRAN__
        REAL(KIND=c_long_double), INTENT(IN) :: SV(N), GX
+#else
+       REAL(KIND=REAL128), INTENT(IN) :: SV(N), GX
+#endif
      END SUBROUTINE XTRACK
   END INTERFACE
+#ifdef __GFORTRAN__
   INTEGER, PARAMETER :: K = c_long_double
+#else
+  INTEGER, PARAMETER :: K = REAL128
+#endif
   REAL(KIND=K), PARAMETER :: ZERO = 0.0_K, ONE = 1.0_K, EPS = EPSILON(EPS) / 2
   INTEGER, INTENT(IN) :: M, N, LDG, LDV, JPOS
   REAL(KIND=K), INTENT(INOUT) :: G(LDG,N)

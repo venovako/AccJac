@@ -5,8 +5,13 @@
 !     INFO = 2: transf, no downscaling of G and SV
 !     INFO = 3: transf with downscaling of G and SV
 SUBROUTINE WTRANS(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, TOL, INFO)
+#ifdef __GFORTRAN__
   USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
+#else
+  USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL128
+#endif
   IMPLICIT NONE
+#ifdef __GFORTRAN__
   INTERFACE
      PURE FUNCTION CR_HYPOT(X, Y) BIND(C,NAME='cr_hypotl')
        USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
@@ -15,98 +20,190 @@ SUBROUTINE WTRANS(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, TOL, INFO)
        REAL(KIND=c_long_double) :: CR_HYPOT
      END FUNCTION CR_HYPOT
   END INTERFACE
+#else
+#define CR_HYPOT HYPOT
+#endif
   INTERFACE
      FUNCTION WSDP(M, X, Y, MX, MY, INFO)
+#ifdef __GFORTRAN__
        USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
+#else
+       USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL128
+#endif
        IMPLICIT NONE
        INTEGER, INTENT(IN) :: M
+       INTEGER, INTENT(INOUT) :: INFO
+#ifdef __GFORTRAN__
        COMPLEX(KIND=c_long_double), INTENT(IN) :: X(M), Y(M)
        REAL(KIND=c_long_double), INTENT(IN) :: MX, MY
-       INTEGER, INTENT(INOUT) :: INFO
        COMPLEX(KIND=c_long_double) :: WSDP
+#else
+       COMPLEX(KIND=REAL128), INTENT(IN) :: X(M), Y(M)
+       REAL(KIND=REAL128), INTENT(IN) :: MX, MY
+       COMPLEX(KIND=REAL128) :: WSDP
+#endif
      END FUNCTION WSDP
   END INTERFACE
   INTERFACE
      PURE SUBROUTINE WGRAM(PNF, QNF, QPS, APP, AQQ, AQPR, AQPI, INFO)
+#ifdef __GFORTRAN__
        USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
+#else
+       USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL128
+#endif
        IMPLICIT NONE
+#ifdef __GFORTRAN__
        REAL(KIND=c_long_double), INTENT(IN) :: PNF, QNF
        COMPLEX(KIND=c_long_double), INTENT(IN) :: QPS
        REAL(KIND=c_long_double), INTENT(OUT) :: APP, AQQ, AQPR, AQPI
+#else
+       REAL(KIND=REAL128), INTENT(IN) :: PNF, QNF
+       COMPLEX(KIND=REAL128), INTENT(IN) :: QPS
+       REAL(KIND=REAL128), INTENT(OUT) :: APP, AQQ, AQPR, AQPI
+#endif
        INTEGER, INTENT(OUT) :: INFO
      END SUBROUTINE WGRAM
   END INTERFACE
   INTERFACE
      SUBROUTINE WLJU2(A11, A22, A21R, A21I, CS, SNR, SNI, INFO)
+#ifdef __GFORTRAN__
        USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
+#else
+       USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL128
+#endif
        IMPLICIT NONE
+#ifdef __GFORTRAN__
        REAL(KIND=c_long_double), INTENT(IN) :: A11, A22, A21R, A21I
        REAL(KIND=c_long_double), INTENT(OUT) :: CS, SNR, SNI
+#else
+       REAL(KIND=REAL128), INTENT(IN) :: A11, A22, A21R, A21I
+       REAL(KIND=REAL128), INTENT(OUT) :: CS, SNR, SNI
+#endif
        INTEGER, INTENT(INOUT) :: INFO
      END SUBROUTINE WLJU2
   END INTERFACE
   INTERFACE
      SUBROUTINE WLJV2(A11, A22, A21R, A21I, CH, SHR, SHI, INFO)
+#ifdef __GFORTRAN__
        USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
+#else
+       USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL128
+#endif
        IMPLICIT NONE
+#ifdef __GFORTRAN__
        REAL(KIND=c_long_double), INTENT(IN) :: A11, A22, A21R, A21I
        REAL(KIND=c_long_double), INTENT(OUT) :: CH, SHR, SHI
+#else
+       REAL(KIND=REAL128), INTENT(IN) :: A11, A22, A21R, A21I
+       REAL(KIND=REAL128), INTENT(OUT) :: CH, SHR, SHI
+#endif
        INTEGER, INTENT(INOUT) :: INFO
      END SUBROUTINE WLJV2
   END INTERFACE
   INTERFACE
      PURE SUBROUTINE WRTVT(N, X, Y, CS, SNR, SNI, INFO)
+#ifdef __GFORTRAN__
        USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
+#else
+       USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL128
+#endif
        IMPLICIT NONE
        INTEGER, INTENT(IN) :: N
+#ifdef __GFORTRAN__
        COMPLEX(KIND=c_long_double), INTENT(INOUT) :: X(N), Y(N)
        REAL(KIND=c_long_double), INTENT(IN) :: CS, SNR, SNI
+#else
+       COMPLEX(KIND=REAL128), INTENT(INOUT) :: X(N), Y(N)
+       REAL(KIND=REAL128), INTENT(IN) :: CS, SNR, SNI
+#endif
        INTEGER, INTENT(INOUT) :: INFO
      END SUBROUTINE WRTVT
   END INTERFACE
   INTERFACE
      PURE SUBROUTINE WRTVH(N, X, Y, CH, SHR, SHI, INFO)
+#ifdef __GFORTRAN__
        USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
+#else
+       USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL128
+#endif
        IMPLICIT NONE
        INTEGER, INTENT(IN) :: N
+#ifdef __GFORTRAN__
        COMPLEX(KIND=c_long_double), INTENT(INOUT) :: X(N), Y(N)
        REAL(KIND=c_long_double), INTENT(IN) :: CH, SHR, SHI
+#else
+       COMPLEX(KIND=REAL128), INTENT(INOUT) :: X(N), Y(N)
+       REAL(KIND=REAL128), INTENT(IN) :: CH, SHR, SHI
+#endif
        INTEGER, INTENT(INOUT) :: INFO
      END SUBROUTINE WRTVH
   END INTERFACE
   INTERFACE
      PURE SUBROUTINE WROTT(M, X, Y, CS, SNR, SNI, GX, MX, MY, INFO)
+#ifdef __GFORTRAN__
        USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
+#else
+       USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL128
+#endif
        IMPLICIT NONE
        INTEGER, INTENT(IN) :: M
+#ifdef __GFORTRAN__
        COMPLEX(KIND=c_long_double), INTENT(INOUT) :: X(M), Y(M)
        REAL(KIND=c_long_double), INTENT(IN) :: CS, SNR, SNI
        REAL(KIND=c_long_double), INTENT(INOUT) :: GX, MX, MY
+#else
+       COMPLEX(KIND=REAL128), INTENT(INOUT) :: X(M), Y(M)
+       REAL(KIND=REAL128), INTENT(IN) :: CS, SNR, SNI
+       REAL(KIND=REAL128), INTENT(INOUT) :: GX, MX, MY
+#endif
        INTEGER, INTENT(INOUT) :: INFO
      END SUBROUTINE WROTT
   END INTERFACE
   INTERFACE
      PURE SUBROUTINE WROTH(M, X, Y, CH, SHR, SHI, GX, MX, MY, INFO)
+#ifdef __GFORTRAN__
        USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
+#else
+       USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL128
+#endif
        IMPLICIT NONE
        INTEGER, INTENT(IN) :: M
+#ifdef __GFORTRAN__
        COMPLEX(KIND=c_long_double), INTENT(INOUT) :: X(M), Y(M)
        REAL(KIND=c_long_double), INTENT(IN) :: CH, SHR, SHI
        REAL(KIND=c_long_double), INTENT(INOUT) :: GX, MX, MY
+#else
+       COMPLEX(KIND=REAL128), INTENT(INOUT) :: X(M), Y(M)
+       REAL(KIND=REAL128), INTENT(IN) :: CH, SHR, SHI
+       REAL(KIND=REAL128), INTENT(INOUT) :: GX, MX, MY
+#endif
        INTEGER, INTENT(INOUT) :: INFO
      END SUBROUTINE WROTH
   END INTERFACE
   INTERFACE
      PURE SUBROUTINE WSCALG(M, N, G, LDG, GX, GS, INFO)
+#ifdef __GFORTRAN__
        USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
+#else
+       USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL128
+#endif
        IMPLICIT NONE
        INTEGER, INTENT(IN) :: M, N, LDG
+#ifdef __GFORTRAN__
        COMPLEX(KIND=c_long_double), INTENT(INOUT) :: G(LDG,N)
        REAL(KIND=c_long_double), INTENT(INOUT) :: GX
+#else
+       COMPLEX(KIND=REAL128), INTENT(INOUT) :: G(LDG,N)
+       REAL(KIND=REAL128), INTENT(INOUT) :: GX
+#endif
        INTEGER, INTENT(INOUT) :: GS, INFO
      END SUBROUTINE WSCALG
   END INTERFACE
+#ifdef __GFORTRAN__
   INTEGER, PARAMETER :: K = c_long_double
+#else
+  INTEGER, PARAMETER :: K = REAL128
+#endif
   REAL(KIND=K), PARAMETER :: ZERO = 0.0_K
   INTEGER, INTENT(IN) :: M, N, LDG, LDV, P, Q
   COMPLEX(KIND=K), INTENT(INOUT) :: G(LDG,N), V(LDV,N)

@@ -1,8 +1,11 @@
 ! meant to be compiled with gfortran and ABI=lp64
 PROGRAM XLJV2T
+#ifdef __GFORTRAN__
   USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_int, c_long_double
   USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: ERROR_UNIT, OUTPUT_UNIT, REAL128
+#endif
   IMPLICIT NONE
+#ifdef __GFORTRAN__
   REAL(KIND=REAL128), PARAMETER :: QZERO = 0.0_REAL128, QONE = 1.0_REAL128
   REAL(KIND=c_long_double), PARAMETER :: ZERO = 0.0_c_long_double, CUTOFF = 0.8_c_long_double, XEPS = EPSILON(ZERO) / 2
   ! DAMP should counterweigh a possible unfavorable rounding when creating the off-diagonal element.
@@ -111,4 +114,7 @@ PROGRAM XLJV2T
   WRITE (OUTPUT_UNIT,'(3(A,ES30.21E4))') ',',&
        REAL(Q(1), c_long_double), ',', REAL(Q(2), c_long_double), ',', REAL(Q(3), c_long_double)
 9 DEALLOCATE(ISEED)
+#else
+  STOP 'xljv2t.exe must be compiled with GNU Fortran on x64'
+#endif
 END PROGRAM XLJV2T

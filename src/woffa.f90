@@ -1,14 +1,19 @@
 FUNCTION WOFFA(M, N, G, LDG, GS, WRK)
   USE, INTRINSIC :: IEEE_ARITHMETIC, ONLY: IEEE_FMA
+#ifdef __GFORTRAN__
   USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
+#endif
   USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL128
   IMPLICIT NONE
-  INTEGER, PARAMETER :: K = c_long_double, KK = REAL128
+#ifdef __GFORTRAN__
+  INTEGER, PARAMETER :: K = c_long_double
+#else
+  INTEGER, PARAMETER :: K = REAL128
+#endif
+  INTEGER, PARAMETER :: KK = REAL128
   REAL(KIND=KK), PARAMETER :: ZERO = 0.0_KK, TWO = 2.0_KK, SQRT2 = SQRT(TWO)
   INTEGER, INTENT(IN) :: M, N, LDG, GS
   COMPLEX(KIND=K), INTENT(IN) :: G(LDG,N)
-  ! this is an ugly HACK, but it is simple to allocate twice the space for WRK
-  ! and pretend WRK is of the KK kind, provided that the alignment is correct
   COMPLEX(KIND=KK), INTENT(OUT) :: WRK(M,N)
   REAL(KIND=K) :: WOFFA
   COMPLEX(KIND=KK) :: D, X, Y
