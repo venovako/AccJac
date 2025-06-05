@@ -76,7 +76,7 @@ dmmmsq.obj jmmmsq.obj qmmmsq.obj wmmmsq.obj xmmmsq.obj ymmmsq.obj zmmmsq.obj \
 cdsort.obj ddsort.obj sdsort.obj wdsort.obj xdsort.obj zdsort.obj \
 cjsvdc.obj djsvdc.obj sjsvdc.obj wjsvdc.obj xjsvdc.obj zjsvdc.obj \
 cjsvdr.obj djsvdr.obj sjsvdr.obj wjsvdr.obj xjsvdr.obj zjsvdr.obj \
-djsvdf.obj sjsvdf.obj xjsvdf.obj zjsvdf.obj \
+cjsvdf.obj djsvdf.obj sjsvdf.obj xjsvdf.obj zjsvdf.obj \
 cjevdc.obj djevdc.obj sjevdc.obj wjevdc.obj xjevdc.obj zjevdc.obj \
 cjevdr.obj djevdr.obj sjevdr.obj wjevdr.obj xjevdr.obj zjevdr.obj \
 jstep.obj jsweep.obj djevdm.obj zjevdm.obj
