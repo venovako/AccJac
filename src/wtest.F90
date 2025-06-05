@@ -1,7 +1,10 @@
 PROGRAM WTEST
+#ifdef __GFORTRAN__
   USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
   USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL128
+#endif
   IMPLICIT NONE
+#ifdef __GFORTRAN__
   INTEGER, PARAMETER :: CLAL = 256
   REAL(c_long_double), PARAMETER :: HALF = 0.5_c_long_double
   REAL(REAL128), PARAMETER :: QZERO = 0.0_REAL128, QONE = 1.0_REAL128
@@ -154,4 +157,7 @@ PROGRAM WTEST
   WRITE (*,9) 'min(relerr(sinα*sinφ)/ε)=', MRESI
   WRITE (*,9) 'max(relerr(sinα*sinφ)/ε)=', XRESI
 9 FORMAT(A,ES30.21E4)
+#else
+  STOP 'wtest.exe must be compiled with GNU Fortran on x64'
+#endif
 END PROGRAM WTEST

@@ -1,7 +1,10 @@
 PROGRAM XTEST
+#ifdef __GFORTRAN__
   USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
   USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL128
+#endif
   IMPLICIT NONE
+#ifdef __GFORTRAN__
   INTEGER, PARAMETER :: CLAL = 256
   REAL(c_long_double), PARAMETER :: HALF = 0.5_c_long_double
   REAL(REAL128), PARAMETER :: QZERO = 0.0_REAL128, QONE = 1.0_REAL128
@@ -129,4 +132,7 @@ PROGRAM XTEST
   WRITE (*,9) '     min(relerr(sinφ)/ε)=', MRES
   WRITE (*,9) '     max(relerr(sinφ)/ε)=', XRES
 9 FORMAT(A,ES30.21E4)
+#else
+  STOP 'xtest.exe must be compiled with GNU Fortran on x64'
+#endif
 END PROGRAM XTEST
