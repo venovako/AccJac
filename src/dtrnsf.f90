@@ -197,18 +197,18 @@ SUBROUTINE DTRNSF(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, TOL, IX, INFO)
      IF (O .EQ. 0) THEN
         ! S = ABS(A21 / (SV(P) * SV(Q)))
         ! norm update, trig:
-        ! SV(P) = SV(P) + TG * (S * SV(Q))
-        ! SV(Q) = SV(Q) - TG * (S * SV(P))
+        ! SQRT(SV(P) + TG * (S * SV(Q))) * SQRT(SV(P))
+        ! SQRT(SV(Q) - TG * (S * SV(P))) * SQRT(SV(Q))
         ! norm update, hyp:
-        ! SV(P) = SV(P) + TH * (S * SV(Q))
-        ! SV(Q) = SV(Q) + TH * (S * SV(P))
+        ! SQRT(SV(P) + TH * (S * SV(Q))) * SQRT(SV(P))
+        ! SQRT(SV(Q) + TH * (S * SV(P))) * SQRT(SV(Q))
         APP = S * SV(Q)
         AQQ = S * SV(P)
         IF (L .EQ. 0) AQP = -AQP
-        APP = DFMA(TOL, APP, SV(P))
-        AQQ = DFMA(AQP, AQQ, SV(Q))
-        SV(P) = APP
-        SV(Q) = AQQ
+        APP = SQRT(DFMA(TOL, APP, SV(P)))
+        AQQ = SQRT(DFMA(AQP, AQQ, SV(Q)))
+        SV(P) = APP * SQRT(SV(P))
+        SV(Q) = AQQ * SQRT(SV(Q))
      ELSE ! SLOW
         SV(P) = DNRMF(M, G(1,IX(P)))
         SV(Q) = DNRMF(M, G(1,IX(Q)))
