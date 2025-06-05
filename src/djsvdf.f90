@@ -68,9 +68,13 @@ SUBROUTINE DJSVDF(M, N, G, LDG, V, LDV, JPOS, SV, GS, IX, WRK, INFO)
   IF (N .LT. 0) INFO = -2
   IF (M .LT. N) INFO = -1
   IF (INFO .LT. 0) RETURN
-  IF (N .EQ. 0) RETURN
+  IF (N .EQ. 0) THEN
+     INFO = 0
+     RETURN
+  END IF
   S = GS
   GS = 0
+  TT = 0_INT64
   IF (INFO .EQ. 0) THEN
      O = -1
   ELSE ! SLOW
@@ -79,18 +83,17 @@ SUBROUTINE DJSVDF(M, N, G, LDG, V, LDV, JPOS, SV, GS, IX, WRK, INFO)
   CALL DSCALG(M, N, G, LDG, GX, GS, O)
   IF (O .LT. 0) THEN
      INFO = -3
-     RETURN
+     GOTO 9
   END IF
   R = INFO
   CALL DINISX(M, N, G, LDG, V, LDV, SV, IX, R)
   IF (R .NE. 0) THEN
      INFO = -10
-     RETURN
+     GOTO 9
   END IF
   CALL DTRACK(N, SV, GX, GS, R, -S)
   TOL = M
-  TOL = SQRT(TOL) * EPS
-  TT = 0_INT64
+  TOL = SQRT(TOL) * EPS  
   DO R = 1, S
      IF (INFO .EQ. 0) THEN
         O = 1
@@ -100,7 +103,7 @@ SUBROUTINE DJSVDF(M, N, G, LDG, V, LDV, JPOS, SV, GS, IX, WRK, INFO)
      CALL DPRCYC(M, N, G, LDG, JPOS, SV, IX, O)
      IF (O .LT. 0) THEN
         INFO = -8
-        RETURN
+        GOTO 9
      END IF
      T = 0
      ! the first diagonal block
@@ -140,7 +143,7 @@ SUBROUTINE DJSVDF(M, N, G, LDG, V, LDV, JPOS, SV, GS, IX, WRK, INFO)
               TT = TT + 1_INT64
            CASE DEFAULT
               INFO = -5
-              RETURN
+              GOTO 9
            END SELECT
         END DO
      END DO
@@ -162,7 +165,7 @@ SUBROUTINE DJSVDF(M, N, G, LDG, V, LDV, JPOS, SV, GS, IX, WRK, INFO)
               TT = TT + 1_INT64
            CASE DEFAULT
               INFO = -5
-              RETURN
+              GOTO 9
            END SELECT
         END DO
      END DO
@@ -201,7 +204,7 @@ SUBROUTINE DJSVDF(M, N, G, LDG, V, LDV, JPOS, SV, GS, IX, WRK, INFO)
               TT = TT + 1_INT64
            CASE DEFAULT
               INFO = -5
-              RETURN
+              GOTO 9
            END SELECT
         END DO
      END DO
@@ -224,7 +227,7 @@ SUBROUTINE DJSVDF(M, N, G, LDG, V, LDV, JPOS, SV, GS, IX, WRK, INFO)
      DO Q = 1, N
         IF (.NOT. (SV(Q) .GT. ZERO)) THEN
            INFO = -11
-           RETURN
+           GOTO 9
         END IF
         IF (SV(Q) .NE. ONE) THEN
            IF (INFO .EQ. 0) THEN
@@ -250,5 +253,5 @@ SUBROUTINE DJSVDF(M, N, G, LDG, V, LDV, JPOS, SV, GS, IX, WRK, INFO)
      END DO
   END IF
   INFO = R
-  WRK(1,1) = TRANSFER(TT, ZERO)
+9 WRK(1,1) = TRANSFER(TT, ZERO)
 END SUBROUTINE DJSVDF
