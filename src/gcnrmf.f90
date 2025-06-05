@@ -9,7 +9,7 @@
      L = IX(J)
      SV(J) = NRMF(M, G(1,L))
 #ifndef NDEBUG
-     IF (.NOT. (SV(J) .LE. HUGE(ZERO))) THEN
+     IF (.NOT. (SV(J) .LE. HUGE(SV(J)))) THEN
         INFO = J
         RETURN
      END IF
