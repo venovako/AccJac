@@ -198,7 +198,7 @@ SUBROUTINE XTRNSF(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, TOL, IX, INFO)
   IF (M .LT. 0) INFO = -1
   IF (INFO .LT. 0) RETURN
 #endif
-  IF (M .EQ. 0) RETURN
+  IF (M .EQ. 0) GOTO 8
   L = IAND(INFO, 1)
   O = IAND(INFO, 2)
   IF (O .EQ. 0) THEN
@@ -221,7 +221,7 @@ SUBROUTINE XTRNSF(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, TOL, IX, INFO)
   END IF
 #endif
   IF (S .LT. TOL) THEN
-     TOL = ZERO
+8    TOL = ZERO
      INFO = 0
      RETURN
   END IF

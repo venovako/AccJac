@@ -157,7 +157,7 @@ SUBROUTINE ZJSVDF(M, N, G, LDG, V, LDV, JPOS, SV, GS, IX, WRK, INFO)
            ELSE ! SLOW
               O = 3
            END IF
-           CALL DTRNSF(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, Z, IX, O)
+           CALL ZTRNSF(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, Z, IX, O)
            SELECT CASE (O)
            CASE (0,1)
               CONTINUE
