@@ -21,9 +21,13 @@
   END DO
   ! init SV
   IF (INFO .EQ. 0) THEN
+#ifdef NDEBUG
+     CONTINUE
+#else
      DO J = 1, N
         SV(J) = ZERO
      END DO
+#endif
   ELSE ! SLOW
      DO J = 1, N
         SV(J) = NRMF(M, G(1,J))

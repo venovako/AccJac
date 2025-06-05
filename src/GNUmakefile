@@ -76,7 +76,7 @@ dnsort.o snsort.o xnsort.o\
 cprcyc.o dprcyc.o sprcyc.o wprcyc.o xprcyc.o zprcyc.o\
 ctrans.o dtrans.o strans.o ztrans.o\
 ctrana.o dtrana.o strana.o wtrana.o xtrana.o ztrana.o\
-dtrnsf.o\
+dtrnsf.o strnsf.o\
 coffa.o doffa.o soffa.o zoffa.o\
 dtrack.o strack.o xtrack.o\
 ctrace.o dtrace.o strace.o wtrace.o xtrace.o ztrace.o\
@@ -84,7 +84,7 @@ cnrmoa.o dnrmoa.o snrmoa.o wnrmoa.o xnrmoa.o znrmoa.o\
 dtrkoa.o ztrkoa.o\
 ctrcoa.o dtrcoa.o strcoa.o wtrcoa.o xtrcoa.o ztrcoa.o\
 dmmmsq.o jmmmsq.o qmmmsq.o wmmmsq.o xmmmsq.o ymmmsq.o zmmmsq.o\
-cdsort.o ddsort.o mdsort.o sdsort.o wdsort.o xdsort.o zdsort.o\
+cdsort.o ddsort.o sdsort.o wdsort.o xdsort.o zdsort.o\
 cjsvdc.o djsvdc.o sjsvdc.o zjsvdc.o\
 cjsvdr.o djsvdr.o sjsvdr.o zjsvdr.o\
 djsvdf.o\
@@ -109,7 +109,7 @@ mrtvh.o mrtvt.o\
 mrtlt.o mrtrt.o mrtlh.o mrtrh.o\
 mswpc.o mswpr.o mswpxd.o\
 mtrana.o mtrace.o\
-mjevdr.o
+mdsort.o mjevdr.o
 EXED += mjevdt.exe
 endif # MPFR
 

@@ -1,0 +1,234 @@
+! IN: INFO & 1: hyp
+!     INFO & 2: SLOW
+!OUT: INFO = 0: notransf due to tol
+!     INFO = 1: notransf due to identity transf
+!     INFO = 2: transf
+!     INFO = 3: transf, big th
+!     ... OR 4: downscaling of G and SV
+SUBROUTINE STRNSF(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, TOL, IX, INFO)
+  USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL32
+  IMPLICIT NONE
+  INTERFACE
+     PURE FUNCTION SFMA(A, B, C)
+       USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL32
+       IMPLICIT NONE
+       REAL(KIND=REAL32), INTENT(IN) :: A, B, C
+       REAL(KIND=REAL32) :: SFMA
+     END FUNCTION SFMA
+  END INTERFACE
+  INTERFACE
+     PURE FUNCTION SNRMF(M, X)
+       USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL32
+       IMPLICIT NONE
+       INTEGER, INTENT(IN) :: M
+       REAL(KIND=REAL32), INTENT(IN) :: X(M)
+       REAL(KIND=REAL32) :: SNRMF
+     END FUNCTION SNRMF
+  END INTERFACE
+  INTERFACE
+     FUNCTION SSDP(M, X, Y, MX, MY, INFO)
+       USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL32
+       IMPLICIT NONE
+       INTEGER, INTENT(IN) :: M
+       REAL(KIND=REAL32), INTENT(IN) :: X(M), Y(M), MX, MY
+       INTEGER, INTENT(INOUT) :: INFO
+       REAL(KIND=REAL32) :: SSDP
+     END FUNCTION SSDP
+  END INTERFACE
+  INTERFACE
+     PURE SUBROUTINE SGRAM(PNF, QNF, QPS, APP, AQQ, AQP, INFO)
+       USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL32
+       IMPLICIT NONE
+       REAL(KIND=REAL32), INTENT(IN) :: PNF, QNF, QPS
+       REAL(KIND=REAL32), INTENT(OUT) :: APP, AQQ, AQP
+       INTEGER, INTENT(OUT) :: INFO
+     END SUBROUTINE SGRAM
+  END INTERFACE
+  INTERFACE
+     SUBROUTINE SLJTU2(A11, A22, A21, CS, TN, INFO)
+       USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL32
+       IMPLICIT NONE
+       REAL(KIND=REAL32), INTENT(INOUT) :: A11, A22, A21
+       REAL(KIND=REAL32), INTENT(OUT) :: CS, TN
+       INTEGER, INTENT(INOUT) :: INFO
+     END SUBROUTINE SLJTU2
+  END INTERFACE
+  INTERFACE
+     SUBROUTINE SLJTV2(A11, A22, A21, CH, TH, INFO)
+       USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL32
+       IMPLICIT NONE
+       REAL(KIND=REAL32), INTENT(INOUT) :: A11, A22, A21
+       REAL(KIND=REAL32), INTENT(OUT) :: CH, TH
+       INTEGER, INTENT(INOUT) :: INFO
+     END SUBROUTINE SLJTV2
+  END INTERFACE
+  INTERFACE
+     PURE SUBROUTINE SRTT(M, X, Y, CS, TG, GX, INFO)
+       USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL32
+       IMPLICIT NONE
+       INTEGER, INTENT(IN) :: M
+       REAL(KIND=REAL32), INTENT(INOUT) :: X(M), Y(M), GX
+       REAL(KIND=REAL32), INTENT(IN) :: CS, TG
+       INTEGER, INTENT(INOUT) :: INFO
+     END SUBROUTINE SRTT
+  END INTERFACE
+  INTERFACE
+     PURE SUBROUTINE SRTH(M, X, Y, CH, TH, GX, INFO)
+       USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL32
+       IMPLICIT NONE
+       INTEGER, INTENT(IN) :: M
+       REAL(KIND=REAL32), INTENT(INOUT) :: X(M), Y(M), GX
+       REAL(KIND=REAL32), INTENT(IN) :: CH, TH
+       INTEGER, INTENT(INOUT) :: INFO
+     END SUBROUTINE SRTH
+  END INTERFACE
+  INTERFACE
+     PURE SUBROUTINE SSCALG(M, N, G, LDG, GX, GS, INFO)
+       USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL32
+       IMPLICIT NONE
+       INTEGER, INTENT(IN) :: M, N, LDG
+       REAL(KIND=REAL32), INTENT(INOUT) :: G(LDG,N), GX
+       INTEGER, INTENT(INOUT) :: GS, INFO
+     END SUBROUTINE SSCALG
+  END INTERFACE
+  INTEGER, PARAMETER :: K = REAL32
+  REAL(KIND=K), PARAMETER :: ZERO = 0.0_K
+  INTEGER, INTENT(IN) :: M, N, LDG, LDV, P, Q, IX(N)
+  REAL(KIND=K), INTENT(INOUT) :: G(LDG,N), V(LDV,N), SV(N), GX, TOL
+  INTEGER, INTENT(INOUT) :: GS, INFO
+  REAL(KIND=K) :: QPS, APP, AQQ, AQP, C, S, T
+  INTEGER :: I, J, L, O
+#ifndef NDEBUG
+  IF ((INFO .LT. 0) .OR. (INFO .GT. 3)) INFO = -14
+  IF (TOL .LT. ZERO) INFO = -12
+  IF ((Q .LE. 0) .OR. (Q .GT. N)) INFO = -11
+  IF ((P .LE. 0) .OR. (P .GT. N)) INFO = -10
+  IF (GX .LT. ZERO) INFO = -8
+  IF (LDV .LT. N) INFO = -6
+  IF (LDG .LT. M) INFO = -4
+  IF (N .LT. 0) INFO = -2
+  IF (M .LT. 0) INFO = -1
+  IF (INFO .LT. 0) RETURN
+#endif
+  IF (M .EQ. 0) RETURN
+  L = IAND(INFO, 1)
+  O = IAND(INFO, 2)
+  IF (O .EQ. 0) THEN
+     I = 1
+  ELSE ! SLOW
+     I = 0
+  END IF
+  QPS = SSDP(M, G(1,IX(Q)), G(1,IX(P)), SV(Q), SV(P), I)
+#ifndef NDEBUG
+  IF (I .LT. 0) THEN
+     INFO = -3
+     RETURN
+  END IF
+#endif
+  S = ABS(QPS)
+#ifndef NDEBUG
+  IF (.NOT. (S .LE. HUGE(S))) THEN
+     INFO = -3
+     RETURN
+  END IF
+#endif
+  IF (S .LT. TOL) THEN
+     TOL = ZERO
+     INFO = 0
+     RETURN
+  END IF
+  J = 0
+  CALL SGRAM(SV(P), SV(Q), QPS, APP, AQQ, AQP, J)
+#ifndef NDEBUG
+  IF (J .LE. -HUGE(J)) THEN
+     INFO = -7
+     RETURN
+  END IF
+#endif
+  I = 0
+  QPS = GX
+  IF (L .EQ. 0) THEN
+     CALL SLJTU2(APP, AQQ, AQP, C, T, I)
+     IF (I .GT. 0) THEN
+        J = 0
+        CALL SRTT(N, V(1,IX(P)), V(1,IX(Q)), C, T, QPS, J)
+#ifndef NDEBUG
+        IF (J .LT. 0) THEN
+           INFO = -5
+           RETURN
+        END IF
+#endif
+        J = 1
+        CALL SRTT(M, G(1,IX(P)), G(1,IX(Q)), C, T, QPS, J)
+#ifndef NDEBUG
+        IF (J .LT. 0) THEN
+           INFO = -13
+           RETURN
+        END IF
+#endif
+     END IF
+  ELSE ! hyp
+     CALL SLJTV2(APP, AQQ, AQP, C, T, I)
+     IF (I .GT. 0) THEN
+        J = 0
+        CALL SRTH(N, V(1,IX(P)), V(1,IX(Q)), C, T, QPS, J)
+#ifndef NDEBUG
+        IF (J .LT. 0) THEN
+           INFO = -5
+           RETURN
+        END IF
+#endif
+        J = 1
+        CALL SRTH(M, G(1,IX(P)), G(1,IX(Q)), C, T, QPS, J)
+#ifndef NDEBUG
+        IF (J .LT. 0) THEN
+           INFO = -13
+           RETURN
+        END IF
+#endif
+     END IF
+  END IF
+  TOL = AQP
+  IF (I .EQ. 0) THEN
+     INFO = 1
+  ELSE IF (I .LT. 0) THEN
+     INFO = -8
+  ELSE ! I > 0
+     IF (O .EQ. 0) THEN
+        ! S = ABS(A21 / (SV(P) * SV(Q)))
+        ! norm update, trig:
+        ! SQRT(SV(P) + TG * (S * SV(Q))) * SQRT(SV(P))
+        ! SQRT(SV(Q) - TG * (S * SV(P))) * SQRT(SV(Q))
+        ! norm update, hyp:
+        ! SQRT(SV(P) + TH * (S * SV(Q))) * SQRT(SV(P))
+        ! SQRT(SV(Q) + TH * (S * SV(P))) * SQRT(SV(Q))
+        APP = S * SV(Q)
+        AQQ = S * SV(P)
+        IF (L .EQ. 0) AQP = -AQP
+        APP = SQRT(SFMA(TOL, APP, SV(P)))
+        AQQ = SQRT(SFMA(AQP, AQQ, SV(Q)))
+        SV(P) = APP * SQRT(SV(P))
+        SV(Q) = AQQ * SQRT(SV(Q))
+     ELSE ! SLOW
+        SV(P) = SNRMF(M, G(1,IX(P)))
+        SV(Q) = SNRMF(M, G(1,IX(Q)))
+     END IF
+     INFO = I + 1
+     IF (QPS .GT. GX) THEN
+        GX = QPS
+        I = -INFO
+        CALL SSCALG(M, N, G, LDG, GX, GS, I)
+        IF (I .GT. 0) THEN
+           I = -I
+           DO J = 1, N
+              SV(J) = SCALE(SV(J), I)
+           END DO
+           INFO = IOR(INFO, 4)
+#ifndef NDEBUG
+        ELSE IF (I .LT. 0) THEN
+           INFO = -9
+#endif
+        END IF
+     END IF
+  END IF
+END SUBROUTINE STRNSF

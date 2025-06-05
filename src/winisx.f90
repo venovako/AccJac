@@ -37,5 +37,5 @@ PURE SUBROUTINE WINISX(M, N, G, LDG, V, LDV, SV, IX, INFO)
   INTEGER, INTENT(INOUT) :: INFO
   INTEGER :: I, J
 #define NRMF WNRMF
-#include "hinisx.f90"
+#include "ginisx.f90"
 END SUBROUTINE WINISX

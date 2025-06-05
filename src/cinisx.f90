@@ -20,5 +20,5 @@ PURE SUBROUTINE CINISX(M, N, G, LDG, V, LDV, SV, IX, INFO)
   INTEGER, INTENT(INOUT) :: INFO
   INTEGER :: I, J
 #define NRMF CNRMF
-#include "hinisx.f90"
+#include "ginisx.f90"
 END SUBROUTINE CINISX

@@ -66,7 +66,7 @@ dnsort.obj snsort.obj xnsort.obj \
 cprcyc.obj dprcyc.obj sprcyc.obj wprcyc.obj xprcyc.obj zprcyc.obj \
 ctrans.obj dtrans.obj strans.obj ztrans.obj \
 ctrana.obj dtrana.obj strana.obj wtrana.obj xtrana.obj ztrana.obj \
-dtrnsf.obj \
+dtrnsf.obj strnsf.obj \
 coffa.obj doffa.obj soffa.obj zoffa.obj \
 dtrack.obj strack.obj xtrack.obj \
 ctrace.obj dtrace.obj strace.obj wtrace.obj xtrace.obj ztrace.obj \
