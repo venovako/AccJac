@@ -75,11 +75,7 @@ SUBROUTINE DJSVDF(M, N, G, LDG, V, LDV, JPOS, SV, GS, IX, WRK, INFO)
   S = GS
   GS = 0
   TT = 0_INT64
-  IF (INFO .EQ. 0) THEN
-     O = -1
-  ELSE ! SLOW
-     O = 0
-  END IF
+  O = -1
   CALL DSCALG(M, N, G, LDG, GX, GS, O)
   IF (O .LT. 0) THEN
      INFO = -3
