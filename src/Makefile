@@ -63,6 +63,7 @@ cinisv.obj dinisv.obj sinisv.obj zinisv.obj \
 cinisx.obj dinisx.obj sinisx.obj winisx.obj xinisx.obj zinisx.obj \
 ccnrmf.obj dcnrmf.obj scnrmf.obj wcnrmf.obj xcnrmf.obj zcnrmf.obj \
 dnsort.obj snsort.obj xnsort.obj \
+cprcyc.obj dprcyc.obj sprcyc.obj wprcyc.obj xprcyc.obj zprcyc.obj \
 ctrans.obj dtrans.obj strans.obj ztrans.obj \
 ctrana.obj dtrana.obj strana.obj wtrana.obj xtrana.obj ztrana.obj \
 dtrnsf.obj \
