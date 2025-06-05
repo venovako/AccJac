@@ -70,11 +70,11 @@ SUBROUTINE DJSVDF(M, N, G, LDG, V, LDV, JPOS, SV, GS, IX, WRK, INFO)
   IF (INFO .LT. 0) RETURN
   IF (N .EQ. 0) RETURN
   S = GS
+  GS = 0
   IF (INFO .EQ. 0) THEN
-     O = -HUGE(O)
-     O = O - 1
+     O = -1
   ELSE ! SLOW
-     O = HUGE(O)
+     O = 0
   END IF
   CALL DSCALG(M, N, G, LDG, GX, GS, O)
   IF (O .LT. 0) THEN
@@ -98,7 +98,7 @@ SUBROUTINE DJSVDF(M, N, G, LDG, V, LDV, JPOS, SV, GS, IX, WRK, INFO)
         O = 0
      END IF
      CALL DPRCYC(M, N, G, LDG, JPOS, SV, IX, O)
-     IF (O .NE. 0) THEN
+     IF (O .LT. 0) THEN
         INFO = -8
         RETURN
      END IF

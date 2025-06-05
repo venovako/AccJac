@@ -195,6 +195,7 @@ SUBROUTINE DTRNSF(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, TOL, IX, INFO)
      INFO = -8
   ELSE ! I > 0
      IF (O .EQ. 0) THEN
+        ! S = ABS(A21 / (SV(P) * SV(Q)))
         ! norm update, trig:
         ! SV(P) = SV(P) + TG * (S * SV(Q))
         ! SV(Q) = SV(Q) - TG * (S * SV(P))
