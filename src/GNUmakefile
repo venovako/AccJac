@@ -125,7 +125,9 @@ wljv2t.exe xljv2t.exe
 
 OBJD += xrsafe.o
 
-EXED += wjsvdt.exe xjsvdt.exe
+EXED += \
+wjsvdt.exe xjsvdt.exe\
+xjsvdx.exe
 endif # x86_64 or i86pc
 endif # gfortran
 
