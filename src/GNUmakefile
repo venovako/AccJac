@@ -87,6 +87,7 @@ dmmmsq.o jmmmsq.o qmmmsq.o wmmmsq.o xmmmsq.o ymmmsq.o zmmmsq.o\
 cdsort.o ddsort.o mdsort.o sdsort.o wdsort.o xdsort.o zdsort.o\
 cjsvdc.o djsvdc.o sjsvdc.o zjsvdc.o\
 cjsvdr.o djsvdr.o sjsvdr.o zjsvdr.o\
+djsvdf.o\
 cjevdc.o djevdc.o sjevdc.o wjevdc.o xjevdc.o zjevdc.o\
 cjevdr.o djevdr.o sjevdr.o wjevdr.o xjevdr.o zjevdr.o\
 jstep.o jsweep.o djevdm.o zjevdm.o
