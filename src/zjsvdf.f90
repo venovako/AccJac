@@ -1,113 +1,67 @@
 !  IN: GS = max sweeps, INFO = 0 or 1 (SLOW)
 ! OUT: GS: backscale SV by 2**-GS, INFO: #sweeps
-SUBROUTINE XJSVDF(M, N, G, LDG, V, LDV, JPOS, SV, GS, IX, WRK, INFO)
-#ifdef __GFORTRAN__
-  USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
-  USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: INT64
-#else
-  USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: INT64, REAL128
-#endif
+SUBROUTINE ZJSVDF(M, N, G, LDG, V, LDV, JPOS, SV, GS, IX, WRK, INFO)
+  USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: INT64, REAL64
   IMPLICIT NONE
   INTERFACE
-     PURE SUBROUTINE XINISX(M, N, G, LDG, V, LDV, SV, IX, INFO)
-#ifdef __GFORTRAN__
-       USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
-#else
-       USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL128
-#endif
+     PURE SUBROUTINE ZINISX(M, N, G, LDG, V, LDV, SV, IX, INFO)
+       USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL64
        IMPLICIT NONE
        INTEGER, INTENT(IN) :: M, N, LDG, LDV
-#ifdef __GFORTRAN__
-       REAL(KIND=c_long_double), INTENT(IN) :: G(LDG,N)
-       REAL(KIND=c_long_double), INTENT(OUT) :: V(LDV,N), SV(N)
-#else
-       REAL(KIND=REAL128), INTENT(IN) :: G(LDG,N)
-       REAL(KIND=REAL128), INTENT(OUT) :: V(LDV,N), SV(N)
-#endif
+       COMPLEX(KIND=REAL64), INTENT(IN) :: G(LDG,N)
+       COMPLEX(KIND=REAL64), INTENT(OUT) :: V(LDV,N)
+       REAL(KIND=REAL64), INTENT(OUT) :: SV(N)
        INTEGER, INTENT(OUT) :: IX(N)
        INTEGER, INTENT(INOUT) :: INFO
-     END SUBROUTINE XINISX
+     END SUBROUTINE ZINISX
   END INTERFACE
   INTERFACE
-     PURE SUBROUTINE XSCALG(M, N, G, LDG, GX, GS, INFO)
-#ifdef __GFORTRAN__
-       USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
-#else
-       USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL128
-#endif
+     PURE SUBROUTINE ZSCALG(M, N, G, LDG, GX, GS, INFO)
+       USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL64
        IMPLICIT NONE
        INTEGER, INTENT(IN) :: M, N, LDG
-#ifdef __GFORTRAN__
-       REAL(KIND=c_long_double), INTENT(INOUT) :: G(LDG,N), GX
-#else
-       REAL(KIND=REAL128), INTENT(INOUT) :: G(LDG,N), GX
-#endif
+       COMPLEX(KIND=REAL64), INTENT(INOUT) :: G(LDG,N)
+       REAL(KIND=REAL64), INTENT(INOUT) :: GX
        INTEGER, INTENT(INOUT) :: GS, INFO
-     END SUBROUTINE XSCALG
+     END SUBROUTINE ZSCALG
   END INTERFACE
   INTERFACE
-     PURE SUBROUTINE XPRCYC(M, N, G, LDG, JPOS, SV, IX, INFO)
-#ifdef __GFORTRAN__
-       USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
-#else
-       USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL128
-#endif
+     PURE SUBROUTINE ZPRCYC(M, N, G, LDG, JPOS, SV, IX, INFO)
+       USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL64
        IMPLICIT NONE
        INTEGER, INTENT(IN) :: M, N, LDG, JPOS
-#ifdef __GFORTRAN__
-       REAL(KIND=c_long_double), INTENT(INOUT) :: G(LDG,N)
-       REAL(KIND=c_long_double), INTENT(OUT) :: SV(N)
-#else
-       REAL(KIND=REAL128), INTENT(INOUT) :: G(LDG,N)
-       REAL(KIND=REAL128), INTENT(OUT) :: SV(N)
-#endif
+       COMPLEX(KIND=REAL64), INTENT(INOUT) :: G(LDG,N)
+       REAL(KIND=REAL64), INTENT(OUT) :: SV(N)
        INTEGER, INTENT(INOUT) :: IX(N), INFO
-     END SUBROUTINE XPRCYC
+     END SUBROUTINE ZPRCYC
   END INTERFACE
   INTERFACE
-     SUBROUTINE XTRNSF(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, TOL, IX, INFO)
-#ifdef __GFORTRAN__
-       USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
-#else
-       USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL128
-#endif
+     SUBROUTINE ZTRNSF(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, TOL, IX, INFO)
+       USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL64
        IMPLICIT NONE
        INTEGER, INTENT(IN) :: M, N, LDG, LDV, P, Q, IX(N)
-#ifdef __GFORTRAN__
-       REAL(KIND=c_long_double), INTENT(INOUT) :: G(LDG,N), V(LDV,N), SV(N), GX, TOL
-#else
-       REAL(KIND=REAL128), INTENT(INOUT) :: G(LDG,N), V(LDV,N), SV(N), GX, TOL
-#endif
+       COMPLEX(KIND=REAL64), INTENT(INOUT) :: G(LDG,N), V(LDV,N), TOL
+       REAL(KIND=REAL64), INTENT(INOUT) :: SV(N), GX
        INTEGER, INTENT(INOUT) :: GS, INFO
-     END SUBROUTINE XTRNSF
+     END SUBROUTINE ZTRNSF
   END INTERFACE
   INTERFACE
-     SUBROUTINE XTRACK(N, SV, GX, GS, SWP, NTR)
-#ifdef __GFORTRAN__
-       USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
-#else
-       USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL128
-#endif
+     SUBROUTINE DTRACK(N, SV, GX, GS, SWP, NTR)
+       USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL64
        IMPLICIT NONE
        INTEGER, INTENT(IN) :: N, GS, SWP, NTR
-#ifdef __GFORTRAN__
-       REAL(KIND=c_long_double), INTENT(IN) :: SV(N), GX
-#else
-       REAL(KIND=REAL128), INTENT(IN) :: SV(N), GX
-#endif
-     END SUBROUTINE XTRACK
+       REAL(KIND=REAL64), INTENT(IN) :: SV(N), GX
+     END SUBROUTINE DTRACK
   END INTERFACE
-#ifdef __GFORTRAN__
-  INTEGER, PARAMETER :: K = c_long_double
-#else
-  INTEGER, PARAMETER :: K = REAL128
-#endif
+  INTEGER, PARAMETER :: K = REAL64
   REAL(KIND=K), PARAMETER :: ZERO = 0.0_K, ONE = 1.0_K, EPS = EPSILON(EPS) / 2
   INTEGER, INTENT(IN) :: M, N, LDG, LDV, JPOS
-  REAL(KIND=K), INTENT(INOUT) :: G(LDG,N)
-  REAL(KIND=K), INTENT(OUT) :: V(LDV,N), SV(N), WRK(M,N)
+  COMPLEX(KIND=K), INTENT(INOUT) :: G(LDG,N)
+  COMPLEX(KIND=K), INTENT(OUT) :: V(LDV,N), WRK(M,N)
+  REAL(KIND=K), INTENT(OUT) :: SV(N)
   INTEGER, INTENT(OUT) :: IX(N)
   INTEGER, INTENT(INOUT) :: GS, INFO
+  COMPLEX(KIND=K) :: Z
   REAL(KIND=K) :: GX, TOL, X
   INTEGER(KIND=INT64) :: TT
   INTEGER :: O, P, Q, R, S, T, W
@@ -127,18 +81,18 @@ SUBROUTINE XJSVDF(M, N, G, LDG, V, LDV, JPOS, SV, GS, IX, WRK, INFO)
   GS = 0
   TT = 0_INT64
   O = -1
-  CALL XSCALG(M, N, G, LDG, GX, GS, O)
+  CALL ZSCALG(M, N, G, LDG, GX, GS, O)
   IF (O .LT. 0) THEN
      INFO = -3
      GOTO 9
   END IF
   R = INFO
-  CALL XINISX(M, N, G, LDG, V, LDV, SV, IX, R)
+  CALL ZINISX(M, N, G, LDG, V, LDV, SV, IX, R)
   IF (R .NE. 0) THEN
      INFO = -10
      GOTO 9
   END IF
-  CALL XTRACK(N, SV, GX, GS, R, -S)
+  CALL DTRACK(N, SV, GX, GS, R, -S)
   TOL = M
   TOL = SQRT(TOL) * EPS
   DO R = 1, S
@@ -147,7 +101,7 @@ SUBROUTINE XJSVDF(M, N, G, LDG, V, LDV, JPOS, SV, GS, IX, WRK, INFO)
      ELSE ! SLOW
         O = 0
      END IF
-     CALL XPRCYC(M, N, G, LDG, JPOS, SV, IX, O)
+     CALL ZPRCYC(M, N, G, LDG, JPOS, SV, IX, O)
      IF (O .LT. 0) THEN
         INFO = -8
         GOTO 9
@@ -175,13 +129,13 @@ SUBROUTINE XJSVDF(M, N, G, LDG, V, LDV, JPOS, SV, GS, IX, WRK, INFO)
            END IF
         END IF
         DO Q = P+1, JPOS
-           X = TOL
+           Z = TOL
            IF (INFO .EQ. 0) THEN
               O = 0
            ELSE ! SLOW
               O = 2
            END IF
-           CALL XTRNSF(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, X, IX, O)
+           CALL ZTRNSF(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, Z, IX, O)
            SELECT CASE (O)
            CASE (0,1)
               CONTINUE
@@ -197,13 +151,13 @@ SUBROUTINE XJSVDF(M, N, G, LDG, V, LDV, JPOS, SV, GS, IX, WRK, INFO)
      ! the off-diagonal block (hyp)
      DO P = 1, JPOS
         DO Q = JPOS+1, N
-           X = TOL
+           Z = TOL
            IF (INFO .EQ. 0) THEN
               O = 1
            ELSE ! SLOW
               O = 3
            END IF
-           CALL XTRNSF(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, X, IX, O)
+           CALL DTRNSF(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, Z, IX, O)
            SELECT CASE (O)
            CASE (0,1)
               CONTINUE
@@ -236,13 +190,13 @@ SUBROUTINE XJSVDF(M, N, G, LDG, V, LDV, JPOS, SV, GS, IX, WRK, INFO)
            T = T + 1
         END IF
         DO Q = P+1, N
-           X = TOL
+           Z = TOL
            IF (INFO .EQ. 0) THEN
               O = 0
            ELSE ! SLOW
               O = 2
            END IF
-           CALL XTRNSF(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, X, IX, O)
+           CALL ZTRNSF(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, Z, IX, O)
            SELECT CASE (O)
            CASE (0,1)
               CONTINUE
@@ -255,7 +209,7 @@ SUBROUTINE XJSVDF(M, N, G, LDG, V, LDV, JPOS, SV, GS, IX, WRK, INFO)
            END SELECT
         END DO
      END DO
-     CALL XTRACK(N, SV, GX, GS, R, -T)
+     CALL DTRACK(N, SV, GX, GS, R, -T)
      IF (T .EQ. 0) EXIT
   END DO
   IF (R .LE. S) THEN
@@ -280,11 +234,13 @@ SUBROUTINE XJSVDF(M, N, G, LDG, V, LDV, JPOS, SV, GS, IX, WRK, INFO)
            IF (INFO .EQ. 0) THEN
               X = ONE / SV(Q)
               DO P = 1, M
-                 WRK(P,Q) = G(P,IX(Q)) * X
+                 Z = G(P,IX(Q))
+                 WRK(P,Q) = CMPLX(REAL(Z) * X, AIMAG(Z) * X, K)
               END DO
            ELSE ! SLOW
               DO P = 1, M
-                 WRK(P,Q) = G(P,IX(Q)) / SV(Q)
+                 Z = G(P,IX(Q))
+                 WRK(P,Q) = CMPLX(REAL(Z) / SV(Q), AIMAG(Z) / SV(Q), K)
               END DO
            END IF
         ELSE ! no division
@@ -301,4 +257,4 @@ SUBROUTINE XJSVDF(M, N, G, LDG, V, LDV, JPOS, SV, GS, IX, WRK, INFO)
   END IF
   INFO = R
 9 WRK(1,1) = REAL(TT, K)
-END SUBROUTINE XJSVDF
+END SUBROUTINE ZJSVDF

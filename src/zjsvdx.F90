@@ -1,4 +1,4 @@
-PROGRAM DJSVDX
+PROGRAM ZJSVDX
 #ifdef __GFORTRAN__
   USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long, c_long_double
   USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: INT64, OUTPUT_UNIT, REAL64
@@ -24,6 +24,23 @@ PROGRAM DJSVDX
 #endif
      END FUNCTION XFMA
   END INTERFACE
+  INTERFACE
+     PURE FUNCTION WFMA(A, B, C)
+#ifdef __GFORTRAN__
+       USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
+#else
+       USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL128
+#endif
+       IMPLICIT NONE
+#ifdef __GFORTRAN__
+       COMPLEX(KIND=c_long_double), INTENT(IN) :: A, B, C
+       COMPLEX(KIND=c_long_double) :: WFMA
+#else
+       COMPLEX(KIND=REAL128), INTENT(IN) :: A, B, C
+       COMPLEX(KIND=REAL128) :: WFMA
+#endif
+     END FUNCTION WFMA
+  END INTERFACE
 #ifdef __GFORTRAN__
   INTERFACE
      PURE FUNCTION HYPOTX(X, Y) BIND(C,NAME='cr_hypotl')
@@ -41,17 +58,20 @@ PROGRAM DJSVDX
   REAL(KIND=KK), PARAMETER :: QZERO = 0.0_KK, QONE = 1.0_KK
   CHARACTER(LEN=256) :: CLA
   REAL(KIND=KK) :: X, Y, Z
-  REAL(KIND=REAL64) :: T
+  COMPLEX(KIND=KK) :: H
+  COMPLEX(KIND=REAL64) :: T
+  REAL(KIND=REAL64) :: R
   INTEGER(KIND=INT64) :: CLK(3)
   INTEGER :: M, N, LDG, LDV, JPOS, GS, INFO, I, J, L
   INTEGER(KIND=INT64), ALLOCATABLE :: JV(:)
-  REAL(KIND=REAL64), ALLOCATABLE :: G(:,:), V(:,:), WRK(:,:), SV(:), LY(:)
+  COMPLEX(KIND=REAL64), ALLOCATABLE :: G(:,:), V(:,:), WRK(:,:)
+  REAL(KIND=REAL64), ALLOCATABLE :: SV(:), LY(:)
   INTEGER, ALLOCATABLE :: IX(:)
-  REAL(KIND=KK), ALLOCATABLE :: U(:,:), W(:,:)
-  EXTERNAL :: BFOPEN, DJSVDF
+  COMPLEX(KIND=KK), ALLOCATABLE :: U(:,:), W(:,:)
+  EXTERNAL :: BFOPEN, ZJSVDF
   ! read the command line arguments
   I = COMMAND_ARGUMENT_COUNT()
-  IF (I .NE. 5) STOP 'djsvdx.exe M N JPOS OPTS FILE'
+  IF (I .NE. 5) STOP 'zjsvdx.exe M N JPOS OPTS FILE'
   CALL GET_COMMAND_ARGUMENT(1, CLA)
   READ (CLA,*) M
   IF (M .LT. 0) THEN
@@ -111,20 +131,20 @@ PROGRAM DJSVDX
   ALLOCATE(WRK(M,N))
   ALLOCATE(SV(N))
   ALLOCATE(IX(N))
-  ! call DJSVDF
+  ! call ZJSVDF
   GS = HUGE(GS)
   CALL SYSTEM_CLOCK(CLK(1), CLK(2), CLK(3))
-  CALL DJSVDF(M, N, G, LDG, V, LDV, JPOS, SV, GS, IX, WRK, INFO)
+  CALL ZJSVDF(M, N, G, LDG, V, LDV, JPOS, SV, GS, IX, WRK, INFO)
   CALL SYSTEM_CLOCK(CLK(3))
   CLK(1) = CLK(3) - CLK(1)
   CLK(3) = MOD(CLK(1), CLK(2)) * 1000000_INT64
   CLK(1) = CLK(1) / CLK(2)
   CLK(3) = CLK(3) / CLK(2)
-  T = WRK(1,1)
-  CLK(2) = INT(T, INT64)
+  R = REAL(WRK(1,1))
+  CLK(2) = INT(R, INT64)
   WRITE (OUTPUT_UNIT,'(I11,A,I12,A,I6,A,I8,A,I6.6,A)',ADVANCE='NO') INFO, ',', CLK(2), ',', GS, ',', CLK(1), '.', CLK(3), ','
   FLUSH(OUTPUT_UNIT)
-  IF (INFO .LT. 0) STOP 'DJSVDF'
+  IF (INFO .LT. 0) STOP 'ZJSVDF'
   CALL BFOPEN(TRIM(CLA)//'.YU', 'WO', I, J)
   IF (J .NE. 0) STOP 'YU'
   WRITE (UNIT=I, IOSTAT=J) G
@@ -140,13 +160,14 @@ PROGRAM DJSVDX
   WRITE (UNIT=I, IOSTAT=J) SV
   IF (J .NE. 0) STOP 'SV'
   CLOSE(I)
-  ! V^-1 = J V^T J
-  DO J = 2, N
+  ! V^-1 = J V^H J
+  DO J = 1, N
      DO I = 1, J-1
         T = V(I,J)
-        V(I,J) = V(J,I)
-        V(J,I) = T
+        V(I,J) = CONJG(V(J,I))
+        V(J,I) = CONJG(T)
      END DO
+     V(J,J) = CONJG(V(J,J))
   END DO
   DO J = 1, JPOS
      DO I = JPOS+1, N
@@ -170,7 +191,7 @@ PROGRAM DJSVDX
         Y = SV(J)
         Y = SCALE(Y, L)
         DO I = 1, M
-           U(I,J) = REAL(G(I,J), KK) * Y
+           U(I,J) = CMPLX(REAL(REAL(G(I,J)), KK) * Y, REAL(AIMAG(G(I,J)), KK) * Y, KK)
         END DO
      END DO
   END IF
@@ -209,9 +230,9 @@ PROGRAM DJSVDX
         L = 0
         DO J = 1, N-I
            IF (LY(J) .LT. LY(J+1)) THEN
-              T = LY(J)
+              R = LY(J)
               LY(J) = LY(J+1)
-              LY(J+1) = T
+              LY(J+1) = R
               L = L + 1
            END IF
         END DO
@@ -223,9 +244,9 @@ PROGRAM DJSVDX
         L = 0
         DO J = 1, JPOS-I
            IF (SV(J) .LT. SV(J+1)) THEN
-              T = SV(J)
+              R = SV(J)
               SV(J) = SV(J+1)
-              SV(J+1) = T
+              SV(J+1) = R
               L = L + 1
            END IF
         END DO
@@ -237,9 +258,9 @@ PROGRAM DJSVDX
         L = 0
         DO J = JPOS+1, N-I
            IF (SV(J) .GT. SV(J+1)) THEN
-              T = SV(J)
+              R = SV(J)
               SV(J) = SV(J+1)
-              SV(J+1) = T
+              SV(J+1) = R
               L = L + 1
            END IF
         END DO
@@ -274,12 +295,13 @@ PROGRAM DJSVDX
      DO I = 1, M
         DO J = 1, N
            W(I,J) = G(I,J)
-           Z = HYPOTX(Z, W(I,J))
+           Z = HYPOTX(Z, HYPOTX(REAL(W(I,J)), AIMAG(W(I,J))))
            DO L = 1, N
-              ! W(I,J) = W(I,J) - U(I,L) * REAL(V(L,J), KK)
-              W(I,J) = XFMA(U(I,L), REAL(-V(L,J), KK), W(I,J))
+              ! W(I,J) = W(I,J) - U(I,L) * V(L,J)
+              H = CMPLX(REAL(-REAL(V(L,J)), KK), REAL(-AIMAG(V(L,J)), KK), KK)
+              W(I,J) = WFMA(U(I,L), H, W(I,J))
            END DO
-           Y = HYPOTX(Y, W(I,J))
+           Y = HYPOTX(Y, HYPOTX(REAL(W(I,J)), AIMAG(W(I,J))))
         END DO
      END DO
      Y = Y / Z
@@ -292,4 +314,4 @@ PROGRAM DJSVDX
   IF (ALLOCATED(WRK)) DEALLOCATE(WRK)
   IF (ALLOCATED(V)) DEALLOCATE(V)
   IF (ALLOCATED(G)) DEALLOCATE(G)
-END PROGRAM DJSVDX
+END PROGRAM ZJSVDX

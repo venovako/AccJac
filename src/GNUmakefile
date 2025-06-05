@@ -85,7 +85,7 @@ dmmmsq.o jmmmsq.o qmmmsq.o wmmmsq.o xmmmsq.o ymmmsq.o zmmmsq.o\
 cdsort.o ddsort.o sdsort.o wdsort.o xdsort.o zdsort.o\
 cjsvdc.o djsvdc.o sjsvdc.o wjsvdc.o xjsvdc.o zjsvdc.o\
 cjsvdr.o djsvdr.o sjsvdr.o wjsvdr.o xjsvdr.o zjsvdr.o\
-djsvdf.o sjsvdf.o xjsvdf.o\
+djsvdf.o sjsvdf.o xjsvdf.o zjsvdf.o\
 cjevdc.o djevdc.o sjevdc.o wjevdc.o xjevdc.o zjevdc.o\
 cjevdr.o djevdr.o sjevdr.o wjevdr.o xjevdr.o zjevdr.o\
 jstep.o jsweep.o djevdm.o zjevdm.o
@@ -99,7 +99,7 @@ cevdj.exe zevdj.exe\
 cjsvdt.exe djsvdt.exe sjsvdt.exe zjsvdt.exe\
 cjevdt.exe djevdt.exe sjevdt.exe wjevdt.exe xjevdt.exe zjevdt.exe\
 cpproc.exe dpproc.exe spproc.exe wpproc.exe xpproc.exe zpproc.exe\
-djsvdx.exe sjsvdx.exe
+djsvdx.exe sjsvdx.exe zjsvdx.exe
 
 ifdef MPFR
 OBJD += \

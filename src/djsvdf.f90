@@ -89,7 +89,7 @@ SUBROUTINE DJSVDF(M, N, G, LDG, V, LDV, JPOS, SV, GS, IX, WRK, INFO)
   END IF
   CALL DTRACK(N, SV, GX, GS, R, -S)
   TOL = M
-  TOL = SQRT(TOL) * EPS  
+  TOL = SQRT(TOL) * EPS
   DO R = 1, S
      IF (INFO .EQ. 0) THEN
         O = 1
