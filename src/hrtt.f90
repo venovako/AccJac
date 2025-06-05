@@ -4,7 +4,6 @@
 #endif
   TG = CMPLX(TGR, TGI, K)
   IF (INFO .EQ. 0) THEN
-     GX = ZERO
      DO I = 1, M
         ! XX = (Y(I) * TG + X(I)) * CS
         !DIR$ FMA

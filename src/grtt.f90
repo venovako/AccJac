@@ -3,7 +3,6 @@
   IF (INFO .LT. 0) RETURN
 #endif
   IF (INFO .EQ. 0) THEN
-     GX = ZERO
      DO I = 1, M
         !DIR$ FMA
         XX = (X(I) + Y(I) * TG) * CS

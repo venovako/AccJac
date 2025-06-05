@@ -51,6 +51,8 @@ crn.o wrn.o zrn.o\
 cjaevd.o zjaevd.o\
 drsafe.o qrsafe.o srsafe.o\
 qre.o qdetm1.o ydetm1.o\
+crth.o drth.o srth.o wrth.o xrth.o zrth.o\
+crtt.o drtt.o srtt.o wrtt.o xrtt.o zrtt.o\
 croth.o droth.o sroth.o zroth.o\
 crott.o drott.o srott.o zrott.o\
 crtvh.o drtvh.o srtvh.o wrtvh.o xrtvh.o zrtvh.o\
@@ -74,8 +76,9 @@ dnsort.o snsort.o xnsort.o\
 cprcyc.o dprcyc.o sprcyc.o wprcyc.o xprcyc.o zprcyc.o\
 ctrans.o dtrans.o strans.o ztrans.o\
 ctrana.o dtrana.o strana.o wtrana.o xtrana.o ztrana.o\
+dtrnsf.o\
 coffa.o doffa.o soffa.o zoffa.o\
-dtrack.o strack.o\
+dtrack.o strack.o xtrack.o\
 ctrace.o dtrace.o strace.o wtrace.o xtrace.o ztrace.o\
 cnrmoa.o dnrmoa.o snrmoa.o wnrmoa.o xnrmoa.o znrmoa.o\
 dtrkoa.o ztrkoa.o\
@@ -128,7 +131,6 @@ wrott.o xrott.o\
 winisv.o xinisv.o\
 wtrans.o xtrans.o\
 woffa.o xoffa.o\
-xtrack.o\
 wjsvdc.o xjsvdc.o\
 wjsvdr.o xjsvdr.o
 

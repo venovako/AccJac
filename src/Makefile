@@ -65,8 +65,9 @@ ccnrmf.obj dcnrmf.obj scnrmf.obj wcnrmf.obj xcnrmf.obj zcnrmf.obj \
 dnsort.obj snsort.obj xnsort.obj \
 ctrans.obj dtrans.obj strans.obj ztrans.obj \
 ctrana.obj dtrana.obj strana.obj wtrana.obj xtrana.obj ztrana.obj \
+dtrnsf.obj \
 coffa.obj doffa.obj soffa.obj zoffa.obj \
-dtrack.obj strack.obj \
+dtrack.obj strack.obj xtrack.obj \
 ctrace.obj dtrace.obj strace.obj wtrace.obj xtrace.obj ztrace.obj \
 cnrmoa.obj dnrmoa.obj snrmoa.obj wnrmoa.obj xnrmoa.obj znrmoa.obj \
 dtrkoa.obj ztrkoa.obj \

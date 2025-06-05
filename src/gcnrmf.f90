@@ -3,7 +3,7 @@
   IF (LDG .LT. M) INFO = -4
   IF (N .LT. 0) INFO = -2
   IF (M .LT. 0) INFO = -1
-  IF (INFO .NE. 0) RETURN
+  IF (INFO .LT. 0) RETURN
 #endif
   DO J = 1, N
      L = IX(J)

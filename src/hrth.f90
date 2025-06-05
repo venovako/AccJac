@@ -4,7 +4,6 @@
 #endif
   TH = CMPLX(THR, THI, K)
   IF (INFO .EQ. 0) THEN
-     GX = ZERO
      DO I = 1, M
         ! XX = (Y(I) * TH + X(I)) * CH
         !DIR$ FMA
