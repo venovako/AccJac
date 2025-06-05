@@ -74,7 +74,7 @@ dnsort.o snsort.o xnsort.o\
 cprcyc.o dprcyc.o sprcyc.o wprcyc.o xprcyc.o zprcyc.o\
 ctrans.o dtrans.o strans.o wtrans.o xtrans.o ztrans.o\
 ctrana.o dtrana.o strana.o wtrana.o xtrana.o ztrana.o\
-dtrnsf.o strnsf.o xtrnsf.o\
+dtrnsf.o strnsf.o xtrnsf.o ztrnsf.o\
 coffa.o doffa.o soffa.o woffa.o xoffa.o zoffa.o\
 dtrack.o strack.o xtrack.o\
 ctrace.o dtrace.o strace.o wtrace.o xtrace.o ztrace.o\

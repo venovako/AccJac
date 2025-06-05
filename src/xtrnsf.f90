@@ -121,7 +121,7 @@ SUBROUTINE XTRNSF(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, TOL, IX, INFO)
      END SUBROUTINE XLJTV2
   END INTERFACE
   INTERFACE
-     PURE SUBROUTINE XRTT(M, X, Y, CS, TG, GX, INFO)
+     PURE SUBROUTINE XRTT(M, X, Y, CS, TN, GX, INFO)
 #ifdef __GFORTRAN__
        USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
 #else
@@ -131,10 +131,10 @@ SUBROUTINE XTRNSF(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, TOL, IX, INFO)
        INTEGER, INTENT(IN) :: M
 #ifdef __GFORTRAN__
        REAL(KIND=c_long_double), INTENT(INOUT) :: X(M), Y(M), GX
-       REAL(KIND=c_long_double), INTENT(IN) :: CS, TG
+       REAL(KIND=c_long_double), INTENT(IN) :: CS, TN
 #else
        REAL(KIND=REAL128), INTENT(INOUT) :: X(M), Y(M), GX
-       REAL(KIND=REAL128), INTENT(IN) :: CS, TG
+       REAL(KIND=REAL128), INTENT(IN) :: CS, TN
 #endif
        INTEGER, INTENT(INOUT) :: INFO
      END SUBROUTINE XRTT
@@ -285,8 +285,8 @@ SUBROUTINE XTRNSF(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, TOL, IX, INFO)
      IF (O .EQ. 0) THEN
         ! S = ABS(A21 / (SV(P) * SV(Q)))
         ! norm update, trig:
-        ! SQRT(SV(P) + TG * (S * SV(Q))) * SQRT(SV(P))
-        ! SQRT(SV(Q) - TG * (S * SV(P))) * SQRT(SV(Q))
+        ! SQRT(SV(P) + TN * (S * SV(Q))) * SQRT(SV(P))
+        ! SQRT(SV(Q) - TN * (S * SV(P))) * SQRT(SV(Q))
         ! norm update, hyp:
         ! SQRT(SV(P) + TH * (S * SV(Q))) * SQRT(SV(P))
         ! SQRT(SV(Q) + TH * (S * SV(P))) * SQRT(SV(Q))

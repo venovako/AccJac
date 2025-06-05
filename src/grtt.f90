@@ -5,18 +5,18 @@
   IF (INFO .EQ. 0) THEN
      DO I = 1, M
         !DIR$ FMA
-        XX = (X(I) + Y(I) * TG) * CS
+        XX = (X(I) + Y(I) * TN) * CS
         !DIR$ FMA
-        YY = (Y(I) - X(I) * TG) * CS
+        YY = (Y(I) - X(I) * TN) * CS
         X(I) = XX
         Y(I) = YY
      END DO
   ELSE ! INFO .NE. 0
      DO I = 1, M
         !DIR$ FMA
-        XX = (X(I) + Y(I) * TG) * CS
+        XX = (X(I) + Y(I) * TN) * CS
         !DIR$ FMA
-        YY = (Y(I) - X(I) * TG) * CS
+        YY = (Y(I) - X(I) * TN) * CS
         X(I) = XX
         Y(I) = YY
         GX = MAX(GX, ABS(XX), ABS(YY))

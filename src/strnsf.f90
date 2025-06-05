@@ -30,8 +30,8 @@ SUBROUTINE STRNSF(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, TOL, IX, INFO)
        USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL32
        IMPLICIT NONE
        INTEGER, INTENT(IN) :: M
-       REAL(KIND=REAL32), INTENT(IN) :: X(M), Y(M), MX, MY
        INTEGER, INTENT(INOUT) :: INFO
+       REAL(KIND=REAL32), INTENT(IN) :: X(M), Y(M), MX, MY
        REAL(KIND=REAL32) :: SSDP
      END FUNCTION SSDP
   END INTERFACE
@@ -63,12 +63,12 @@ SUBROUTINE STRNSF(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, TOL, IX, INFO)
      END SUBROUTINE SLJTV2
   END INTERFACE
   INTERFACE
-     PURE SUBROUTINE SRTT(M, X, Y, CS, TG, GX, INFO)
+     PURE SUBROUTINE SRTT(M, X, Y, CS, TN, GX, INFO)
        USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL32
        IMPLICIT NONE
        INTEGER, INTENT(IN) :: M
        REAL(KIND=REAL32), INTENT(INOUT) :: X(M), Y(M), GX
-       REAL(KIND=REAL32), INTENT(IN) :: CS, TG
+       REAL(KIND=REAL32), INTENT(IN) :: CS, TN
        INTEGER, INTENT(INOUT) :: INFO
      END SUBROUTINE SRTT
   END INTERFACE
@@ -197,8 +197,8 @@ SUBROUTINE STRNSF(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, TOL, IX, INFO)
      IF (O .EQ. 0) THEN
         ! S = ABS(A21 / (SV(P) * SV(Q)))
         ! norm update, trig:
-        ! SQRT(SV(P) + TG * (S * SV(Q))) * SQRT(SV(P))
-        ! SQRT(SV(Q) - TG * (S * SV(P))) * SQRT(SV(Q))
+        ! SQRT(SV(P) + TN * (S * SV(Q))) * SQRT(SV(P))
+        ! SQRT(SV(Q) - TN * (S * SV(P))) * SQRT(SV(Q))
         ! norm update, hyp:
         ! SQRT(SV(P) + TH * (S * SV(Q))) * SQRT(SV(P))
         ! SQRT(SV(Q) + TH * (S * SV(P))) * SQRT(SV(Q))
