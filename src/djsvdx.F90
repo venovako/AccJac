@@ -65,12 +65,12 @@ PROGRAM DJSVDX
   CALL GET_COMMAND_ARGUMENT(4, CLA)
   READ (CLA,*) L
   IF (L .LT. 0) STOP 'OPTS'
-  L = IAND(L, 7)
+  L = IAND(L, 1)
   CALL GET_COMMAND_ARGUMENT(2, CLA)
   READ (CLA,*) N
   IF (N .LT. 0) THEN
      N = -N
-     L = IOR(L, 8)
+     L = IOR(L, 2)
   END IF
   IF ((N .EQ. 0) .OR. (N .GT. M)) STOP 'N'
   CALL GET_COMMAND_ARGUMENT(3, CLA)
@@ -113,12 +113,12 @@ PROGRAM DJSVDX
   ! allocate the rest
   LDV = N
   ALLOCATE(V(LDV,N))
-  INFO = IAND(L, 3)
-  IF (IAND(L, 8) .EQ. 0) THEN
+  INFO = IAND(L, 1)
+  IF (IAND(L, 2) .EQ. 0) THEN
      ALLOCATE(WRK(M,N))
   ELSE ! track off
      ALLOCATE(WRK(2*M,N))
-     INFO = IOR(INFO, 4)
+     INFO = IOR(INFO, 2)
   END IF
   ALLOCATE(SV(N))
   ALLOCATE(IX(N))
@@ -132,7 +132,7 @@ PROGRAM DJSVDX
   CLK(1) = CLK(1) / CLK(2)
   CLK(3) = CLK(3) / CLK(2)
   T = WRK(1,1)
-  CLK(2) = TRANSFER(T, 0_INT64)
+  CLK(2) = INT(T, INT64)
   WRITE (OUTPUT_UNIT,'(I11,A,I12,A,I6,A,I8,A,I6.6,A)',ADVANCE='NO') INFO, ',', CLK(2), ',', GS, ',', CLK(1), '.', CLK(3), ','
   FLUSH(OUTPUT_UNIT)
   IF (INFO .LT. 0) STOP 'DJSVDF'
