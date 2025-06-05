@@ -98,7 +98,7 @@ PROGRAM SJSVDX
   CLK(3) = CLK(3) / CLK(2)
   T = WRK(1,1)
   CLK(2) = INT(T, INT64)
-  WRITE (OUTPUT_UNIT,'(I11,A,I12,AI6,A,I8,A,I6.6,A)',ADVANCE='NO') INFO, ',', CLK(2), ',', GS, ',', CLK(1), '.', CLK(3), ','
+  WRITE (OUTPUT_UNIT,'(I11,A,I12,A,I6,A,I8,A,I6.6,A)',ADVANCE='NO') INFO, ',', CLK(2), ',', GS, ',', CLK(1), '.', CLK(3), ','
   FLUSH(OUTPUT_UNIT)
   IF (INFO .LT. 0) STOP 'SJSVDF'
   CALL BFOPEN(TRIM(CLA)//'.YU', 'WO', I, J)

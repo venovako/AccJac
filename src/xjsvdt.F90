@@ -43,6 +43,7 @@ PROGRAM XJSVDT
   LDG = M
   ALLOCATE(G(LDG,N))
   CALL BFOPEN(TRIM(CLA)//'.Y', 'RO', I, J)
+  IF (J .NE. 0) CALL BFOPEN(TRIM(CLA)//'.YX', 'RO', I, J)
   IF (J .NE. 0) STOP 'Y'
   READ (UNIT=I, IOSTAT=J) G
   IF (J .NE. 0) STOP 'G'
@@ -135,6 +136,7 @@ PROGRAM XJSVDT
   IF (Z .EQ. QZERO) THEN
      ! read G again
      CALL BFOPEN(TRIM(CLA)//'.Y', 'RO', I, J)
+     IF (J .NE. 0) CALL BFOPEN(TRIM(CLA)//'.YX', 'RO', I, J)
      IF (J .NE. 0) STOP 'Y'
      READ (UNIT=I, IOSTAT=J) G
      IF (J .NE. 0) STOP 'G'
