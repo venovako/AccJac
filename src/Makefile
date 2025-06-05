@@ -43,8 +43,8 @@ drsafe.obj qrsafe.obj srsafe.obj \
 qre.obj qdetm1.obj ydetm1.obj \
 crth.obj drth.obj srth.obj wrth.obj xrth.obj zrth.obj \
 crtt.obj drtt.obj srtt.obj wrtt.obj xrtt.obj zrtt.obj \
-croth.obj droth.obj sroth.obj zroth.obj \
-crott.obj drott.obj srott.obj zrott.obj \
+croth.obj droth.obj sroth.obj wroth.obj xroth.obj zroth.obj \
+crott.obj drott.obj srott.obj wrott.obj xrott.obj zrott.obj \
 crtvh.obj drtvh.obj srtvh.obj wrtvh.obj xrtvh.obj zrtvh.obj \
 crtvt.obj drtvt.obj srtvt.obj wrtvt.obj xrtvt.obj zrtvt.obj \
 crtlt.obj drtlt.obj srtlt.obj wrtlt.obj xrtlt.obj zrtlt.obj \

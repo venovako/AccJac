@@ -53,8 +53,8 @@ drsafe.o qrsafe.o srsafe.o\
 qre.o qdetm1.o ydetm1.o\
 crth.o drth.o srth.o wrth.o xrth.o zrth.o\
 crtt.o drtt.o srtt.o wrtt.o xrtt.o zrtt.o\
-croth.o droth.o sroth.o zroth.o\
-crott.o drott.o srott.o zrott.o\
+croth.o droth.o sroth.o wroth.o xroth.o zroth.o\
+crott.o drott.o srott.o wrott.o xrott.o zrott.o\
 crtvh.o drtvh.o srtvh.o wrtvh.o xrtvh.o zrtvh.o\
 crtvt.o drtvt.o srtvt.o wrtvt.o xrtvt.o zrtvt.o\
 crtlt.o drtlt.o srtlt.o wrtlt.o xrtlt.o zrtlt.o\
@@ -128,8 +128,6 @@ wtest.exe xtest.exe\
 wljv2t.exe xljv2t.exe
 
 OBJD += xrsafe.o\
-wroth.o xroth.o\
-wrott.o xrott.o\
 winisv.o xinisv.o\
 wtrans.o xtrans.o\
 woffa.o xoffa.o\
