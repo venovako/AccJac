@@ -99,7 +99,7 @@ cevdj.exe zevdj.exe\
 cjsvdt.exe djsvdt.exe sjsvdt.exe zjsvdt.exe\
 cjevdt.exe djevdt.exe sjevdt.exe wjevdt.exe xjevdt.exe zjevdt.exe\
 cpproc.exe dpproc.exe spproc.exe wpproc.exe xpproc.exe zpproc.exe\
-djsvdx.exe sjsvdx.exe zjsvdx.exe
+cjsvdx.exe djsvdx.exe sjsvdx.exe zjsvdx.exe
 
 ifdef MPFR
 OBJD += \
