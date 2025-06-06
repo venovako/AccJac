@@ -47,6 +47,16 @@ SUBROUTINE CJSVDF(M, N, G, LDG, V, LDV, JPOS, SV, GS, IX, WRK, INFO)
      END SUBROUTINE CTRNSF
   END INTERFACE
   INTERFACE
+     SUBROUTINE CTRUTI(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, TOL, IX, WRK, INFO)
+       USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL32
+       IMPLICIT NONE
+       INTEGER, INTENT(IN) :: M, N, LDG, LDV, P, Q, IX(N)
+       COMPLEX(KIND=REAL32), INTENT(INOUT) :: G(LDG,N), V(LDV,N), TOL, WRK(M,N)
+       REAL(KIND=REAL32), INTENT(INOUT) :: SV(N), GX
+       INTEGER, INTENT(INOUT) :: GS, INFO
+     END SUBROUTINE CTRUTI
+  END INTERFACE
+  INTERFACE
      SUBROUTINE STRACK(N, SV, GX, GS, SWP, NTR)
        USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL32
        IMPLICIT NONE
@@ -139,7 +149,11 @@ SUBROUTINE CJSVDF(M, N, G, LDG, V, LDV, JPOS, SV, GS, IX, WRK, INFO)
               ELSE ! SLOW
                  O = 2
               END IF
-              CALL CTRNSF(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, Z, IX, WRK, O)
+              IF (L .EQ. 0) THEN
+                 CALL CTRNSF(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, Z, IX, WRK, O)
+              ELSE ! L = 2
+                 CALL CTRUTI(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, Z, IX, WRK, O)
+              END IF
               SELECT CASE (O)
               CASE (0,1)
                  CONTINUE
@@ -161,7 +175,11 @@ SUBROUTINE CJSVDF(M, N, G, LDG, V, LDV, JPOS, SV, GS, IX, WRK, INFO)
               ELSE ! SLOW
                  O = 3
               END IF
-              CALL CTRNSF(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, Z, IX, WRK, O)
+              IF (L .EQ. 0) THEN
+                 CALL CTRNSF(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, Z, IX, WRK, O)
+              ELSE ! L = 2
+                 CALL CTRUTI(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, Z, IX, WRK, O)
+              END IF
               SELECT CASE (O)
               CASE (0,1)
                  CONTINUE
@@ -200,7 +218,11 @@ SUBROUTINE CJSVDF(M, N, G, LDG, V, LDV, JPOS, SV, GS, IX, WRK, INFO)
               ELSE ! SLOW
                  O = 2
               END IF
-              CALL CTRNSF(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, Z, IX, WRK, O)
+              IF (L .EQ. 0) THEN
+                 CALL CTRNSF(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, Z, IX, WRK, O)
+              ELSE ! L = 2
+                 CALL CTRUTI(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, Z, IX, WRK, O)
+              END IF
               SELECT CASE (O)
               CASE (0,1)
                  CONTINUE
@@ -230,7 +252,11 @@ SUBROUTINE CJSVDF(M, N, G, LDG, V, LDV, JPOS, SV, GS, IX, WRK, INFO)
                     O = 2
                  END IF
               END IF
-              CALL CTRNSF(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, Z, IX, WRK, O)
+              IF (L .EQ. 1) THEN
+                 CALL CTRNSF(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, Z, IX, WRK, O)
+              ELSE ! L = 3
+                 CALL CTRUTI(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, Z, IX, WRK, O)
+              END IF
               SELECT CASE (O)
               CASE (0,1)
                  CONTINUE

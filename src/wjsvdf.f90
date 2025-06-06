@@ -90,6 +90,25 @@ SUBROUTINE WJSVDF(M, N, G, LDG, V, LDV, JPOS, SV, GS, IX, WRK, INFO)
      END SUBROUTINE WTRNSF
   END INTERFACE
   INTERFACE
+     SUBROUTINE WTRUTI(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, TOL, IX, WRK, INFO)
+#ifdef __GFORTRAN__
+       USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
+#else
+       USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL128
+#endif
+       IMPLICIT NONE
+       INTEGER, INTENT(IN) :: M, N, LDG, LDV, P, Q, IX(N)
+#ifdef __GFORTRAN__
+       COMPLEX(KIND=c_long_double), INTENT(INOUT) :: G(LDG,N), V(LDV,N), TOL, WRK(M,N)
+       REAL(KIND=c_long_double), INTENT(INOUT) :: SV(N), GX
+#else
+       COMPLEX(KIND=REAL128), INTENT(INOUT) :: G(LDG,N), V(LDV,N), TOL, WRK(M,N)
+       REAL(KIND=REAL128), INTENT(INOUT) :: SV(N), GX
+#endif
+       INTEGER, INTENT(INOUT) :: GS, INFO
+     END SUBROUTINE WTRUTI
+  END INTERFACE
+  INTERFACE
      SUBROUTINE XTRACK(N, SV, GX, GS, SWP, NTR)
 #ifdef __GFORTRAN__
        USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
@@ -194,7 +213,11 @@ SUBROUTINE WJSVDF(M, N, G, LDG, V, LDV, JPOS, SV, GS, IX, WRK, INFO)
               ELSE ! SLOW
                  O = 2
               END IF
-              CALL WTRNSF(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, Z, IX, WRK, O)
+              IF (L .EQ. 0) THEN
+                 CALL WTRNSF(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, Z, IX, WRK, O)
+              ELSE ! L = 2
+                 CALL WTRUTI(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, Z, IX, WRK, O)
+              END IF
               SELECT CASE (O)
               CASE (0,1)
                  CONTINUE
@@ -216,7 +239,11 @@ SUBROUTINE WJSVDF(M, N, G, LDG, V, LDV, JPOS, SV, GS, IX, WRK, INFO)
               ELSE ! SLOW
                  O = 3
               END IF
-              CALL WTRNSF(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, Z, IX, WRK, O)
+              IF (L .EQ. 0) THEN
+                 CALL WTRNSF(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, Z, IX, WRK, O)
+              ELSE ! L = 2
+                 CALL WTRUTI(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, Z, IX, WRK, O)
+              END IF
               SELECT CASE (O)
               CASE (0,1)
                  CONTINUE
@@ -255,7 +282,11 @@ SUBROUTINE WJSVDF(M, N, G, LDG, V, LDV, JPOS, SV, GS, IX, WRK, INFO)
               ELSE ! SLOW
                  O = 2
               END IF
-              CALL WTRNSF(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, Z, IX, WRK, O)
+              IF (L .EQ. 0) THEN
+                 CALL WTRNSF(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, Z, IX, WRK, O)
+              ELSE ! L = 2
+                 CALL WTRUTI(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, Z, IX, WRK, O)
+              END IF
               SELECT CASE (O)
               CASE (0,1)
                  CONTINUE
@@ -285,7 +316,11 @@ SUBROUTINE WJSVDF(M, N, G, LDG, V, LDV, JPOS, SV, GS, IX, WRK, INFO)
                     O = 2
                  END IF
               END IF
-              CALL WTRNSF(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, Z, IX, WRK, O)
+              IF (L .EQ. 1) THEN
+                 CALL WTRNSF(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, Z, IX, WRK, O)
+              ELSE ! L = 3
+                 CALL WTRUTI(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, Z, IX, WRK, O)
+              END IF
               SELECT CASE (O)
               CASE (0,1)
                  CONTINUE
