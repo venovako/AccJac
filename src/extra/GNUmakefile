@@ -23,9 +23,12 @@ OBJ2=
 endif # ?MPFR
 
 OBJ2 += xsqrt.o\
-cfma.o dfma.o sfma.o wfma.o xfma.o zfma.o\
+sfma.o dfma.o xfma.o\
+cfma.o zfma.o wfma.o\
 cjaev2.o djaev2.o qjaev2.o sjaev2.o yjaev2.o zjaev2.o\
 cjiev2.o djiev2.o qjiev2.o sjiev2.o yjiev2.o zjiev2.o\
+clju2.o dlju2.o slju2.o wlju2.o xlju2.o zlju2.o\
+cljv2.o dljv2.o sljv2.o xljv2.o wljv2.o zljv2.o\
 cljtu2.o dljtu2.o sljtu2.o wljtu2.o xljtu2.o zljtu2.o\
 cljtv2.o dljtv2.o sljtv2.o wljtv2.o xljtv2.o zljtv2.o\
 cljau2.o dljau2.o sljau2.o wljau2.o xljau2.o zljau2.o\
@@ -48,6 +51,8 @@ drsafe.o qrsafe.o srsafe.o\
 qre.o qdetm1.o ydetm1.o\
 crth.o drth.o srth.o wrth.o xrth.o zrth.o\
 crtt.o drtt.o srtt.o wrtt.o xrtt.o zrtt.o\
+croth.o droth.o sroth.o wroth.o xroth.o zroth.o\
+crott.o drott.o srott.o wrott.o xrott.o zrott.o\
 crtvh.o drtvh.o srtvh.o wrtvh.o xrtvh.o zrtvh.o\
 crtvt.o drtvt.o srtvt.o wrtvt.o xrtvt.o zrtvt.o\
 crtlt.o drtlt.o srtlt.o wrtlt.o xrtlt.o zrtlt.o\
@@ -62,18 +67,24 @@ cscala.o dscala.o sscala.o wscala.o xscala.o zscala.o\
 cswpc.o dswpc.o sswpc.o wswpc.o xswpc.o zswpc.o\
 cswpr.o dswpr.o sswpr.o wswpr.o xswpr.o zswpr.o\
 cswpxd.o dswpxd.o sswpxd.o wswpxd.o xswpxd.o zswpxd.o\
+cinisv.o dinisv.o sinisv.o winisv.o xinisv.o zinisv.o\
 cinisx.o dinisx.o sinisx.o winisx.o xinisx.o zinisx.o\
 ccnrmf.o dcnrmf.o scnrmf.o wcnrmf.o xcnrmf.o zcnrmf.o\
 dnsort.o snsort.o xnsort.o\
 cprcyc.o dprcyc.o sprcyc.o wprcyc.o xprcyc.o zprcyc.o\
+ctrans.o dtrans.o strans.o wtrans.o xtrans.o ztrans.o\
 ctrana.o dtrana.o strana.o wtrana.o xtrana.o ztrana.o\
 ctrnsf.o dtrnsf.o strnsf.o wtrnsf.o xtrnsf.o ztrnsf.o\
+coffa.o doffa.o soffa.o woffa.o xoffa.o zoffa.o\
 dtrack.o strack.o xtrack.o\
 ctrace.o dtrace.o strace.o wtrace.o xtrace.o ztrace.o\
 cnrmoa.o dnrmoa.o snrmoa.o wnrmoa.o xnrmoa.o znrmoa.o\
+dtrkoa.o ztrkoa.o\
 ctrcoa.o dtrcoa.o strcoa.o wtrcoa.o xtrcoa.o ztrcoa.o\
 dmmmsq.o jmmmsq.o qmmmsq.o wmmmsq.o xmmmsq.o ymmmsq.o zmmmsq.o\
 cdsort.o ddsort.o sdsort.o wdsort.o xdsort.o zdsort.o\
+cjsvdc.o djsvdc.o sjsvdc.o wjsvdc.o xjsvdc.o zjsvdc.o\
+cjsvdr.o djsvdr.o sjsvdr.o wjsvdr.o xjsvdr.o zjsvdr.o\
 cjsvdf.o djsvdf.o sjsvdf.o wjsvdf.o xjsvdf.o zjsvdf.o\
 cjevdc.o djevdc.o sjevdc.o wjevdc.o xjevdc.o zjevdc.o\
 cjevdr.o djevdr.o sjevdr.o wjevdr.o xjevdr.o zjevdr.o\
@@ -85,6 +96,7 @@ EXED=past.exe\
 crnher.exe drnsym.exe srnsym.exe wrnher.exe xrnsym.exe zrnher.exe\
 dxgtg.exe zwghg.exe\
 cevdj.exe zevdj.exe\
+cjsvdt.exe djsvdt.exe sjsvdt.exe zjsvdt.exe\
 cjevdt.exe djevdt.exe sjevdt.exe wjevdt.exe xjevdt.exe zjevdt.exe\
 cpproc.exe dpproc.exe spproc.exe wpproc.exe xpproc.exe zpproc.exe\
 cjsvdx.exe djsvdx.exe sjsvdx.exe zjsvdx.exe
@@ -102,14 +114,20 @@ endif # MPFR
 ifeq ($(COMPILER),gfortran)
 ifeq ($(findstring 86,$(ARCH)),86)
 OBJL += wlaev2.o xlaev2.o
+
 OBJ2 += \
 wjaev2.o xjaev2.o\
 wjiev2.o xjiev2.o
+
 EXE2 += \
 wtest.exe xtest.exe\
 wljv2t.exe xljv2t.exe
+
 OBJD += xrsafe.o
-EXED += wjsvdx.exe xjsvdx.exe
+
+EXED += \
+wjsvdt.exe xjsvdt.exe\
+wjsvdx.exe xjsvdx.exe
 endif # x86_64 or i86pc
 endif # gfortran
 

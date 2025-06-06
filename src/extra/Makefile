@@ -16,9 +16,12 @@ FCFLAGS=$(FCFLAGS) /4I8
 LDFLAGS=/link /RELEASE /LIBPATH:. jaevd.lib jaev2.lib /LIBPATH:..\..\libpvn\src pvn.lib
 
 OBJ2=xsqrt.obj \
-cfma.obj dfma.obj sfma.obj wfma.obj xfma.obj zfma.obj \
+sfma.obj dfma.obj xfma.obj \
+cfma.obj zfma.obj wfma.obj \
 cjaev2.obj djaev2.obj qjaev2.obj sjaev2.obj yjaev2.obj zjaev2.obj \
 cjiev2.obj djiev2.obj qjiev2.obj sjiev2.obj yjiev2.obj zjiev2.obj \
+clju2.obj dlju2.obj slju2.obj xlju2.obj wlju2.obj zlju2.obj \
+cljv2.obj dljv2.obj sljv2.obj xljv2.obj wljv2.obj zljv2.obj \
 cljtu2.obj dljtu2.obj sljtu2.obj wljtu2.obj xljtu2.obj zljtu2.obj \
 cljtv2.obj dljtv2.obj sljtv2.obj wljtv2.obj xljtv2.obj zljtv2.obj \
 cljau2.obj dljau2.obj sljau2.obj wljau2.obj xljau2.obj zljau2.obj \
@@ -39,6 +42,8 @@ drsafe.obj qrsafe.obj srsafe.obj \
 qre.obj qdetm1.obj ydetm1.obj \
 crth.obj drth.obj srth.obj wrth.obj xrth.obj zrth.obj \
 crtt.obj drtt.obj srtt.obj wrtt.obj xrtt.obj zrtt.obj \
+croth.obj droth.obj sroth.obj wroth.obj xroth.obj zroth.obj \
+crott.obj drott.obj srott.obj wrott.obj xrott.obj zrott.obj \
 crtvh.obj drtvh.obj srtvh.obj wrtvh.obj xrtvh.obj zrtvh.obj \
 crtvt.obj drtvt.obj srtvt.obj wrtvt.obj xrtvt.obj zrtvt.obj \
 crtlt.obj drtlt.obj srtlt.obj wrtlt.obj xrtlt.obj zrtlt.obj \
@@ -53,18 +58,24 @@ cscala.obj dscala.obj sscala.obj wscala.obj xscala.obj zscala.obj \
 cswpc.obj dswpc.obj sswpc.obj wswpc.obj xswpc.obj zswpc.obj \
 cswpr.obj dswpr.obj sswpr.obj wswpr.obj xswpr.obj zswpr.obj \
 cswpxd.obj dswpxd.obj sswpxd.obj wswpxd.obj xswpxd.obj zswpxd.obj \
+cinisv.obj dinisv.obj sinisv.obj winisv.obj xinisv.obj zinisv.obj \
 cinisx.obj dinisx.obj sinisx.obj winisx.obj xinisx.obj zinisx.obj \
 ccnrmf.obj dcnrmf.obj scnrmf.obj wcnrmf.obj xcnrmf.obj zcnrmf.obj \
 dnsort.obj snsort.obj xnsort.obj \
 cprcyc.obj dprcyc.obj sprcyc.obj wprcyc.obj xprcyc.obj zprcyc.obj \
+ctrans.obj dtrans.obj strans.obj wtrans.obj xtrans.obj ztrans.obj \
 ctrana.obj dtrana.obj strana.obj wtrana.obj xtrana.obj ztrana.obj \
 ctrnsf.obj dtrnsf.obj strnsf.obj wtrnsf.obj xtrnsf.obj ztrnsf.obj \
+coffa.obj doffa.obj soffa.obj woffa.obj xoffa.obj zoffa.obj \
 dtrack.obj strack.obj xtrack.obj \
 ctrace.obj dtrace.obj strace.obj wtrace.obj xtrace.obj ztrace.obj \
 cnrmoa.obj dnrmoa.obj snrmoa.obj wnrmoa.obj xnrmoa.obj znrmoa.obj \
+dtrkoa.obj ztrkoa.obj \
 ctrcoa.obj dtrcoa.obj strcoa.obj wtrcoa.obj xtrcoa.obj ztrcoa.obj \
 dmmmsq.obj jmmmsq.obj qmmmsq.obj wmmmsq.obj xmmmsq.obj ymmmsq.obj zmmmsq.obj \
 cdsort.obj ddsort.obj sdsort.obj wdsort.obj xdsort.obj zdsort.obj \
+cjsvdc.obj djsvdc.obj sjsvdc.obj wjsvdc.obj xjsvdc.obj zjsvdc.obj \
+cjsvdr.obj djsvdr.obj sjsvdr.obj wjsvdr.obj xjsvdr.obj zjsvdr.obj \
 cjsvdf.obj djsvdf.obj sjsvdf.obj wjsvdf.obj xjsvdf.obj zjsvdf.obj \
 cjevdc.obj djevdc.obj sjevdc.obj wjevdc.obj xjevdc.obj zjevdc.obj \
 cjevdr.obj djevdr.obj sjevdr.obj wjevdr.obj xjevdr.obj zjevdr.obj \
@@ -77,6 +88,7 @@ crnher.exe drnsym.exe srnsym.exe wrnher.exe xrnsym.exe zrnher.exe \
 dxgtg.exe zwghg.exe \
 cevdj.exe zevdj.exe \
 cljv2t.exe dljv2t.exe sljv2t.exe zljv2t.exe \
+cjsvdt.exe djsvdt.exe sjsvdt.exe zjsvdt.exe \
 cjevdt.exe djevdt.exe sjevdt.exe wjevdt.exe xjevdt.exe zjevdt.exe \
 cpproc.exe dpproc.exe spproc.exe wjevdt.exe xpproc.exe zpproc.exe \
 cjsvdx.exe djsvdx.exe sjsvdx.exe zjsvdx.exe
