@@ -59,12 +59,11 @@ SUBROUTINE CJSVDF(M, N, G, LDG, V, LDV, JPOS, SV, GS, IX, WRK, INFO)
   COMPLEX(KIND=K), INTENT(INOUT) :: G(LDG,N)
   COMPLEX(KIND=K), INTENT(OUT) :: V(LDV,N), WRK(M,N)
   REAL(KIND=K), INTENT(OUT) :: SV(N)
-  INTEGER, INTENT(OUT) :: IX(N)
-  INTEGER, INTENT(INOUT) :: GS, INFO
+  INTEGER, INTENT(INOUT) :: GS, IX(N), INFO
   COMPLEX(KIND=K) :: Z
   REAL(KIND=K) :: GX, TOL, X
   INTEGER(KIND=INT64) :: TT
-  INTEGER :: O, P, Q, R, S, T, W
+  INTEGER :: L, O, P, Q, R, S, T, W
   IF ((INFO .LT. 0) .OR. (INFO .GT. 1)) INFO = -12
   IF (GS .LT. 0) INFO = -9
   IF ((JPOS .LT. 0) .OR. (JPOS .GT. N)) INFO = -7
@@ -79,6 +78,7 @@ SUBROUTINE CJSVDF(M, N, G, LDG, V, LDV, JPOS, SV, GS, IX, WRK, INFO)
   END IF
   S = GS
   GS = 0
+  L = IX(1)
   TT = 0_INT64
   O = -1
   CALL CSCALG(M, N, G, LDG, GX, GS, O)
@@ -107,12 +107,75 @@ SUBROUTINE CJSVDF(M, N, G, LDG, V, LDV, JPOS, SV, GS, IX, WRK, INFO)
         GOTO 9
      END IF
      T = 0
-     ! the first diagonal block
-     DO P = 1, JPOS-1
-        IF (P .GT. 1) THEN
+     IF (L .EQ. 0) THEN
+        ! the first diagonal block
+        DO P = 1, JPOS-1
+           IF (P .GT. 1) THEN
+              X = ZERO
+              W = 0
+              DO Q = P, JPOS
+                 IF (SV(Q) .GT. X) THEN
+                    X = SV(Q)
+                    W = Q
+                 END IF
+              END DO
+              IF (W .GT. P) THEN
+                 X = SV(P)
+                 SV(P) = SV(W)
+                 SV(W) = X
+                 O = IX(P)
+                 IX(P) = IX(W)
+                 IX(W) = O
+                 T = T + 1
+              END IF
+           END IF
+           DO Q = P+1, JPOS
+              Z = TOL
+              IF (INFO .EQ. 0) THEN
+                 O = 0
+              ELSE ! SLOW
+                 O = 2
+              END IF
+              CALL CTRNSF(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, Z, IX, O)
+              SELECT CASE (O)
+              CASE (0,1)
+                 CONTINUE
+              CASE (2,3,6,7)
+                 T = T + 1
+                 TT = TT + 1_INT64
+              CASE DEFAULT
+                 INFO = -5
+                 GOTO 9
+              END SELECT
+           END DO
+        END DO
+        ! the off-diagonal block (hyp)
+        DO P = 1, JPOS
+           DO Q = JPOS+1, N
+              Z = TOL
+              IF (INFO .EQ. 0) THEN
+                 O = 1
+              ELSE ! SLOW
+                 O = 3
+              END IF
+              CALL CTRNSF(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, Z, IX, O)
+              SELECT CASE (O)
+              CASE (0,1)
+                 CONTINUE
+              CASE (2,3,6,7)
+                 T = T + 1
+                 TT = TT + 1_INT64
+              CASE DEFAULT
+                 INFO = -5
+                 GOTO 9
+              END SELECT
+           END DO
+        END DO
+        ! the second diagonal block
+        DO P = JPOS+1, N-1
            X = ZERO
            W = 0
-           DO Q = P, JPOS
+           DO Q = P, N
               IF (SV(Q) .GT. X) THEN
                  X = SV(Q)
                  W = Q
@@ -127,88 +190,57 @@ SUBROUTINE CJSVDF(M, N, G, LDG, V, LDV, JPOS, SV, GS, IX, WRK, INFO)
               IX(W) = O
               T = T + 1
            END IF
-        END IF
-        DO Q = P+1, JPOS
-           Z = TOL
-           IF (INFO .EQ. 0) THEN
-              O = 0
-           ELSE ! SLOW
-              O = 2
-           END IF
-           CALL CTRNSF(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, Z, IX, O)
-           SELECT CASE (O)
-           CASE (0,1)
-              CONTINUE
-           CASE (2,3,6,7)
-              T = T + 1
-              TT = TT + 1_INT64
-           CASE DEFAULT
-              INFO = -5
-              GOTO 9
-           END SELECT
+           DO Q = P+1, N
+              Z = TOL
+              IF (INFO .EQ. 0) THEN
+                 O = 0
+              ELSE ! SLOW
+                 O = 2
+              END IF
+              CALL CTRNSF(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, Z, IX, O)
+              SELECT CASE (O)
+              CASE (0,1)
+                 CONTINUE
+              CASE (2,3,6,7)
+                 T = T + 1
+                 TT = TT + 1_INT64
+              CASE DEFAULT
+                 INFO = -5
+                 GOTO 9
+              END SELECT
+           END DO
         END DO
-     END DO
-     ! the off-diagonal block (hyp)
-     DO P = 1, JPOS
-        DO Q = JPOS+1, N
-           Z = TOL
-           IF (INFO .EQ. 0) THEN
-              O = 1
-           ELSE ! SLOW
-              O = 3
-           END IF
-           CALL CTRNSF(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, Z, IX, O)
-           SELECT CASE (O)
-           CASE (0,1)
-              CONTINUE
-           CASE (2,3,6,7)
-              T = T + 1
-              TT = TT + 1_INT64
-           CASE DEFAULT
-              INFO = -5
-              GOTO 9
-           END SELECT
+     ELSE ! row-cyclic
+        DO P = 1, N-1
+           DO Q = P+1, N
+              Z = TOL
+              IF ((P .LE. JPOS) .AND. (Q .GT. JPOS)) THEN
+                 IF (INFO .EQ. 0) THEN
+                    O = 1
+                 ELSE ! SLOW
+                    O = 3
+                 END IF
+              ELSE ! trig
+                 IF (INFO .EQ. 0) THEN
+                    O = 0
+                 ELSE ! SLOW
+                    O = 2
+                 END IF
+              END IF
+              CALL CTRNSF(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, Z, IX, O)
+              SELECT CASE (O)
+              CASE (0,1)
+                 CONTINUE
+              CASE (2,3,6,7)
+                 T = T + 1
+                 TT = TT + 1_INT64
+              CASE DEFAULT
+                 INFO = -5
+                 GOTO 9
+              END SELECT
+           END DO
         END DO
-     END DO
-     ! the second diagonal block
-     DO P = JPOS+1, N-1
-        X = ZERO
-        W = 0
-        DO Q = P, N
-           IF (SV(Q) .GT. X) THEN
-              X = SV(Q)
-              W = Q
-           END IF
-        END DO
-        IF (W .GT. P) THEN
-           X = SV(P)
-           SV(P) = SV(W)
-           SV(W) = X
-           O = IX(P)
-           IX(P) = IX(W)
-           IX(W) = O
-           T = T + 1
-        END IF
-        DO Q = P+1, N
-           Z = TOL
-           IF (INFO .EQ. 0) THEN
-              O = 0
-           ELSE ! SLOW
-              O = 2
-           END IF
-           CALL CTRNSF(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, Z, IX, O)
-           SELECT CASE (O)
-           CASE (0,1)
-              CONTINUE
-           CASE (2,3,6,7)
-              T = T + 1
-              TT = TT + 1_INT64
-           CASE DEFAULT
-              INFO = -5
-              GOTO 9
-           END SELECT
-        END DO
-     END DO
+     END IF
      CALL STRACK(N, SV, GX, GS, R, -T)
      IF (T .EQ. 0) EXIT
   END DO
