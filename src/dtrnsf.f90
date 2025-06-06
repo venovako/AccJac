@@ -5,7 +5,7 @@
 !     INFO = 2: transf
 !     INFO = 3: transf, big th
 !     ... OR 4: downscaling of G and SV
-SUBROUTINE DTRNSF(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, TOL, IX, INFO)
+SUBROUTINE DTRNSF(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, TOL, IX, WRK, INFO)
   USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL64
   IMPLICIT NONE
   INTERFACE
@@ -95,11 +95,12 @@ SUBROUTINE DTRNSF(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, TOL, IX, INFO)
   REAL(KIND=K), PARAMETER :: ZERO = 0.0_K
   INTEGER, INTENT(IN) :: M, N, LDG, LDV, P, Q, IX(N)
   REAL(KIND=K), INTENT(INOUT) :: G(LDG,N), V(LDV,N), SV(N), GX, TOL
+  REAL(KIND=K), INTENT(OUT) :: WRK(M,N)
   INTEGER, INTENT(INOUT) :: GS, INFO
   REAL(KIND=K) :: QPS, APP, AQQ, AQP, C, S, T
   INTEGER :: I, J, L, O
 #ifndef NDEBUG
-  IF ((INFO .LT. 0) .OR. (INFO .GT. 3)) INFO = -14
+  IF ((INFO .LT. 0) .OR. (INFO .GT. 3)) INFO = -15
   IF (TOL .LT. ZERO) INFO = -12
   IF ((Q .LE. 0) .OR. (Q .GT. N)) INFO = -11
   IF ((P .LE. 0) .OR. (P .GT. N)) INFO = -10
@@ -127,14 +128,14 @@ SUBROUTINE DTRNSF(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, TOL, IX, INFO)
   S = ABS(QPS)
 #ifndef NDEBUG
   IF (.NOT. (S .LE. HUGE(S))) THEN
-     INFO = -3
+     INFO = -14
      RETURN
   END IF
 #endif
   IF (S .LT. TOL) THEN
      TOL = ZERO
      INFO = 0
-     RETURN
+     GOTO 9
   END IF
   J = 0
   CALL DGRAM(SV(P), SV(Q), QPS, APP, AQQ, AQP, J)
@@ -230,4 +231,6 @@ SUBROUTINE DTRNSF(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, TOL, IX, INFO)
         END IF
      END IF
   END IF
+9 WRK(P,Q) = C
+  WRK(Q,P) = T
 END SUBROUTINE DTRNSF

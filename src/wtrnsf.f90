@@ -5,7 +5,7 @@
 !     INFO = 2: transf
 !     INFO = 3: transf, big th
 !     ... OR 4: downscaling of G and SV
-SUBROUTINE WTRNSF(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, TOL, IX, INFO)
+SUBROUTINE WTRNSF(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, TOL, IX, WRK, INFO)
 #ifdef __GFORTRAN__
   USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
 #else
@@ -205,13 +205,14 @@ SUBROUTINE WTRNSF(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, TOL, IX, INFO)
   REAL(KIND=K), PARAMETER :: ZERO = 0.0_K
   INTEGER, INTENT(IN) :: M, N, LDG, LDV, P, Q, IX(N)
   COMPLEX(KIND=K), INTENT(INOUT) :: G(LDG,N), V(LDV,N), TOL
+  COMPLEX(KIND=K), INTENT(OUT) :: WRK(M,N)
   REAL(KIND=K), INTENT(INOUT) :: SV(N), GX
   INTEGER, INTENT(INOUT) :: GS, INFO
   COMPLEX(KIND=K) :: QPS
   REAL(KIND=K) :: APP, AQQ, AQPR, AQPI, C, S, T, TR, TI
   INTEGER :: I, J, L, O
 #ifndef NDEBUG
-  IF ((INFO .LT. 0) .OR. (INFO .GT. 3)) INFO = -14
+  IF ((INFO .LT. 0) .OR. (INFO .GT. 3)) INFO = -15
   IF (REAL(TOL) .LT. ZERO) INFO = -12
   IF ((Q .LE. 0) .OR. (Q .GT. N)) INFO = -11
   IF ((P .LE. 0) .OR. (P .GT. N)) INFO = -10
@@ -239,14 +240,14 @@ SUBROUTINE WTRNSF(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, TOL, IX, INFO)
   S = CR_HYPOT(REAL(QPS), AIMAG(QPS))
 #ifndef NDEBUG
   IF (.NOT. (S .LE. HUGE(S))) THEN
-     INFO = -3
+     INFO = -14
      RETURN
   END IF
 #endif
   IF (S .LT. REAL(TOL)) THEN
      TOL = ZERO
      INFO = 0
-     RETURN
+     GOTO 9
   END IF
   J = 0
   CALL WGRAM(SV(P), SV(Q), QPS, APP, AQQ, AQPR, AQPI, J)
@@ -346,4 +347,6 @@ SUBROUTINE WTRNSF(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, TOL, IX, INFO)
         END IF
      END IF
   END IF
+9 WRK(P,Q) = CMPLX(C, S, K)
+  WRK(Q,P) = CMPLX(TR, TI, K)
 END SUBROUTINE WTRNSF

@@ -5,7 +5,12 @@
 !     INFO = 2: transf
 !     INFO = 3: transf, big th
 !     ... OR 4: downscaling of G and SV
-SUBROUTINE ZTRNSF(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, TOL, IX, WRK, INFO)
+! Rutishauser:
+! X1 = X
+! C1 = 1
+! Z1 = 0
+! Xj = X1 * C2 * *** * Cj + Zj
+SUBROUTINE ZTRUTI(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, TOL, IX, WRK, INFO)
   USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL64
   IMPLICIT NONE
   INTERFACE
@@ -105,17 +110,16 @@ SUBROUTINE ZTRNSF(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, TOL, IX, WRK, INFO)
      END SUBROUTINE ZSCALG
   END INTERFACE
   INTEGER, PARAMETER :: K = REAL64
-  REAL(KIND=K), PARAMETER :: ZERO = 0.0_K
+  REAL(KIND=K), PARAMETER :: ZERO = 0.0_K, ONE = 1.0_K
   INTEGER, INTENT(IN) :: M, N, LDG, LDV, P, Q, IX(N)
-  COMPLEX(KIND=K), INTENT(INOUT) :: G(LDG,N), V(LDV,N), TOL
-  COMPLEX(KIND=K), INTENT(OUT) :: WRK(M,N)
+  COMPLEX(KIND=K), INTENT(INOUT) :: G(LDG,N), V(LDV,N), TOL, WRK(M,N)
   REAL(KIND=K), INTENT(INOUT) :: SV(N), GX
   INTEGER, INTENT(INOUT) :: GS, INFO
-  COMPLEX(KIND=K) :: QPS
-  REAL(KIND=K) :: APP, AQQ, AQPR, AQPI, C, S, T, TR, TI
+  COMPLEX(KIND=K) :: QPS, XX, YY
+  REAL(KIND=K) :: APP, AQQ, AQPR, AQPI, C, S, T, TR, TI, CC
   INTEGER :: I, J, L, O
 #ifndef NDEBUG
-  IF ((INFO .LT. 0) .OR. (INFO .GT. 3)) INFO = -15
+  IF ((INFO .LT. 0) .OR. (INFO .GT. 1)) INFO = -15
   IF (REAL(TOL) .LT. ZERO) INFO = -12
   IF ((Q .LE. 0) .OR. (Q .GT. N)) INFO = -11
   IF ((P .LE. 0) .OR. (P .GT. N)) INFO = -10
@@ -126,14 +130,26 @@ SUBROUTINE ZTRNSF(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, TOL, IX, WRK, INFO)
   IF (M .LT. 0) INFO = -1
   IF (INFO .LT. 0) RETURN
 #endif
-  L = IAND(INFO, 1)
-  O = IAND(INFO, 2)
-  IF (O .EQ. 0) THEN
+  J = IX(P)
+  IF ((Q - P) .EQ. 1) THEN
+     CC = ONE
+     DO I = 1, M
+        WRK(I,P) = ZERO
+        WRK(I,N) = G(I,J)
+     END DO
+  ELSE ! Q - P > 1
+     CC = REAL(WRK(P,N))
+     DO I = 1, M
+        !DIR$ FMA
+        WRK(I,N) = CMPLX(REAL(G(I,J)) * CC + REAL(WRK(I,P)), AIMAG(G(I,J)) * CC + AIMAG(WRK(I,P)), K)
+     END DO
+  END IF
+  IF (IAND(INFO, 2) .EQ. 0) THEN
      I = 1
   ELSE ! SLOW
      I = 0
   END IF
-  QPS = ZSDP(M, G(1,IX(Q)), G(1,IX(P)), SV(Q), SV(P), I)
+  QPS = ZSDP(M, G(1,IX(Q)), WRK(1,N), SV(Q), SV(P), I)
 #ifndef NDEBUG
   IF (I .LT. 0) THEN
      INFO = -3
@@ -162,45 +178,70 @@ SUBROUTINE ZTRNSF(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, TOL, IX, WRK, INFO)
 #endif
   I = 0
   T = GX
-  IF (L .EQ. 0) THEN
+  IF (IAND(INFO, 1) .EQ. 0) THEN
      CALL ZLJTU2(APP, AQQ, AQPR, AQPI, C, TR, TI, I)
      IF (I .GT. 0) THEN
-        J = 0
-        CALL ZRTT(N, V(1,IX(P)), V(1,IX(Q)), C, TR, TI, T, J)
-#ifndef NDEBUG
-        IF (J .LT. 0) THEN
-           INFO = -5
-           RETURN
-        END IF
-#endif
-        J = 1
-        CALL ZRTT(M, G(1,IX(P)), G(1,IX(Q)), C, TR, TI, T, J)
-#ifndef NDEBUG
-        IF (J .LT. 0) THEN
-           INFO = -13
-           RETURN
-        END IF
-#endif
+        QPS = CMPLX(TR, TI, K)
+        O = IX(Q)
+        DO L = 1, M
+           XX = WRK(L,P) ! ZZ
+           YY = G(L,O)
+           ! (YY * QPS + XX) * CS
+           !DIR$ FMA
+           WRK(L,P) = CMPLX((REAL(YY) * REAL(QPS) + (REAL(XX) - AIMAG(YY) * AIMAG(QPS))) * C,&
+                (REAL(YY) * AIMAG(QPS) + (AIMAG(XX) + AIMAG(YY) * REAL(QPS))) * C, K)
+           XX = WRK(L,N) ! XX
+           ! (YY - XX * CONJG(QPS)) * C
+           !DIR$ FMA
+           G(L,O) = CMPLX(((REAL(YY) - AIMAG(XX) * AIMAG(QPS)) - REAL(XX) * REAL(QPS)) * C,&
+                (REAL(XX) * AIMAG(QPS) + (AIMAG(YY) - AIMAG(XX) * REAL(QPS))) * C, K)
+           T = MAX(T, REAL(XX), AIMAG(XX), REAL(YY), AIMAG(YY))
+        END DO
+        J = IX(P)
+        DO L = 1, N
+           XX = V(L,J)
+           YY = V(L,O)
+           ! XX = (YY * QPS + XX) * C
+           !DIR$ FMA
+           V(L,J) = CMPLX((REAL(YY) * REAL(QPS) + (REAL(XX) - AIMAG(YY) * AIMAG(QPS))) * C,&
+             (REAL(YY) * AIMAG(QPS) + (AIMAG(XX) + AIMAG(YY) * REAL(QPS))) * C, K)
+           ! YY = (YY - XX * CONJG(QPS)) * C
+           !DIR$ FMA
+           V(L,O) = CMPLX(((REAL(YY) - AIMAG(XX) * AIMAG(QPS)) - REAL(XX) * REAL(QPS)) * C,&
+                (REAL(XX) * AIMAG(QPS) + (AIMAG(YY) - AIMAG(XX) * REAL(QPS))) * C, K)
+        END DO
      END IF
   ELSE ! hyp
      CALL ZLJTV2(APP, AQQ, AQPR, AQPI, C, TR, TI, I)
      IF (I .GT. 0) THEN
-        J = 0
-        CALL ZRTH(N, V(1,IX(P)), V(1,IX(Q)), C, TR, TI, T, J)
-#ifndef NDEBUG
-        IF (J .LT. 0) THEN
-           INFO = -5
-           RETURN
-        END IF
-#endif
-        J = 1
-        CALL ZRTH(M, G(1,IX(P)), G(1,IX(Q)), C, TR, TI, T, J)
-#ifndef NDEBUG
-        IF (J .LT. 0) THEN
-           INFO = -13
-           RETURN
-        END IF
-#endif
+        QPS = CMPLX(TR, TI, K)
+        O = IX(Q)
+        DO L = 1, M
+           XX = WRK(L,P) ! ZZ
+           YY = G(L,O)
+           ! XX = (YY * QPS + XX) * C
+           !DIR$ FMA
+           WRK(L,P) = CMPLX((REAL(YY) * REAL(QPS) + (REAL(XX) - AIMAG(YY) * AIMAG(QPS))) * C,&
+                (REAL(YY) * AIMAG(QPS) + (AIMAG(XX) + AIMAG(YY) * REAL(QPS))) * C, K)
+           XX = WRK(L,N) ! XX
+           ! YY = (XX * CONJG(QPS) + YY) * C
+           !DIR$ FMA
+           G(L,O) = CMPLX((REAL(XX) * REAL(QPS) + (REAL(YY) + AIMAG(XX) * AIMAG(QPS))) * C,&
+                ((AIMAG(YY) + AIMAG(XX) * REAL(QPS)) - REAL(XX) * AIMAG(QPS)) * C, K)
+           T = MAX(T, REAL(XX), AIMAG(XX), REAL(YY), AIMAG(YY))
+        END DO
+        DO L = 1, N
+           XX = V(L,J)
+           YY = V(L,O)
+           ! XX = (YY * QPS + XX) * C
+           !DIR$ FMA
+           V(L,J) = CMPLX((REAL(YY) * REAL(QPS) + (REAL(XX) - AIMAG(YY) * AIMAG(QPS))) * C,&
+                (REAL(YY) * AIMAG(QPS) + (AIMAG(XX) + AIMAG(YY) * REAL(QPS))) * C, K)
+           ! YY = (XX * CONJG(QPS) + YY) * C
+           !DIR$ FMA
+           V(L,O) = CMPLX((REAL(XX) * REAL(QPS) + (REAL(YY) + AIMAG(XX) * AIMAG(QPS))) * C,&
+                ((AIMAG(YY) + AIMAG(XX) * REAL(QPS)) - REAL(XX) * AIMAG(QPS)) * C, K)
+        END DO
      END IF
   END IF
   TOL = CMPLX(AQPR, AQPI, K)
@@ -209,29 +250,25 @@ SUBROUTINE ZTRNSF(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, TOL, IX, WRK, INFO)
   ELSE IF (I .LT. 0) THEN
      INFO = -8
   ELSE ! I > 0
-     IF (O .EQ. 0) THEN
-        ! S = ABS(A21 / (SV(P) * SV(Q)))
-        ! norm update, trig:
-        ! SQRT(SV(P) + TG * (S * SV(Q))) * SQRT(SV(P))
-        ! SQRT(SV(Q) - TG * (S * SV(P))) * SQRT(SV(Q))
-        ! norm update, hyp:
-        ! SQRT(SV(P) + TH * (S * SV(Q))) * SQRT(SV(P))
-        ! SQRT(SV(Q) + TH * (S * SV(P))) * SQRT(SV(Q))
-        APP = S * SV(Q)
-        AQQ = S * SV(P)
-        IF (L .EQ. 0) THEN
-           AQPI = -AQPR
-        ELSE ! hyp
-           AQPI =  AQPR
-        END IF
-        APP = SQRT(DFMA(AQPR, APP, SV(P)))
-        AQQ = SQRT(DFMA(AQPI, AQQ, SV(Q)))
-        SV(P) = APP * SQRT(SV(P))
-        SV(Q) = AQQ * SQRT(SV(Q))
-     ELSE ! SLOW
-        SV(P) = ZNRMF(M, G(1,IX(P)))
-        SV(Q) = ZNRMF(M, G(1,IX(Q)))
+     CC = CC * C
+     ! S = ABS(A21 / (SV(P) * SV(Q)))
+     ! norm update, trig:
+     ! SQRT(SV(P) + TG * (S * SV(Q))) * SQRT(SV(P))
+     ! SQRT(SV(Q) - TG * (S * SV(P))) * SQRT(SV(Q))
+     ! norm update, hyp:
+     ! SQRT(SV(P) + TH * (S * SV(Q))) * SQRT(SV(P))
+     ! SQRT(SV(Q) + TH * (S * SV(P))) * SQRT(SV(Q))
+     APP = S * SV(Q)
+     AQQ = S * SV(P)
+     IF (IAND(INFO, 1) .EQ. 0) THEN
+        AQPI = -AQPR
+     ELSE ! hyp
+        AQPI =  AQPR
      END IF
+     APP = SQRT(DFMA(AQPR, APP, SV(P)))
+     AQQ = SQRT(DFMA(AQPI, AQQ, SV(Q)))
+     SV(P) = APP * SQRT(SV(P))
+     SV(Q) = AQQ * SQRT(SV(Q))
      INFO = I + 1
      IF (T .GT. GX) THEN
         GX = T
@@ -250,6 +287,12 @@ SUBROUTINE ZTRNSF(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, TOL, IX, WRK, INFO)
         END IF
      END IF
   END IF
-9 WRK(P,Q) = CMPLX(C, S, K)
-  WRK(Q,P) = CMPLX(TR, TI, K)
-END SUBROUTINE ZTRNSF
+9 IF (Q .EQ. N) THEN
+     J = IX(P)
+     DO I = 1, M
+        !DIR$ FMA
+        G(I,J) = CMPLX(REAL(G(I,J)) * CC + REAL(WRK(I,P)), AIMAG(G(I,J)) * CC + AIMAG(WRK(I,P)), K)
+     END DO
+  END IF
+  WRK(P,N) = CC
+END SUBROUTINE ZTRUTI

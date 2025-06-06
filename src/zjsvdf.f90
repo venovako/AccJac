@@ -36,14 +36,25 @@ SUBROUTINE ZJSVDF(M, N, G, LDG, V, LDV, JPOS, SV, GS, IX, WRK, INFO)
      END SUBROUTINE ZPRCYC
   END INTERFACE
   INTERFACE
-     SUBROUTINE ZTRNSF(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, TOL, IX, INFO)
+     SUBROUTINE ZTRNSF(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, TOL, IX, WRK, INFO)
        USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL64
        IMPLICIT NONE
        INTEGER, INTENT(IN) :: M, N, LDG, LDV, P, Q, IX(N)
        COMPLEX(KIND=REAL64), INTENT(INOUT) :: G(LDG,N), V(LDV,N), TOL
+       COMPLEX(KIND=REAL64), INTENT(OUT) :: WRK(M,N)
        REAL(KIND=REAL64), INTENT(INOUT) :: SV(N), GX
        INTEGER, INTENT(INOUT) :: GS, INFO
      END SUBROUTINE ZTRNSF
+  END INTERFACE
+  INTERFACE
+     SUBROUTINE ZTRUTI(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, TOL, IX, WRK, INFO)
+       USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL64
+       IMPLICIT NONE
+       INTEGER, INTENT(IN) :: M, N, LDG, LDV, P, Q, IX(N)
+       COMPLEX(KIND=REAL64), INTENT(INOUT) :: G(LDG,N), V(LDV,N), TOL, WRK(M,N)
+       REAL(KIND=REAL64), INTENT(INOUT) :: SV(N), GX
+       INTEGER, INTENT(INOUT) :: GS, INFO
+     END SUBROUTINE ZTRUTI
   END INTERFACE
   INTERFACE
      SUBROUTINE DTRACK(N, SV, GX, GS, SWP, NTR)
@@ -78,8 +89,8 @@ SUBROUTINE ZJSVDF(M, N, G, LDG, V, LDV, JPOS, SV, GS, IX, WRK, INFO)
   END IF
   S = GS
   GS = 0
-  L = IX(1)
   TT = 0_INT64
+  L = IX(1)
   O = -1
   CALL ZSCALG(M, N, G, LDG, GX, GS, O)
   IF (O .LT. 0) THEN
@@ -98,6 +109,8 @@ SUBROUTINE ZJSVDF(M, N, G, LDG, V, LDV, JPOS, SV, GS, IX, WRK, INFO)
   DO R = 1, S
      IF (INFO .EQ. 0) THEN
         O = 1
+     ELSE IF ((L .EQ. 2) .OR. (L .EQ. 3)) THEN
+        O = 1
      ELSE ! SLOW
         O = 0
      END IF
@@ -107,7 +120,7 @@ SUBROUTINE ZJSVDF(M, N, G, LDG, V, LDV, JPOS, SV, GS, IX, WRK, INFO)
         GOTO 9
      END IF
      T = 0
-     IF (L .EQ. 0) THEN
+     IF (IAND(L, 1) .EQ. 0) THEN
         ! the first diagonal block
         DO P = 1, JPOS-1
            IF (P .GT. 1) THEN
@@ -136,7 +149,11 @@ SUBROUTINE ZJSVDF(M, N, G, LDG, V, LDV, JPOS, SV, GS, IX, WRK, INFO)
               ELSE ! SLOW
                  O = 2
               END IF
-              CALL ZTRNSF(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, Z, IX, O)
+              IF (L .EQ. 0) THEN
+                 CALL ZTRNSF(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, Z, IX, WRK, O)
+              ELSE ! L = 2
+                 CALL ZTRUTI(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, Z, IX, WRK, O)
+              END IF
               SELECT CASE (O)
               CASE (0,1)
                  CONTINUE
@@ -158,7 +175,11 @@ SUBROUTINE ZJSVDF(M, N, G, LDG, V, LDV, JPOS, SV, GS, IX, WRK, INFO)
               ELSE ! SLOW
                  O = 3
               END IF
-              CALL ZTRNSF(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, Z, IX, O)
+              IF (L .EQ. 0) THEN
+                 CALL ZTRNSF(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, Z, IX, WRK, O)
+              ELSE ! L = 2
+                 CALL ZTRUTI(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, Z, IX, WRK, O)
+              END IF
               SELECT CASE (O)
               CASE (0,1)
                  CONTINUE
@@ -197,7 +218,11 @@ SUBROUTINE ZJSVDF(M, N, G, LDG, V, LDV, JPOS, SV, GS, IX, WRK, INFO)
               ELSE ! SLOW
                  O = 2
               END IF
-              CALL ZTRNSF(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, Z, IX, O)
+              IF (L .EQ. 0) THEN
+                 CALL ZTRNSF(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, Z, IX, WRK, O)
+              ELSE ! L = 2
+                 CALL ZTRUTI(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, Z, IX, WRK, O)
+              END IF
               SELECT CASE (O)
               CASE (0,1)
                  CONTINUE
@@ -227,7 +252,11 @@ SUBROUTINE ZJSVDF(M, N, G, LDG, V, LDV, JPOS, SV, GS, IX, WRK, INFO)
                     O = 2
                  END IF
               END IF
-              CALL ZTRNSF(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, Z, IX, O)
+              IF (L .EQ. 1) THEN
+                 CALL ZTRNSF(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, Z, IX, WRK, O)
+              ELSE ! L = 3
+                 CALL ZTRUTI(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, Z, IX, WRK, O)
+              END IF
               SELECT CASE (O)
               CASE (0,1)
                  CONTINUE

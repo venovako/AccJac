@@ -36,11 +36,12 @@ SUBROUTINE CJSVDF(M, N, G, LDG, V, LDV, JPOS, SV, GS, IX, WRK, INFO)
      END SUBROUTINE CPRCYC
   END INTERFACE
   INTERFACE
-     SUBROUTINE CTRNSF(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, TOL, IX, INFO)
+     SUBROUTINE CTRNSF(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, TOL, IX, WRK, INFO)
        USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL32
        IMPLICIT NONE
        INTEGER, INTENT(IN) :: M, N, LDG, LDV, P, Q, IX(N)
        COMPLEX(KIND=REAL32), INTENT(INOUT) :: G(LDG,N), V(LDV,N), TOL
+       COMPLEX(KIND=REAL32), INTENT(OUT) :: WRK(M,N)
        REAL(KIND=REAL32), INTENT(INOUT) :: SV(N), GX
        INTEGER, INTENT(INOUT) :: GS, INFO
      END SUBROUTINE CTRNSF
@@ -78,8 +79,8 @@ SUBROUTINE CJSVDF(M, N, G, LDG, V, LDV, JPOS, SV, GS, IX, WRK, INFO)
   END IF
   S = GS
   GS = 0
-  L = IX(1)
   TT = 0_INT64
+  L = IX(1)
   O = -1
   CALL CSCALG(M, N, G, LDG, GX, GS, O)
   IF (O .LT. 0) THEN
@@ -136,7 +137,7 @@ SUBROUTINE CJSVDF(M, N, G, LDG, V, LDV, JPOS, SV, GS, IX, WRK, INFO)
               ELSE ! SLOW
                  O = 2
               END IF
-              CALL CTRNSF(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, Z, IX, O)
+              CALL CTRNSF(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, Z, IX, WRK, O)
               SELECT CASE (O)
               CASE (0,1)
                  CONTINUE
@@ -158,7 +159,7 @@ SUBROUTINE CJSVDF(M, N, G, LDG, V, LDV, JPOS, SV, GS, IX, WRK, INFO)
               ELSE ! SLOW
                  O = 3
               END IF
-              CALL CTRNSF(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, Z, IX, O)
+              CALL CTRNSF(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, Z, IX, WRK, O)
               SELECT CASE (O)
               CASE (0,1)
                  CONTINUE
@@ -197,7 +198,7 @@ SUBROUTINE CJSVDF(M, N, G, LDG, V, LDV, JPOS, SV, GS, IX, WRK, INFO)
               ELSE ! SLOW
                  O = 2
               END IF
-              CALL CTRNSF(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, Z, IX, O)
+              CALL CTRNSF(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, Z, IX, WRK, O)
               SELECT CASE (O)
               CASE (0,1)
                  CONTINUE
@@ -227,7 +228,7 @@ SUBROUTINE CJSVDF(M, N, G, LDG, V, LDV, JPOS, SV, GS, IX, WRK, INFO)
                     O = 2
                  END IF
               END IF
-              CALL CTRNSF(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, Z, IX, O)
+              CALL CTRNSF(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, Z, IX, WRK, O)
               SELECT CASE (O)
               CASE (0,1)
                  CONTINUE

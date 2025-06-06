@@ -65,7 +65,7 @@ SUBROUTINE XJSVDF(M, N, G, LDG, V, LDV, JPOS, SV, GS, IX, WRK, INFO)
      END SUBROUTINE XPRCYC
   END INTERFACE
   INTERFACE
-     SUBROUTINE XTRNSF(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, TOL, IX, INFO)
+     SUBROUTINE XTRNSF(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, TOL, IX, WRK, INFO)
 #ifdef __GFORTRAN__
        USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
 #else
@@ -75,8 +75,10 @@ SUBROUTINE XJSVDF(M, N, G, LDG, V, LDV, JPOS, SV, GS, IX, WRK, INFO)
        INTEGER, INTENT(IN) :: M, N, LDG, LDV, P, Q, IX(N)
 #ifdef __GFORTRAN__
        REAL(KIND=c_long_double), INTENT(INOUT) :: G(LDG,N), V(LDV,N), SV(N), GX, TOL
+       REAL(KIND=c_long_double), INTENT(OUT) :: WRK(M,N)
 #else
        REAL(KIND=REAL128), INTENT(INOUT) :: G(LDG,N), V(LDV,N), SV(N), GX, TOL
+       REAL(KIND=REAL128), INTENT(OUT) :: WRK(M,N)
 #endif
        INTEGER, INTENT(INOUT) :: GS, INFO
      END SUBROUTINE XTRNSF
@@ -124,8 +126,8 @@ SUBROUTINE XJSVDF(M, N, G, LDG, V, LDV, JPOS, SV, GS, IX, WRK, INFO)
   END IF
   S = GS
   GS = 0
-  L = IX(1)
   TT = 0_INT64
+  L = IX(1)
   O = -1
   CALL XSCALG(M, N, G, LDG, GX, GS, O)
   IF (O .LT. 0) THEN
@@ -182,7 +184,7 @@ SUBROUTINE XJSVDF(M, N, G, LDG, V, LDV, JPOS, SV, GS, IX, WRK, INFO)
               ELSE ! SLOW
                  O = 2
               END IF
-              CALL XTRNSF(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, X, IX, O)
+              CALL XTRNSF(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, X, IX, WRK, O)
               SELECT CASE (O)
               CASE (0,1)
                  CONTINUE
@@ -204,7 +206,7 @@ SUBROUTINE XJSVDF(M, N, G, LDG, V, LDV, JPOS, SV, GS, IX, WRK, INFO)
               ELSE ! SLOW
                  O = 3
               END IF
-              CALL XTRNSF(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, X, IX, O)
+              CALL XTRNSF(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, X, IX, WRK, O)
               SELECT CASE (O)
               CASE (0,1)
                  CONTINUE
@@ -243,7 +245,7 @@ SUBROUTINE XJSVDF(M, N, G, LDG, V, LDV, JPOS, SV, GS, IX, WRK, INFO)
               ELSE ! SLOW
                  O = 2
               END IF
-              CALL XTRNSF(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, X, IX, O)
+              CALL XTRNSF(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, X, IX, WRK, O)
               SELECT CASE (O)
               CASE (0,1)
                  CONTINUE
@@ -273,7 +275,7 @@ SUBROUTINE XJSVDF(M, N, G, LDG, V, LDV, JPOS, SV, GS, IX, WRK, INFO)
                     O = 2
                  END IF
               END IF
-              CALL XTRNSF(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, X, IX, O)
+              CALL XTRNSF(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, X, IX, WRK, O)
               SELECT CASE (O)
               CASE (0,1)
                  CONTINUE
