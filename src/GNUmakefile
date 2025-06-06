@@ -127,7 +127,7 @@ OBJD += xrsafe.o
 
 EXED += \
 wjsvdt.exe xjsvdt.exe\
-xjsvdx.exe
+wjsvdx.exe xjsvdx.exe
 endif # x86_64 or i86pc
 endif # gfortran
 
