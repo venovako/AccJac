@@ -196,7 +196,7 @@ SUBROUTINE ZTRUTI(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, TOL, IX, WRK, INFO)
            !DIR$ FMA
            G(L,O) = CMPLX(((REAL(YY) - AIMAG(XX) * AIMAG(QPS)) - REAL(XX) * REAL(QPS)) * C,&
                 (REAL(XX) * AIMAG(QPS) + (AIMAG(YY) - AIMAG(XX) * REAL(QPS))) * C, K)
-           T = MAX(T, REAL(XX), AIMAG(XX), REAL(YY), AIMAG(YY))
+           T = MAX(T, REAL(G(L,O)), AIMAG(G(L,O)))
         END DO
         J = IX(P)
         DO L = 1, N
@@ -229,7 +229,7 @@ SUBROUTINE ZTRUTI(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, TOL, IX, WRK, INFO)
            !DIR$ FMA
            G(L,O) = CMPLX((REAL(XX) * REAL(QPS) + (REAL(YY) + AIMAG(XX) * AIMAG(QPS))) * C,&
                 ((AIMAG(YY) + AIMAG(XX) * REAL(QPS)) - REAL(XX) * AIMAG(QPS)) * C, K)
-           T = MAX(T, REAL(XX), AIMAG(XX), REAL(YY), AIMAG(YY))
+           T = MAX(T, REAL(G(L,O)), AIMAG(G(L,O)))
         END DO
         DO L = 1, N
            XX = V(L,J)
@@ -293,7 +293,24 @@ SUBROUTINE ZTRUTI(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, TOL, IX, WRK, INFO)
      DO I = 1, M
         !DIR$ FMA
         G(I,J) = CMPLX(REAL(G(I,J)) * CC + REAL(WRK(I,P)), AIMAG(G(I,J)) * CC + AIMAG(WRK(I,P)), K)
+        T = MAX(T, ABS(REAL(G(I,J))), ABS(AIMAG(G(I,J))))
      END DO
+     IF (T .GT. GX) THEN
+        GX = T
+        I = -2
+        CALL ZSCALG(M, N, G, LDG, GX, GS, I)
+        IF (I .GT. 0) THEN
+           I = -I
+           DO J = 1, N
+              SV(J) = SCALE(SV(J), I)
+           END DO
+           INFO = IOR(INFO, 4)
+#ifndef NDEBUG
+        ELSE IF (I .LT. 0) THEN
+           INFO = -9
+#endif
+        END IF
+     END IF
   END IF
   WRK(P,N) = CC
 END SUBROUTINE ZTRUTI
