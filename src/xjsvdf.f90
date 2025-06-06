@@ -146,6 +146,8 @@ SUBROUTINE XJSVDF(M, N, G, LDG, V, LDV, JPOS, SV, GS, IX, WRK, INFO)
   DO R = 1, S
      IF (INFO .EQ. 0) THEN
         O = 1
+     ELSE IF ((L .EQ. 2) .OR. (L .EQ. 3)) THEN
+        O = 1
      ELSE ! SLOW
         O = 0
      END IF
@@ -155,7 +157,7 @@ SUBROUTINE XJSVDF(M, N, G, LDG, V, LDV, JPOS, SV, GS, IX, WRK, INFO)
         GOTO 9
      END IF
      T = 0
-     IF (L .EQ. 0) THEN
+     IF (IAND(L, 1) .EQ. 0) THEN
         ! the first diagonal block
         DO P = 1, JPOS-1
            IF (P .GT. 1) THEN

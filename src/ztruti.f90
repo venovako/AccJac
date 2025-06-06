@@ -5,11 +5,12 @@
 !     INFO = 2: transf
 !     INFO = 3: transf, big th
 !     ... OR 4: downscaling of G and SV
-! Rutishauser:
+! ~Rutishauser:
 ! X1 = X
 ! C1 = 1
-! Z1 = 0
+! Z1 = (/ 0, ..., 0 /)
 ! Xj = X1 * C2 * *** * Cj + Zj
+!    = X1 * CC + Zj
 SUBROUTINE ZTRUTI(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, TOL, IX, WRK, INFO)
   USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL64
   IMPLICIT NONE
@@ -119,7 +120,7 @@ SUBROUTINE ZTRUTI(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, TOL, IX, WRK, INFO)
   REAL(KIND=K) :: APP, AQQ, AQPR, AQPI, C, S, T, TR, TI, CC
   INTEGER :: I, J, L, O
 #ifndef NDEBUG
-  IF ((INFO .LT. 0) .OR. (INFO .GT. 1)) INFO = -15
+  IF ((INFO .LT. 0) .OR. (INFO .GT. 3)) INFO = -15
   IF (REAL(TOL) .LT. ZERO) INFO = -12
   IF ((Q .LE. 0) .OR. (Q .GT. N)) INFO = -11
   IF ((P .LE. 0) .OR. (P .GT. N)) INFO = -10
