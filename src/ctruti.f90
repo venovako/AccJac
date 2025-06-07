@@ -225,6 +225,7 @@ SUBROUTINE CTRUTI(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, TOL, IX, WRK, INFO)
                 ((AIMAG(YY) + AIMAG(XX) * REAL(QPS)) - REAL(XX) * AIMAG(QPS)) * C, K)
            T = MAX(T, REAL(G(L,O)), AIMAG(G(L,O)))
         END DO
+        J = IX(P)
         DO L = 1, N
            XX = V(L,J)
            YY = V(L,O)
