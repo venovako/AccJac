@@ -46,7 +46,7 @@ SUBROUTINE XJSVDF(M, N, G, LDG, V, LDV, JPOS, SV, GS, IX, WRK, INFO)
      END SUBROUTINE XSCALG
   END INTERFACE
   INTERFACE
-     PURE SUBROUTINE XPRCYC(M, N, G, LDG, JPOS, SV, IX, INFO)
+     PURE SUBROUTINE XPRCYC(M, N, G, LDG, JPOS, SV, IX, WRK, INFO)
 #ifdef __GFORTRAN__
        USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
 #else
@@ -55,10 +55,10 @@ SUBROUTINE XJSVDF(M, N, G, LDG, V, LDV, JPOS, SV, GS, IX, WRK, INFO)
        IMPLICIT NONE
        INTEGER, INTENT(IN) :: M, N, LDG, JPOS
 #ifdef __GFORTRAN__
-       REAL(KIND=c_long_double), INTENT(INOUT) :: G(LDG,N)
+       REAL(KIND=c_long_double), INTENT(INOUT) :: G(LDG,N), WRK(M,N)
        REAL(KIND=c_long_double), INTENT(OUT) :: SV(N)
 #else
-       REAL(KIND=REAL128), INTENT(INOUT) :: G(LDG,N)
+       REAL(KIND=REAL128), INTENT(INOUT) :: G(LDG,N), WRK(M,N)
        REAL(KIND=REAL128), INTENT(OUT) :: SV(N)
 #endif
        INTEGER, INTENT(INOUT) :: IX(N), INFO
@@ -147,11 +147,11 @@ SUBROUTINE XJSVDF(M, N, G, LDG, V, LDV, JPOS, SV, GS, IX, WRK, INFO)
      IF (INFO .EQ. 0) THEN
         O = 1
      ELSE IF ((L .EQ. 2) .OR. (L .EQ. 3)) THEN
-        O = 1
+        O = 2
      ELSE ! SLOW
         O = 0
      END IF
-     CALL XPRCYC(M, N, G, LDG, JPOS, SV, IX, O)
+     CALL XPRCYC(M, N, G, LDG, JPOS, SV, IX, WRK, O)
      IF (O .LT. 0) THEN
         INFO = -8
         GOTO 9

@@ -5,6 +5,12 @@
 !     INFO = 2: transf
 !     INFO = 3: transf, big th
 !     ... OR 4: downscaling of G and SV
+! ~Rutishauser:
+! X1 = X
+! C1 = 1
+! Z1 = (/ 0, ..., 0 /)
+! Xj = X1 * C2 * *** * Cj + Zj
+!    = X1 * CC + Zj
 SUBROUTINE WTRUTI(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, TOL, IX, WRK, INFO)
 #ifdef __GFORTRAN__
   USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
@@ -223,19 +229,11 @@ SUBROUTINE WTRUTI(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, TOL, IX, WRK, INFO)
   IF (INFO .LT. 0) RETURN
 #endif
   J = IX(P)
-  IF ((Q - P) .EQ. 1) THEN
-     CC = ONE
-     DO I = 1, M
-        WRK(I,P) = ZERO
-        WRK(I,N) = G(I,J)
-     END DO
-  ELSE ! Q - P > 1
-     CC = REAL(WRK(P,N))
-     DO I = 1, M
-        !DIR$ FMA
-        WRK(I,N) = CMPLX(REAL(G(I,J)) * CC + REAL(WRK(I,P)), AIMAG(G(I,J)) * CC + AIMAG(WRK(I,P)), K)
-     END DO
-  END IF
+  CC = REAL(WRK(P,N))
+  DO I = 1, M
+     !DIR$ FMA
+     WRK(I,N) = CMPLX(REAL(G(I,J)) * CC + REAL(WRK(I,P)), AIMAG(G(I,J)) * CC + AIMAG(WRK(I,P)), K)
+  END DO
   IF (IAND(INFO, 2) .EQ. 0) THEN
      I = 1
   ELSE ! SLOW

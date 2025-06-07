@@ -1,4 +1,4 @@
-PURE SUBROUTINE XPRCYC(M, N, G, LDG, JPOS, SV, IX, INFO)
+PURE SUBROUTINE XPRCYC(M, N, G, LDG, JPOS, SV, IX, WRK, INFO)
 #ifdef __GFORTRAN__
   USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
 #else
@@ -47,10 +47,12 @@ PURE SUBROUTINE XPRCYC(M, N, G, LDG, JPOS, SV, IX, INFO)
 #else
   INTEGER, PARAMETER :: K = REAL128
 #endif
+  REAL(KIND=K), PARAMETER :: ZERO = 0.0_K, ONE = 1.0_K
   INTEGER, INTENT(IN) :: M, N, LDG, JPOS
-  REAL(KIND=K), INTENT(INOUT) :: G(LDG,N)
+  REAL(KIND=K), INTENT(INOUT) :: G(LDG,N), WRK(M,N)
   REAL(KIND=K), INTENT(OUT) :: SV(N)
   INTEGER, INTENT(INOUT) :: IX(N), INFO
+  INTEGER :: I, J
 #ifndef NDEBUG
   IF ((JPOS .LT. 0) .OR. (JPOS .GT. N)) INFO = -5
   IF (LDG .LT. M) INFO = -4
@@ -58,11 +60,28 @@ PURE SUBROUTINE XPRCYC(M, N, G, LDG, JPOS, SV, IX, INFO)
   IF (M .LT. 0) INFO = -1
   IF (INFO .LT. 0) RETURN
 #endif
-  IF (INFO .NE. 0) CALL XCNRMF(M, N, G, LDG, SV, IX, INFO)
-#ifndef NDEBUG
   IF (INFO .NE. 0) THEN
-     INFO = -6
-     RETURN
+     IF (INFO .EQ. 2) THEN
+        DO J = 1, N-1
+           DO I = 1, M
+              WRK(I,J) = ZERO
+           END DO
+        END DO
+        DO I = 1, M
+           WRK(I,N) = ONE
+        END DO
+#ifndef NDEBUG
+     ELSE IF (INFO .NE. 1) THEN
+        INFO = -9
+        RETURN
+#endif
+     END IF
+     CALL XCNRMF(M, N, G, LDG, SV, IX, INFO)
+#ifndef NDEBUG
+     IF (INFO .NE. 0) THEN
+        INFO = -6
+        RETURN
+     END IF
   END IF
 #endif
   CALL XNSORT(N, JPOS, SV, IX, INFO)
