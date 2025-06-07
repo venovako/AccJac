@@ -143,48 +143,6 @@ SUBROUTINE WTRUTI(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, TOL, IX, WRK, INFO)
      END SUBROUTINE WLJTV2
   END INTERFACE
   INTERFACE
-     PURE SUBROUTINE WRTT(M, X, Y, CS, TNR, TNI, GX, INFO)
-#ifdef __GFORTRAN__
-       USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
-#else
-       USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL128
-#endif
-       IMPLICIT NONE
-       INTEGER, INTENT(IN) :: M
-#ifdef __GFORTRAN__
-       COMPLEX(KIND=c_long_double), INTENT(INOUT) :: X(M), Y(M)
-       REAL(KIND=c_long_double), INTENT(IN) :: CS, TNR, TNI
-       REAL(KIND=c_long_double), INTENT(INOUT) :: GX
-#else
-       COMPLEX(KIND=REAL128), INTENT(INOUT) :: X(M), Y(M)
-       REAL(KIND=REAL128), INTENT(IN) :: CS, TNR, TNI
-       REAL(KIND=REAL128), INTENT(INOUT) :: GX
-#endif
-       INTEGER, INTENT(INOUT) :: INFO
-     END SUBROUTINE WRTT
-  END INTERFACE
-  INTERFACE
-     PURE SUBROUTINE WRTH(M, X, Y, CH, THR, THI, GX, INFO)
-#ifdef __GFORTRAN__
-       USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
-#else
-       USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL128
-#endif
-       IMPLICIT NONE
-       INTEGER, INTENT(IN) :: M
-#ifdef __GFORTRAN__
-       COMPLEX(KIND=c_long_double), INTENT(INOUT) :: X(M), Y(M)
-       REAL(KIND=c_long_double), INTENT(IN) :: CH, THR, THI
-       REAL(KIND=c_long_double), INTENT(INOUT) :: GX
-#else
-       COMPLEX(KIND=REAL128), INTENT(INOUT) :: X(M), Y(M)
-       REAL(KIND=REAL128), INTENT(IN) :: CH, THR, THI
-       REAL(KIND=REAL128), INTENT(INOUT) :: GX
-#endif
-       INTEGER, INTENT(INOUT) :: INFO
-     END SUBROUTINE WRTH
-  END INTERFACE
-  INTERFACE
      PURE SUBROUTINE WSCALG(M, N, G, LDG, GX, GS, INFO)
 #ifdef __GFORTRAN__
        USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
@@ -208,7 +166,7 @@ SUBROUTINE WTRUTI(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, TOL, IX, WRK, INFO)
 #else
   INTEGER, PARAMETER :: K = REAL128
 #endif
-  REAL(KIND=K), PARAMETER :: ZERO = 0.0_K
+  REAL(KIND=K), PARAMETER :: ZERO = 0.0_K, ONE = 1.0_K
   INTEGER, INTENT(IN) :: M, N, LDG, LDV, P, Q, IX(N)
   COMPLEX(KIND=K), INTENT(INOUT) :: G(LDG,N), V(LDV,N), TOL, WRK(M,N+1)
   REAL(KIND=K), INTENT(INOUT) :: SV(N), GX
@@ -231,7 +189,6 @@ SUBROUTINE WTRUTI(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, TOL, IX, WRK, INFO)
   J = IX(P)
   CC = REAL(WRK(P,N+1))
   DO I = 1, M
-     !DIR$ FMA
      WRK(I,N) = CMPLX(REAL(G(I,J)) * CC + REAL(WRK(I,P)), AIMAG(G(I,J)) * CC + AIMAG(WRK(I,P)), K)
   END DO
   IF (IAND(INFO, 2) .EQ. 0) THEN
@@ -276,27 +233,23 @@ SUBROUTINE WTRUTI(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, TOL, IX, WRK, INFO)
         DO L = 1, M
            XX = WRK(L,P) ! ZZ
            YY = G(L,O)
-           ! (YY * QPS + XX) * CS
-           !DIR$ FMA
+           ! (YY * QPS + XX) * C
            WRK(L,P) = CMPLX((REAL(YY) * REAL(QPS) + (REAL(XX) - AIMAG(YY) * AIMAG(QPS))) * C,&
                 (REAL(YY) * AIMAG(QPS) + (AIMAG(XX) + AIMAG(YY) * REAL(QPS))) * C, K)
            XX = WRK(L,N) ! XX
            ! (YY - XX * CONJG(QPS)) * C
-           !DIR$ FMA
            G(L,O) = CMPLX(((REAL(YY) - AIMAG(XX) * AIMAG(QPS)) - REAL(XX) * REAL(QPS)) * C,&
                 (REAL(XX) * AIMAG(QPS) + (AIMAG(YY) - AIMAG(XX) * REAL(QPS))) * C, K)
-           T = MAX(T, REAL(G(L,O)), AIMAG(G(L,O)))
+           T = MAX(T, ABS(REAL(G(L,O))), ABS(AIMAG(G(L,O))))
         END DO
         J = IX(P)
         DO L = 1, N
            XX = V(L,J)
            YY = V(L,O)
            ! XX = (YY * QPS + XX) * C
-           !DIR$ FMA
            V(L,J) = CMPLX((REAL(YY) * REAL(QPS) + (REAL(XX) - AIMAG(YY) * AIMAG(QPS))) * C,&
              (REAL(YY) * AIMAG(QPS) + (AIMAG(XX) + AIMAG(YY) * REAL(QPS))) * C, K)
            ! YY = (YY - XX * CONJG(QPS)) * C
-           !DIR$ FMA
            V(L,O) = CMPLX(((REAL(YY) - AIMAG(XX) * AIMAG(QPS)) - REAL(XX) * REAL(QPS)) * C,&
                 (REAL(XX) * AIMAG(QPS) + (AIMAG(YY) - AIMAG(XX) * REAL(QPS))) * C, K)
         END DO
@@ -310,26 +263,22 @@ SUBROUTINE WTRUTI(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, TOL, IX, WRK, INFO)
            XX = WRK(L,P) ! ZZ
            YY = G(L,O)
            ! XX = (YY * QPS + XX) * C
-           !DIR$ FMA
            WRK(L,P) = CMPLX((REAL(YY) * REAL(QPS) + (REAL(XX) - AIMAG(YY) * AIMAG(QPS))) * C,&
                 (REAL(YY) * AIMAG(QPS) + (AIMAG(XX) + AIMAG(YY) * REAL(QPS))) * C, K)
            XX = WRK(L,N) ! XX
            ! YY = (XX * CONJG(QPS) + YY) * C
-           !DIR$ FMA
            G(L,O) = CMPLX((REAL(XX) * REAL(QPS) + (REAL(YY) + AIMAG(XX) * AIMAG(QPS))) * C,&
                 ((AIMAG(YY) + AIMAG(XX) * REAL(QPS)) - REAL(XX) * AIMAG(QPS)) * C, K)
-           T = MAX(T, REAL(G(L,O)), AIMAG(G(L,O)))
+           T = MAX(T, ABS(REAL(G(L,O))), ABS(AIMAG(G(L,O))))
         END DO
         J = IX(P)
         DO L = 1, N
            XX = V(L,J)
            YY = V(L,O)
            ! XX = (YY * QPS + XX) * C
-           !DIR$ FMA
            V(L,J) = CMPLX((REAL(YY) * REAL(QPS) + (REAL(XX) - AIMAG(YY) * AIMAG(QPS))) * C,&
                 (REAL(YY) * AIMAG(QPS) + (AIMAG(XX) + AIMAG(YY) * REAL(QPS))) * C, K)
            ! YY = (XX * CONJG(QPS) + YY) * C
-           !DIR$ FMA
            V(L,O) = CMPLX((REAL(XX) * REAL(QPS) + (REAL(YY) + AIMAG(XX) * AIMAG(QPS))) * C,&
                 ((AIMAG(YY) + AIMAG(XX) * REAL(QPS)) - REAL(XX) * AIMAG(QPS)) * C, K)
         END DO
@@ -381,7 +330,6 @@ SUBROUTINE WTRUTI(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, TOL, IX, WRK, INFO)
 9 IF (Q .EQ. N) THEN
      J = IX(P)
      DO I = 1, M
-        !DIR$ FMA
         G(I,J) = CMPLX(REAL(G(I,J)) * CC + REAL(WRK(I,P)), AIMAG(G(I,J)) * CC + AIMAG(WRK(I,P)), K)
         T = MAX(T, ABS(REAL(G(I,J))), ABS(AIMAG(G(I,J))))
      END DO
@@ -402,5 +350,5 @@ SUBROUTINE WTRUTI(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, TOL, IX, WRK, INFO)
         END IF
      END IF
   END IF
-  WRK(P,N+1) = CC
+  WRK(P,N+1) = CMPLX(CC, AIMAG(WRK(P,N+1)) + ONE, K)
 END SUBROUTINE WTRUTI
