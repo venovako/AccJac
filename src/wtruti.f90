@@ -301,6 +301,11 @@ SUBROUTINE WTRUTI(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, TOL, IX, WRK, INFO)
            DO J = 1, N
               SV(J) = SCALE(SV(J), I)
            END DO
+           DO J = 1, N-1
+              DO L = 1, M
+                 WRK(L,J) = CMPLX(SCALE(REAL(WRK(L,J)), I), SCALE(AIMAG(WRK(L,J)), I), K)
+              END DO
+           END DO
            INFO = IOR(INFO, 4)
 #ifndef NDEBUG
         ELSE IF (I .LT. 0) THEN
@@ -323,6 +328,11 @@ SUBROUTINE WTRUTI(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, TOL, IX, WRK, INFO)
            I = -I
            DO J = 1, N
               SV(J) = SCALE(SV(J), I)
+           END DO
+           DO J = 1, N-1
+              DO L = 1, M
+                 WRK(L,J) = CMPLX(SCALE(REAL(WRK(L,J)), I), SCALE(AIMAG(WRK(L,J)), I), K)
+              END DO
            END DO
            INFO = IOR(INFO, 4)
 #ifndef NDEBUG

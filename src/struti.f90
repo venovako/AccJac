@@ -209,6 +209,11 @@ SUBROUTINE STRUTI(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, TOL, IX, WRK, INFO)
            DO J = 1, N
               SV(J) = SCALE(SV(J), I)
            END DO
+           DO J = 1, N-1
+              DO L = 1, M
+                 WRK(L,J) = SCALE(WRK(L,J), I)
+              END DO
+           END DO
            INFO = IOR(INFO, 4)
 #ifndef NDEBUG
         ELSE IF (I .LT. 0) THEN
@@ -232,6 +237,11 @@ SUBROUTINE STRUTI(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, TOL, IX, WRK, INFO)
            I = -I
            DO J = 1, N
               SV(J) = SCALE(SV(J), I)
+           END DO
+           DO J = 1, N-1
+              DO L = 1, M
+                 WRK(L,J) = SCALE(WRK(L,J), I)
+              END DO
            END DO
            INFO = IOR(INFO, 4)
 #ifndef NDEBUG
