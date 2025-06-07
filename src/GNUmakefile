@@ -68,7 +68,7 @@ dnsort.o snsort.o xnsort.o\
 cprcyc.o dprcyc.o sprcyc.o wprcyc.o xprcyc.o zprcyc.o\
 ctrana.o dtrana.o strana.o wtrana.o xtrana.o ztrana.o\
 ctrnsf.o dtrnsf.o strnsf.o wtrnsf.o xtrnsf.o ztrnsf.o\
-ctruti.o wtruti.o ztruti.o\
+ctruti.o dtruti.o wtruti.o ztruti.o\
 dtrack.o strack.o xtrack.o\
 ctrace.o dtrace.o strace.o wtrace.o xtrace.o ztrace.o\
 cnrmoa.o dnrmoa.o snrmoa.o wnrmoa.o xnrmoa.o znrmoa.o\

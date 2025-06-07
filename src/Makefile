@@ -59,7 +59,7 @@ dnsort.obj snsort.obj xnsort.obj \
 cprcyc.obj dprcyc.obj sprcyc.obj wprcyc.obj xprcyc.obj zprcyc.obj \
 ctrana.obj dtrana.obj strana.obj wtrana.obj xtrana.obj ztrana.obj \
 ctrnsf.obj dtrnsf.obj strnsf.obj wtrnsf.obj xtrnsf.obj ztrnsf.obj \
-ctruti.obj wtruti.obj ztruti.obj \
+ctruti.obj dtruti.obj wtruti.obj ztruti.obj \
 dtrack.obj strack.obj xtrack.obj \
 ctrace.obj dtrace.obj strace.obj wtrace.obj xtrace.obj ztrace.obj \
 cnrmoa.obj dnrmoa.obj snrmoa.obj wnrmoa.obj xnrmoa.obj znrmoa.obj \
