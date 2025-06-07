@@ -158,6 +158,7 @@ SUBROUTINE CTRUTI(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, TOL, IX, WRK, INFO)
      RETURN
   END IF
 #endif
+  T = GX
   IF (S .LT. REAL(TOL)) THEN
      TOL = ZERO
      INFO = 0
@@ -172,7 +173,6 @@ SUBROUTINE CTRUTI(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, TOL, IX, WRK, INFO)
   END IF
 #endif
   I = 0
-  T = GX
   IF (IAND(INFO, 1) .EQ. 0) THEN
      CALL CLJTU2(APP, AQQ, AQPR, AQPI, C, TR, TI, I)
      IF (I .GT. 0) THEN

@@ -138,6 +138,8 @@ SUBROUTINE SJSVDF(M, N, G, LDG, V, LDV, JPOS, SV, GS, IX, WRK, INFO)
               SELECT CASE (O)
               CASE (0,1)
                  CONTINUE
+              CASE (4,5)
+                 T = T + 1
               CASE (2,3,6,7)
                  T = T + 1
                  TT = TT + 1_INT64
@@ -160,6 +162,8 @@ SUBROUTINE SJSVDF(M, N, G, LDG, V, LDV, JPOS, SV, GS, IX, WRK, INFO)
               SELECT CASE (O)
               CASE (0,1)
                  CONTINUE
+              CASE (4,5)
+                 T = T + 1
               CASE (2,3,6,7)
                  T = T + 1
                  TT = TT + 1_INT64
@@ -199,6 +203,8 @@ SUBROUTINE SJSVDF(M, N, G, LDG, V, LDV, JPOS, SV, GS, IX, WRK, INFO)
               SELECT CASE (O)
               CASE (0,1)
                  CONTINUE
+              CASE (4,5)
+                 T = T + 1
               CASE (2,3,6,7)
                  T = T + 1
                  TT = TT + 1_INT64
@@ -229,6 +235,8 @@ SUBROUTINE SJSVDF(M, N, G, LDG, V, LDV, JPOS, SV, GS, IX, WRK, INFO)
               SELECT CASE (O)
               CASE (0,1)
                  CONTINUE
+              CASE (4,5)
+                 T = T + 1
               CASE (2,3,6,7)
                  T = T + 1
                  TT = TT + 1_INT64
