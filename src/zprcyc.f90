@@ -57,8 +57,8 @@ PURE SUBROUTINE ZPRCYC(M, N, G, LDG, JPOS, SV, IX, WRK, INFO)
         INFO = -6
         RETURN
      END IF
-  END IF
 #endif
+  END IF
   CALL DNSORT(N, JPOS, SV, IX, INFO)
 #ifndef NDEBUG
   IF (INFO .LT. 0) THEN
