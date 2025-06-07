@@ -48,24 +48,6 @@ SUBROUTINE WTRUTI(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, TOL, IX, WRK, INFO)
 #define CR_HYPOT HYPOT
 #endif
   INTERFACE
-     PURE FUNCTION WNRMF(M, X)
-#ifdef __GFORTRAN__
-       USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
-#else
-       USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL128
-#endif
-       IMPLICIT NONE
-       INTEGER, INTENT(IN) :: M
-#ifdef __GFORTRAN__
-       COMPLEX(KIND=c_long_double), INTENT(IN) :: X(M)
-       REAL(KIND=c_long_double) :: WNRMF
-#else
-       COMPLEX(KIND=REAL128), INTENT(IN) :: X(M)
-       REAL(KIND=REAL128) :: WNRMF
-#endif
-     END FUNCTION WNRMF
-  END INTERFACE
-  INTERFACE
      FUNCTION WSDP(M, X, Y, MX, MY, INFO)
 #ifdef __GFORTRAN__
        USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
