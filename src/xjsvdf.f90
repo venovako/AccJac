@@ -84,6 +84,23 @@ SUBROUTINE XJSVDF(M, N, G, LDG, V, LDV, JPOS, SV, GS, IX, WRK, INFO)
      END SUBROUTINE XTRNSF
   END INTERFACE
   INTERFACE
+     SUBROUTINE XTRUTI(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, TOL, IX, WRK, INFO)
+#ifdef __GFORTRAN__
+       USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
+#else
+       USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL128
+#endif
+       IMPLICIT NONE
+       INTEGER, INTENT(IN) :: M, N, LDG, LDV, P, Q, IX(N)
+#ifdef __GFORTRAN__
+       REAL(KIND=c_long_double), INTENT(INOUT) :: G(LDG,N), V(LDV,N), SV(N), GX, TOL, WRK(M,N+1)
+#else
+       REAL(KIND=REAL128), INTENT(INOUT) :: G(LDG,N), V(LDV,N), SV(N), GX, TOL, WRK(M,N+1)
+#endif
+       INTEGER, INTENT(INOUT) :: GS, INFO
+     END SUBROUTINE XTRUTI
+  END INTERFACE
+  INTERFACE
      SUBROUTINE XTRACK(N, SV, GX, GS, SWP, NTR)
 #ifdef __GFORTRAN__
        USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
@@ -185,7 +202,11 @@ SUBROUTINE XJSVDF(M, N, G, LDG, V, LDV, JPOS, SV, GS, IX, WRK, INFO)
               ELSE ! SLOW
                  O = 2
               END IF
-              CALL XTRNSF(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, X, IX, WRK, O)
+              IF (L .EQ. 0) THEN
+                 CALL XTRNSF(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, X, IX, WRK, O)
+              ELSE ! L = 2
+                 CALL XTRUTI(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, X, IX, WRK, O)
+              END IF
               SELECT CASE (O)
               CASE (0,1)
                  CONTINUE
@@ -209,7 +230,11 @@ SUBROUTINE XJSVDF(M, N, G, LDG, V, LDV, JPOS, SV, GS, IX, WRK, INFO)
               ELSE ! SLOW
                  O = 3
               END IF
-              CALL XTRNSF(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, X, IX, WRK, O)
+              IF (L .EQ. 0) THEN
+                 CALL XTRNSF(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, X, IX, WRK, O)
+              ELSE ! L = 2
+                 CALL XTRUTI(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, X, IX, WRK, O)
+              END IF
               SELECT CASE (O)
               CASE (0,1)
                  CONTINUE
@@ -250,7 +275,11 @@ SUBROUTINE XJSVDF(M, N, G, LDG, V, LDV, JPOS, SV, GS, IX, WRK, INFO)
               ELSE ! SLOW
                  O = 2
               END IF
-              CALL XTRNSF(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, X, IX, WRK, O)
+              IF (L .EQ. 0) THEN
+                 CALL XTRNSF(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, X, IX, WRK, O)
+              ELSE ! L = 2
+                 CALL XTRUTI(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, X, IX, WRK, O)
+              END IF
               SELECT CASE (O)
               CASE (0,1)
                  CONTINUE
@@ -282,7 +311,11 @@ SUBROUTINE XJSVDF(M, N, G, LDG, V, LDV, JPOS, SV, GS, IX, WRK, INFO)
                     O = 2
                  END IF
               END IF
-              CALL XTRNSF(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, X, IX, WRK, O)
+              IF (L .EQ. 1) THEN
+                 CALL XTRNSF(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, X, IX, WRK, O)
+              ELSE ! L = 3
+                 CALL XTRUTI(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, X, IX, WRK, O)
+              END IF
               SELECT CASE (O)
               CASE (0,1)
                  CONTINUE
