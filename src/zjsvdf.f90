@@ -142,7 +142,7 @@ SUBROUTINE ZJSVDF(M, N, G, LDG, V, LDV, JPOS, SV, GS, IX, WRK, INFO)
               END IF
            END IF
            DO Q = P+1, JPOS
-              Z = TOL
+              Z = CMPLX(TOL, REAL(R, K), K)
               IF (INFO .EQ. 0) THEN
                  O = 0
               ELSE ! SLOW
@@ -170,7 +170,7 @@ SUBROUTINE ZJSVDF(M, N, G, LDG, V, LDV, JPOS, SV, GS, IX, WRK, INFO)
         ! the off-diagonal block (hyp)
         DO P = 1, JPOS
            DO Q = JPOS+1, N
-              Z = TOL
+              Z = CMPLX(TOL, REAL(R, K), K)
               IF (INFO .EQ. 0) THEN
                  O = 1
               ELSE ! SLOW
@@ -215,7 +215,7 @@ SUBROUTINE ZJSVDF(M, N, G, LDG, V, LDV, JPOS, SV, GS, IX, WRK, INFO)
               T = T + 1
            END IF
            DO Q = P+1, N
-              Z = TOL
+              Z = CMPLX(TOL, REAL(R, K), K)
               IF (INFO .EQ. 0) THEN
                  O = 0
               ELSE ! SLOW
@@ -243,7 +243,7 @@ SUBROUTINE ZJSVDF(M, N, G, LDG, V, LDV, JPOS, SV, GS, IX, WRK, INFO)
      ELSE ! row-cyclic
         DO P = 1, N-1
            DO Q = P+1, N
-              Z = TOL
+              Z = CMPLX(TOL, REAL(R, K), K)
               IF ((P .LE. JPOS) .AND. (Q .GT. JPOS)) THEN
                  IF (INFO .EQ. 0) THEN
                     O = 1
