@@ -44,6 +44,15 @@ SUBROUTINE DJSVDF(M, N, G, LDG, V, LDV, JPOS, SV, GS, IX, WRK, INFO)
      END SUBROUTINE DTRNSF
   END INTERFACE
   INTERFACE
+     SUBROUTINE DTRUTI(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, TOL, IX, WRK, INFO)
+       USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL64
+       IMPLICIT NONE
+       INTEGER, INTENT(IN) :: M, N, LDG, LDV, P, Q, IX(N)
+       REAL(KIND=REAL64), INTENT(INOUT) :: G(LDG,N), V(LDV,N), SV(N), GX, TOL, WRK(M,N+1)
+       INTEGER, INTENT(INOUT) :: GS, INFO
+     END SUBROUTINE DTRUTI
+  END INTERFACE
+  INTERFACE
      SUBROUTINE DTRACK(N, SV, GX, GS, SWP, NTR)
        USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL64
        IMPLICIT NONE
@@ -133,7 +142,11 @@ SUBROUTINE DJSVDF(M, N, G, LDG, V, LDV, JPOS, SV, GS, IX, WRK, INFO)
               ELSE ! SLOW
                  O = 2
               END IF
-              CALL DTRNSF(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, X, IX, WRK, O)
+              IF (L .EQ. 0) THEN
+                 CALL DTRNSF(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, X, IX, WRK, O)
+              ELSE ! L = 2
+                 CALL DTRUTI(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, X, IX, WRK, O)
+              END IF
               SELECT CASE (O)
               CASE (0,1)
                  CONTINUE
@@ -157,7 +170,11 @@ SUBROUTINE DJSVDF(M, N, G, LDG, V, LDV, JPOS, SV, GS, IX, WRK, INFO)
               ELSE ! SLOW
                  O = 3
               END IF
-              CALL DTRNSF(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, X, IX, WRK, O)
+              IF (L .EQ. 0) THEN
+                 CALL DTRNSF(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, X, IX, WRK, O)
+              ELSE ! L = 2
+                 CALL DTRUTI(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, X, IX, WRK, O)
+              END IF
               SELECT CASE (O)
               CASE (0,1)
                  CONTINUE
@@ -198,7 +215,11 @@ SUBROUTINE DJSVDF(M, N, G, LDG, V, LDV, JPOS, SV, GS, IX, WRK, INFO)
               ELSE ! SLOW
                  O = 2
               END IF
-              CALL DTRNSF(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, X, IX, WRK, O)
+              IF (L .EQ. 0) THEN
+                 CALL DTRNSF(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, X, IX, WRK, O)
+              ELSE ! L = 2
+                 CALL DTRUTI(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, X, IX, WRK, O)
+              END IF
               SELECT CASE (O)
               CASE (0,1)
                  CONTINUE
@@ -230,7 +251,11 @@ SUBROUTINE DJSVDF(M, N, G, LDG, V, LDV, JPOS, SV, GS, IX, WRK, INFO)
                     O = 2
                  END IF
               END IF
-              CALL DTRNSF(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, X, IX, WRK, O)
+              IF (L .EQ. 1) THEN
+                 CALL DTRNSF(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, X, IX, WRK, O)
+              ELSE ! L = 3
+                 CALL DTRUTI(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, X, IX, WRK, O)
+              END IF
               SELECT CASE (O)
               CASE (0,1)
                  CONTINUE
