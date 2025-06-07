@@ -165,7 +165,6 @@ SUBROUTINE ZJSVDF(M, N, G, LDG, V, LDV, JPOS, SV, GS, IX, WRK, INFO)
                  INFO = -5
                  GOTO 9
               END SELECT
-              U = U + 1
            END DO
         END DO
         ! the off-diagonal block (hyp)
