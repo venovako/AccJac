@@ -112,12 +112,14 @@ SUBROUTINE DTRUTI(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, TOL, IX, WRK, INFO)
      RETURN
   END IF
 #endif
+  T = QPS
   QPS = GX
   IF (S .LT. TOL) THEN
      TOL = ZERO
      INFO = 0
      GOTO 9
   END IF
+  QPS = T
   J = 0
   CALL DGRAM(SV(P), SV(Q), QPS, APP, AQQ, AQP, J)
 #ifndef NDEBUG
