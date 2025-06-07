@@ -1,7 +1,7 @@
 #!/bin/bash
 for T in d z
 do
-	for S in 1 3 5 7
+	for S in 0 2 4 6
 	do
 		echo '"N", "J", "SWEEPS", "TRANSFS", "GS", "TIMEs", "MAXREΛ", "||G-UΣV^-1||_F/||G||_F"' > $T-$S.csv
 		for ((I=$1;I<=$2;I*=2))
