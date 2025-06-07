@@ -151,7 +151,6 @@ SUBROUTINE XTRUTI(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, TOL, IX, WRK, INFO)
   J = IX(P)
   CC = WRK(P,N+1)
   DO I = 1, M
-     !DIR$ FMA
      WRK(I,N) = G(I,J) * CC + WRK(I,P)
   END DO
   IF (IAND(INFO, 2) .EQ. 0) THEN
@@ -197,10 +196,8 @@ SUBROUTINE XTRUTI(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, TOL, IX, WRK, INFO)
         DO L = 1, M
            XX = WRK(L,P) ! ZZ
            YY = G(L,O)
-           !DIR$ FMA
            WRK(L,P) = (XX + YY * T) * C
            XX = WRK(L,N) ! XX
-           !DIR$ FMA
            G(L,O) = (YY - XX * T) * C
            QPS = MAX(QPS, ABS(G(L,O)))
         END DO
@@ -208,9 +205,7 @@ SUBROUTINE XTRUTI(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, TOL, IX, WRK, INFO)
         DO L = 1, N
            XX = V(L,J)
            YY = V(L,O)
-           !DIR$ FMA
            V(L,J) = (XX + YY * T) * C
-           !DIR$ FMA
            V(L,O) = (YY - XX * T) * C
         END DO
      END IF
@@ -221,10 +216,8 @@ SUBROUTINE XTRUTI(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, TOL, IX, WRK, INFO)
         DO L = 1, M
            XX = WRK(L,P) ! ZZ
            YY = G(L,O)
-           !DIR$ FMA
            WRK(L,P) = (YY * T + XX) * C
            XX = WRK(L,N) ! XX
-           !DIR$ FMA
            G(L,O) = (XX * T + YY) * C
            QPS = MAX(QPS, ABS(G(L,O)))
         END DO
@@ -232,9 +225,7 @@ SUBROUTINE XTRUTI(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, TOL, IX, WRK, INFO)
         DO L = 1, N
            XX = V(L,J)
            YY = V(L,O)
-           !DIR$ FMA
            V(L,J) = (YY * T + XX) * C
-           !DIR$ FMA
            V(L,O) = (XX * T + YY) * C
         END DO
      END IF
@@ -281,7 +272,6 @@ SUBROUTINE XTRUTI(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, TOL, IX, WRK, INFO)
 9 IF (Q .EQ. N) THEN
      J = IX(P)
      DO I = 1, M
-        !DIR$ FMA
         G(I,J) = G(I,J) * CC + WRK(I,P)
         QPS = MAX(QPS, ABS(G(I,J)))
      END DO
