@@ -24,7 +24,7 @@ PURE SUBROUTINE CPRCYC(M, N, G, LDG, JPOS, SV, IX, WRK, INFO)
   INTEGER, PARAMETER :: K = REAL32
   REAL(KIND=K), PARAMETER :: ZERO = 0.0_K, ONE = 1.0_K
   INTEGER, INTENT(IN) :: M, N, LDG, JPOS
-  COMPLEX(KIND=K), INTENT(INOUT) :: G(LDG,N), WRK(M,N)
+  COMPLEX(KIND=K), INTENT(INOUT) :: G(LDG,N), WRK(M,N+1)
   REAL(KIND=K), INTENT(OUT) :: SV(N)
   INTEGER, INTENT(INOUT) :: IX(N), INFO
   INTEGER :: I, J
@@ -37,13 +37,14 @@ PURE SUBROUTINE CPRCYC(M, N, G, LDG, JPOS, SV, IX, WRK, INFO)
 #endif
   IF (INFO .NE. 0) THEN
      IF (INFO .EQ. 2) THEN
-        DO J = 1, N-1
+        DO J = 1, N
            DO I = 1, M
               WRK(I,J) = ZERO
            END DO
         END DO
+        J = N + 1
         DO I = 1, M
-           WRK(I,N) = ONE
+           WRK(I,J) = ONE
         END DO
 #ifndef NDEBUG
      ELSE IF (INFO .NE. 1) THEN

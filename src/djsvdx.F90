@@ -108,7 +108,7 @@ PROGRAM DJSVDX
   ! allocate the rest
   LDV = N
   ALLOCATE(V(LDV,N))
-  ALLOCATE(WRK(M,N))
+  ALLOCATE(WRK(M,N+1))
   ALLOCATE(SV(N))
   ALLOCATE(IX(N))
   ! call DJSVDF
@@ -122,7 +122,7 @@ PROGRAM DJSVDX
   CLK(3) = MOD(CLK(1), CLK(2)) * 1000000_INT64
   CLK(1) = CLK(1) / CLK(2)
   CLK(3) = CLK(3) / CLK(2)
-  T = WRK(1,1)
+  T = WRK(1,N+1)
   CLK(2) = INT(T, INT64)
   WRITE (OUTPUT_UNIT,'(I11,A,I12,A,I6,A,I8,A,I6.6,A)',ADVANCE='NO') INFO, ',', CLK(2), ',', GS, ',', CLK(1), '.', CLK(3), ','
   FLUSH(OUTPUT_UNIT)
