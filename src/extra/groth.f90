@@ -8,7 +8,7 @@
         YY = X(I) * SH + Y(I) * CH
         X(I) = XX
         Y(I) = YY
-        GX = MAX(GX, ABS(XX), ABS(YY))
+        GX = MAX(GX, MAX(ABS(XX), ABS(YY)))
         MX = CR_HYPOT(MX, XX)
         MY = CR_HYPOT(MY, YY)
      END DO
@@ -23,7 +23,7 @@
         YY = (X(I) * SH + Y(I)) * CH
         X(I) = XX
         Y(I) = YY
-        GX = MAX(GX, ABS(XX), ABS(YY))
+        GX = MAX(GX, MAX(ABS(XX), ABS(YY)))
         MX = CR_HYPOT(MX, XX)
         MY = CR_HYPOT(MY, YY)
      END DO
