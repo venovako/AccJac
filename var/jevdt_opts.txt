@@ -1,0 +1,11 @@
+bit    0: cos[h]-sin[h] (0) or cos[h]-tan[h] (1) transformations
+bits 1-2: row-cyclic (00) or column-cyclic (01) or deRijk (10) or modified deRijk (11)
+i.e.,
+row-cyclic        : 0 or 1
+column-cyclic     : 2 or 3
+deRijk            : 4 or 5
+modified deRijk   : 6 or 7
+only D & Z:
+Mantharam-Eberlein: 8 or 9
+not tested:
+(modified modulus: 10 or 11)
