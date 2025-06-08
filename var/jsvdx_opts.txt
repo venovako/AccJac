@@ -1,3 +1,8 @@
 bit 0: fast (0) or slow (1)
 bit 1: modified deRijk (0) or row-cyclic (1)
 bit 2: standard transformations (0) or Rutishauser-like (1)
+
+0: modified deRijk
+2: row-cyclic
+4: modified deRijk + Rutishauser
+6: row-cyclic + Rutishauser

@@ -196,10 +196,13 @@ SUBROUTINE XTRUTI(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, TOL, IX, WRK, INFO)
         DO L = 1, M
            XX = WRK(L,P) ! ZZ
            YY = G(L,O)
-           WRK(L,P) = (XX + YY * T) * C
+           XX = (XX + YY * T) * C
+           WRK(L,P) = XX
+           QPS = MAX(QPS, ABS(XX))
            XX = WRK(L,N) ! XX
-           G(L,O) = (YY - XX * T) * C
-           QPS = MAX(QPS, ABS(G(L,O)))
+           YY = (YY - XX * T) * C
+           G(L,O) = YY
+           QPS = MAX(QPS, ABS(YY))
         END DO
         J = IX(P)
         DO L = 1, N
@@ -216,10 +219,13 @@ SUBROUTINE XTRUTI(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, TOL, IX, WRK, INFO)
         DO L = 1, M
            XX = WRK(L,P) ! ZZ
            YY = G(L,O)
-           WRK(L,P) = (YY * T + XX) * C
+           XX = (YY * T + XX) * C
+           WRK(L,P) = XX
+           QPS = MAX(QPS, ABS(XX))
            XX = WRK(L,N) ! XX
-           G(L,O) = (XX * T + YY) * C
-           QPS = MAX(QPS, ABS(G(L,O)))
+           YY = (XX * T + YY) * C
+           G(L,O) = YY
+           QPS = MAX(QPS, ABS(YY))
         END DO
         J = IX(P)
         DO L = 1, N
@@ -234,7 +240,8 @@ SUBROUTINE XTRUTI(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, TOL, IX, WRK, INFO)
   IF (I .EQ. 0) THEN
      INFO = 1
   ELSE IF (I .LT. 0) THEN
-     INFO = -8
+     INFO = -5
+     RETURN
   ELSE ! I > 0
      CC = CC * C
      ! S = ABS(A21 / (SV(P) * SV(Q)))

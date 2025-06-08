@@ -215,14 +215,16 @@ SUBROUTINE WTRUTI(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, TOL, IX, WRK, INFO)
         DO L = 1, M
            XX = WRK(L,P) ! ZZ
            YY = G(L,O)
-           ! (YY * QPS + XX) * C
-           WRK(L,P) = CMPLX((REAL(YY) * REAL(QPS) + (REAL(XX) - AIMAG(YY) * AIMAG(QPS))) * C,&
+           XX = CMPLX((REAL(YY) * REAL(QPS) + (REAL(XX) - AIMAG(YY) * AIMAG(QPS))) * C,&
                 (REAL(YY) * AIMAG(QPS) + (AIMAG(XX) + AIMAG(YY) * REAL(QPS))) * C, K)
+           WRK(L,P) = XX
+           T = MAX(T, MAX(ABS(REAL(XX)), ABS(AIMAG(XX))))
            XX = WRK(L,N) ! XX
            ! (YY - XX * CONJG(QPS)) * C
-           G(L,O) = CMPLX(((REAL(YY) - AIMAG(XX) * AIMAG(QPS)) - REAL(XX) * REAL(QPS)) * C,&
+           YY = CMPLX(((REAL(YY) - AIMAG(XX) * AIMAG(QPS)) - REAL(XX) * REAL(QPS)) * C,&
                 (REAL(XX) * AIMAG(QPS) + (AIMAG(YY) - AIMAG(XX) * REAL(QPS))) * C, K)
-           T = MAX(T, MAX(ABS(REAL(G(L,O))), ABS(AIMAG(G(L,O)))))
+           G(L,O) = YY
+           T = MAX(T, MAX(ABS(REAL(YY)), ABS(AIMAG(YY))))
         END DO
         J = IX(P)
         DO L = 1, N
@@ -244,14 +246,16 @@ SUBROUTINE WTRUTI(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, TOL, IX, WRK, INFO)
         DO L = 1, M
            XX = WRK(L,P) ! ZZ
            YY = G(L,O)
-           ! XX = (YY * QPS + XX) * C
-           WRK(L,P) = CMPLX((REAL(YY) * REAL(QPS) + (REAL(XX) - AIMAG(YY) * AIMAG(QPS))) * C,&
+           XX = CMPLX((REAL(YY) * REAL(QPS) + (REAL(XX) - AIMAG(YY) * AIMAG(QPS))) * C,&
                 (REAL(YY) * AIMAG(QPS) + (AIMAG(XX) + AIMAG(YY) * REAL(QPS))) * C, K)
+           WRK(L,P) = XX
+           T = MAX(T, MAX(ABS(REAL(XX)), ABS(AIMAG(XX))))
            XX = WRK(L,N) ! XX
            ! YY = (XX * CONJG(QPS) + YY) * C
-           G(L,O) = CMPLX((REAL(XX) * REAL(QPS) + (REAL(YY) + AIMAG(XX) * AIMAG(QPS))) * C,&
+           YY = CMPLX((REAL(XX) * REAL(QPS) + (REAL(YY) + AIMAG(XX) * AIMAG(QPS))) * C,&
                 ((AIMAG(YY) + AIMAG(XX) * REAL(QPS)) - REAL(XX) * AIMAG(QPS)) * C, K)
-           T = MAX(T, MAX(ABS(REAL(G(L,O))), ABS(AIMAG(G(L,O)))))
+           G(L,O) = YY
+           T = MAX(T, MAX(ABS(REAL(YY)), ABS(AIMAG(YY))))
         END DO
         J = IX(P)
         DO L = 1, N
@@ -270,7 +274,8 @@ SUBROUTINE WTRUTI(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, TOL, IX, WRK, INFO)
   IF (I .EQ. 0) THEN
      INFO = 1
   ELSE IF (I .LT. 0) THEN
-     INFO = -8
+     INFO = -5
+     RETURN
   ELSE ! I > 0
      CC = CC * C
      ! S = ABS(A21 / (SV(P) * SV(Q)))
