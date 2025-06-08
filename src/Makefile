@@ -80,7 +80,8 @@ cevdj.exe zevdj.exe \
 cljv2t.exe dljv2t.exe sljv2t.exe zljv2t.exe \
 cjevdt.exe djevdt.exe sjevdt.exe wjevdt.exe xjevdt.exe zjevdt.exe \
 cpproc.exe dpproc.exe spproc.exe wjevdt.exe xpproc.exe zpproc.exe \
-cjsvdx.exe djsvdx.exe sjsvdx.exe zjsvdx.exe
+cjsvdx.exe djsvdx.exe sjsvdx.exe zjsvdx.exe \
+djsvrr.exe
 
 all: $(LIBS) $(EXES)
 

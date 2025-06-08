@@ -1,0 +1,138 @@
+PROGRAM DJSVRR
+#ifdef __GFORTRAN__
+  USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
+  USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: OUTPUT_UNIT, REAL64
+#else
+  USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: OUTPUT_UNIT, REAL64, REAL128
+#endif
+  IMPLICIT NONE
+  INTERFACE
+     PURE FUNCTION XFMA(A, B, C)
+#ifdef __GFORTRAN__
+       USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
+#else
+       USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL128
+#endif
+       IMPLICIT NONE
+#ifdef __GFORTRAN__
+       REAL(KIND=c_long_double), INTENT(IN) :: A, B, C
+       REAL(KIND=c_long_double) :: XFMA
+#else
+       REAL(KIND=REAL128), INTENT(IN) :: A, B, C
+       REAL(KIND=REAL128) :: XFMA
+#endif
+     END FUNCTION XFMA
+  END INTERFACE
+#ifdef __GFORTRAN__
+  INTERFACE
+     PURE FUNCTION CR_HYPOT(X, Y) BIND(C,NAME='cr_hypotl')
+       USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
+       IMPLICIT NONE
+       REAL(KIND=c_long_double), INTENT(IN), VALUE :: X, Y
+       REAL(KIND=c_long_double) :: CR_HYPOT
+     END FUNCTION CR_HYPOT
+  END INTERFACE
+  INTEGER, PARAMETER :: KK = c_long_double
+#else
+#define CR_HYPOT HYPOT
+  INTEGER, PARAMETER :: KK = REAL128
+#endif
+  INTEGER, PARAMETER :: K = REAL64
+  REAL(KIND=KK), PARAMETER :: XZERO = 0.0_K
+  CHARACTER(LEN=256) :: CLA
+  REAL(KIND=K), ALLOCATABLE :: G(:,:), V(:,:), U(:,:), S(:)
+  REAL(KIND=KK), ALLOCATABLE :: XG(:,:), XV(:,:), XU(:,:), XS(:,:)
+  REAL(KIND=KK) :: X
+  INTEGER :: M, N, I, J, L
+  EXTERNAL :: BFOPEN
+  I = COMMAND_ARGUMENT_COUNT()
+  IF (I .NE. 3) STOP 'djsvrr.exe M N FN'
+  CALL GET_COMMAND_ARGUMENT(1, CLA)
+  READ (CLA,*) M
+  IF (M .LE. 0) STOP 'M'
+  CALL GET_COMMAND_ARGUMENT(2, CLA)
+  READ (CLA,*) N
+  IF ((N .LE. 0) .OR. (N .GT. M)) STOP 'N'
+  CALL GET_COMMAND_ARGUMENT(3, CLA)
+  CALL BFOPEN(TRIM(CLA)//'.Y', 'RO', I, J)
+  IF (J .NE. 0) STOP 'OPEN(Y)'
+  ALLOCATE(G(M,N))
+  READ (UNIT=I, IOSTAT=J) G
+  IF (J .NE. 0) STOP 'READ(Y)'
+  CLOSE (UNIT=I, IOSTAT=J)
+  IF (J .NE. 0) STOP 'CLOSE(Y)'
+  CALL BFOPEN(TRIM(CLA)//'.YV', 'RO', I, J)
+  IF (J .NE. 0) STOP 'OPEN(YV)'
+  ALLOCATE(V(N,N))
+  READ (UNIT=I, IOSTAT=J) V
+  IF (J .NE. 0) STOP 'READ(YV)'
+  CLOSE (UNIT=I, IOSTAT=J)
+  IF (J .NE. 0) STOP 'CLOSE(YV)'
+  CALL BFOPEN(TRIM(CLA)//'.YU', 'RO', I, J)
+  IF (J .NE. 0) STOP 'OPEN(YU)'
+  ALLOCATE (U(M,N))
+  READ (UNIT=I, IOSTAT=J) U
+  IF (J .NE. 0) STOP 'READ(YU)'
+  CLOSE (UNIT=I, IOSTAT=J)
+  IF (J .NE. 0) STOP 'CLOSE(YU)'
+  CALL BFOPEN(TRIM(CLA)//'.SY', 'RO', I, J)
+  IF (J .NE. 0) STOP 'READ(SY)'
+  ALLOCATE(S(N))
+  READ (UNIT=I, IOSTAT=J) S
+  IF (J .NE. 0) STOP 'READ(SY)'
+  CLOSE (UNIT=I, IOSTAT=J)
+  IF (J .NE. 0) STOP 'CLOSE(SY)'
+  ALLOCATE(XG(M,N))
+  ALLOCATE(XV(N,N))
+  ALLOCATE(XU(M,N))
+  ALLOCATE(XS(N,2))
+  DO J = 1, N
+     DO I = 1, M
+        XG(I,J) = G(I,J)
+     END DO
+  END DO
+  DO J = 1, N
+     DO I = 1, N
+        XV(I,J) = V(I,J)
+     END DO
+  END DO
+  DO J = 1, N
+     DO I = 1, M
+        XU(I,J) = XZERO
+     END DO
+  END DO
+  DO J = 1, N
+     DO L = 1, N
+        DO I = 1, M
+           XU(I,J) = XFMA(XG(I,L), XV(L,J), XU(I,J))
+        END DO
+     END DO
+  END DO
+  X = XZERO
+  L = 0
+  DO J = 1, N
+     XS(J,1) = S(J)
+     XS(J,2) = XZERO
+     DO I = 1, M
+        XU(I,J) = XFMA(REAL(-U(I,J), KK), XS(J,1), XU(I,J))
+        XS(J,2) = CR_HYPOT(XS(J,2), XU(I,J))
+     END DO
+     XS(J,2) = XS(J,2) / XS(J,1)
+     IF (XS(J,2) .GT. X) THEN
+        X = XS(J,2)
+        L = J
+     END IF
+  END DO
+  WRITE (OUTPUT_UNIT,'(I11,A,ES25.17E3)') -L, ',', X
+  DO J = 1, N
+     WRITE (OUTPUT_UNIT,'(I11,A,ES25.17E3)') J, ',', XS(J,2)
+  END DO
+  DEALLOCATE(XS)
+  DEALLOCATE(XU)
+  DEALLOCATE(XV)
+  DEALLOCATE(XG)
+  DEALLOCATE(S)
+  DEALLOCATE(U)
+  DEALLOCATE(V)
+  DEALLOCATE(G)
+END PROGRAM DJSVRR

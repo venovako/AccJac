@@ -88,7 +88,8 @@ dxgtg.exe zwghg.exe\
 cevdj.exe zevdj.exe\
 cjevdt.exe djevdt.exe sjevdt.exe wjevdt.exe xjevdt.exe zjevdt.exe\
 cpproc.exe dpproc.exe spproc.exe wpproc.exe xpproc.exe zpproc.exe\
-cjsvdx.exe djsvdx.exe sjsvdx.exe zjsvdx.exe
+cjsvdx.exe djsvdx.exe sjsvdx.exe zjsvdx.exe\
+djsvrr.exe
 
 ifdef MPFR
 OBJD += \
