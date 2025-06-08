@@ -43,7 +43,7 @@ PURE SUBROUTINE CPRCYC(M, N, G, LDG, JPOS, SV, IX, WRK, INFO)
            END DO
         END DO
         J = N + 1
-        DO I = 1, M
+        DO I = 1, N-1
            WRK(I,J) = ONE
         END DO
 #ifndef NDEBUG

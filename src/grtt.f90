@@ -19,6 +19,6 @@
         YY = (Y(I) - X(I) * TN) * CS
         X(I) = XX
         Y(I) = YY
-        GX = MAX(GX, ABS(XX), ABS(YY))
+        GX = MAX(GX, MAX(ABS(XX), ABS(YY)))
      END DO
   END IF

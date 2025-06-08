@@ -222,7 +222,7 @@ SUBROUTINE WTRUTI(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, TOL, IX, WRK, INFO)
            ! (YY - XX * CONJG(QPS)) * C
            G(L,O) = CMPLX(((REAL(YY) - AIMAG(XX) * AIMAG(QPS)) - REAL(XX) * REAL(QPS)) * C,&
                 (REAL(XX) * AIMAG(QPS) + (AIMAG(YY) - AIMAG(XX) * REAL(QPS))) * C, K)
-           T = MAX(T, ABS(REAL(G(L,O))), ABS(AIMAG(G(L,O))))
+           T = MAX(T, MAX(ABS(REAL(G(L,O))), ABS(AIMAG(G(L,O)))))
         END DO
         J = IX(P)
         DO L = 1, N
@@ -251,7 +251,7 @@ SUBROUTINE WTRUTI(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, TOL, IX, WRK, INFO)
            ! YY = (XX * CONJG(QPS) + YY) * C
            G(L,O) = CMPLX((REAL(XX) * REAL(QPS) + (REAL(YY) + AIMAG(XX) * AIMAG(QPS))) * C,&
                 ((AIMAG(YY) + AIMAG(XX) * REAL(QPS)) - REAL(XX) * AIMAG(QPS)) * C, K)
-           T = MAX(T, ABS(REAL(G(L,O))), ABS(AIMAG(G(L,O))))
+           T = MAX(T, MAX(ABS(REAL(G(L,O))), ABS(AIMAG(G(L,O)))))
         END DO
         J = IX(P)
         DO L = 1, N
@@ -318,7 +318,7 @@ SUBROUTINE WTRUTI(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, TOL, IX, WRK, INFO)
      J = IX(P)
      DO I = 1, M
         G(I,J) = CMPLX(REAL(G(I,J)) * CC + REAL(WRK(I,P)), AIMAG(G(I,J)) * CC + AIMAG(WRK(I,P)), K)
-        T = MAX(T, ABS(REAL(G(I,J))), ABS(AIMAG(G(I,J))))
+        T = MAX(T, MAX(ABS(REAL(G(I,J))), ABS(AIMAG(G(I,J)))))
      END DO
      IF (T .GT. GX) THEN
         GX = T

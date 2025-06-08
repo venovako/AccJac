@@ -28,6 +28,6 @@
              (REAL(X(I)) * AIMAG(TN) + (AIMAG(Y(I)) - AIMAG(X(I)) * REAL(TN))) * CS, K)
         X(I) = XX
         Y(I) = YY
-        GX = MAX(GX, REAL(XX), AIMAG(XX), REAL(YY), AIMAG(YY))
+        GX = MAX(GX, MAX(MAX(ABS(REAL(XX)), ABS(AIMAG(XX))), MAX(ABS(REAL(YY)), ABS(AIMAG(YY)))))
      END DO
   END IF
