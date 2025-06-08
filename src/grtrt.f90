@@ -7,7 +7,7 @@
         YY = A(Q,I) * CS - A(I,P) * SN
         A(I,P) = XX
         A(Q,I) = YY
-        AX = MAX(AX, ABS(XX), ABS(YY))
+        AX = MAX(AX, MAX(ABS(XX), ABS(YY)))
      END DO
      A(Q,P) = A(Q,Q) * SN + A(Q,P) * CS
      DO I = Q+1, N
@@ -15,7 +15,7 @@
         YY = A(I,Q) * CS - A(I,P) * SN
         A(I,P) = XX
         A(I,Q) = YY
-        AX = MAX(AX, ABS(XX), ABS(YY))
+        AX = MAX(AX, MAX(ABS(XX), ABS(YY)))
      END DO
   ELSE IF (IAND(INFO, 4) .EQ. 0) THEN
      ! SN => TG
@@ -25,7 +25,7 @@
         YY = GFMA(A(I,P), -SN, A(Q,I)) * CS
         A(I,P) = XX
         A(Q,I) = YY
-        AX = MAX(AX, ABS(XX), ABS(YY))
+        AX = MAX(AX, MAX(ABS(XX), ABS(YY)))
      END DO
      A(Q,P) = GFMA(A(Q,Q), SN, A(Q,P)) * CS
      DO I = Q+1, N
@@ -33,6 +33,6 @@
         YY = GFMA(A(I,P), -SN, A(I,Q)) * CS
         A(I,P) = XX
         A(I,Q) = YY
-        AX = MAX(AX, ABS(XX), ABS(YY))
+        AX = MAX(AX, MAX(ABS(XX), ABS(YY)))
      END DO
   END IF

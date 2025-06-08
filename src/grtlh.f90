@@ -6,7 +6,7 @@
         YY = SH * A(P,J) + CH * A(Q,J)
         A(P,J) = XX
         A(Q,J) = YY
-        AX = MAX(AX, ABS(XX), ABS(YY))
+        AX = MAX(AX, MAX(ABS(XX), ABS(YY)))
      END DO
      A(Q,P) = SH * A(P,P) + CH * A(Q,P)
   ELSE IF (IAND(INFO, 4) .EQ. 0) THEN
@@ -16,7 +16,7 @@
         YY = CH * GFMA(SH, A(P,J), A(Q,J))
         A(P,J) = XX
         A(Q,J) = YY
-        AX = MAX(AX, ABS(XX), ABS(YY))
+        AX = MAX(AX, MAX(ABS(XX), ABS(YY)))
      END DO
      A(Q,P) = CH * GFMA(SH, A(P,P), A(Q,P))
   END IF
