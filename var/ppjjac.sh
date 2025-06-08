@@ -8,7 +8,7 @@ do
 		do
 			let "J=I/2"
 			printf "%4d, %4d," $I $J >> $T-$S.csv
-			cat $T$I-$S.out >> $T-$S.csv
+			cat $S/$T$I-$S.out >> $T-$S.csv
 		done
 	done
 done
