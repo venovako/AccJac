@@ -23,6 +23,11 @@ PURE FUNCTION CFMA(A, B, C)
   CALL PVN_CFMA(DR, DI, AR, AI, BR, BI, CR, CI)
   CFMA = CMPLX(DR, DI, REAL32)
 #else
+#ifdef __GFORTRAN__
+  CFMA = CMPLX(REAL(A) * REAL(B) + (REAL(C) - AIMAG(A) * AIMAG(B)),&
+       REAL(A) * AIMAG(B) + (AIMAG(A) * REAL(B) + AIMAG(C)), REAL32)
+#else
   CFMA = A * B + C
+#endif
 #endif
 END FUNCTION CFMA

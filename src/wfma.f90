@@ -14,6 +14,15 @@ PURE FUNCTION WFMA(A, B, C)
        REAL(KIND=c_long_double), INTENT(IN) :: AR, AI, BR, BI, CR, CI
      END SUBROUTINE PVN_WFMA
   END INTERFACE
+#else
+  INTERFACE
+     PURE FUNCTION XFMA(A, B, C)
+       USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
+       IMPLICIT NONE
+       REAL(KIND=c_long_double), INTENT(IN) :: A, B, C
+       REAL(KIND=c_long_double) :: XFMA
+     END FUNCTION XFMA
+  END INTERFACE
 #endif
   COMPLEX(KIND=c_long_double), INTENT(IN) :: A, B, C
   COMPLEX(KIND=c_long_double) :: WFMA
@@ -51,6 +60,11 @@ PURE FUNCTION WFMA(A, B, C)
   WFMA = CMPLX(DR, DI, REAL128)
 #endif
 #else
+#ifdef __GFORTRAN__
+  WFMA = CMPLX(XFMA(REAL(A), REAL(B), XFMA(-AIMAG(A), AIMAG(B), REAL(C))),&
+       XFMA(REAL(A), AIMAG(B), XFMA(AIMAG(A), REAL(B), AIMAG(C))), c_long_double)
+#else
   WFMA = A * B + C
+#endif
 #endif
 END FUNCTION WFMA

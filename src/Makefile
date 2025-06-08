@@ -81,7 +81,7 @@ cljv2t.exe dljv2t.exe sljv2t.exe zljv2t.exe \
 cjevdt.exe djevdt.exe sjevdt.exe wjevdt.exe xjevdt.exe zjevdt.exe \
 cpproc.exe dpproc.exe spproc.exe wjevdt.exe xpproc.exe zpproc.exe \
 cjsvdx.exe djsvdx.exe sjsvdx.exe zjsvdx.exe \
-djsvrr.exe sjsvrr.exe
+cjsvrr.exe djsvrr.exe sjsvrr.exe zjsvrr.exe
 
 all: $(LIBS) $(EXES)
 
