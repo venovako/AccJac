@@ -24,4 +24,4 @@ ECHO 1..4096 > d-%1.txt
 ..\src\djsvrr.exe  512  512  d512 >  d512-%1.rrs 2>> d-%1_512.trc
 ..\src\djsvrr.exe 1024 1024 d1024 > d1024-%1.rrs 2>> d-%1_1024.trc
 ..\src\djsvrr.exe 2048 2048 d2048 > d2048-%1.rrs 2>> d-%1_2048.trc
-..\src\djsvrr.exe 4096 4098 d4096 > d4096-%1.rrs 2>> d-%1_4096.trc
+..\src\djsvrr.exe 4096 4096 d4096 > d4096-%1.rrs 2>> d-%1_4096.trc

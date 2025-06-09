@@ -24,4 +24,4 @@ ECHO 1..4096 > z-%1.txt
 ..\src\zjsvrr.exe  512  512  z512 >  z512-%1.rrs 2>> z-%1_512.trc
 ..\src\zjsvrr.exe 1024 1024 z1024 > z1024-%1.rrs 2>> z-%1_1024.trc
 ..\src\zjsvrr.exe 2048 2048 z2048 > z2048-%1.rrs 2>> z-%1_2048.trc
-..\src\zjsvrr.exe 4096 4098 z4096 > z4096-%1.rrs 2>> z-%1_4096.trc
+..\src\zjsvrr.exe 4096 4096 z4096 > z4096-%1.rrs 2>> z-%1_4096.trc
