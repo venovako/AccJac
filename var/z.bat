@@ -12,3 +12,16 @@ ECHO 1..4096 > z-%1.txt
 ..\src\zjsvdx.exe 1024 1024 -1 %1 z1024 >> z-%1.txt 2> z-%1_1024.trc
 ..\src\zjsvdx.exe 2048 2048 -1 %1 z2048 >> z-%1.txt 2> z-%1_2048.trc
 ..\src\zjsvdx.exe 4096 4096 -1 %1 z4096 >> z-%1.txt 2> z-%1_4096.trc
+..\src\zjsvrr.exe    1    1    z1 >    z1-%1.rrs 2>> z-%1_1.trc
+..\src\zjsvrr.exe    2    2    z2 >    z2-%1.rrs 2>> z-%1_2.trc
+..\src\zjsvrr.exe    4    4    z4 >    z4-%1.rrs 2>> z-%1_4.trc
+..\src\zjsvrr.exe    8    8    z8 >    z8-%1.rrs 2>> z-%1_8.trc
+..\src\zjsvrr.exe   16   16   z16 >   z16-%1.rrs 2>> z-%1_16.trc
+..\src\zjsvrr.exe   32   32   z32 >   z32-%1.rrs 2>> z-%1_32.trc
+..\src\zjsvrr.exe   64   64   z64 >   z64-%1.rrs 2>> z-%1_64.trc
+..\src\zjsvrr.exe  128  128  z128 >  z128-%1.rrs 2>> z-%1_128.trc
+..\src\zjsvrr.exe  256  256  z256 >  z256-%1.rrs 2>> z-%1_256.trc
+..\src\zjsvrr.exe  512  512  z512 >  z512-%1.rrs 2>> z-%1_512.trc
+..\src\zjsvrr.exe 1024 1024 z1024 > z1024-%1.rrs 2>> z-%1_1024.trc
+..\src\zjsvrr.exe 2048 2048 z2048 > z2048-%1.rrs 2>> z-%1_2048.trc
+..\src\zjsvrr.exe 4096 4098 z4096 > z4096-%1.rrs 2>> z-%1_4096.trc
