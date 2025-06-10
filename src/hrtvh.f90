@@ -12,8 +12,8 @@
   ELSE IF (IAND(INFO, 4) .EQ. 0) THEN
      ! SH => TH
      DO I = 1, N
-        XX = (X(I) + Y(I) * SH) * CH
-        YY = (X(I) * HS + Y(I)) * CH
+        XX = HFMA(Y(I), SH, X(I)) * CH
+        YY = HFMA(X(I), HS, Y(I)) * CH
         X(I) = XX
         Y(I) = YY
      END DO

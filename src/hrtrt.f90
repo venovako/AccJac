@@ -11,7 +11,7 @@
         YY = A(I,P) * HS + YY * CS
         A(I,P) = XX
         A(Q,I) = CMPLX(REAL(YY), -AIMAG(YY), K)
-        AX = MAX(AX, CR_HYPOT(REAL(XX), AIMAG(XX)), CR_HYPOT(REAL(YY), AIMAG(YY)))
+        AX = MAX(AX, MAX(CR_HYPOT(REAL(XX), AIMAG(XX)), CR_HYPOT(REAL(YY), AIMAG(YY))))
      END DO
      A(Q,P) = A(Q,Q) * SN + A(Q,P) * CS
      DO I = Q+1, N
@@ -19,7 +19,7 @@
         YY = A(I,P) * HS + A(I,Q) * CS
         A(I,P) = XX
         A(I,Q) = YY
-        AX = MAX(AX, CR_HYPOT(REAL(XX), AIMAG(XX)), CR_HYPOT(REAL(YY), AIMAG(YY)))
+        AX = MAX(AX, MAX(CR_HYPOT(REAL(XX), AIMAG(XX)), CR_HYPOT(REAL(YY), AIMAG(YY))))
      END DO
   ELSE IF (IAND(INFO, 4) .EQ. 0) THEN
      ! SN => TG
@@ -31,7 +31,7 @@
         YY = HFMA(A(I,P), HS, YY) * CS
         A(I,P) = XX
         A(Q,I) = CMPLX(REAL(YY), -AIMAG(YY), K)
-        AX = MAX(AX, CR_HYPOT(REAL(XX), AIMAG(XX)), CR_HYPOT(REAL(YY), AIMAG(YY)))
+        AX = MAX(AX, MAX(CR_HYPOT(REAL(XX), AIMAG(XX)), CR_HYPOT(REAL(YY), AIMAG(YY))))
      END DO
      A(Q,P) = HFMA(A(Q,Q), SN, A(Q,P)) * CS
      DO I = Q+1, N
@@ -39,6 +39,6 @@
         YY = HFMA(A(I,P), HS, A(I,Q)) * CS
         A(I,P) = XX
         A(I,Q) = YY
-        AX = MAX(AX, CR_HYPOT(REAL(XX), AIMAG(XX)), CR_HYPOT(REAL(YY), AIMAG(YY)))
+        AX = MAX(AX, MAX(CR_HYPOT(REAL(XX), AIMAG(XX)), CR_HYPOT(REAL(YY), AIMAG(YY))))
      END DO
   END IF

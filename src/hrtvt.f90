@@ -22,15 +22,15 @@
      ! SN => TG
      IF (IAND(INFO, 8) .EQ. 0) THEN
         DO I = 1, N
-           XX = (X(I) + Y(I) * SN) * CS
-           YY = (X(I) * HS + Y(I)) * CS
+           XX = HFMA(Y(I), SN, X(I)) * CS
+           YY = HFMA(X(I), HS, Y(I)) * CS
            X(I) = XX
            Y(I) = YY
         END DO
      ELSE ! swap
         DO I = 1, N
-           XX = (X(I) + Y(I) * SN) * CS
-           YY = (X(I) * HS + Y(I)) * CS
+           XX = HFMA(Y(I), SN, X(I)) * CS
+           YY = HFMA(X(I), HS, Y(I)) * CS
            X(I) = YY
            Y(I) = XX
         END DO

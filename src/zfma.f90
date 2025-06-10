@@ -23,11 +23,9 @@ PURE FUNCTION ZFMA(A, B, C)
   CALL PVN_ZFMA(DR, DI, AR, AI, BR, BI, CR, CI)
   ZFMA = CMPLX(DR, DI, REAL64)
 #else
-#ifdef __GFORTRAN__
+  ! ZFMA = A * B + C
+  !DIR$ FMA
   ZFMA = CMPLX(REAL(A) * REAL(B) + (REAL(C) - AIMAG(A) * AIMAG(B)),&
        REAL(A) * AIMAG(B) + (AIMAG(A) * REAL(B) + AIMAG(C)), REAL64)
-#else
-  ZFMA = A * B + C
-#endif
 #endif
 END FUNCTION ZFMA

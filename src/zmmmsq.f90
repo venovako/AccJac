@@ -18,7 +18,11 @@ PURE SUBROUTINE ZMMMSQ(N, A, LDA, B, LDB, C, LDC)
   DO J = 1, N
      DO I = 1, N
         C(I,J) = ZERO
-        DO L = 1, N
+     END DO
+  END DO
+  DO J = 1, N
+     DO L = 1, N
+        DO I = 1, N
            C(I,J) = ZFMA(A(I,L), B(L,J), C(I,J))
         END DO
      END DO
