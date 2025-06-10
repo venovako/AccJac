@@ -138,6 +138,7 @@ PROGRAM DJEVDT
   ALLOCATE(Y(N,N))
   ALLOCATE(Z(N,N))
   INFO = -AS
+  !$OMP PARALLEL DO DEFAULT(NONE) PRIVATE(I,J) SHARED(A,Z,N,INFO)
   DO J = 1, N
      DO I = 1, J-1
         A(I,J) = ZERO
@@ -149,7 +150,9 @@ PROGRAM DJEVDT
         A(I,J) = ZERO
      END DO
   END DO
+  !$OMP END PARALLEL DO
   ! V^-T = WRK := J V J
+  !$OMP PARALLEL DO DEFAULT(NONE) PRIVATE(I,J) SHARED(V,WRK,N,JPOS)
   DO J = 1, JPOS
      DO I = 1, JPOS
         WRK(I,J) = V(I,J)
@@ -158,6 +161,8 @@ PROGRAM DJEVDT
         WRK(I,J) = -V(I,J)
      END DO
   END DO
+  !$OMP END PARALLEL DO
+  !$OMP PARALLEL DO DEFAULT(NONE) PRIVATE(I,J) SHARED(V,WRK,N,JPOS)
   DO J = JPOS+1, N
      DO I = 1, JPOS
         WRK(I,J) = -V(I,J)
@@ -166,23 +171,30 @@ PROGRAM DJEVDT
         WRK(I,J) = V(I,J)
      END DO
   END DO
+  !$OMP END PARALLEL DO
   ! Y := V^-T D
+  !$OMP PARALLEL DO DEFAULT(NONE) PRIVATE(I,J) SHARED(WRK,Y,Z,N)
   DO J = 1, N
      DO I = 1, N
         Y(I,J) = WRK(I,J) * Z(J,J)
      END DO
   END DO
+  !$OMP END PARALLEL DO
   ! Z := V^-1 = (V^-T)^T = WRK^T
+  !$OMP PARALLEL DO DEFAULT(NONE) PRIVATE(I,J) SHARED(WRK,Z,N)
   DO J = 1, N
      DO I = 1, N
         Z(I,J) = WRK(J,I)
      END DO
   END DO
+  !$OMP END PARALLEL DO
+  !$OMP PARALLEL DO DEFAULT(NONE) PRIVATE(I,J) SHARED(X,N)
   DO J = 1, N
      DO I = 1, N
         X(I,J) = XZERO
      END DO
   END DO
+  !$OMP END PARALLEL DO
   ! V^T A V = D ==> A = V^-T D V^-1
   CALL XMMMSQ(N, N, Y, N, Z, N, X, N)
   CALL BFOPEN(TRIM(CLA)//'.A', 'RO', I, J)
