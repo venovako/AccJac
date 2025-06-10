@@ -14,20 +14,24 @@ PROGRAM ZJEVDT
      END SUBROUTINE JSWEEP
   END INTERFACE
   INTERFACE
-     PURE SUBROUTINE WMMMSQ(N, A, LDA, B, LDB, C, LDC)
+#ifdef _OPENMP
+     SUBROUTINE WMMMSQ(M, N, A, LDA, B, LDB, C, LDC)
+#else
+     PURE SUBROUTINE WMMMSQ(M, N, A, LDA, B, LDB, C, LDC)
+#endif
 #ifdef __GFORTRAN__
        USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
 #else
        USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL128
 #endif
        IMPLICIT NONE
-       INTEGER, INTENT(IN) :: N, LDA, LDB, LDC
+       INTEGER, INTENT(IN) :: M, N, LDA, LDB, LDC
 #ifdef __GFORTRAN__
-       COMPLEX(KIND=c_long_double), INTENT(IN) :: A(LDA,N), B(LDB,N)
-       COMPLEX(KIND=c_long_double), INTENT(OUT) :: C(LDC,N)
+       COMPLEX(KIND=c_long_double), INTENT(IN) :: A(LDA,M), B(LDB,N)
+       COMPLEX(KIND=c_long_double), INTENT(INOUT) :: C(LDC,N)
 #else
-       COMPLEX(KIND=REAL128), INTENT(IN) :: A(LDA,N), B(LDB,N)
-       COMPLEX(KIND=REAL128), INTENT(OUT) :: C(LDC,N)
+       COMPLEX(KIND=REAL128), INTENT(IN) :: A(LDA,M), B(LDB,N)
+       COMPLEX(KIND=REAL128), INTENT(INOUT) :: C(LDC,N)
 #endif
      END SUBROUTINE WMMMSQ
   END INTERFACE
@@ -174,8 +178,13 @@ PROGRAM ZJEVDT
         Z(I,J) = CONJG(WRK(J,I))
      END DO
   END DO
+  DO J = 1, N
+     DO I = 1, N
+        X(I,J) = XZERO
+     END DO
+  END DO
   ! V^H A V = D ==> A = V^-H D V^-1
-  CALL WMMMSQ(N, Y, N, Z, N, X, N)
+  CALL WMMMSQ(N, N, Y, N, Z, N, X, N)
   CALL BFOPEN(TRIM(CLA)//'.A', 'RO', I, J)
   IF (J .NE. 0) STOP 'OPEN(A)'
   READ (UNIT=I, IOSTAT=J) A

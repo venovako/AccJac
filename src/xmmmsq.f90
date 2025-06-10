@@ -1,5 +1,9 @@
-! C = A * B
-PURE SUBROUTINE XMMMSQ(N, A, LDA, B, LDB, C, LDC)
+! C += A * B
+#ifdef _OPENMP
+SUBROUTINE XMMMSQ(M, N, A, LDA, B, LDB, C, LDC)
+#else
+PURE SUBROUTINE XMMMSQ(M, N, A, LDA, B, LDB, C, LDC)
+#endif
 #ifdef __GFORTRAN__
   USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
 #else
@@ -28,21 +32,17 @@ PURE SUBROUTINE XMMMSQ(N, A, LDA, B, LDB, C, LDC)
 #else
   INTEGER, PARAMETER :: K = REAL128
 #endif
-  REAL(KIND=K), PARAMETER :: ZERO = 0.0_K
-  INTEGER, INTENT(IN) :: N, LDA, LDB, LDC
-  REAL(KIND=K), INTENT(IN) :: A(LDA,N), B(LDB,N)
-  REAL(KIND=K), INTENT(OUT) :: C(LDC,N)
+  INTEGER, INTENT(IN) :: M, N, LDA, LDB, LDC
+  REAL(KIND=K), INTENT(IN) :: A(LDA,M), B(LDB,N)
+  REAL(KIND=K), INTENT(INOUT) :: C(LDC,N)
   INTEGER :: I, J, L
+  !$OMP PARALLEL DO DEFAULT(NONE) PRIVATE(I,J,L) SHARED(A,B,C,M,N)
   DO J = 1, N
-     DO I = 1, N
-        C(I,J) = ZERO
-     END DO
-  END DO
-  DO J = 1, N
-     DO L = 1, N
+     DO L = 1, M
         DO I = 1, N
            C(I,J) = XFMA(A(I,L), B(L,J), C(I,J))
         END DO
      END DO
   END DO
+  !$OMP END PARALLEL DO
 END SUBROUTINE XMMMSQ
