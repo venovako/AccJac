@@ -164,6 +164,7 @@ PROGRAM CJSVDX
   L = -GS
   IF (Z .EQ. QZERO) THEN
      ALLOCATE(U(M,N))
+     !$OMP PARALLEL DO DEFAULT(NONE) PRIVATE(I,J,Y) SHARED(G,U,SV,L,M,N)
      DO J = 1, N
         Y = SV(J)
         Y = SCALE(Y, L)
@@ -171,6 +172,7 @@ PROGRAM CJSVDX
            U(I,J) = CMPLX(REAL(REAL(G(I,J)), KK) * Y, REAL(AIMAG(G(I,J)), KK) * Y, KK)
         END DO
      END DO
+     !$OMP END PARALLEL DO
   END IF
   DO J = 1, N
      SV(J) = SCALE(SV(J), L)
@@ -192,11 +194,13 @@ PROGRAM CJSVDX
         DO J = 1, N
            W(I,J) = G(I,J)
            Z = HYPOTX(Z, HYPOTX(REAL(W(I,J)), AIMAG(W(I,J))))
+           !$OMP PARALLEL DO DEFAULT(NONE) PRIVATE(H,L) SHARED(U,V,W,I,J,N)
            DO L = 1, N
               ! W(I,J) = W(I,J) - U(I,L) * V(L,J)
               H = CMPLX(REAL(-REAL(V(L,J)), KK), REAL(-AIMAG(V(L,J)), KK), KK)
               W(I,J) = WFMA(U(I,L), H, W(I,J))
            END DO
+           !$OMP END PARALLEL DO
            Y = HYPOTX(Y, HYPOTX(REAL(W(I,J)), AIMAG(W(I,J))))
         END DO
      END DO

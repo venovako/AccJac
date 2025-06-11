@@ -143,6 +143,7 @@ PROGRAM SJSVDX
   L = -GS
   IF (Z .EQ. QZERO) THEN
      ALLOCATE(U(M,N))
+     !$OMP PARALLEL DO DEFAULT(NONE) PRIVATE(I,J,Y) SHARED(G,U,SV,L,M,N)
      DO J = 1, N
         Y = SV(J)
         Y = SCALE(Y, L)
@@ -150,6 +151,7 @@ PROGRAM SJSVDX
            U(I,J) = REAL(G(I,J), KK) * Y
         END DO
      END DO
+     !$OMP END PARALLEL DO
   END IF
   DO J = 1, N
      SV(J) = SCALE(SV(J), L)
@@ -171,10 +173,12 @@ PROGRAM SJSVDX
         DO J = 1, N
            W(I,J) = G(I,J)
            Z = HYPOTX(Z, W(I,J))
+           !$OMP PARALLEL DO DEFAULT(NONE) PRIVATE(L) SHARED(U,V,W,I,J,N)
            DO L = 1, N
               ! W(I,J) = W(I,J) - U(I,L) * REAL(V(L,J), KK)
               W(I,J) = XFMA(U(I,L), REAL(-V(L,J), KK), W(I,J))
            END DO
+           !$OMP END PARALLEL DO
            Y = HYPOTX(Y, W(I,J))
         END DO
      END DO

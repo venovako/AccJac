@@ -116,15 +116,15 @@ PROGRAM WJSVDX
   L = -GS
   IF (Z .EQ. QZERO) THEN
      ALLOCATE(U(M,N))
+     !$OMP PARALLEL DO DEFAULT(NONE) PRIVATE(I,J,Y) SHARED(G,U,SV,L,M,N)
      DO J = 1, N
         Y = SV(J)
         Y = SCALE(Y, L)
         DO I = 1, M
-           U(I,J) = CMPLX(&
-                REAL(REAL(G(I,J)), REAL128) * Y,&
-                REAL(AIMAG(G(I,J)), REAL128) * Y, REAL128)
+           U(I,J) = CMPLX(REAL(REAL(G(I,J)), REAL128) * Y, REAL(AIMAG(G(I,J)), REAL128) * Y, REAL128)
         END DO
      END DO
+     !$OMP END PARALLEL DO
   END IF
   DO J = 1, N
      SV(J) = SCALE(SV(J), L)
@@ -147,6 +147,7 @@ PROGRAM WJSVDX
         DO J = 1, N
            W(I,J) = G(I,J)
            Z = HYPOT(Z, HYPOT(REAL(W(I,J)), AIMAG(W(I,J))))
+           !$OMP PARALLEL DO DEFAULT(NONE) PRIVATE(H,L) SHARED(U,V,W,I,J,N)
            DO L = 1, N
               ! W(I,J) = W(I,J) - U(I,L) * V(L,J)
               H = CMPLX(REAL(-REAL(V(L,J)), REAL128), REAL(-AIMAG(V(L,J)), REAL128), REAL128)
@@ -154,6 +155,7 @@ PROGRAM WJSVDX
                    IEEE_FMA(REAL(U(I,L)), REAL(H), IEEE_FMA(-AIMAG(U(I,L)), AIMAG(H), REAL(W(I,J)))),&
                    IEEE_FMA(REAL(U(I,L)), AIMAG(H), IEEE_FMA(AIMAG(U(I,L)), REAL(H), AIMAG(W(I,J)))), REAL128)
            END DO
+           !$OMP END PARALLEL DO
            Y = HYPOT(Y, HYPOT(REAL(W(I,J)), AIMAG(W(I,J))))
         END DO
      END DO
