@@ -42,6 +42,6 @@ With the [MPFR](https://www.mpfr.org) and [GMP](https://gmplib.org) libraries, a
 
 ## Other
 
-Additional material is available in the `etc` subdirectory.
+Additional material is available in the `etc` and `var` subdirectories.
 
 This work has been supported in part by Croatian Science Foundation under the project IP-2014-09-3670 ([MFBDA](https://web.math.pmf.unizg.hr/mfbda/)).
