@@ -1,5 +1,5 @@
 #!/bin/bash
-source $3/var/env.sh
+source $3/env.sh
 for ((I=$1;I<=$2;I*=2))
 do
 	for T in d z
@@ -8,7 +8,7 @@ do
 		do
 			echo $I $T $S
 			cd $S
-			OMP_NUM_THREADS=$4 $3/src/${T}jsvdx.exe $5$I $6$I -1 $S $T$I > $T$I-$S.out 2> $T$I-$S.err
+			OMP_NUM_THREADS=$4 $3/${T}jsvdx.exe $5$I $6$I -1 $S $T$I > $T$I-$S.out 2> $T$I-$S.err
 			cd ..
 		done
 	done

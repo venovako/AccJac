@@ -14,13 +14,3 @@ then
 	unset OMP_PROC_BIND
 fi
 export OMP_PROC_BIND=SPREAD
-if [ -n "${OMP_DYNAMIC}" ]
-then
-	unset OMP_DYNAMIC
-fi
-export OMP_DYNAMIC=FALSE
-if [ -n "${MKL_DYNAMIC}" ]
-then
-	unset MKL_DYNAMIC
-fi
-export MKL_DYNAMIC=FALSE
