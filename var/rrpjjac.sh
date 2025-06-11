@@ -8,11 +8,12 @@ do
 		do
 			echo $I $T $S
 			cd $S
-			OMP_NUM_THREADS=$4 $3/src/${T}jsvrr.exe $I $I $T$I > $T$I-$S.rr 2>> $T$I-$S.err
-			echo -n "|| U^H U - I ||_F =" >> $T$I-$S.rr
-			OMP_NUM_THREADS=$4 $3/src/${T}jsvor.exe $I $I $T$I.YU >> $T$I-$S.rr 2>> $T$I-$S.err
-			echo -n "|| V^H J V - J ||_F =" >> $T$I-$S.rr
-			OMP_NUM_THREADS=$4 $3/src/${T}jsvor.exe $I -1 $T$I.YV >> $T$I-$S.rr 2>> $T$I-$S.err
+			OMP_NUM_THREADS=$4 $3/src/${T}jsvrr.exe $I $I $T$I > $T$I-$S.txt 2>> $T$I-$S.err
+			tr '\n' , < $T$I-$S.out > $T$I-$S.tuo
+			OMP_NUM_THREADS=$4 $3/src/${T}jsvor.exe $I $I $T$I.YU >> $T$I-$S.tuo 2>> $T$I-$S.err
+			tr '\n' , < $T$I-$S.tuo > $T$I-$S.out
+			OMP_NUM_THREADS=$4 $3/src/${T}jsvor.exe $I -1 $T$I.YV >> $T$I-$S.out 2>> $T$I-$S.err
+			rm -fv $T$I-$.tuo
 			cd ..
 		done
 	done

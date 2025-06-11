@@ -7,7 +7,7 @@ do
 		do
 			echo $I $T $S
 			cd $S
-			$3/${T}jsvrr.exe $I $I $T$I > $T$I-$S.rr 2>> $T$I-$S.err &
+			$3/${T}jsvrr.exe $I $I $T$I > $T$I-$S.txt 2>> $T$I-$S.err &
 			cd ..
 		done
 	done
