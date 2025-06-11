@@ -6,7 +6,8 @@ PROGRAM XJSVDX
 #endif
   IMPLICIT NONE
 #ifdef __GFORTRAN__
-  REAL(KIND=REAL128), PARAMETER :: QZERO = 0.0_REAL128, QONE = 1.0_REAL128
+#define HYPOTX HYPOT
+  REAL(KIND=REAL128), PARAMETER :: XZERO = 0.0_REAL128, XONE = 1.0_REAL128
   CHARACTER(LEN=256) :: CLA
   REAL(KIND=REAL128) :: Y, Z
   REAL(KIND=c_long_double) :: T
@@ -16,7 +17,7 @@ PROGRAM XJSVDX
   INTEGER, ALLOCATABLE :: IX(:)
   REAL(KIND=REAL128), ALLOCATABLE :: U(:,:), W(:,:)
   EXTERNAL :: BFOPEN, XJSVDF
-  !$OMP DECLARE REDUCTION(HYP:REAL(REAL128):OMP_OUT=HYPOT(OMP_OUT,OMP_IN)) INITIALIZER(OMP_PRIV=QZERO)
+  !$OMP DECLARE REDUCTION(HYP:REAL(REAL128):OMP_OUT=HYPOTX(OMP_OUT,OMP_IN)) INITIALIZER(OMP_PRIV=XZERO)
   ! read the command line arguments
   I = COMMAND_ARGUMENT_COUNT()
   IF (I .NE. 5) STOP 'xjsvdx.exe M N JPOS OPTS FILE'
@@ -24,9 +25,9 @@ PROGRAM XJSVDX
   READ (CLA,*) M
   IF (M .LT. 0) THEN
      M = -M
-     Z = QONE
+     Z = XONE
   ELSE IF (M .GT. 0) THEN
-     Z = QZERO
+     Z = XZERO
   ELSE ! M = 0
      STOP 'M'
   END IF
@@ -111,7 +112,7 @@ PROGRAM XJSVDX
   IF (J .NE. 0) STOP 'Z'
   CLOSE(I)
   L = -GS
-  IF (Z .EQ. QZERO) THEN
+  IF (Z .EQ. XZERO) THEN
      ALLOCATE(U(M,N))
      !$OMP PARALLEL DO DEFAULT(NONE) PRIVATE(I,J,Y) SHARED(G,U,SV,L,M,N)
      DO J = 1, N
@@ -130,8 +131,8 @@ PROGRAM XJSVDX
   IF (J .NE. 0) STOP 'SY'
   WRITE (UNIT=I, IOSTAT=J) SV
   IF (J .NE. 0) STOP 'S'
-  Y = QZERO
-  IF (Z .EQ. QZERO) THEN
+  Y = XZERO
+  IF (Z .EQ. XZERO) THEN
      ! read G again
      CALL BFOPEN(TRIM(CLA)//'.YX', 'RO', I, J)
      IF (J .NE. 0) CALL BFOPEN(TRIM(CLA)//'.Y', 'RO', I, J)
@@ -144,12 +145,12 @@ PROGRAM XJSVDX
      DO I = 1, M
         DO J = 1, N
            W(I,J) = G(I,J)
-           Z = HYPOT(Z, W(I,J))
+           Z = HYPOTX(Z, W(I,J))
            DO L = 1, N
               ! W(I,J) = W(I,J) - U(I,L) * REAL(V(L,J), REAL128)
               W(I,J) = IEEE_FMA(U(I,L), REAL(-V(L,J), REAL128), W(I,J))
            END DO
-           Y = HYPOT(Y, W(I,J))
+           Y = HYPOTX(Y, W(I,J))
         END DO
      END DO
      !$OMP END PARALLEL DO
