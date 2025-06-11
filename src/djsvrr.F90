@@ -118,8 +118,7 @@ PROGRAM DJSVRR
   !$OMP END PARALLEL DO
   WRITE (OUTPUT_UNIT,'(A)') '"j", "||(G*V)j - (U*Σ)j||_F / Σj"'
   FLUSH(OUTPUT_UNIT)
-  X = XZERO
-  L = 0
+  !$OMP PARALLEL DO DEFAULT(NONE) PRIVATE(I,J) SHARED(U,XU,S,XS,M,N)
   DO J = 1, N
      XS(J,1) = S(J)
      XS(J,2) = XZERO
@@ -128,6 +127,11 @@ PROGRAM DJSVRR
         XS(J,2) = CR_HYPOT(XS(J,2), XU(I,J))
      END DO
      XS(J,2) = XS(J,2) / XS(J,1)
+  END DO
+  !$OMP END PARALLEL DO
+  X = XZERO
+  L = 0
+  DO J = 1, N
      WRITE (OUTPUT_UNIT,'(I11,A,ES25.17E3)') J, ',', REAL(XS(J,2), K)
      FLUSH(OUTPUT_UNIT)
      IF (XS(J,2) .GT. X) THEN
