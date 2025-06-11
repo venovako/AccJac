@@ -19,6 +19,7 @@ PROGRAM WJSVDX
   INTEGER, ALLOCATABLE :: IX(:)
   COMPLEX(KIND=REAL128), ALLOCATABLE :: U(:,:), W(:,:)
   EXTERNAL :: BFOPEN, WJSVDF
+  !$OMP DECLARE REDUCTION(HYP:REAL(REAL128):OMP_OUT=HYPOT(OMP_OUT,OMP_IN)) INITIALIZER(OMP_PRIV=QZERO)
   ! read the command line arguments
   I = COMMAND_ARGUMENT_COUNT()
   IF (I .NE. 5) STOP 'wjsvdx.exe M N JPOS OPTS FILE'
@@ -143,11 +144,11 @@ PROGRAM WJSVDX
      IF (J .NE. 0) STOP 'G'
      CLOSE(I)
      ALLOCATE(W(M,N))
+     !$OMP PARALLEL DO DEFAULT(NONE) PRIVATE(H,I,J,L) SHARED(G,U,V,W,M,N) REDUCTION(HYP:Y,Z)
      DO I = 1, M
         DO J = 1, N
            W(I,J) = G(I,J)
            Z = HYPOT(Z, HYPOT(REAL(W(I,J)), AIMAG(W(I,J))))
-           !$OMP PARALLEL DO DEFAULT(NONE) PRIVATE(H,L) SHARED(U,V,W,I,J,N)
            DO L = 1, N
               ! W(I,J) = W(I,J) - U(I,L) * V(L,J)
               H = CMPLX(REAL(-REAL(V(L,J)), REAL128), REAL(-AIMAG(V(L,J)), REAL128), REAL128)
@@ -155,10 +156,10 @@ PROGRAM WJSVDX
                    IEEE_FMA(REAL(U(I,L)), REAL(H), IEEE_FMA(-AIMAG(U(I,L)), AIMAG(H), REAL(W(I,J)))),&
                    IEEE_FMA(REAL(U(I,L)), AIMAG(H), IEEE_FMA(AIMAG(U(I,L)), REAL(H), AIMAG(W(I,J)))), REAL128)
            END DO
-           !$OMP END PARALLEL DO
            Y = HYPOT(Y, HYPOT(REAL(W(I,J)), AIMAG(W(I,J))))
         END DO
      END DO
+     !$OMP END PARALLEL DO
      Y = Y / Z
      IF (ALLOCATED(W)) DEALLOCATE(W)
      IF (ALLOCATED(U)) DEALLOCATE(U)

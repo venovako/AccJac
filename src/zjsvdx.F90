@@ -69,6 +69,7 @@ PROGRAM ZJSVDX
   INTEGER, ALLOCATABLE :: IX(:)
   COMPLEX(KIND=KK), ALLOCATABLE :: U(:,:), W(:,:)
   EXTERNAL :: BFOPEN, ZJSVDF
+  !$OMP DECLARE REDUCTION(HYP:REAL(KK):OMP_OUT=HYPOTX(OMP_OUT,OMP_IN)) INITIALIZER(OMP_PRIV=QZERO)
   ! read the command line arguments
   I = COMMAND_ARGUMENT_COUNT()
   IF (I .NE. 5) STOP 'zjsvdx.exe M N JPOS OPTS FILE'
@@ -296,20 +297,20 @@ PROGRAM ZJSVDX
      IF (J .NE. 0) STOP 'G'
      CLOSE(I)
      ALLOCATE(W(M,N))
+     !$OMP PARALLEL DO DEFAULT(NONE) PRIVATE(H,I,J,L) SHARED(G,U,V,W,M,N) REDUCTION(HYP:Y,Z)
      DO I = 1, M
         DO J = 1, N
            W(I,J) = G(I,J)
            Z = HYPOTX(Z, HYPOTX(REAL(W(I,J)), AIMAG(W(I,J))))
-           !$OMP PARALLEL DO DEFAULT(NONE) PRIVATE(H,L) SHARED(U,V,W,I,J,N)
            DO L = 1, N
               ! W(I,J) = W(I,J) - U(I,L) * V(L,J)
               H = CMPLX(REAL(-REAL(V(L,J)), KK), REAL(-AIMAG(V(L,J)), KK), KK)
               W(I,J) = WFMA(U(I,L), H, W(I,J))
            END DO
-           !$OMP END PARALLEL DO
            Y = HYPOTX(Y, HYPOTX(REAL(W(I,J)), AIMAG(W(I,J))))
         END DO
      END DO
+     !$OMP END PARALLEL DO
      Y = Y / Z
      IF (ALLOCATED(W)) DEALLOCATE(W)
      IF (ALLOCATED(U)) DEALLOCATE(U)

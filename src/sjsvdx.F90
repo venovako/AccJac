@@ -48,6 +48,7 @@ PROGRAM SJSVDX
   INTEGER, ALLOCATABLE :: IX(:)
   REAL(KIND=KK), ALLOCATABLE :: U(:,:), W(:,:)
   EXTERNAL :: BFOPEN, SJSVDF
+  !$OMP DECLARE REDUCTION(HYP:REAL(KK):OMP_OUT=HYPOTX(OMP_OUT,OMP_IN)) INITIALIZER(OMP_PRIV=QZERO)
   ! read the command line arguments
   I = COMMAND_ARGUMENT_COUNT()
   IF (I .NE. 5) STOP 'sjsvdx.exe M N JPOS OPTS FILE'
@@ -169,19 +170,19 @@ PROGRAM SJSVDX
      IF (J .NE. 0) STOP 'G'
      CLOSE(I)
      ALLOCATE(W(M,N))
+     !$OMP PARALLEL DO DEFAULT(NONE) PRIVATE(I,J,L) SHARED(G,U,V,W,M,N) REDUCTION(HYP:Y,Z)
      DO I = 1, M
         DO J = 1, N
            W(I,J) = G(I,J)
            Z = HYPOTX(Z, W(I,J))
-           !$OMP PARALLEL DO DEFAULT(NONE) PRIVATE(L) SHARED(U,V,W,I,J,N)
            DO L = 1, N
               ! W(I,J) = W(I,J) - U(I,L) * REAL(V(L,J), KK)
               W(I,J) = XFMA(U(I,L), REAL(-V(L,J), KK), W(I,J))
            END DO
-           !$OMP END PARALLEL DO
            Y = HYPOTX(Y, W(I,J))
         END DO
      END DO
+     !$OMP END PARALLEL DO
      Y = Y / Z
      IF (ALLOCATED(W)) DEALLOCATE(W)
      IF (ALLOCATED(U)) DEALLOCATE(U)
