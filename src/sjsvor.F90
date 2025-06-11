@@ -70,9 +70,17 @@ PROGRAM SJSVOR
   CLOSE (UNIT=I, IOSTAT=J)
   IF (J .NE. 0) STOP 'CLOSE'
   IF (JPOS .EQ. -1) THEN
-     ALLOCATE(JV(N))
-     CALL BFOPEN(TRIM(CLA)//'.J', 'RO', I, J)
+     I = LEN_TRIM(CLA)
+     IF (I .EQ. 1) THEN
+        CLA(I:I) = 'J'
+     ELSE IF (I .GT. 1) THEN
+        CLA(I-1:I) = 'J '
+     ELSE ! I < 1
+        STOP 'FILENAME'
+     END IF
+     CALL BFOPEN(TRIM(CLA), 'RO', I, J)
      IF (J .NE. 0) STOP 'OPEN(J)'
+     ALLOCATE(JV(N))
      READ (UNIT=I, IOSTAT=J) JV
      IF (J .NE. 0) STOP 'READ(J)'
      CLOSE (UNIT=I, IOSTAT=J)
