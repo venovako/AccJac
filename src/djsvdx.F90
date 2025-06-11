@@ -78,10 +78,11 @@ PROGRAM DJSVDX
   IF (JPOS .EQ. -1) THEN
      ALLOCATE(JV(N))
      CALL BFOPEN(TRIM(CLA)//'.J', 'RO', I, J)
-     IF (J .NE. 0) STOP 'J'
+     IF (J .NE. 0) STOP 'OPEN(J)'
      READ (UNIT=I, IOSTAT=J) JV
-     IF (J .NE. 0) STOP 'JV'
-     CLOSE(I)
+     IF (J .NE. 0) STOP 'READ(J)'
+     CLOSE (UNIT=I, IOSTAT=J)
+     IF (J .NE. 0) STOP 'CLOSE(J)'
      JPOS = 0
      J = 1
      DO WHILE (JV(J) .EQ. 1_INT64)
@@ -102,10 +103,11 @@ PROGRAM DJSVDX
   LDG = M
   ALLOCATE(G(LDG,N))
   CALL BFOPEN(TRIM(CLA)//'.Y', 'RO', I, J)
-  IF (J .NE. 0) STOP 'Y'
+  IF (J .NE. 0) STOP 'OPEN(Y)'
   READ (UNIT=I, IOSTAT=J) G
-  IF (J .NE. 0) STOP 'G'
-  CLOSE(I)
+  IF (J .NE. 0) STOP 'READ(Y)'
+  CLOSE (UNIT=I, IOSTAT=J)
+  IF (J .NE. 0) STOP 'CLOSE(Y)'
   ! allocate the rest
   LDV = N
   ALLOCATE(V(LDV,N))
@@ -129,20 +131,23 @@ PROGRAM DJSVDX
   FLUSH(OUTPUT_UNIT)
   IF (INFO .LT. 0) STOP 'DJSVDF'
   CALL BFOPEN(TRIM(CLA)//'.YU', 'WO', I, J)
-  IF (J .NE. 0) STOP 'YU'
+  IF (J .NE. 0) STOP 'OPEN(YU)'
   WRITE (UNIT=I, IOSTAT=J) G
-  IF (J .NE. 0) STOP 'U'
-  CLOSE(I)
+  IF (J .NE. 0) STOP 'WRITE(YU)'
+  CLOSE (UNIT=I, IOSTAT=J)
+  IF (J .NE. 0) STOP 'CLOSE(YU)'
   CALL BFOPEN(TRIM(CLA)//'.YV', 'WO', I, J)
-  IF (J .NE. 0) STOP 'YV'
+  IF (J .NE. 0) STOP 'OPEN(YV)'
   WRITE (UNIT=I, IOSTAT=J) V
-  IF (J .NE. 0) STOP 'V'
-  CLOSE(I)
+  IF (J .NE. 0) STOP 'WRITE(YV)'
+  CLOSE (UNIT=I, IOSTAT=J)
+  IF (J .NE. 0) STOP 'CLOSE(YV)'
   CALL BFOPEN(TRIM(CLA)//'.SS', 'WO', I, J)
-  IF (J .NE. 0) STOP 'SS'
+  IF (J .NE. 0) STOP 'OPEN(SS)'
   WRITE (UNIT=I, IOSTAT=J) SV
-  IF (J .NE. 0) STOP 'SV'
-  CLOSE(I)
+  IF (J .NE. 0) STOP 'WRITE(SS)'
+  CLOSE (UNIT=I, IOSTAT=J)
+  IF (J .NE. 0) STOP 'CLOSE(SS)'
   ! V^-1 = J V^T J
   DO J = 2, N
      DO I = 1, J-1
@@ -162,10 +167,11 @@ PROGRAM DJSVDX
      END DO
   END DO
   CALL BFOPEN(TRIM(CLA)//'.ZZ', 'WO', I, J)
-  IF (J .NE. 0) STOP 'ZZ'
+  IF (J .NE. 0) STOP 'OPEN(ZZ)'
   WRITE (UNIT=I, IOSTAT=J) V
-  IF (J .NE. 0) STOP 'Z'
-  CLOSE(I)
+  IF (J .NE. 0) STOP 'WRITE(ZZ)'
+  CLOSE (UNIT=I, IOSTAT=J)
+  IF (J .NE. 0) STOP 'CLOSE(ZZ)'
   L = -GS
   IF (Z .EQ. XZERO) THEN
      ALLOCATE(U(M,N))
@@ -198,16 +204,19 @@ PROGRAM DJSVDX
   CLOSE (UNIT=I, IOSTAT=J)
   IF (J .NE. 0) STOP 'CLOSE(E)'
   CALL BFOPEN(TRIM(CLA)//'.SY', 'WO', I, J)
-  IF (J .NE. 0) STOP 'SY'
+  IF (J .NE. 0) STOP 'OPEN(SY)'
   WRITE (UNIT=I, IOSTAT=J) SV
-  IF (J .NE. 0) STOP 'S'
+  IF (J .NE. 0) STOP 'WRITE(SY)'
+  CLOSE (UNIT=I, IOSTAT=J)
+  IF (J .NE. 0) STOP 'CLOSE(SY)'
   ! read LY
   CALL BFOPEN(TRIM(CLA)//'.LY', 'RO', I, J)
   IF (J .EQ. 0) THEN
      ALLOCATE(LY(N))
      READ (UNIT=I, IOSTAT=J) LY
-     IF (J .NE. 0) STOP 'L'
-     CLOSE(I)
+     IF (J .NE. 0) STOP 'READ(LY)'
+     CLOSE (UNIT=I, IOSTAT=J)
+     IF (J .NE. 0) STOP 'CLOSE(LY)'
      L = 1
      I = 1
      DO WHILE (L .GT. 0)
@@ -271,10 +280,11 @@ PROGRAM DJSVDX
   IF (Z .EQ. XZERO) THEN
      ! read G again
      CALL BFOPEN(TRIM(CLA)//'.Y', 'RO', I, J)
-     IF (J .NE. 0) STOP 'Y'
+     IF (J .NE. 0) STOP 'OPEN(Y)'
      READ (UNIT=I, IOSTAT=J) G
-     IF (J .NE. 0) STOP 'G'
-     CLOSE(I)
+     IF (J .NE. 0) STOP 'READ(Y)'
+     CLOSE (UNIT=I, IOSTAT=J)
+     IF (J .NE. 0) STOP 'CLOSE(Y)'
      ALLOCATE(W(M,N))
      !$OMP PARALLEL DO DEFAULT(NONE) PRIVATE(I,J) SHARED(G,W,M,N) REDUCTION(HYP:Z)
      DO J = 1, N
