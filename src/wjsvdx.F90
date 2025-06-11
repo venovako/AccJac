@@ -145,18 +145,30 @@ PROGRAM WJSVDX
      IF (J .NE. 0) STOP 'G'
      CLOSE(I)
      ALLOCATE(W(M,N))
-     !$OMP PARALLEL DO DEFAULT(NONE) PRIVATE(H,I,J,L) SHARED(G,U,V,W,M,N) REDUCTION(HYP:Y,Z)
-     DO I = 1, M
-        DO J = 1, N
+     !$OMP PARALLEL DO DEFAULT(NONE) PRIVATE(I,J) SHARED(G,W,M,N) REDUCTION(HYP:Z)
+     DO J = 1, N
+        DO I = 1, M
            W(I,J) = G(I,J)
            Z = HYPOTX(Z, HYPOTX(REAL(W(I,J)), AIMAG(W(I,J))))
-           DO L = 1, N
+        END DO
+     END DO
+     !$OMP END PARALLEL DO
+     !$OMP PARALLEL DO DEFAULT(NONE) PRIVATE(H,I,J,L) SHARED(U,V,W,M,N)
+     DO J = 1, N
+        DO L = 1, N
+           DO I = 1, M
               ! W(I,J) = W(I,J) - U(I,L) * V(L,J)
               H = CMPLX(REAL(-REAL(V(L,J)), REAL128), REAL(-AIMAG(V(L,J)), REAL128), REAL128)
               W(I,J) = CMPLX(&
                    IEEE_FMA(REAL(U(I,L)), REAL(H), IEEE_FMA(-AIMAG(U(I,L)), AIMAG(H), REAL(W(I,J)))),&
                    IEEE_FMA(REAL(U(I,L)), AIMAG(H), IEEE_FMA(AIMAG(U(I,L)), REAL(H), AIMAG(W(I,J)))), REAL128)
            END DO
+        END DO
+     END DO
+     !$OMP END PARALLEL DO
+     !$OMP PARALLEL DO DEFAULT(NONE) PRIVATE(I,J) SHARED(W,M,N) REDUCTION(HYP:Y)
+     DO J = 1, N
+        DO I = 1, M
            Y = HYPOTX(Y, HYPOTX(REAL(W(I,J)), AIMAG(W(I,J))))
         END DO
      END DO

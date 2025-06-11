@@ -170,15 +170,27 @@ PROGRAM SJSVDX
      IF (J .NE. 0) STOP 'G'
      CLOSE(I)
      ALLOCATE(W(M,N))
-     !$OMP PARALLEL DO DEFAULT(NONE) PRIVATE(I,J,L) SHARED(G,U,V,W,M,N) REDUCTION(HYP:Y,Z)
-     DO I = 1, M
-        DO J = 1, N
+     !$OMP PARALLEL DO DEFAULT(NONE) PRIVATE(I,J) SHARED(G,W,M,N) REDUCTION(HYP:Z)
+     DO J = 1, N
+        DO I = 1, M
            W(I,J) = G(I,J)
            Z = HYPOTX(Z, W(I,J))
-           DO L = 1, N
+        END DO
+     END DO
+     !$OMP END PARALLEL DO
+     !$OMP PARALLEL DO DEFAULT(NONE) PRIVATE(I,J,L) SHARED(U,V,W,M,N)
+     DO J = 1, N
+        DO L = 1, N
+           DO I = 1, M
               ! W(I,J) = W(I,J) - U(I,L) * REAL(V(L,J), KK)
               W(I,J) = XFMA(U(I,L), REAL(-V(L,J), KK), W(I,J))
            END DO
+        END DO
+     END DO
+     !$OMP END PARALLEL DO
+     !$OMP PARALLEL DO DEFAULT(NONE) PRIVATE(I,J) SHARED(W,M,N) REDUCTION(HYP:Y)
+     DO J = 1, N
+        DO I = 1, M
            Y = HYPOTX(Y, W(I,J))
         END DO
      END DO
