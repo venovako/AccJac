@@ -1,4 +1,4 @@
-RM=del /F
+RM=DEL /F
 AR=lib.exe
 ARFLAGS=/NOLOGO /VERBOSE
 FC=ifx.exe
@@ -8,8 +8,8 @@ MARCH=Host
 !IFNDEF NDEBUG
 NDEBUG=d
 !ENDIF # NDEBUG
-FCFLAGS=/nologo /fpp /recursive /standard-semantics /traceback /DNDEBUG=$(NDEBUG) /I. /MT /O$(NDEBUG) /Qx$(MARCH) /fp:precise /Qfma /Qftz- /Qprec-div /Qprotect-parens /Qopt-report:3 /Qvec-threshold:0
-# /DCARITH_PVN="cma"
+FCFLAGS=/nologo /fpp /Qopenmp /standard-semantics /traceback /DNDEBUG=$(NDEBUG) /I. /MD /O$(NDEBUG) /Qx$(MARCH) /fp:precise /Qfma /Qftz- /Qprec-div /Qprotect-parens /Qopt-report:3 /Qvec-threshold:0
+# /DCARITH_PVN="cma" /recursive /MT
 !IF "$(ABI)"=="ilp64"
 FCFLAGS=$(FCFLAGS) /4I8
 !ENDIF # ilp64
@@ -85,6 +85,7 @@ cjsvrr.exe djsvrr.exe sjsvrr.exe zjsvrr.exe \
 cjsvor.exe djsvor.exe sjsvor.exe zjsvor.exe
 
 all: $(LIBS) $(EXES)
+	COPY /Y /V ..\..\libpvn\src\*.dll .
 
 jaev2.lib: $(OBJ2) Makefile
 	$(AR) $(ARFLAGS) /OUT:$@ $(OBJ2)
@@ -93,7 +94,8 @@ jaevd.lib: $(OBJD) Makefile
 	$(AR) $(ARFLAGS) /OUT:$@ $(OBJD)
 
 help:
-	@echo "nmake.exe [MARCH=Host|...] [NDEBUG=d|1|2|3|...] [ABI=lp64|ilp64] [LAPACK=/Qmkl:sequential] [all|help|clean]"
+	@ECHO "nmake.exe [MARCH=Host|...] [NDEBUG=d|1|2|3|...] [ABI=lp64|ilp64] [LAPACK=/Qmkl:sequential] [all|help|clean]"
+	@ECHO "libpvn has to be build beforehand with the CRT=MD build option"
 
 .f90.obj:
 	$(FC) $(FCFLAGS) /c $< /Fo$@
@@ -103,6 +105,7 @@ help:
 
 clean:
 	-$(RM) *.exe
+	-$(RM) *.dll
 	-$(RM) *.lib
 	-$(RM) *.obj
 	-$(RM) *.optrpt

@@ -1,4 +1,7 @@
 ECHO 1..4096 > z-%1.txt
+SET KMP_DETERMINISTIC_REDUCTION=TRUE
+SET OMP_PLACES=CORES
+SET OMP_PROC_BIND=SPREAD
 ..\src\zjsvdx.exe    1    1 -1 %1    z1 >> z-%1.txt 2> z-%1_1.trc
 ..\src\zjsvdx.exe    2    2 -1 %1    z2 >> z-%1.txt 2> z-%1_2.trc
 ..\src\zjsvdx.exe    4    4 -1 %1    z4 >> z-%1.txt 2> z-%1_4.trc
