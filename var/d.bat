@@ -2,6 +2,7 @@ ECHO 1..4096 > d-%1.txt
 SET KMP_DETERMINISTIC_REDUCTION=TRUE
 SET OMP_PLACES=CORES
 SET OMP_PROC_BIND=SPREAD
+SET OMP_NUM_THREADS=%2
 ..\src\djsvdx.exe    1    1 -1 %1    d1 >> d-%1.txt 2> d-%1_1.trc
 ..\src\djsvdx.exe    2    2 -1 %1    d2 >> d-%1.txt 2> d-%1_2.trc
 ..\src\djsvdx.exe    4    4 -1 %1    d4 >> d-%1.txt 2> d-%1_4.trc
