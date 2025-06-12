@@ -101,7 +101,11 @@ SUBROUTINE SJEVDR(N, A, LDA, V, LDV, JPOS, WRK, AS, INFO)
   ! init trace
   R = 0
   O = ICHAR('s')
+#ifdef NDEBUG
+  CALL STRACE(N, A, LDA, AX, AS, R, -S)
+#else
   CALL STRACE(N, A, LDA, AX, AS, R, S)
+#endif
   IF (IAND(INFO, 4) .NE. 0) CALL STRCOA(N, A, LDA, AS, R, O, U)
   TT = 0_INT64
   ! main loop
@@ -221,7 +225,11 @@ SUBROUTINE SJEVDR(N, A, LDA, V, LDV, JPOS, WRK, AS, INFO)
            END DO
         END DO
      END IF
+#ifdef NDEBUG
+     CALL STRACE(N, A, LDA, AX, AS, R, -T)
+#else
      CALL STRACE(N, A, LDA, AX, AS, R, T)
+#endif
      IF (N .LT. 1000) THEN
         X = -AS
         DO Q = 1, N

@@ -80,7 +80,11 @@ SUBROUTINE MJEVDR(N, A, LDA, V, LDV, JPOS, WRK, INFO)
   ! init trace
   R = 0
   O = ICHAR('d')
+#ifdef NDEBUG
+  CALL MTRACE(N, A, LDA, R, -S)
+#else
   CALL MTRACE(N, A, LDA, R, S)
+#endif
   TT = 0_INT64
   ! main loop
   DO R = 1, S
@@ -195,7 +199,11 @@ SUBROUTINE MJEVDR(N, A, LDA, V, LDV, JPOS, WRK, INFO)
            END DO
         END DO
      END IF
+#ifdef NDEBUG
+     CALL MTRACE(N, A, LDA, R, -T)
+#else
      CALL MTRACE(N, A, LDA, R, T)
+#endif
      IF (N .LT. 1000) THEN
         DO Q = 1, N
            DO P = 1, Q-1

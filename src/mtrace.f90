@@ -9,9 +9,9 @@ SUBROUTINE MTRACE(N, A, LDA, SWP, NTR)
   REAL(KIND=REAL128) :: X
 #endif
   INTEGER :: J
-  WRITE (ERROR_UNIT,'(I10,A,I11)') SWP, ',', NTR
+  WRITE (ERROR_UNIT,'(I10,A,I11)') SWP, ',', ABS(NTR)
   FLUSH(ERROR_UNIT)
-  IF (N .LT. 1000) THEN
+  IF ((NTR .GT. 0) .AND. (N .LT. 1000)) THEN
      DO J = 1, N
         X = A(J,J)
 #ifdef __GFORTRAN__
