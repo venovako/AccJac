@@ -1,0 +1,7 @@
+Intel(R) Xeon Phi(TM) 7210 CPU @ 1.20 GHz
+
+Intel(R) oneAPI DPC++/C++ Compiler for applications running on Intel(R) 64, Version 2025.1.1 Build 20250418
+Intel(R) Fortran Compiler for applications running on Intel(R) 64, Version 2025.1.1 Build 20250418
+
+gcc (GCC) 14.2.1 20250110 (Red Hat 14.2.1-7)
+GNU Fortran (GCC) 14.2.1 20250110 (Red Hat 14.2.1-7)
