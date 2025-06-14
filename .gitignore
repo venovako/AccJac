@@ -45,6 +45,7 @@
 *.YV
 *.YX
 *.ZZ
+data
 
 # Other
 *.dSYM
