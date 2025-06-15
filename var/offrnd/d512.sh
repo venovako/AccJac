@@ -12,4 +12,4 @@ do
 	rm -fv d512-$S.err d512-$S.out
 done
 unset S
-rm -fv [Dd]512???.txt
+rm -fv [Dd]512???.txt d512.L d512.V
