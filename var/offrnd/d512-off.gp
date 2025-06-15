@@ -1,7 +1,7 @@
 # max 140 (W) x 195 (H) mm
 set term cairolatex pdf standalone header "\\usepackage{amsmath,amsfonts}" color font ", 10" size 10cm,6cm
 set output "d512-off.tex"
-set key bottom left vertical spacing 1.5 box width 2
+set key bottom left vertical spacing 1.5 box width 2 title "\\textsc{sorted} $\\mathop{\\mathrm{diag}}(A)$" offset 0,1
 set logscale y
 
 set xrange [-47000:1622793]
