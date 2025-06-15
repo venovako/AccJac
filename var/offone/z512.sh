@@ -12,4 +12,4 @@ do
 	rm -fv z512-$S.err z512-$S.out
 done
 unset S
-rm -fv [Zz]512???.txt
+rm -fv [Zz]512???.txt z512.L z512.V
