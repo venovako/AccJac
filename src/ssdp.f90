@@ -1,6 +1,14 @@
 FUNCTION SSDP(M, X, Y, MX, MY, INFO)
   USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL32
   IMPLICIT NONE
+  INTERFACE
+     PURE FUNCTION SFMA(A, B, C)
+       USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL32
+       IMPLICIT NONE
+       REAL(KIND=REAL32), INTENT(IN) :: A, B, C
+       REAL(KIND=REAL32) :: SFMA
+     END FUNCTION SFMA
+  END INTERFACE
   INTEGER, PARAMETER :: K = REAL32
   REAL(KIND=K), PARAMETER :: ZERO = 0.0_K, ONE = 1.0_K
   INTEGER, INTENT(IN) :: M
@@ -17,15 +25,13 @@ FUNCTION SSDP(M, X, Y, MX, MY, INFO)
   SSDP = ZERO
   IF (INFO .EQ. 0) THEN
      DO I = 1, M
-        !DIR$ FMA
-        SSDP = SSDP + (X(I) / MX) * (Y(I) / MY)
+        SSDP = SFMA((X(I) / MX), (Y(I) / MY), SSDP)
      END DO
   ELSE IF (M .GE. 1) THEN
      NX = ONE / MX
      NY = ONE / MY
      DO I = 1, M
-        !DIR$ FMA
-        SSDP = SSDP + (X(I) * NX) * (Y(I) * NY)
+        SSDP = SFMA((X(I) * NX), (Y(I) * NY), SSDP)
      END DO
   END IF
 END FUNCTION SSDP

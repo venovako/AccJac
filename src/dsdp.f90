@@ -1,6 +1,14 @@
 FUNCTION DSDP(M, X, Y, MX, MY, INFO)
   USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL64
   IMPLICIT NONE
+  INTERFACE
+     PURE FUNCTION DFMA(A, B, C)
+       USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL64
+       IMPLICIT NONE
+       REAL(KIND=REAL64), INTENT(IN) :: A, B, C
+       REAL(KIND=REAL64) :: DFMA
+     END FUNCTION DFMA
+  END INTERFACE
   INTEGER, PARAMETER :: K = REAL64
   REAL(KIND=K), PARAMETER :: ZERO = 0.0_K, ONE = 1.0_K
   INTEGER, INTENT(IN) :: M
@@ -17,15 +25,13 @@ FUNCTION DSDP(M, X, Y, MX, MY, INFO)
   DSDP = ZERO
   IF (INFO .EQ. 0) THEN
      DO I = 1, M
-        !DIR$ FMA
-        DSDP = DSDP + (X(I) / MX) * (Y(I) / MY)
+        DSDP = DFMA((X(I) / MX), (Y(I) / MY), DSDP)
      END DO
   ELSE IF (M .GE. 1) THEN
      NX = ONE / MX
      NY = ONE / MY
      DO I = 1, M
-        !DIR$ FMA
-        DSDP = DSDP + (X(I) * NX) * (Y(I) * NY)
+        DSDP = DFMA((X(I) * NX), (Y(I) * NY), DSDP)
      END DO
   END IF
 END FUNCTION DSDP

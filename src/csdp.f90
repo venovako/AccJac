@@ -1,6 +1,14 @@
 FUNCTION CSDP(M, X, Y, MX, MY, INFO)
   USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL32
   IMPLICIT NONE
+  INTERFACE
+     PURE FUNCTION CFMA(A, B, C)
+       USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL32
+       IMPLICIT NONE
+       COMPLEX(KIND=REAL32), INTENT(IN) :: A, B, C
+       COMPLEX(KIND=REAL32) :: CFMA
+     END FUNCTION CFMA
+  END INTERFACE
   INTEGER, PARAMETER :: K = REAL32
   REAL(KIND=K), PARAMETER :: ZERO = 0.0_K, ONE = 1.0_K
   INTEGER, INTENT(IN) :: M
@@ -19,23 +27,23 @@ FUNCTION CSDP(M, X, Y, MX, MY, INFO)
   CSDP = ZERO
   IF (INFO .EQ. 0) THEN
      DO I = 1, M
+        XX = X(I)
+        YY = Y(I)
         ! CSDP = CSDP + (CONJG(X(I)) / MX) * (Y(I) / MY)
-        XX = CMPLX(REAL(X(I)) / MX, -AIMAG(X(I)) / MX, K)
-        YY = CMPLX(REAL(Y(I)) / MY,  AIMAG(Y(I)) / MY, K)
-        !DIR$ FMA
-        CSDP = CMPLX((REAL(XX) * REAL(YY) + (REAL(CSDP) - AIMAG(XX) * AIMAG(YY))),&
-             (REAL(XX) * AIMAG(YY) + (AIMAG(CSDP) + AIMAG(XX) * REAL(YY))), K)
+        XX = CMPLX((REAL(XX) / MX), -(AIMAG(XX) / MX), K)
+        YY = CMPLX((REAL(YY) / MY),  (AIMAG(YY) / MY), K)
+        CSDP = CFMA(XX, YY, CSDP)
      END DO
   ELSE IF (M .GE. 1) THEN
      NX = ONE / MX
      NY = ONE / MY
      DO I = 1, M
+        XX = X(I)
+        YY = Y(I)
         ! CSDP = CSDP + (CONJG(X(I)) * NX) * (Y(I) * NY)
-        XX = CMPLX(REAL(X(I)) * NX, -AIMAG(X(I)) * NX, K)
-        YY = CMPLX(REAL(Y(I)) * NY,  AIMAG(Y(I)) * NY, K)
-        !DIR$ FMA
-        CSDP = CMPLX((REAL(XX) * REAL(YY) + (REAL(CSDP) - AIMAG(XX) * AIMAG(YY))),&
-             (REAL(XX) * AIMAG(YY) + (AIMAG(CSDP) + AIMAG(XX) * REAL(YY))), K)
+        XX = CMPLX((REAL(XX) * NX), -(AIMAG(XX) * NX), K)
+        YY = CMPLX((REAL(YY) * NY),  (AIMAG(YY) * NY), K)
+        CSDP = CFMA(XX, YY, CSDP)
      END DO
   END IF
 END FUNCTION CSDP

@@ -5,6 +5,23 @@ FUNCTION XSDP(M, X, Y, MX, MY, INFO)
   USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL128
 #endif
   IMPLICIT NONE
+  INTERFACE
+     PURE FUNCTION XFMA(A, B, C)
+#ifdef __GFORTRAN__
+       USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
+#else
+       USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL128
+#endif
+       IMPLICIT NONE
+#ifdef __GFORTRAN__
+       REAL(KIND=c_long_double), INTENT(IN) :: A, B, C
+       REAL(KIND=c_long_double) :: XFMA
+#else
+       REAL(KIND=REAL128), INTENT(IN) :: A, B, C
+       REAL(KIND=REAL128) :: XFMA
+#endif
+     END FUNCTION XFMA
+  END INTERFACE
 #ifdef __GFORTRAN__
   INTEGER, PARAMETER :: K = c_long_double
 #else
@@ -25,13 +42,13 @@ FUNCTION XSDP(M, X, Y, MX, MY, INFO)
   XSDP = ZERO
   IF (INFO .EQ. 0) THEN
      DO I = 1, M
-        XSDP = XSDP + (X(I) / MX) * (Y(I) / MY)
+        XSDP = XFMA((X(I) / MX), (Y(I) / MY), XSDP)
      END DO
   ELSE IF (M .GE. 1) THEN
      NX = ONE / MX
      NY = ONE / MY
      DO I = 1, M
-        XSDP = XSDP + (X(I) * NX) * (Y(I) * NY)
+        XSDP = XFMA((X(I) * NX), (Y(I) * NY), XSDP)
      END DO
   END IF
 END FUNCTION XSDP
