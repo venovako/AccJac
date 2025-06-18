@@ -199,8 +199,8 @@ PROGRAM PAST
         Z(J,J) = L(J,J)
         ZZ(J,J) = L(J,J)
         DO I = J+1, N
-           Z(I,J) = CMPLX(RU(2,I), RU(3,I), REAL64) * L(I,J)
-           ZZ(I,J) = CMPLX(RU(2,I), RU(3,I), KK) * L(I,J)
+           Z(I,J) = CMPLX((RU(2,I) * L(I,J)), (RU(3,I) * L(I,J)), REAL64)
+           ZZ(I,J) = CMPLX((RU(2,I) * L(I,J)), (RU(3,I) * L(I,J)), KK)
         END DO
      END DO
      DO J = 2, N
@@ -246,8 +246,8 @@ PROGRAM PAST
         ZZ(J,J) = S(J,J)
         DO I = J+1, N
            R = I - J + 1
-           Z(I,J) = CMPLX(RU(2,R), RU(3,R), REAL64) * S(I,J)
-           ZZ(I,J) = CMPLX(RU(2,R), RU(3,R), KK) * S(I,J)
+           Z(I,J) = CMPLX((RU(2,R) * S(I,J)), (RU(3,R) * S(I,J)), REAL64)
+           ZZ(I,J) = CMPLX((RU(2,R) * S(I,J)), (RU(3,R) * S(I,J)), KK)
         END DO
      END DO
      DO J = 2, N
