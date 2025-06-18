@@ -23,6 +23,8 @@
         YY = HFMA(X(I), NT, Y(I))
         XX = CMPLX(REAL(XX) * CS, AIMAG(XX) * CS, K)
         YY = CMPLX(REAL(YY) * CS, AIMAG(YY) * CS, K)
+        X(I) = XX
+        Y(I) = YY
         GX = MAX(GX, MAX(MAX(ABS(REAL(XX)), ABS(AIMAG(XX))), MAX(ABS(REAL(YY)), ABS(AIMAG(YY)))))
      END DO
   END IF
