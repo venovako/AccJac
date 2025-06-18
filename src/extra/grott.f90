@@ -4,8 +4,8 @@
      MX = ZERO
      MY = ZERO
      DO I = 1, M
-        XX = X(I) * CS + Y(I) * SN
-        YY = Y(I) * CS - X(I) * SN
+        XX = (X(I) * CS) + (Y(I) * SN)
+        YY = (Y(I) * CS) - (X(I) * SN)
         X(I) = XX
         Y(I) = YY
         GX = MAX(GX, MAX(ABS(XX), ABS(YY)))
@@ -17,9 +17,7 @@
      MY = ZERO
      ! SN => TG
      DO I = 1, M
-        !DIR$ FMA
         XX = (X(I) + Y(I) * SN) * CS
-        !DIR$ FMA
         YY = (Y(I) - X(I) * SN) * CS
         X(I) = XX
         Y(I) = YY

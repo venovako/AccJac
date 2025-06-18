@@ -1,18 +1,18 @@
   IF (N .LT. 0) INFO = -1
   IF (INFO .LT. 0) RETURN
   IF (IAND(INFO, 5) .EQ. 0) THEN
-     A(P,P) = A(P,P) * CS + A(Q,P) * SN
+     A(P,P) = (A(P,P) * CS) + (A(Q,P) * SN)
      DO I = P+1, Q-1
-        XX = A(I,P) * CS + A(Q,I) * SN
-        YY = A(Q,I) * CS - A(I,P) * SN
+        XX = (A(I,P) * CS) + (A(Q,I) * SN)
+        YY = (A(Q,I) * CS) - (A(I,P) * SN)
         A(I,P) = XX
         A(Q,I) = YY
         AX = MAX(AX, MAX(ABS(XX), ABS(YY)))
      END DO
-     A(Q,P) = A(Q,Q) * SN + A(Q,P) * CS
+     A(Q,P) = (A(Q,Q) * SN) + (A(Q,P) * CS)
      DO I = Q+1, N
-        XX = A(I,P) * CS + A(I,Q) * SN
-        YY = A(I,Q) * CS - A(I,P) * SN
+        XX = (A(I,P) * CS) + (A(I,Q) * SN)
+        YY = (A(I,Q) * CS) - (A(I,P) * SN)
         A(I,P) = XX
         A(I,Q) = YY
         AX = MAX(AX, MAX(ABS(XX), ABS(YY)))

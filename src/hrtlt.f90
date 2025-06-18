@@ -4,13 +4,13 @@
   HS = CMPLX( SNR, -SNI, K)
   IF (IAND(INFO, 5) .EQ. 0) THEN
      DO J = 1, P-1
-        XX = HS * A(Q,J) + CS * A(P,J)
-        YY = SN * A(P,J) + CS * A(Q,J)
+        XX = (HS * A(Q,J)) + (CS * A(P,J))
+        YY = (SN * A(P,J)) + (CS * A(Q,J))
         A(P,J) = XX
         A(Q,J) = YY
         AX = MAX(AX, MAX(CR_HYPOT(REAL(XX), AIMAG(XX)), CR_HYPOT(REAL(YY), AIMAG(YY))))
      END DO
-     A(Q,P) = SN * A(P,P) + CS * A(Q,P)
+     A(Q,P) = (SN * A(P,P)) + (CS * A(Q,P))
   ELSE IF (IAND(INFO, 4) .EQ. 0) THEN
      ! SN => TG
      DO J = 1, P-1

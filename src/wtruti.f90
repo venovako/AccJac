@@ -19,6 +19,23 @@ SUBROUTINE WTRUTI(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, TOL, IX, WRK, INFO)
 #endif
   IMPLICIT NONE
   INTERFACE
+     PURE FUNCTION WFMA(A, B, C)
+#ifdef __GFORTRAN__
+       USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
+#else
+       USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL128
+#endif
+       IMPLICIT NONE
+#ifdef __GFORTRAN__
+       COMPLEX(KIND=c_long_double), INTENT(IN) :: A, B, C
+       COMPLEX(KIND=c_long_double) :: WFMA
+#else
+       COMPLEX(KIND=REAL128), INTENT(IN) :: A, B, C
+       COMPLEX(KIND=REAL128) :: WFMA
+#endif
+     END FUNCTION WFMA
+  END INTERFACE
+  INTERFACE
      PURE FUNCTION XFMA(A, B, C)
 #ifdef __GFORTRAN__
        USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
@@ -153,7 +170,7 @@ SUBROUTINE WTRUTI(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, TOL, IX, WRK, INFO)
   COMPLEX(KIND=K), INTENT(INOUT) :: G(LDG,N), V(LDV,N), TOL, WRK(M,N+1)
   REAL(KIND=K), INTENT(INOUT) :: SV(N), GX
   INTEGER, INTENT(INOUT) :: GS, INFO
-  COMPLEX(KIND=K) :: QPS, XX, YY
+  COMPLEX(KIND=K) :: QPS, XX, YY, CQN
   REAL(KIND=K) :: APP, AQQ, AQPR, AQPI, C, S, T, TR, TI, CC
   INTEGER :: I, J, L, O
 #ifndef NDEBUG
@@ -171,7 +188,7 @@ SUBROUTINE WTRUTI(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, TOL, IX, WRK, INFO)
   J = IX(P)
   CC = REAL(WRK(P,N+1))
   DO I = 1, M
-     WRK(I,N) = CMPLX(REAL(G(I,J)) * CC + REAL(WRK(I,P)), AIMAG(G(I,J)) * CC + AIMAG(WRK(I,P)), K)
+     WRK(I,N) = CMPLX(XFMA(REAL(G(I,J)), CC, REAL(WRK(I,P))), XFMA(AIMAG(G(I,J)), CC, AIMAG(WRK(I,P))), K)
   END DO
   IF (IAND(INFO, 2) .EQ. 0) THEN
      I = 1
@@ -210,19 +227,21 @@ SUBROUTINE WTRUTI(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, TOL, IX, WRK, INFO)
   IF (IAND(INFO, 1) .EQ. 0) THEN
      CALL WLJTU2(APP, AQQ, AQPR, AQPI, C, TR, TI, I)
      IF (I .GT. 0) THEN
-        QPS = CMPLX(TR, TI, K)
+        QPS = CMPLX( TR, TI, K)
+        CQN = CMPLX(-TR, TI, K)
         O = IX(Q)
         DO L = 1, M
            XX = WRK(L,P) ! ZZ
            YY = G(L,O)
-           XX = CMPLX((REAL(YY) * REAL(QPS) + (REAL(XX) - AIMAG(YY) * AIMAG(QPS))) * C,&
-                (REAL(YY) * AIMAG(QPS) + (AIMAG(XX) + AIMAG(YY) * REAL(QPS))) * C, K)
+           ! (YY * QPS + XX) * C
+           XX = WFMA(YY, QPS, XX)
+           XX = CMPLX(REAL(XX) * C, AIMAG(XX) * C, K)
            WRK(L,P) = XX
            T = MAX(T, MAX(ABS(REAL(XX)), ABS(AIMAG(XX))))
            XX = WRK(L,N) ! XX
            ! (YY - XX * CONJG(QPS)) * C
-           YY = CMPLX(((REAL(YY) - AIMAG(XX) * AIMAG(QPS)) - REAL(XX) * REAL(QPS)) * C,&
-                (REAL(XX) * AIMAG(QPS) + (AIMAG(YY) - AIMAG(XX) * REAL(QPS))) * C, K)
+           YY = WFMA(XX, CQN, YY)
+           YY = CMPLX(REAL(YY) * C, AIMAG(YY) * C, K)
            G(L,O) = YY
            T = MAX(T, MAX(ABS(REAL(YY)), ABS(AIMAG(YY))))
         END DO
@@ -230,30 +249,32 @@ SUBROUTINE WTRUTI(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, TOL, IX, WRK, INFO)
         DO L = 1, N
            XX = V(L,J)
            YY = V(L,O)
-           ! XX = (YY * QPS + XX) * C
-           V(L,J) = CMPLX((REAL(YY) * REAL(QPS) + (REAL(XX) - AIMAG(YY) * AIMAG(QPS))) * C,&
-             (REAL(YY) * AIMAG(QPS) + (AIMAG(XX) + AIMAG(YY) * REAL(QPS))) * C, K)
            ! YY = (YY - XX * CONJG(QPS)) * C
-           V(L,O) = CMPLX(((REAL(YY) - AIMAG(XX) * AIMAG(QPS)) - REAL(XX) * REAL(QPS)) * C,&
-                (REAL(XX) * AIMAG(QPS) + (AIMAG(YY) - AIMAG(XX) * REAL(QPS))) * C, K)
+           CQN = WFMA(XX, CQN, YY)
+           V(L,O) = CMPLX(REAL(CQN) * C, AIMAG(CQN) * C, K)
+           ! XX = (YY * QPS + XX) * C
+           CQN = WFMA(YY, QPS, XX)
+           V(L,J) = CMPLX(REAL(CQN) * C, AIMAG(CQN) * C, K)
         END DO
      END IF
   ELSE ! hyp
      CALL WLJTV2(APP, AQQ, AQPR, AQPI, C, TR, TI, I)
      IF (I .GT. 0) THEN
-        QPS = CMPLX(TR, TI, K)
+        QPS = CMPLX(TR,  TI, K)
+        CQN = CMPLX(TR, -TI, K)
         O = IX(Q)
         DO L = 1, M
            XX = WRK(L,P) ! ZZ
            YY = G(L,O)
-           XX = CMPLX((REAL(YY) * REAL(QPS) + (REAL(XX) - AIMAG(YY) * AIMAG(QPS))) * C,&
-                (REAL(YY) * AIMAG(QPS) + (AIMAG(XX) + AIMAG(YY) * REAL(QPS))) * C, K)
+           ! XX = (YY * QPS + XX) * C
+           XX = WFMA(YY, QPS, XX)
+           XX = CMPLX(REAL(XX) * C, AIMAG(XX) * C, K)
            WRK(L,P) = XX
            T = MAX(T, MAX(ABS(REAL(XX)), ABS(AIMAG(XX))))
            XX = WRK(L,N) ! XX
            ! YY = (XX * CONJG(QPS) + YY) * C
-           YY = CMPLX((REAL(XX) * REAL(QPS) + (REAL(YY) + AIMAG(XX) * AIMAG(QPS))) * C,&
-                ((AIMAG(YY) + AIMAG(XX) * REAL(QPS)) - REAL(XX) * AIMAG(QPS)) * C, K)
+           YY = WFMA(XX, CQN, YY)
+           YY = CMPLX(REAL(YY) * C, AIMAG(YY) * C, K)
            G(L,O) = YY
            T = MAX(T, MAX(ABS(REAL(YY)), ABS(AIMAG(YY))))
         END DO
@@ -261,12 +282,12 @@ SUBROUTINE WTRUTI(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, TOL, IX, WRK, INFO)
         DO L = 1, N
            XX = V(L,J)
            YY = V(L,O)
-           ! XX = (YY * QPS + XX) * C
-           V(L,J) = CMPLX((REAL(YY) * REAL(QPS) + (REAL(XX) - AIMAG(YY) * AIMAG(QPS))) * C,&
-                (REAL(YY) * AIMAG(QPS) + (AIMAG(XX) + AIMAG(YY) * REAL(QPS))) * C, K)
            ! YY = (XX * CONJG(QPS) + YY) * C
-           V(L,O) = CMPLX((REAL(XX) * REAL(QPS) + (REAL(YY) + AIMAG(XX) * AIMAG(QPS))) * C,&
-                ((AIMAG(YY) + AIMAG(XX) * REAL(QPS)) - REAL(XX) * AIMAG(QPS)) * C, K)
+           CQN = WFMA(XX, CQN, YY)
+           V(L,O) = CMPLX(REAL(CQN) * C, AIMAG(CQN) * C, K)
+           ! XX = (YY * QPS + XX) * C
+           CQN = WFMA(YY, QPS, XX)
+           V(L,J) = CMPLX(REAL(CQN) * C, AIMAG(CQN) * C, K)
         END DO
      END IF
   END IF
@@ -322,7 +343,7 @@ SUBROUTINE WTRUTI(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, TOL, IX, WRK, INFO)
 9 IF (Q .EQ. N) THEN
      J = IX(P)
      DO I = 1, M
-        G(I,J) = CMPLX(REAL(G(I,J)) * CC + REAL(WRK(I,P)), AIMAG(G(I,J)) * CC + AIMAG(WRK(I,P)), K)
+        G(I,J) = CMPLX(XFMA(REAL(G(I,J)), CC, REAL(WRK(I,P))), XFMA(AIMAG(G(I,J)), CC, AIMAG(WRK(I,P))), K)
         T = MAX(T, MAX(ABS(REAL(G(I,J))), ABS(AIMAG(G(I,J)))))
      END DO
      IF (T .GT. GX) THEN

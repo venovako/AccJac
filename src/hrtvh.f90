@@ -4,8 +4,8 @@
   HS = CMPLX(SHR, -SHI, K)
   IF (IAND(INFO, 5) .EQ. 0) THEN
      DO I = 1, N
-        XX = X(I) * CH + Y(I) * SH
-        YY = X(I) * HS + Y(I) * CH
+        XX = (X(I) * CH) + (Y(I) * SH)
+        YY = (X(I) * HS) + (Y(I) * CH)
         X(I) = XX
         Y(I) = YY
      END DO

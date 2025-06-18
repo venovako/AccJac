@@ -23,6 +23,14 @@ SUBROUTINE ZTRUTI(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, TOL, IX, WRK, INFO)
      END FUNCTION DFMA
   END INTERFACE
   INTERFACE
+     PURE FUNCTION ZFMA(A, B, C)
+       USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL64
+       IMPLICIT NONE
+       COMPLEX(KIND=REAL64), INTENT(IN) :: A, B, C
+       COMPLEX(KIND=REAL64) :: ZFMA
+     END FUNCTION ZFMA
+  END INTERFACE
+  INTERFACE
      PURE FUNCTION CR_HYPOT(X, Y) BIND(C,NAME='cr_hypot')
        USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_double
        IMPLICIT NONE
@@ -85,7 +93,7 @@ SUBROUTINE ZTRUTI(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, TOL, IX, WRK, INFO)
   COMPLEX(KIND=K), INTENT(INOUT) :: G(LDG,N), V(LDV,N), TOL, WRK(M,N+1)
   REAL(KIND=K), INTENT(INOUT) :: SV(N), GX
   INTEGER, INTENT(INOUT) :: GS, INFO
-  COMPLEX(KIND=K) :: QPS, XX, YY
+  COMPLEX(KIND=K) :: QPS, XX, YY, CQN
   REAL(KIND=K) :: APP, AQQ, AQPR, AQPI, C, S, T, TR, TI, CC
   INTEGER :: I, J, L, O
 #ifndef NDEBUG
@@ -103,8 +111,7 @@ SUBROUTINE ZTRUTI(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, TOL, IX, WRK, INFO)
   J = IX(P)
   CC = REAL(WRK(P,N+1))
   DO I = 1, M
-     !DIR$ FMA
-     WRK(I,N) = CMPLX(REAL(G(I,J)) * CC + REAL(WRK(I,P)), AIMAG(G(I,J)) * CC + AIMAG(WRK(I,P)), K)
+     WRK(I,N) = CMPLX(DFMA(REAL(G(I,J)), CC, REAL(WRK(I,P))), DFMA(AIMAG(G(I,J)), CC, AIMAG(WRK(I,P))), K)
   END DO
   IF (IAND(INFO, 2) .EQ. 0) THEN
      I = 1
@@ -143,22 +150,21 @@ SUBROUTINE ZTRUTI(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, TOL, IX, WRK, INFO)
   IF (IAND(INFO, 1) .EQ. 0) THEN
      CALL ZLJTU2(APP, AQQ, AQPR, AQPI, C, TR, TI, I)
      IF (I .GT. 0) THEN
-        QPS = CMPLX(TR, TI, K)
+        QPS = CMPLX( TR, TI, K)
+        CQN = CMPLX(-TR, TI, K)
         O = IX(Q)
         DO L = 1, M
            XX = WRK(L,P) ! ZZ
            YY = G(L,O)
            ! (YY * QPS + XX) * C
-           !DIR$ FMA
-           XX = CMPLX((REAL(YY) * REAL(QPS) + (REAL(XX) - AIMAG(YY) * AIMAG(QPS))) * C,&
-                (REAL(YY) * AIMAG(QPS) + (AIMAG(XX) + AIMAG(YY) * REAL(QPS))) * C, K)
+           XX = ZFMA(YY, QPS, XX)
+           XX = CMPLX(REAL(XX) * C, AIMAG(XX) * C, K)
            WRK(L,P) = XX
            T = MAX(T, MAX(ABS(REAL(XX)), ABS(AIMAG(XX))))
            XX = WRK(L,N) ! XX
            ! (YY - XX * CONJG(QPS)) * C
-           !DIR$ FMA
-           YY = CMPLX(((REAL(YY) - AIMAG(XX) * AIMAG(QPS)) - REAL(XX) * REAL(QPS)) * C,&
-                (REAL(XX) * AIMAG(QPS) + (AIMAG(YY) - AIMAG(XX) * REAL(QPS))) * C, K)
+           YY = ZFMA(XX, CQN, YY)
+           YY = CMPLX(REAL(YY) * C, AIMAG(YY) * C, K)
            G(L,O) = YY
            T = MAX(T, MAX(ABS(REAL(YY)), ABS(AIMAG(YY))))
         END DO
@@ -166,35 +172,32 @@ SUBROUTINE ZTRUTI(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, TOL, IX, WRK, INFO)
         DO L = 1, N
            XX = V(L,J)
            YY = V(L,O)
-           ! XX = (YY * QPS + XX) * C
-           !DIR$ FMA
-           V(L,J) = CMPLX((REAL(YY) * REAL(QPS) + (REAL(XX) - AIMAG(YY) * AIMAG(QPS))) * C,&
-             (REAL(YY) * AIMAG(QPS) + (AIMAG(XX) + AIMAG(YY) * REAL(QPS))) * C, K)
            ! YY = (YY - XX * CONJG(QPS)) * C
-           !DIR$ FMA
-           V(L,O) = CMPLX(((REAL(YY) - AIMAG(XX) * AIMAG(QPS)) - REAL(XX) * REAL(QPS)) * C,&
-                (REAL(XX) * AIMAG(QPS) + (AIMAG(YY) - AIMAG(XX) * REAL(QPS))) * C, K)
+           CQN = ZFMA(XX, CQN, YY)
+           V(L,O) = CMPLX(REAL(CQN) * C, AIMAG(CQN) * C, K)
+           ! XX = (YY * QPS + XX) * C
+           CQN = ZFMA(YY, QPS, XX)
+           V(L,J) = CMPLX(REAL(CQN) * C, AIMAG(CQN) * C, K)
         END DO
      END IF
   ELSE ! hyp
      CALL ZLJTV2(APP, AQQ, AQPR, AQPI, C, TR, TI, I)
      IF (I .GT. 0) THEN
-        QPS = CMPLX(TR, TI, K)
+        QPS = CMPLX(TR,  TI, K)
+        CQN = CMPLX(TR, -TI, K)
         O = IX(Q)
         DO L = 1, M
            XX = WRK(L,P) ! ZZ
            YY = G(L,O)
            ! XX = (YY * QPS + XX) * C
-           !DIR$ FMA
-           XX = CMPLX((REAL(YY) * REAL(QPS) + (REAL(XX) - AIMAG(YY) * AIMAG(QPS))) * C,&
-                (REAL(YY) * AIMAG(QPS) + (AIMAG(XX) + AIMAG(YY) * REAL(QPS))) * C, K)
+           XX = ZFMA(YY, QPS, XX)
+           XX = CMPLX(REAL(XX) * C, AIMAG(XX) * C, K)
            WRK(L,P) = XX
            T = MAX(T, MAX(ABS(REAL(XX)), ABS(AIMAG(XX))))
            XX = WRK(L,N) ! XX
            ! YY = (XX * CONJG(QPS) + YY) * C
-           !DIR$ FMA
-           YY = CMPLX((REAL(XX) * REAL(QPS) + (REAL(YY) + AIMAG(XX) * AIMAG(QPS))) * C,&
-                ((AIMAG(YY) + AIMAG(XX) * REAL(QPS)) - REAL(XX) * AIMAG(QPS)) * C, K)
+           YY = ZFMA(XX, CQN, YY)
+           YY = CMPLX(REAL(YY) * C, AIMAG(YY) * C, K)
            G(L,O) = YY
            T = MAX(T, MAX(ABS(REAL(YY)), ABS(AIMAG(YY))))
         END DO
@@ -203,13 +206,12 @@ SUBROUTINE ZTRUTI(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, TOL, IX, WRK, INFO)
            XX = V(L,J)
            YY = V(L,O)
            ! XX = (YY * QPS + XX) * C
-           !DIR$ FMA
-           V(L,J) = CMPLX((REAL(YY) * REAL(QPS) + (REAL(XX) - AIMAG(YY) * AIMAG(QPS))) * C,&
-                (REAL(YY) * AIMAG(QPS) + (AIMAG(XX) + AIMAG(YY) * REAL(QPS))) * C, K)
            ! YY = (XX * CONJG(QPS) + YY) * C
-           !DIR$ FMA
-           V(L,O) = CMPLX((REAL(XX) * REAL(QPS) + (REAL(YY) + AIMAG(XX) * AIMAG(QPS))) * C,&
-                ((AIMAG(YY) + AIMAG(XX) * REAL(QPS)) - REAL(XX) * AIMAG(QPS)) * C, K)
+           CQN = ZFMA(XX, CQN, YY)
+           V(L,O) = CMPLX(REAL(CQN) * C, AIMAG(CQN) * C, K)
+           ! XX = (YY * QPS + XX) * C
+           CQN = ZFMA(YY, QPS, XX)
+           V(L,J) = CMPLX(REAL(CQN) * C, AIMAG(CQN) * C, K)
         END DO
      END IF
   END IF
@@ -265,8 +267,7 @@ SUBROUTINE ZTRUTI(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, TOL, IX, WRK, INFO)
 9 IF (Q .EQ. N) THEN
      J = IX(P)
      DO I = 1, M
-        !DIR$ FMA
-        G(I,J) = CMPLX(REAL(G(I,J)) * CC + REAL(WRK(I,P)), AIMAG(G(I,J)) * CC + AIMAG(WRK(I,P)), K)
+        G(I,J) = CMPLX(DFMA(REAL(G(I,J)), CC, REAL(WRK(I,P))), DFMA(AIMAG(G(I,J)), CC, AIMAG(WRK(I,P))), K)
         T = MAX(T, MAX(ABS(REAL(G(I,J))), ABS(AIMAG(G(I,J)))))
      END DO
      IF (T .GT. GX) THEN

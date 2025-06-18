@@ -90,8 +90,7 @@ SUBROUTINE DTRUTI(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, TOL, IX, WRK, INFO)
   J = IX(P)
   CC = WRK(P,N+1)
   DO I = 1, M
-     !DIR$ FMA
-     WRK(I,N) = G(I,J) * CC + WRK(I,P)
+     WRK(I,N) = DFMA(G(I,J), CC, WRK(I,P))
   END DO
   IF (IAND(INFO, 2) .EQ. 0) THEN
      I = 1
@@ -133,16 +132,15 @@ SUBROUTINE DTRUTI(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, TOL, IX, WRK, INFO)
      CALL DLJTU2(APP, AQQ, AQP, C, T, I)
      IF (I .GT. 0) THEN
         O = IX(Q)
+        AQQ = -T
         DO L = 1, M
            XX = WRK(L,P) ! ZZ
            YY = G(L,O)
-           !DIR$ FMA
-           XX = (XX + YY * T) * C
+           XX = DFMA(YY, T, XX) * C
            WRK(L,P) = XX
            QPS = MAX(QPS, ABS(XX))
            XX = WRK(L,N) ! XX
-           !DIR$ FMA
-           YY = (YY - XX * T) * C
+           YY = DFMA(XX, AQQ, YY) * C
            G(L,O) = YY
            QPS = MAX(QPS, ABS(YY))
         END DO
@@ -150,10 +148,8 @@ SUBROUTINE DTRUTI(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, TOL, IX, WRK, INFO)
         DO L = 1, N
            XX = V(L,J)
            YY = V(L,O)
-           !DIR$ FMA
-           V(L,J) = (XX + YY * T) * C
-           !DIR$ FMA
-           V(L,O) = (YY - XX * T) * C
+           V(L,J) = DFMA(YY, T, XX) * C
+           V(L,O) = DFMA(XX, AQQ, YY) * C
         END DO
      END IF
   ELSE ! hyp
@@ -163,13 +159,11 @@ SUBROUTINE DTRUTI(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, TOL, IX, WRK, INFO)
         DO L = 1, M
            XX = WRK(L,P) ! ZZ
            YY = G(L,O)
-           !DIR$ FMA
-           XX = (YY * T + XX) * C
+           XX = DFMA(YY, T, XX) * C
            WRK(L,P) = XX
            QPS = MAX(QPS, ABS(XX))
            XX = WRK(L,N) ! XX
-           !DIR$ FMA
-           YY = (XX * T + YY) * C
+           YY = DFMA(XX, T, YY) * C
            G(L,O) = YY
            QPS = MAX(QPS, ABS(YY))
         END DO
@@ -177,10 +171,8 @@ SUBROUTINE DTRUTI(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, TOL, IX, WRK, INFO)
         DO L = 1, N
            XX = V(L,J)
            YY = V(L,O)
-           !DIR$ FMA
-           V(L,J) = (YY * T + XX) * C
-           !DIR$ FMA
-           V(L,O) = (XX * T + YY) * C
+           V(L,J) = DFMA(YY, T, XX) * C
+           V(L,O) = DFMA(XX, T, YY) * C
         END DO
      END IF
   END IF
@@ -232,8 +224,7 @@ SUBROUTINE DTRUTI(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, TOL, IX, WRK, INFO)
 9 IF (Q .EQ. N) THEN
      J = IX(P)
      DO I = 1, M
-        !DIR$ FMA
-        G(I,J) = G(I,J) * CC + WRK(I,P)
+        G(I,J) = DFMA(G(I,J), CC, WRK(I,P))
         QPS = MAX(QPS, ABS(G(I,J)))
      END DO
      IF (QPS .GT. GX) THEN

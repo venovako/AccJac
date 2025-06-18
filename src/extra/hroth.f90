@@ -6,8 +6,8 @@
      MX = ZERO
      MY = ZERO
      DO I = 1, M
-        XX = X(I) * CH + Y(I) * SH
-        YY = X(I) * HS + Y(I) * CH
+        XX = (X(I) * CH) + (Y(I) * SH)
+        YY = (X(I) * HS) + (Y(I) * CH)
         X(I) = XX
         Y(I) = YY
         AX = CR_HYPOT(REAL(XX), AIMAG(XX))
