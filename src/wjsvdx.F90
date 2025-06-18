@@ -169,8 +169,7 @@ PROGRAM WJSVDX
            DO I = 1, M
               ! W(I,J) = W(I,J) - U(I,L) * V(L,J)
               H = CMPLX(REAL(-REAL(V(L,J)), KK), REAL(-AIMAG(V(L,J)), KK), KK)
-              W(I,J) = CMPLX(&
-                   IEEE_FMA(REAL(U(I,L)), REAL(H), IEEE_FMA(-AIMAG(U(I,L)), AIMAG(H), REAL(W(I,J)))),&
+              W(I,J) = CMPLX(IEEE_FMA(REAL(U(I,L)), REAL(H), IEEE_FMA(-AIMAG(U(I,L)), AIMAG(H), REAL(W(I,J)))),&
                    IEEE_FMA(REAL(U(I,L)), AIMAG(H), IEEE_FMA(AIMAG(U(I,L)), REAL(H), AIMAG(W(I,J)))), KK)
            END DO
         END DO

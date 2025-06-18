@@ -70,9 +70,8 @@ PROGRAM WRNHER
         DO L = 1, N
            X = CONJG(G(L,I))
            Y = G(L,J)
-           Z = CMPLX(&
-                IEEE_FMA(REAL(X), REAL(Y), IEEE_FMA(-AIMAG(X), AIMAG(Y), REAL(Z))),&
-                IEEE_FMA(REAL(X), AIMAG(Y), IEEE_FMA(AIMAG(X), REAL(Y), AIMAG(Z))), K)
+           Z = CMPLX(IEEE_FMA(REAL(X), REAL(Y), IEEE_FMA(-AIMAG(X), AIMAG(Y), REAL(Z))),&
+                IEEE_FMA(REAL(X), AIMAG(Y), IEEE_FMA(AIMAG(X), REAL(Y), AIMAG(Z))), KK)
         END DO
         A(I,J) = CMPLX(REAL(REAL(Z), K), REAL(AIMAG(Z), K), K)
      END DO
