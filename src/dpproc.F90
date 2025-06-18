@@ -6,6 +6,23 @@ PROGRAM DPPROC
   USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: OUTPUT_UNIT, REAL64, REAL128
 #endif
   IMPLICIT NONE
+  INTERFACE
+     PURE FUNCTION XSQRT(X)
+#ifdef __GFORTRAN__
+       USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
+#else
+       USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL128
+#endif
+       IMPLICIT NONE
+#ifdef __GFORTRAN__
+       REAL(KIND=c_long_double), INTENT(IN) :: X
+       REAL(KIND=c_long_double) :: XSQRT
+#else
+       REAL(KIND=REAL128), INTENT(IN) :: X
+       REAL(KIND=REAL128) :: XSQRT
+#endif
+     END FUNCTION XSQRT
+  END INTERFACE
 #ifdef __GFORTRAN__
   INTERFACE
      PURE FUNCTION HYPOTX(X, Y) BIND(C,NAME='cr_hypotl')
@@ -21,7 +38,7 @@ PROGRAM DPPROC
   INTEGER, PARAMETER :: KK = REAL128
 #endif
   INTEGER, PARAMETER :: K = REAL64
-  REAL(KIND=KK), PARAMETER :: XZERO = 0.0_KK, SQRT2 = SQRT(2.0_KK)
+  REAL(KIND=KK), PARAMETER :: XZERO = 0.0_KK
   REAL(KIND=K), PARAMETER :: ZERO = 0.0_K
   CHARACTER(LEN=11) :: FN
   CHARACTER :: T
@@ -112,7 +129,7 @@ PROGRAM DPPROC
               Y = HYPOTX(Y, REAL(A1(I,J), KK))
            END DO
         END DO
-        Y = Y * SQRT2
+        Y = Y * XSQRT(2.0_KK)
         DO J = 1, N
            Y = HYPOTX(Y, REAL(A1(J,J), KK))
         END DO

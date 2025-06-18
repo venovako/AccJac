@@ -25,6 +25,23 @@ SUBROUTINE WTRANA(N, A, LDA, V, LDV, AX, AS, P, Q, TOL, INFO)
 #define CR_HYPOT HYPOT
 #endif
   INTERFACE
+     PURE FUNCTION XSQRT(X)
+#ifdef __GFORTRAN__
+       USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
+#else
+       USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL128
+#endif
+       IMPLICIT NONE
+#ifdef __GFORTRAN__
+       REAL(KIND=c_long_double), INTENT(IN) :: X
+       REAL(KIND=c_long_double) :: XSQRT
+#else
+       REAL(KIND=REAL128), INTENT(IN) :: X
+       REAL(KIND=REAL128) :: XSQRT
+#endif
+     END FUNCTION XSQRT
+  END INTERFACE
+  INTERFACE
      SUBROUTINE WLJAU2(A11, A22, A21R, A21I, CS, SNR, SNI, INFO)
 #ifdef __GFORTRAN__
        USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
@@ -232,7 +249,7 @@ SUBROUTINE WTRANA(N, A, LDA, V, LDV, AX, AS, P, Q, TOL, INFO)
   INFO = IAND(INFO, 1)
   A1 = REAL(A(P,P))
   A2 = REAL(A(Q,Q))
-  T = (SQRT(ABS(A1)) * SQRT(ABS(A2))) * T
+  T = (XSQRT(ABS(A1)) * XSQRT(ABS(A2))) * T
   TOL = ZERO
 #ifdef CARITH_PVN
   WRITE (ERROR_UNIT,9) P, SCALE(REAL(A(P,P)), -AS), SCALE(REAL(A(Q,P)), -AS), SCALE(REAL(A(4,2)), -AS)

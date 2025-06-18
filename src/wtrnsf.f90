@@ -29,6 +29,23 @@ SUBROUTINE WTRNSF(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, TOL, IX, WRK, INFO)
 #endif
      END FUNCTION XFMA
   END INTERFACE
+  INTERFACE
+     PURE FUNCTION XSQRT(X)
+#ifdef __GFORTRAN__
+       USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
+#else
+       USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL128
+#endif
+       IMPLICIT NONE
+#ifdef __GFORTRAN__
+       REAL(KIND=c_long_double), INTENT(IN) :: X
+       REAL(KIND=c_long_double) :: XSQRT
+#else
+       REAL(KIND=REAL128), INTENT(IN) :: X
+       REAL(KIND=REAL128) :: XSQRT
+#endif
+     END FUNCTION XSQRT
+  END INTERFACE
 #ifdef __GFORTRAN__
   INTERFACE
      PURE FUNCTION CR_HYPOT(X, Y) BIND(C,NAME='cr_hypotl')
@@ -325,10 +342,10 @@ SUBROUTINE WTRNSF(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, TOL, IX, WRK, INFO)
         ELSE ! hyp
            AQPI =  AQPR
         END IF
-        APP = SQRT(XFMA(AQPR, APP, SV(P)))
-        AQQ = SQRT(XFMA(AQPI, AQQ, SV(Q)))
-        SV(P) = APP * SQRT(SV(P))
-        SV(Q) = AQQ * SQRT(SV(Q))
+        APP = XSQRT(XFMA(AQPR, APP, SV(P)))
+        AQQ = XSQRT(XFMA(AQPI, AQQ, SV(Q)))
+        SV(P) = APP * XSQRT(SV(P))
+        SV(Q) = AQQ * XSQRT(SV(Q))
      ELSE ! SLOW
         SV(P) = WNRMF(M, G(1,IX(P)))
         SV(Q) = WNRMF(M, G(1,IX(Q)))

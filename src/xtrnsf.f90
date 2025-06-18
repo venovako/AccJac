@@ -30,6 +30,23 @@ SUBROUTINE XTRNSF(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, TOL, IX, WRK, INFO)
      END FUNCTION XFMA
   END INTERFACE
   INTERFACE
+     PURE FUNCTION XSQRT(X)
+#ifdef __GFORTRAN__
+       USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
+#else
+       USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL128
+#endif
+       IMPLICIT NONE
+#ifdef __GFORTRAN__
+       REAL(KIND=c_long_double), INTENT(IN) :: X
+       REAL(KIND=c_long_double) :: XSQRT
+#else
+       REAL(KIND=REAL128), INTENT(IN) :: X
+       REAL(KIND=REAL128) :: XSQRT
+#endif
+     END FUNCTION XSQRT
+  END INTERFACE
+  INTERFACE
      PURE FUNCTION XNRMF(M, X)
 #ifdef __GFORTRAN__
        USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
@@ -295,10 +312,10 @@ SUBROUTINE XTRNSF(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, TOL, IX, WRK, INFO)
         APP = S * SV(Q)
         AQQ = S * SV(P)
         IF (L .EQ. 0) AQP = -AQP
-        APP = SQRT(XFMA(TOL, APP, SV(P)))
-        AQQ = SQRT(XFMA(AQP, AQQ, SV(Q)))
-        SV(P) = APP * SQRT(SV(P))
-        SV(Q) = AQQ * SQRT(SV(Q))
+        APP = XSQRT(XFMA(TOL, APP, SV(P)))
+        AQQ = XSQRT(XFMA(AQP, AQQ, SV(Q)))
+        SV(P) = APP * XSQRT(SV(P))
+        SV(Q) = AQQ * XSQRT(SV(Q))
      ELSE ! SLOW
         SV(P) = XNRMF(M, G(1,IX(P)))
         SV(Q) = XNRMF(M, G(1,IX(Q)))

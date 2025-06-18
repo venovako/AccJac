@@ -12,6 +12,23 @@ SUBROUTINE XTRANA(N, A, LDA, V, LDV, AX, AS, P, Q, TOL, INFO)
 #endif
   IMPLICIT NONE
   INTERFACE
+     PURE FUNCTION XSQRT(X)
+#ifdef __GFORTRAN__
+       USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
+#else
+       USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL128
+#endif
+       IMPLICIT NONE
+#ifdef __GFORTRAN__
+       REAL(KIND=c_long_double), INTENT(IN) :: X
+       REAL(KIND=c_long_double) :: XSQRT
+#else
+       REAL(KIND=REAL128), INTENT(IN) :: X
+       REAL(KIND=REAL128) :: XSQRT
+#endif
+     END FUNCTION XSQRT
+  END INTERFACE
+  INTERFACE
      SUBROUTINE XLJAU2(A11, A22, A21, CS, SN, INFO)
 #ifdef __GFORTRAN__
        USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
@@ -207,7 +224,7 @@ SUBROUTINE XTRANA(N, A, LDA, V, LDV, AX, AS, P, Q, TOL, INFO)
   INFO = IAND(INFO, 1)
   A1 = A(P,P)
   A2 = A(Q,Q)
-  T = (SQRT(ABS(A1)) * SQRT(ABS(A2))) * TOL
+  T = (XSQRT(ABS(A1)) * XSQRT(ABS(A2))) * TOL
   TOL = ZERO
   C = ZERO
   S = ZERO

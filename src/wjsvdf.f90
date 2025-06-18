@@ -9,6 +9,23 @@ SUBROUTINE WJSVDF(M, N, G, LDG, V, LDV, JPOS, SV, GS, IX, WRK, INFO)
 #endif
   IMPLICIT NONE
   INTERFACE
+     PURE FUNCTION XSQRT(X)
+#ifdef __GFORTRAN__
+       USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
+#else
+       USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL128
+#endif
+       IMPLICIT NONE
+#ifdef __GFORTRAN__
+       REAL(KIND=c_long_double), INTENT(IN) :: X
+       REAL(KIND=c_long_double) :: XSQRT
+#else
+       REAL(KIND=REAL128), INTENT(IN) :: X
+       REAL(KIND=REAL128) :: XSQRT
+#endif
+     END FUNCTION XSQRT
+  END INTERFACE
+  INTERFACE
      PURE SUBROUTINE WINISX(M, N, G, LDG, V, LDV, SV, IX, INFO)
 #ifdef __GFORTRAN__
        USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
@@ -169,7 +186,7 @@ SUBROUTINE WJSVDF(M, N, G, LDG, V, LDV, JPOS, SV, GS, IX, WRK, INFO)
   END IF
   CALL XTRACK(N, SV, GX, GS, R, -S)
   TOL = M
-  TOL = SQRT(TOL) * EPS
+  TOL = XSQRT(TOL) * EPS
   DO R = 1, S
      IF (INFO .EQ. 0) THEN
         O = 1
