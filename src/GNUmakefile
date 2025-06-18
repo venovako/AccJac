@@ -17,9 +17,9 @@ claev2.o dlaev2.o slaev2.o zlaev2.o
 endif # !LAPACK
 
 ifdef MPFR
-OBJ2=mpfr_f.o
+OBJ2=mpfr_f.o xsqrt.o
 else # !MPFR
-OBJ2=
+OBJ2=xsqrt.o
 endif # ?MPFR
 
 OBJ2 += cfma.o dfma.o sfma.o wfma.o xfma.o zfma.o\
