@@ -12,18 +12,19 @@ PURE SUBROUTINE XRTRH(N, A, LDA, AX, P, Q, CH, SH, INFO)
 #define XFMA IEEE_FMA
 #else
   INTERFACE
-     PURE FUNCTION XFMA(A, B, C)
 #ifdef __GFORTRAN__
+     PURE FUNCTION XFMA(A, B, C) BIND(C,NAME='fmal')
        USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
 #else
+     PURE FUNCTION XFMA(A, B, C) BIND(C,NAME='__fmaq')
        USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL128
 #endif
        IMPLICIT NONE
 #ifdef __GFORTRAN__
-       REAL(KIND=c_long_double), INTENT(IN) :: A, B, C
+       REAL(KIND=c_long_double), INTENT(IN), VALUE :: A, B, C
        REAL(KIND=c_long_double) :: XFMA
 #else
-       REAL(KIND=REAL128), INTENT(IN) :: A, B, C
+       REAL(KIND=REAL128), INTENT(IN), VALUE :: A, B, C
        REAL(KIND=REAL128) :: XFMA
 #endif
      END FUNCTION XFMA

@@ -7,18 +7,19 @@ PURE FUNCTION DNRMOA(N, A, LDA, AS)
 #endif
   IMPLICIT NONE
   INTERFACE
-     PURE FUNCTION XSQRT(X)
 #ifdef __GFORTRAN__
+     PURE FUNCTION XSQRT(X) BIND(C,NAME='sqrtl')
        USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
 #else
+     PURE FUNCTION XSQRT(X) BIND(C,NAME='cr_sqrtq')
        USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL128
 #endif
        IMPLICIT NONE
 #ifdef __GFORTRAN__
-       REAL(KIND=c_long_double), INTENT(IN) :: X
+       REAL(KIND=c_long_double), INTENT(IN), VALUE :: X
        REAL(KIND=c_long_double) :: XSQRT
 #else
-       REAL(KIND=REAL128), INTENT(IN) :: X
+       REAL(KIND=REAL128), INTENT(IN), VALUE :: X
        REAL(KIND=REAL128) :: XSQRT
 #endif
      END FUNCTION XSQRT
