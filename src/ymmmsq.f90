@@ -16,8 +16,7 @@ PURE SUBROUTINE YMMMSQ(M, N, A, LDA, B, LDB, C, LDC)
   DO J = 1, N
      DO L = 1, M
         DO I = 1, N
-           C(I,J) = CMPLX(&
-                IEEE_FMA(REAL(A(I,L)), REAL(B(L,J)), IEEE_FMA(-AIMAG(A(I,L)), AIMAG(B(L,J)), REAL(C(I,J)))),&
+           C(I,J) = CMPLX(IEEE_FMA(REAL(A(I,L)), REAL(B(L,J)), IEEE_FMA(-AIMAG(A(I,L)), AIMAG(B(L,J)), REAL(C(I,J)))),&
                 IEEE_FMA(REAL(A(I,L)), AIMAG(B(L,J)), IEEE_FMA(AIMAG(A(I,L)), REAL(B(L,J)), AIMAG(C(I,J)))), K)
         END DO
      END DO

@@ -115,8 +115,9 @@ PURE SUBROUTINE QLAEV2(A, B, C, RT1, RT2, CS1, SN1)
   !  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
   !
   USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL128
-  ! let the compiler autogenerate FMAs when available
-  ! USE, INTRINSIC :: IEEE_ARITHMETIC, ONLY: IEEE_FMA
+#ifdef USE_IEEE_INTRINSIC
+  USE, INTRINSIC :: IEEE_ARITHMETIC, ONLY: IEEE_FMA
+#endif
   IMPLICIT NONE
   INTEGER, PARAMETER :: K = REAL128
   !     .. Scalar Arguments ..
@@ -154,12 +155,18 @@ PURE SUBROUTINE QLAEV2(A, B, C, RT1, RT2, CS1, SN1)
   END IF
   IF (ADF .GT. AB) THEN
      TN = AB / ADF
-     ! RT = ADF * SQRT(IEEE_FMA(TN, TN, ONE))
+#ifdef USE_IEEE_INTRINSIC
+     RT = ADF * SQRT(IEEE_FMA(TN, TN, ONE))
+#else
      RT = ADF * SQRT(ONE + TN * TN)
+#endif
   ELSE IF (ADF .LT. AB) THEN
      TN = ADF / AB
-     ! RT = AB * SQRT(IEEE_FMA(TN, TN, ONE))
+#ifdef USE_IEEE_INTRINSIC
+     RT = AB * SQRT(IEEE_FMA(TN, TN, ONE))
+#else
      RT = AB * SQRT(ONE + TN * TN)
+#endif
   ELSE
      !
      !        Includes case AB=ADF=0
@@ -205,8 +212,11 @@ PURE SUBROUTINE QLAEV2(A, B, C, RT1, RT2, CS1, SN1)
   ACS = ABS(CS)
   IF (ACS .GT. AB) THEN
      CT = -TB / CS
-     ! SN1 = ONE / SQRT(IEEE_FMA(CT, CT, ONE))
+#ifdef USE_IEEE_INTRINSIC
+     SN1 = ONE / SQRT(IEEE_FMA(CT, CT, ONE))
+#else
      SN1 = ONE / SQRT(ONE + CT * CT)
+#endif
      CS1 = CT * SN1
   ELSE
      IF (AB .EQ. ZERO) THEN
@@ -214,8 +224,11 @@ PURE SUBROUTINE QLAEV2(A, B, C, RT1, RT2, CS1, SN1)
         SN1 = ZERO
      ELSE
         TN = -CS / TB
-        ! CS1 = ONE / SQRT(IEEE_FMA(TN, TN, ONE))
+#ifdef USE_IEEE_INTRINSIC
+        CS1 = ONE / SQRT(IEEE_FMA(TN, TN, ONE))
+#else
         CS1 = ONE / SQRT(ONE + TN * TN)
+#endif
         SN1 = TN * CS1
      END IF
   END IF
