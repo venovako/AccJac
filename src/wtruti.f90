@@ -274,10 +274,10 @@ SUBROUTINE WTRUTI(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, TOL, IX, WRK, INFO)
            XX = V(L,J)
            YY = V(L,O)
            ! XX = (YY * QPS + XX) * C
-           ZZ = ZFMA(YY, QPS, XX)
+           ZZ = WFMA(YY, QPS, XX)
            V(L,J) = CMPLX(REAL(ZZ) * C, AIMAG(ZZ) * C, K)
            ! YY = (YY - XX * CONJG(QPS)) * C
-           ZZ = ZFMA(XX, CQN, YY)
+           ZZ = WFMA(XX, CQN, YY)
            V(L,O) = CMPLX(REAL(ZZ) * C, AIMAG(ZZ) * C, K)
         END DO
      END IF
@@ -307,10 +307,10 @@ SUBROUTINE WTRUTI(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, TOL, IX, WRK, INFO)
            XX = V(L,J)
            YY = V(L,O)
            ! XX = (YY * QPS + XX) * C
-           ZZ = ZFMA(YY, QPS, XX)
+           ZZ = WFMA(YY, QPS, XX)
            V(L,J) = CMPLX(REAL(ZZ) * C, AIMAG(ZZ) * C, K)
            ! YY = (XX * CONJG(QPS) + YY) * C
-           ZZ = ZFMA(XX, CQN, YY)
+           ZZ = WFMA(XX, CQN, YY)
            V(L,O) = CMPLX(REAL(ZZ) * C, AIMAG(ZZ) * C, K)
         END DO
      END IF
