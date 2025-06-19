@@ -100,7 +100,7 @@ SUBROUTINE CTRUTI(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, TOL, IX, WRK, INFO)
   COMPLEX(KIND=K), INTENT(INOUT) :: G(LDG,N), V(LDV,N), TOL, WRK(M,N+1)
   REAL(KIND=K), INTENT(INOUT) :: SV(N), GX
   INTEGER, INTENT(INOUT) :: GS, INFO
-  COMPLEX(KIND=K) :: QPS, XX, YY, CQN
+  COMPLEX(KIND=K) :: QPS, XX, YY, CQN, ZZ
   REAL(KIND=K) :: APP, AQQ, AQPR, AQPI, C, S, T, TR, TI, CC
   INTEGER :: I, J, L, O
 #ifndef NDEBUG
@@ -179,12 +179,12 @@ SUBROUTINE CTRUTI(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, TOL, IX, WRK, INFO)
         DO L = 1, N
            XX = V(L,J)
            YY = V(L,O)
-           ! YY = (YY - XX * CONJG(QPS)) * C
-           CQN = CFMA(XX, CQN, YY)
-           V(L,O) = CMPLX(REAL(CQN) * C, AIMAG(CQN) * C, K)
            ! XX = (YY * QPS + XX) * C
-           CQN = CFMA(YY, QPS, XX)
-           V(L,J) = CMPLX(REAL(CQN) * C, AIMAG(CQN) * C, K)
+           ZZ = ZFMA(YY, QPS, XX)
+           V(L,J) = CMPLX(REAL(ZZ) * C, AIMAG(ZZ) * C, K)
+           ! YY = (YY - XX * CONJG(QPS)) * C
+           ZZ = ZFMA(XX, CQN, YY)
+           V(L,O) = CMPLX(REAL(ZZ) * C, AIMAG(ZZ) * C, K)
         END DO
      END IF
   ELSE ! hyp
@@ -212,12 +212,12 @@ SUBROUTINE CTRUTI(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, TOL, IX, WRK, INFO)
         DO L = 1, N
            XX = V(L,J)
            YY = V(L,O)
-           ! YY = (XX * CONJG(QPS) + YY) * C
-           CQN = CFMA(XX, CQN, YY)
-           V(L,O) = CMPLX(REAL(CQN) * C, AIMAG(CQN) * C, K)
            ! XX = (YY * QPS + XX) * C
-           CQN = CFMA(YY, QPS, XX)
-           V(L,J) = CMPLX(REAL(CQN) * C, AIMAG(CQN) * C, K)
+           ZZ = ZFMA(YY, QPS, XX)
+           V(L,J) = CMPLX(REAL(ZZ) * C, AIMAG(ZZ) * C, K)
+           ! YY = (XX * CONJG(QPS) + YY) * C
+           ZZ = ZFMA(XX, CQN, YY)
+           V(L,O) = CMPLX(REAL(ZZ) * C, AIMAG(ZZ) * C, K)
         END DO
      END IF
   END IF
