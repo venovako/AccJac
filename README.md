@@ -44,5 +44,6 @@ With the [MPFR](https://www.mpfr.org) and [GMP](https://gmplib.org) libraries, a
 Additional material is available in the `etc` and `var` subdirectories.
 
 Static, single-threaded Windows executables can be found [here](https://web.math.pmf.unizg.hr/~venovako/venovako.exe) or [here](https://venovako.eu/venovako.exe).
+For Linux, there are [x86_64](https://venovako.eu/x86_64) and [ppc64le](https://venovako.eu/ppc64le) builds.
 
 This work has been supported in part by Croatian Science Foundation under the project IP-2014-09-3670 ([MFBDA](https://web.math.pmf.unizg.hr/mfbda/)).
