@@ -8,7 +8,7 @@ MARCH=Host
 !IFNDEF NDEBUG
 NDEBUG=d
 !ENDIF # NDEBUG
-# /DCARITH_PVN="cma" /DUSE_IEEE_INTRINSIC=IEEE_FMA
+# /DUSE_IEEE_INTRINSIC=IEEE_FMA
 !IFDEF STATIC
 FCFLAGS=/nologo /fpp /recursive $(STATIC) /standard-semantics /traceback /DNDEBUG=$(NDEBUG) /I. /MT /O$(NDEBUG) /Qx$(MARCH) /fp:precise /Qfma /Qftz- /Qprec-div /Qprotect-parens /Qopt-report:3 /Qvec-threshold:0
 !ELSE # !STATIC
@@ -19,7 +19,7 @@ FCFLAGS=$(FCFLAGS) /4I8
 !ENDIF # ilp64
 LDFLAGS=/link /RELEASE /LIBPATH:. jaevd.lib jaev2.lib /LIBPATH:..\..\libpvn\src pvn.lib
 
-OBJ2= cfma.obj wfma.obj zfma.obj \
+OBJ2= \
 cjaev2.obj djaev2.obj qjaev2.obj sjaev2.obj yjaev2.obj zjaev2.obj \
 cjiev2.obj djiev2.obj qjiev2.obj sjiev2.obj yjiev2.obj zjiev2.obj \
 cljtu2.obj dljtu2.obj sljtu2.obj wljtu2.obj xljtu2.obj zljtu2.obj \

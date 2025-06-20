@@ -25,7 +25,7 @@ else # !NDEBUG
 FCFLAGS += -fcheck=all -finit-local-zero -finit-real=snan -finit-derived
 endif # ?NDEBUG
 FCFLAGS += -ffree-line-length-none -fprotect-parens -fopenmp -fstack-arrays -Wall -Wextra -Wno-c-binding-type -Wno-compare-reals -Wno-function-elimination -Wno-uninitialized
-# -DCARITH_PVN="cma" -frecursive
+# -frecursive
 ifdef MPFR
 FCFLAGS += -DMPFR="\"$(MPFR)\""
 endif # MPFR
