@@ -1,4 +1,4 @@
-PURE SUBROUTINE WPRCYC(M, N, G, LDG, JPOS, SV, IX, WRK, INFO)
+PURE SUBROUTINE WPRCYC(M, N, G, LDG, JPOS, SV, IX, WRK, RWRK, INFO)
 #ifdef __GFORTRAN__
   USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
 #else
@@ -49,8 +49,9 @@ PURE SUBROUTINE WPRCYC(M, N, G, LDG, JPOS, SV, IX, WRK, INFO)
 #endif
   REAL(KIND=K), PARAMETER :: ZERO = 0.0_K, ONE = 1.0_K
   INTEGER, INTENT(IN) :: M, N, LDG, JPOS
-  COMPLEX(KIND=K), INTENT(INOUT) :: G(LDG,N), WRK(M,N+1)
-  REAL(KIND=K), INTENT(OUT) :: SV(N)
+  COMPLEX(KIND=K), INTENT(INOUT) :: G(LDG,N)
+  COMPLEX(KIND=K), INTENT(OUT) :: WRK(M,N)
+  REAL(KIND=K), INTENT(OUT) :: SV(N), RWRK(N)
   INTEGER, INTENT(INOUT) :: IX(N), INFO
   INTEGER :: I, J
 #ifndef NDEBUG
@@ -67,11 +68,11 @@ PURE SUBROUTINE WPRCYC(M, N, G, LDG, JPOS, SV, IX, WRK, INFO)
               WRK(I,J) = ZERO
            END DO
         END DO
-        J = N + 1
         DO I = 1, N-1
-           WRK(I,J) = ONE
+           RWRK(I) = ONE
         END DO
 #ifndef NDEBUG
+        RWRK(N) = REAL(INFO, K)
      ELSE IF (INFO .NE. 1) THEN
         INFO = -9
         RETURN

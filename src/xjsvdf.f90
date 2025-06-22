@@ -1,6 +1,6 @@
 !  IN: GS = max sweeps, INFO = 0 or 1 (SLOW)
 ! OUT: GS: backscale SV by 2**-GS, INFO: #sweeps
-SUBROUTINE XJSVDF(M, N, G, LDG, V, LDV, JPOS, SV, GS, IX, WRK, INFO)
+SUBROUTINE XJSVDF(M, N, G, LDG, V, LDV, JPOS, SV, GS, IX, WRK, RWRK, INFO)
 #ifdef __GFORTRAN__
   USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
   USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: INT64
@@ -68,7 +68,7 @@ SUBROUTINE XJSVDF(M, N, G, LDG, V, LDV, JPOS, SV, GS, IX, WRK, INFO)
      END SUBROUTINE XSCALG
   END INTERFACE
   INTERFACE
-     PURE SUBROUTINE XPRCYC(M, N, G, LDG, JPOS, SV, IX, WRK, INFO)
+     PURE SUBROUTINE XPRCYC(M, N, G, LDG, JPOS, SV, IX, WRK, RWRK, INFO)
 #ifdef __GFORTRAN__
        USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
 #else
@@ -77,11 +77,11 @@ SUBROUTINE XJSVDF(M, N, G, LDG, V, LDV, JPOS, SV, GS, IX, WRK, INFO)
        IMPLICIT NONE
        INTEGER, INTENT(IN) :: M, N, LDG, JPOS
 #ifdef __GFORTRAN__
-       REAL(KIND=c_long_double), INTENT(INOUT) :: G(LDG,N), WRK(M,N+1)
-       REAL(KIND=c_long_double), INTENT(OUT) :: SV(N)
+       REAL(KIND=c_long_double), INTENT(INOUT) :: G(LDG,N)
+       REAL(KIND=c_long_double), INTENT(OUT) :: SV(N), WRK(M,N), RWRK(N)
 #else
-       REAL(KIND=REAL128), INTENT(INOUT) :: G(LDG,N), WRK(M,N+1)
-       REAL(KIND=REAL128), INTENT(OUT) :: SV(N)
+       REAL(KIND=REAL128), INTENT(INOUT) :: G(LDG,N)
+       REAL(KIND=REAL128), INTENT(OUT) :: SV(N), WRK(M,N), RWRK(N)
 #endif
        INTEGER, INTENT(INOUT) :: IX(N), INFO
      END SUBROUTINE XPRCYC
@@ -106,7 +106,7 @@ SUBROUTINE XJSVDF(M, N, G, LDG, V, LDV, JPOS, SV, GS, IX, WRK, INFO)
      END SUBROUTINE XTRNSF
   END INTERFACE
   INTERFACE
-     SUBROUTINE XTRUTI(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, TOL, IX, WRK, INFO)
+     SUBROUTINE XTRUTI(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, TOL, IX, WRK, RWRK, INFO)
 #ifdef __GFORTRAN__
        USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
 #else
@@ -115,9 +115,9 @@ SUBROUTINE XJSVDF(M, N, G, LDG, V, LDV, JPOS, SV, GS, IX, WRK, INFO)
        IMPLICIT NONE
        INTEGER, INTENT(IN) :: M, N, LDG, LDV, P, Q, IX(N)
 #ifdef __GFORTRAN__
-       REAL(KIND=c_long_double), INTENT(INOUT) :: G(LDG,N), V(LDV,N), SV(N), GX, TOL, WRK(M,N+1)
+       REAL(KIND=c_long_double), INTENT(INOUT) :: G(LDG,N), V(LDV,N), SV(N), GX, TOL, WRK(M,N), RWRK(N)
 #else
-       REAL(KIND=REAL128), INTENT(INOUT) :: G(LDG,N), V(LDV,N), SV(N), GX, TOL, WRK(M,N+1)
+       REAL(KIND=REAL128), INTENT(INOUT) :: G(LDG,N), V(LDV,N), SV(N), GX, TOL, WRK(M,N), RWRK(N)
 #endif
        INTEGER, INTENT(INOUT) :: GS, INFO
      END SUBROUTINE XTRUTI
@@ -146,12 +146,12 @@ SUBROUTINE XJSVDF(M, N, G, LDG, V, LDV, JPOS, SV, GS, IX, WRK, INFO)
   REAL(KIND=K), PARAMETER :: ZERO = 0.0_K, ONE = 1.0_K, EPS = EPSILON(EPS) / 2
   INTEGER, INTENT(IN) :: M, N, LDG, LDV, JPOS
   REAL(KIND=K), INTENT(INOUT) :: G(LDG,N)
-  REAL(KIND=K), INTENT(OUT) :: V(LDV,N), SV(N), WRK(M,N+1)
+  REAL(KIND=K), INTENT(OUT) :: V(LDV,N), SV(N), WRK(M,N), RWRK(N)
   INTEGER, INTENT(INOUT) :: GS, IX(N), INFO
   REAL(KIND=K) :: GX, TOL, X
   INTEGER(KIND=INT64) :: TT
   INTEGER :: L, O, P, Q, R, S, T, W
-  IF ((INFO .LT. 0) .OR. (INFO .GT. 1)) INFO = -12
+  IF ((INFO .LT. 0) .OR. (INFO .GT. 1)) INFO = -13
   IF (GS .LT. 0) INFO = -9
   IF ((JPOS .LT. 0) .OR. (JPOS .GT. N)) INFO = -7
   IF (LDV .LT. N) INFO = -6
@@ -189,7 +189,7 @@ SUBROUTINE XJSVDF(M, N, G, LDG, V, LDV, JPOS, SV, GS, IX, WRK, INFO)
         O = 0
      END IF
      IF ((L .EQ. 2) .OR. (L .EQ. 3)) O = 2
-     CALL XPRCYC(M, N, G, LDG, JPOS, SV, IX, WRK, O)
+     CALL XPRCYC(M, N, G, LDG, JPOS, SV, IX, WRK, RWRK, O)
      IF (O .LT. 0) THEN
         INFO = -8
         GOTO 9
@@ -227,7 +227,7 @@ SUBROUTINE XJSVDF(M, N, G, LDG, V, LDV, JPOS, SV, GS, IX, WRK, INFO)
               IF (L .EQ. 0) THEN
                  CALL XTRNSF(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, X, IX, WRK, O)
               ELSE ! L = 2
-                 CALL XTRUTI(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, X, IX, WRK, O)
+                 CALL XTRUTI(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, X, IX, WRK, RWRK, O)
               END IF
               SELECT CASE (O)
               CASE (0,1)
@@ -255,7 +255,7 @@ SUBROUTINE XJSVDF(M, N, G, LDG, V, LDV, JPOS, SV, GS, IX, WRK, INFO)
               IF (L .EQ. 0) THEN
                  CALL XTRNSF(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, X, IX, WRK, O)
               ELSE ! L = 2
-                 CALL XTRUTI(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, X, IX, WRK, O)
+                 CALL XTRUTI(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, X, IX, WRK, RWRK, O)
               END IF
               SELECT CASE (O)
               CASE (0,1)
@@ -300,7 +300,7 @@ SUBROUTINE XJSVDF(M, N, G, LDG, V, LDV, JPOS, SV, GS, IX, WRK, INFO)
               IF (L .EQ. 0) THEN
                  CALL XTRNSF(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, X, IX, WRK, O)
               ELSE ! L = 2
-                 CALL XTRUTI(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, X, IX, WRK, O)
+                 CALL XTRUTI(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, X, IX, WRK, RWRK, O)
               END IF
               SELECT CASE (O)
               CASE (0,1)
@@ -336,7 +336,7 @@ SUBROUTINE XJSVDF(M, N, G, LDG, V, LDV, JPOS, SV, GS, IX, WRK, INFO)
               IF (L .EQ. 1) THEN
                  CALL XTRNSF(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, X, IX, WRK, O)
               ELSE ! L = 3
-                 CALL XTRUTI(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, X, IX, WRK, O)
+                 CALL XTRUTI(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, X, IX, WRK, RWRK, O)
               END IF
               SELECT CASE (O)
               CASE (0,1)
@@ -398,5 +398,5 @@ SUBROUTINE XJSVDF(M, N, G, LDG, V, LDV, JPOS, SV, GS, IX, WRK, INFO)
      END DO
   END IF
   INFO = R
-9 WRK(N,N+1) = REAL(TT, K)
+9 RWRK(N) = REAL(TT, K)
 END SUBROUTINE XJSVDF
