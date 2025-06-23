@@ -2,7 +2,7 @@
   ES = -1_c_int
   INFO = INT(LJV2(A11, A22, A21R, A21I, CH, THR, THI, TG, ES))
   IF (INFO .LT. 0) RETURN
-  IF (.NOT. WD) A21I = INFO
+  IF (.NOT. WD) A21I = REAL(INFO, K)
   IF (IAND(INFO, 2) .NE. 0) THEN
      INFO = 2
   ELSE IF ((CH .EQ. ONE) .AND. (THR .EQ. ZERO) .AND. (THI .EQ. ZERO)) THEN

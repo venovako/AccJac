@@ -281,6 +281,7 @@ SUBROUTINE WJSVDF(M, N, G, LDG, V, LDV, JPOS, SV, GS, IX, WRK, RWRK, INFO)
                  INFO = -5
                  GOTO 9
               END SELECT
+              RWRK(N) = MAX(RWRK(N), ABS(REAL(Z)))
            END DO
         END DO
         ! the second diagonal block
@@ -362,10 +363,11 @@ SUBROUTINE WJSVDF(M, N, G, LDG, V, LDV, JPOS, SV, GS, IX, WRK, RWRK, INFO)
                  INFO = -5
                  GOTO 9
               END SELECT
+              IF ((P .LE. JPOS) .AND. (Q .GT. JPOS)) RWRK(N) = MAX(RWRK(N), ABS(REAL(Z)))
            END DO
         END DO
      END IF
-     CALL XTRACK(N, SV, GX, GS, R, -T)
+     CALL XTRACK(N, SV, RWRK(N), GS, R, -T)
      IF (T .EQ. 0) EXIT
   END DO
   IF (R .LE. S) THEN

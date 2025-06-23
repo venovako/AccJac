@@ -60,6 +60,7 @@ PURE SUBROUTINE XPRCYC(M, N, G, LDG, JPOS, SV, IX, WRK, RWRK, INFO)
   IF (M .LT. 0) INFO = -1
   IF (INFO .LT. 0) RETURN
 #endif
+  RWRK(N) = ZERO
   IF (INFO .NE. 0) THEN
      IF (INFO .EQ. 2) THEN
         DO J = 1, N
@@ -71,7 +72,6 @@ PURE SUBROUTINE XPRCYC(M, N, G, LDG, JPOS, SV, IX, WRK, RWRK, INFO)
            RWRK(I) = ONE
         END DO
 #ifndef NDEBUG
-        RWRK(N) = REAL(INFO, K)
      ELSE IF (INFO .NE. 1) THEN
         INFO = -9
         RETURN
