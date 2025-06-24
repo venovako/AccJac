@@ -62,13 +62,13 @@ SUBROUTINE XTRANA(N, A, LDA, V, LDV, AX, AS, P, Q, TOL, INFO)
 #endif
        IMPLICIT NONE
 #ifdef __GFORTRAN__
-       REAL(KIND=c_long_double), INTENT(INOUT) :: A11, A22
+       REAL(KIND=c_long_double), INTENT(INOUT) :: A11, A22, CH
        REAL(KIND=c_long_double), INTENT(IN) :: A21
-       REAL(KIND=c_long_double), INTENT(OUT) :: CH, SH
+       REAL(KIND=c_long_double), INTENT(OUT) :: SH
 #else
-       REAL(KIND=REAL128), INTENT(INOUT) :: A11, A22
+       REAL(KIND=REAL128), INTENT(INOUT) :: A11, A22, CH
        REAL(KIND=REAL128), INTENT(IN) :: A21
-       REAL(KIND=REAL128), INTENT(OUT) :: CH, SH
+       REAL(KIND=REAL128), INTENT(OUT) :: SH
 #endif
        INTEGER, INTENT(INOUT) :: INFO
      END SUBROUTINE XLJAV2
@@ -243,6 +243,7 @@ SUBROUTINE XTRANA(N, A, LDA, V, LDV, AX, AS, P, Q, TOL, INFO)
         CALL XRTRT(N, A, LDA, AX, P, Q, C, S, INFO)
         CALL XRTLT(N, A, LDA, AX, P, Q, C, S, INFO)
      ELSE ! hyp
+        C = CUTOFF
         CALL XLJAV2(A1, A2, A(Q,P), C, S, INFO)
         CALL XRTVH(N, V(1,P), V(1,Q), C, S, INFO)
         CALL XRTRH(N, A, LDA, AX, P, Q, C, S, INFO)

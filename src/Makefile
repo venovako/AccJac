@@ -28,6 +28,11 @@ cljau2.obj dljau2.obj sljau2.obj wljau2.obj xljau2.obj zljau2.obj \
 cljav2.obj dljav2.obj sljav2.obj wljav2.obj xljav2.obj zljav2.obj \
 qlaev2.obj ylaev2.obj
 
+!IFNDEF CUTOFF
+CUTOFF=0.8
+!ENDIF # !CUTOFF
+FCFLAGS=$(FCFLAGS) /DCUTOFF=$(CUTOFF)_K
+
 !IFDEF LAPACK
 FCFLAGS=$(FCFLAGS) $(LAPACK)
 !ELSE # !LAPACK
@@ -99,7 +104,7 @@ jaevd.lib: $(OBJD) Makefile
 	$(AR) $(ARFLAGS) /OUT:$@ $(OBJD)
 
 help:
-	@ECHO "nmake.exe [MARCH=Host|...] [NDEBUG=d|1|2|3|...] [ABI=lp64|ilp64] [LAPACK=/Qmkl:sequential] [STATIC=/Qopenmp-simd] [all|help|clean]"
+	@ECHO "nmake.exe [MARCH=Host|...] [NDEBUG=d|1|2|3|...] [ABI=lp64|ilp64] [CUTOFF=0.8] [LAPACK=/Qmkl:sequential] [STATIC=/Qopenmp-simd] [all|help|clean]"
 	@ECHO "libpvn has to be build beforehand with the CRT=MD build option"
 
 .f90.obj:

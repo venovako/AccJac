@@ -2,15 +2,15 @@ PROGRAM DLJV2T
   USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_int
   USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: ERROR_UNIT, OUTPUT_UNIT, REAL64, REAL128
   IMPLICIT NONE
-  INTEGER, PARAMETER :: KK = REAL128
+  INTEGER, PARAMETER :: K = REAL64, KK = REAL128
   REAL(KIND=KK), PARAMETER :: QZERO = 0.0_KK, QONE = 1.0_KK
-  REAL(KIND=REAL64), PARAMETER :: ZERO = 0.0_REAL64, CUTOFF = 0.8_REAL64, DEPS = EPSILON(ZERO) / 2
+  REAL(KIND=K), PARAMETER :: ZERO = 0.0_K, DEPS = EPSILON(ZERO) / 2
   ! DAMP should counterweigh a possible unfavorable rounding when creating the off-diagonal element.
   ! This has been observed in single precision, and is more unlikely in higher precisions.
-  REAL(KIND=REAL64), PARAMETER :: DAMP = 1.0_REAL64 - 4 * EPSILON(ZERO)
+  REAL(KIND=K), PARAMETER :: DAMP = 1.0_K - 4 * EPSILON(ZERO)
   CHARACTER(LEN=256) :: CLA
   REAL(KIND=KK) :: Q(10), W
-  REAL(KIND=REAL64) :: D(5), T
+  REAL(KIND=K) :: D(5), T
   INTEGER, ALLOCATABLE :: ISEED(:)
   INTEGER :: I, N, SSIZE
   INTEGER(KIND=c_int) :: ES
@@ -63,6 +63,7 @@ PROGRAM DLJV2T
      IF (.NOT. (D(3) .LE. HUGE(ZERO))) GOTO 1
      IF (SSIZE .NE. 0) D(3) = -D(3)
      ES = 0_c_int
+     T = CUTOFF
      SSIZE = INT(PVN_DLJV2(D(1), D(2), D(3), D(4), D(5), T, ES))
      IF (SSIZE .LT. 0) THEN
         WRITE (ERROR_UNIT,'(I11,A,I3)') I, ': error', SSIZE
@@ -81,6 +82,7 @@ PROGRAM DLJV2T
      Q(9) = D(2)
      Q(10) = D(3)
      ES = 0_c_int
+     W = CUTOFF
      SSIZE = INT(PVN_QLJV2(Q(8), Q(9), Q(10), Q(6), Q(7), W, ES))
      IF (SSIZE .LT. 0) THEN
         WRITE (ERROR_UNIT,'(I11,A,I3)') I, ': ERROR', SSIZE
@@ -102,6 +104,6 @@ PROGRAM DLJV2T
      WRITE (OUTPUT_UNIT,'(I11,A,I11)',ADVANCE='NO')  ISEED(1), ',',  N
   END IF
   WRITE (OUTPUT_UNIT,'(3(A,ES25.17E3))') ',',&
-       REAL(Q(1), REAL64), ',', REAL(Q(2), REAL64), ',', REAL(Q(3), REAL64)
+       REAL(Q(1), K), ',', REAL(Q(2), K), ',', REAL(Q(3), K)
 2 DEALLOCATE(ISEED)
 END PROGRAM DLJV2T

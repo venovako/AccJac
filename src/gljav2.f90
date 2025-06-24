@@ -3,6 +3,7 @@
   ELSE ! (ch,th)
      ES = -1_c_int
   END IF
+  TH = CH
   RT = LJV2(A11, A22, A21, CH, SH, TH, ES)
   IF (RT .LT. 0_c_int) THEN
      INFO = INT(RT)

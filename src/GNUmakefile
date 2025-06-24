@@ -113,6 +113,14 @@ EXED += wjsvdx.exe xjsvdx.exe
 endif # x86_64 or i86pc
 endif # gfortran
 
+ifndef CUTOFF
+CUTOFF=0.8
+endif # !CUTOFF
+FCFLAGS += -DCUTOFF=$(CUTOFF)_K
+ifdef ANIMATE
+FCFLAGS += -DANIMATE=$(ANIMATE)
+endif # ANIMATE
+
 ifeq ($(findstring MINGW64,$(OS)),MINGW64)
 LDFLAGS=
 else # !MINGW64
@@ -129,9 +137,6 @@ endif # MPFR
 ifdef GMP
 LDFLAGS += -L$(GMP)/lib -lgmp
 endif # GMP
-ifdef ANIMATE
-FCFLAGS += -DANIMATE=$(ANIMATE)
-endif # ANIMATE
 ifneq ($(findstring MINGW64,$(OS)),MINGW64)
 LDFLAGS += -ldl
 endif # !MINGW64
@@ -151,7 +156,7 @@ $(LIBD): $(OBJD)
 	$(AR) $(ARFLAGS) $@ $(OBJD)
 
 help:
-	@echo $(MAKE) "[COMPILER=gfortran|ifx] [COMPILER_PREFIX=...] [COMPILER_SUFFIX=...] [MARCH=...] [ABI=lp64|ilp64] [NDEBUG=optimization_level] [LAPACK=...] [GMP=...] [MPFR=...] [PROFILE=...] [ANIMATE=ppe] [all|help|clean]"
+	@echo $(MAKE) "[COMPILER=gfortran|ifx] [COMPILER_PREFIX=...] [COMPILER_SUFFIX=...] [MARCH=...] [ABI=lp64|ilp64] [NDEBUG=g|0|1|2|3|...] [CUTOFF=0.8] [LAPACK=...] [GMP=...] [MPFR=...] [PROFILE=...] [ANIMATE=ppe] [all|help|clean]"
 
 %.o : %.f90 $(MKFS)
 	$(FC) $(FCFLAGS) -c $< -o $@

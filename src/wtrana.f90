@@ -75,13 +75,13 @@ SUBROUTINE WTRANA(N, A, LDA, V, LDV, AX, AS, P, Q, TOL, INFO)
 #endif
        IMPLICIT NONE
 #ifdef __GFORTRAN__
-       REAL(KIND=c_long_double), INTENT(INOUT) :: A11, A22
+       REAL(KIND=c_long_double), INTENT(INOUT) :: A11, A22, CH
        REAL(KIND=c_long_double), INTENT(IN) :: A21R, A21I
-       REAL(KIND=c_long_double), INTENT(OUT) :: CH, SHR, SHI
+       REAL(KIND=c_long_double), INTENT(OUT) :: SHR, SHI
 #else
-       REAL(KIND=REAL128), INTENT(INOUT) :: A11, A22
+       REAL(KIND=REAL128), INTENT(INOUT) :: A11, A22, CH
        REAL(KIND=REAL128), INTENT(IN) :: A21R, A21I
-       REAL(KIND=REAL128), INTENT(OUT) :: CH, SHR, SHI
+       REAL(KIND=REAL128), INTENT(OUT) :: SHR, SHI
 #endif
        INTEGER, INTENT(INOUT) :: INFO
      END SUBROUTINE WLJAV2
@@ -273,6 +273,7 @@ SUBROUTINE WTRANA(N, A, LDA, V, LDV, AX, AS, P, Q, TOL, INFO)
         CALL WRTRT(N, A, LDA, AX, P, Q, C, SR, SI, INFO)
         CALL WRTLT(N, A, LDA, AX, P, Q, C, SR, SI, INFO)
      ELSE ! hyp
+        C = CUTOFF
         CALL WLJAV2(A1, A2, REAL(A(Q,P)), AIMAG(A(Q,P)), C, SR, SI, INFO)
         CALL WRTVH(N, V(1,P), V(1,Q), C, SR, SI, INFO)
         CALL WRTRH(N, A, LDA, AX, P, Q, C, SR, SI, INFO)

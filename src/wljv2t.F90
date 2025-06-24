@@ -14,14 +14,15 @@ PROGRAM WLJV2T
        REAL(KIND=c_long_double) :: CR_HYPOT
      END FUNCTION CR_HYPOT
   END INTERFACE
-  REAL(KIND=REAL128), PARAMETER :: QZERO = 0.0_REAL128, QONE = 1.0_REAL128
-  REAL(KIND=c_long_double), PARAMETER :: ZERO = 0.0_c_long_double, CUTOFF = 0.8_c_long_double, XEPS = EPSILON(ZERO) / 2
+  INTEGER, PARAMETER :: K = c_long_double, KK = REAL128
+  REAL(KIND=KK), PARAMETER :: QZERO = 0.0_KK, QONE = 1.0_KK
+  REAL(KIND=K), PARAMETER :: ZERO = 0.0_K, XEPS = EPSILON(ZERO) / 2
   ! DAMP should counterweigh a possible unfavorable rounding when creating the off-diagonal element.
   ! This has been observed in single precision, and is more unlikely in higher precisions.
-  REAL(KIND=c_long_double), PARAMETER :: DAMP = 1.0_c_long_double - 8 * EPSILON(ZERO)
+  REAL(KIND=K), PARAMETER :: DAMP = 1.0_K - 8 * EPSILON(ZERO)
   CHARACTER(LEN=256) :: CLA
-  REAL(KIND=REAL128) :: Q(14), W
-  REAL(KIND=c_long_double) :: D(7), T
+  REAL(KIND=KK) :: Q(14), W
+  REAL(KIND=K) :: D(7), T
   INTEGER, ALLOCATABLE :: ISEED(:)
   INTEGER :: I, N, SSIZE
   INTEGER(KIND=c_int) :: ES
@@ -94,6 +95,7 @@ PROGRAM WLJV2T
         D(4) = D(4) * D(7)
      END DO
      ES = 0_c_int
+     T = CUTOFF
      SSIZE = INT(PVN_WLJV2(D(1), D(2), D(3), D(4), D(5), D(6), D(7), T, ES))
      IF (SSIZE .LT. 0) THEN
         WRITE (ERROR_UNIT,'(I11,A,I3)') I, ': error', SSIZE
@@ -115,6 +117,7 @@ PROGRAM WLJV2T
      Q(13) = D(3)
      Q(14) = D(4)
      ES = 0_c_int
+     W = CUTOFF
      SSIZE = INT(PVN_YLJV2(Q(11), Q(12), Q(13), Q(14), Q(8), Q(9), Q(10), W, ES))
      IF (SSIZE .LT. 0) THEN
         WRITE (ERROR_UNIT,'(I11,A,I3)') I, ': ERROR', SSIZE
@@ -139,7 +142,7 @@ PROGRAM WLJV2T
      WRITE (OUTPUT_UNIT,'(I11,A,I11)',ADVANCE='NO')  ISEED(1), ',',  N
   END IF
   WRITE (OUTPUT_UNIT,'(4(A,ES30.21E4))') ',',&
-       REAL(Q(1),c_long_double), ',', REAL(Q(2),c_long_double), ',', REAL(Q(3),c_long_double), ',', REAL(Q(4),c_long_double)
+       REAL(Q(1),K), ',', REAL(Q(2),K), ',', REAL(Q(3),K), ',', REAL(Q(4),K)
 9 DEALLOCATE(ISEED)
 #else
   STOP 'wljv2t.exe must be compiled with GNU Fortran on x64'

@@ -10,15 +10,15 @@ PROGRAM ZLJV2T
        REAL(KIND=c_double) :: CR_HYPOT
      END FUNCTION CR_HYPOT
   END INTERFACE
-  INTEGER, PARAMETER :: KK = REAL128
+  INTEGER, PARAMETER :: K = REAL64, KK = REAL128
   REAL(KIND=KK), PARAMETER :: QZERO = 0.0_KK, QONE = 1.0_KK
-  REAL(KIND=REAL64), PARAMETER :: ZERO = 0.0_REAL64, CUTOFF = 0.8_REAL64, DEPS = EPSILON(ZERO) / 2
+  REAL(KIND=K), PARAMETER :: ZERO = 0.0_K, DEPS = EPSILON(ZERO) / 2
   ! DAMP should counterweigh a possible unfavorable rounding when creating the off-diagonal element.
   ! This has been observed in single precision, and is more unlikely in higher precisions.
-  REAL(KIND=REAL64), PARAMETER :: DAMP = 1.0_REAL64 - 8 * EPSILON(ZERO)
+  REAL(KIND=K), PARAMETER :: DAMP = 1.0_K - 8 * EPSILON(ZERO)
   CHARACTER(LEN=256) :: CLA
   REAL(KIND=KK) :: Q(14), W
-  REAL(KIND=REAL64) :: D(7), T
+  REAL(KIND=K) :: D(7), T
   INTEGER, ALLOCATABLE :: ISEED(:)
   INTEGER :: I, N, SSIZE
   INTEGER(KIND=c_int) :: ES
@@ -81,6 +81,7 @@ PROGRAM ZLJV2T
         D(4) = D(4) * D(7)
      END DO
      ES = 0_c_int
+     T = CUTOFF
      SSIZE = INT(PVN_ZLJV2(D(1), D(2), D(3), D(4), D(5), D(6), D(7), T, ES))
      IF (SSIZE .LT. 0) THEN
         WRITE (ERROR_UNIT,'(I11,A,I3)') I, ': error', SSIZE
@@ -102,6 +103,7 @@ PROGRAM ZLJV2T
      Q(13) = D(3)
      Q(14) = D(4)
      ES = 0_c_int
+     W = CUTOFF
      SSIZE = INT(PVN_YLJV2(Q(11), Q(12), Q(13), Q(14), Q(8), Q(9), Q(10), W, ES))
      IF (SSIZE .LT. 0) THEN
         WRITE (ERROR_UNIT,'(I11,A,I3)') I, ': ERROR', SSIZE
@@ -126,6 +128,6 @@ PROGRAM ZLJV2T
      WRITE (OUTPUT_UNIT,'(I11,A,I11)',ADVANCE='NO')  ISEED(1), ',',  N
   END IF
   WRITE (OUTPUT_UNIT,'(4(A,ES25.17E3))') ',',&
-       REAL(Q(1), REAL64), ',', REAL(Q(2), REAL64), ',', REAL(Q(3), REAL64), ',', REAL(Q(4), REAL64)
+       REAL(Q(1), K), ',', REAL(Q(2), K), ',', REAL(Q(3), K), ',', REAL(Q(4), K)
 2 DEALLOCATE(ISEED)
 END PROGRAM ZLJV2T

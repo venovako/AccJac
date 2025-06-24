@@ -29,14 +29,15 @@ PROGRAM CLJV2T
 #define HYPOTX HYPOT
   INTEGER, PARAMETER :: KK = REAL128
 #endif
+  INTEGER, PARAMETER :: K = REAL32
   REAL(KIND=KK), PARAMETER :: QZERO = 0.0_KK, QONE = 1.0_KK
-  REAL(KIND=REAL32), PARAMETER :: ZERO = 0.0_REAL32, CUTOFF = 0.8_REAL32, SEPS = EPSILON(ZERO) / 2
+  REAL(KIND=K), PARAMETER :: ZERO = 0.0_K, SEPS = EPSILON(ZERO) / 2
   ! DAMP should counterweigh a possible unfavorable rounding when creating the off-diagonal element.
   ! This has been observed in single precision, and is more unlikely in higher precisions.
-  REAL(KIND=REAL32), PARAMETER :: DAMP = 1.0_REAL32 - 8 * EPSILON(ZERO)
+  REAL(KIND=K), PARAMETER :: DAMP = 1.0_K - 8 * EPSILON(ZERO)
   CHARACTER(LEN=256) :: CLA
   REAL(KIND=KK) :: Q(14), W
-  REAL(KIND=REAL32) :: D(7), T
+  REAL(KIND=K) :: D(7), T
   INTEGER, ALLOCATABLE :: ISEED(:)
   INTEGER :: I, N, SSIZE
   INTEGER(KIND=c_int) :: ES
@@ -104,6 +105,7 @@ PROGRAM CLJV2T
         D(4) = D(4) * D(7)
      END DO
      ES = 0_c_int
+     T = CUTOFF
      SSIZE = INT(PVN_CLJV2(D(1), D(2), D(3), D(4), D(5), D(6), D(7), T, ES))
      IF (SSIZE .LT. 0) THEN
         WRITE (ERROR_UNIT,'(I11,A,I3)') I, ': error', SSIZE
@@ -125,6 +127,7 @@ PROGRAM CLJV2T
      Q(13) = D(3)
      Q(14) = D(4)
      ES = 0_c_int
+     W = CUTOFF
 #ifdef __GFORTRAN__
      SSIZE = INT(PVN_WLJV2(Q(11), Q(12), Q(13), Q(14), Q(8), Q(9), Q(10), W, ES))
 #else
@@ -156,7 +159,7 @@ PROGRAM CLJV2T
   WRITE (OUTPUT_UNIT,'(4(A,ES16.9E2))') ',', Q(1), ',', Q(2), ',', Q(3), ',', Q(4)
 #else
   WRITE (OUTPUT_UNIT,'(4(A,ES16.9E2))') ',',&
-       REAL(Q(1), REAL32), ',', REAL(Q(2), REAL32), ',', REAL(Q(3), REAL32), ',', REAL(Q(4), REAL32)
+       REAL(Q(1), K), ',', REAL(Q(2), K), ',', REAL(Q(3), K), ',', REAL(Q(4), K)
 #endif
 2 DEALLOCATE(ISEED)
 END PROGRAM CLJV2T

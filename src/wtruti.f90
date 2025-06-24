@@ -144,11 +144,11 @@ SUBROUTINE WTRUTI(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, TOL, IX, WRK, RWRK, IN
 #endif
        IMPLICIT NONE
 #ifdef __GFORTRAN__
-       REAL(KIND=c_long_double), INTENT(INOUT) :: A11, A22, A21R, A21I
-       REAL(KIND=c_long_double), INTENT(OUT) :: CH, THR, THI
+       REAL(KIND=c_long_double), INTENT(INOUT) :: A11, A22, A21R, A21I, CH
+       REAL(KIND=c_long_double), INTENT(OUT) :: THR, THI
 #else
-       REAL(KIND=REAL128), INTENT(INOUT) :: A11, A22, A21R, A21I
-       REAL(KIND=REAL128), INTENT(OUT) :: CH, THR, THI
+       REAL(KIND=REAL128), INTENT(INOUT) :: A11, A22, A21R, A21I, CH
+       REAL(KIND=REAL128), INTENT(OUT) :: THR, THI
 #endif
        INTEGER, INTENT(INOUT) :: INFO
      END SUBROUTINE WLJTV2
@@ -270,6 +270,7 @@ SUBROUTINE WTRUTI(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, TOL, IX, WRK, RWRK, IN
         END DO
      END IF
   ELSE ! hyp
+     C = CUTOFF
      CALL WLJTV2(APP, AQQ, AQPR, AQPI, C, TR, TI, I)
      IF (I .GT. 0) THEN
         QPS = CMPLX(TR,  TI, K)

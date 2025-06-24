@@ -6,14 +6,15 @@ PROGRAM XLJV2T
 #endif
   IMPLICIT NONE
 #ifdef __GFORTRAN__
-  REAL(KIND=REAL128), PARAMETER :: QZERO = 0.0_REAL128, QONE = 1.0_REAL128
-  REAL(KIND=c_long_double), PARAMETER :: ZERO = 0.0_c_long_double, CUTOFF = 0.8_c_long_double, XEPS = EPSILON(ZERO) / 2
+  INTEGER, PARAMETER :: K = c_long_double, KK = REAL128
+  REAL(KIND=KK), PARAMETER :: QZERO = 0.0_KK, QONE = 1.0_KK
+  REAL(KIND=K), PARAMETER :: ZERO = 0.0_K, XEPS = EPSILON(ZERO) / 2
   ! DAMP should counterweigh a possible unfavorable rounding when creating the off-diagonal element.
   ! This has been observed in single precision, and is more unlikely in higher precisions.
-  REAL(KIND=c_long_double), PARAMETER :: DAMP = 1.0_c_long_double - 4 * EPSILON(ZERO)
+  REAL(KIND=K), PARAMETER :: DAMP = 1.0_K - 4 * EPSILON(ZERO)
   CHARACTER(LEN=256) :: CLA
-  REAL(KIND=REAL128) :: Q(10), W
-  REAL(KIND=c_long_double) :: D(5), T
+  REAL(KIND=KK) :: Q(10), W
+  REAL(KIND=K) :: D(5), T
   INTEGER, ALLOCATABLE :: ISEED(:)
   INTEGER :: I, N, SSIZE
   INTEGER(KIND=c_int) :: ES
@@ -72,6 +73,7 @@ PROGRAM XLJV2T
      IF (.NOT. (D(3) .GE. TINY(ZERO))) GOTO 1
 4    IF (SSIZE .NE. 0) D(3) = -D(3)
      ES = 0_c_int
+     T = CUTOFF
      SSIZE = INT(PVN_XLJV2(D(1), D(2), D(3), D(4), D(5), T, ES))
      IF (SSIZE .LT. 0) THEN
         WRITE (ERROR_UNIT,'(I11,A,I3)') I, ': error', SSIZE
@@ -90,6 +92,7 @@ PROGRAM XLJV2T
      Q(9) = D(2)
      Q(10) = D(3)
      ES = 0_c_int
+     W = CUTOFF
      SSIZE = INT(PVN_QLJV2(Q(8), Q(9), Q(10), Q(6), Q(7), W, ES))
      IF (SSIZE .LT. 0) THEN
         WRITE (ERROR_UNIT,'(I11,A,I3)') I, ': ERROR', SSIZE
@@ -111,7 +114,7 @@ PROGRAM XLJV2T
      WRITE (OUTPUT_UNIT,'(I11,A,I11)',ADVANCE='NO')  ISEED(1), ',',  N
   END IF
   WRITE (OUTPUT_UNIT,'(3(A,ES30.21E4))') ',',&
-       REAL(Q(1), c_long_double), ',', REAL(Q(2), c_long_double), ',', REAL(Q(3), c_long_double)
+       REAL(Q(1), K), ',', REAL(Q(2), K), ',', REAL(Q(3), K)
 9 DEALLOCATE(ISEED)
 #else
   STOP 'xljv2t.exe must be compiled with GNU Fortran on x64'
