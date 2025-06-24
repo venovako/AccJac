@@ -35,10 +35,10 @@ PROGRAM STH2T
   REAL(KIND=REAL32), PARAMETER :: ZERO = 0.0_REAL32, ONE = 1.0_REAL32, TWO = 2.0_REAL32
   REAL(KIND=REAL32), PARAMETER :: CUTOFF = 40.0_REAL32 / 41.0_REAL32, EPS = EPSILON(ZERO) / TWO
   REAL(KIND=REAL64), PARAMETER :: DZERO = 0.0_REAL64
-  INTEGER, PARAMETER :: ETH = 1, ECH = 2, ESH = 3, STH = 4, SCH = 5, SSH = 6, ARE = 1, MRE = 2
-  TYPE(MPFR_T) :: MO, MD, MT, MC, MS, ME, MF
+  INTEGER, PARAMETER :: ETH = 1, ECH = 2, ESH = 3, STH = 4, SCH = 5, SSH = 6, DET = 7, ARE = 1, MRE = 2
+  TYPE(MPFR_T) :: MO, MD, MT, MC, MS, ME, MF, MG
   CHARACTER(LEN=256) :: CLA
-  REAL(KIND=REAL64) :: Q(2,6), QD, QT, QC, QS, J
+  REAL(KIND=REAL64) :: Q(2,7), QD, QT, QC, QS, J
   REAL(KIND=REAL32) :: D, T, C, S, U
   INTEGER :: I, NEXP
   INTEGER(KIND=INT32) :: ID
@@ -71,6 +71,8 @@ PROGRAM STH2T
   ME = EPS
   CALL MPFR_INIT_M(MF)
   CALL MPFR_SET_ZERO(MF, MF%TAG)
+  CALL MPFR_INIT_M(MG)
+  CALL MPFR_SET_ZERO(MG, MG%TAG)
   I = 1
   DO WHILE (D .LT. U)
      T = D / (ONE + SQRT(SFMA(-D, D, ONE)))
@@ -90,6 +92,16 @@ PROGRAM STH2T
      CALL MPFR_REC_SQRT_F(MC, MS)
      ! S
      CALL MPFR_MUL_F(MS, MC, MT)
+     ! relerr det = 1 - (c^2 - s^2) = 1 + (s - c)*(s + c)
+     MF = C
+     MG = S
+     CALL MPFR_SUB_F(MD, MG, MF)
+     CALL MPFR_ADD_F(MF, MG, MF)
+     CALL MPFR_FMA_F(MD, MD, MF, MO)
+     CALL MPFR_ABS_F(MD, MD)
+     CALL MPFR_DIV_F(MD, MD, ME)
+     J = MD
+     IF (T .GE. 0.5) WRITE (ERROR_UNIT,'(ES16.9E2,A,ES16.9E2)') T, ',', J
      ! relerr T
      MD = T
      CALL MPFR_SUB_F(MD, MT, MD)
@@ -113,14 +125,15 @@ PROGRAM STH2T
      QS = MD
      ! stat
      QD = I - 1
-     J = I
-     QD = QD / J
-     Q(ARE,ETH) = DFMA(Q(ARE,ETH), QD, (QT / J))
+     QD = QD / I
+     Q(ARE,ETH) = DFMA(Q(ARE,ETH), QD, (QT / I))
      Q(MRE,ETH) = MAX(Q(MRE,ETH), QT)
-     Q(ARE,ECH) = DFMA(Q(ARE,ECH), QD, (QC / J))
+     Q(ARE,ECH) = DFMA(Q(ARE,ECH), QD, (QC / I))
      Q(MRE,ECH) = MAX(Q(MRE,ECH), QC)
-     Q(ARE,ESH) = DFMA(Q(ARE,ESH), QD, (QS / J))
+     Q(ARE,ESH) = DFMA(Q(ARE,ESH), QD, (QS / I))
      Q(MRE,ESH) = MAX(Q(MRE,ESH), QS)
+     Q(ARE,DET) = DFMA(Q(ARE,DET), QD, (J / I))
+     Q(MRE,DET) = MAX(Q(MRE,DET), J)
      ! "standard" formulas
      C = ONE - D
      S = ONE + D
@@ -151,16 +164,17 @@ PROGRAM STH2T
      CALL MPFR_DIV_F(MD, MD, MF)
      QS = MD
      ! stat
-     Q(ARE,STH) = DFMA(Q(ARE,STH), QD, (QT / J))
+     Q(ARE,STH) = DFMA(Q(ARE,STH), QD, (QT / I))
      Q(MRE,STH) = MAX(Q(MRE,STH), QT)
-     Q(ARE,SCH) = DFMA(Q(ARE,SCH), QD, (QC / J))
+     Q(ARE,SCH) = DFMA(Q(ARE,SCH), QD, (QC / I))
      Q(MRE,SCH) = MAX(Q(MRE,SCH), QC)
-     Q(ARE,SSH) = DFMA(Q(ARE,SSH), QD, (QS / J))
+     Q(ARE,SSH) = DFMA(Q(ARE,SSH), QD, (QS / I))
      Q(MRE,SSH) = MAX(Q(MRE,SSH), QS)
      ! increment
      ID = ID + 1
      I = I + 1
   END DO
+  CALL MPFR_CLEAR_M(MG)
   CALL MPFR_CLEAR_M(MF)
   CALL MPFR_CLEAR_M(ME)
   CALL MPFR_CLEAR_M(MS)
@@ -171,8 +185,9 @@ PROGRAM STH2T
   CALL MPFR_FINALIZE()
   ! relative errors in the terms of \epsilon
   I = I - 1
-  WRITE (OUTPUT_UNIT,'(I3,A,I11,12(A,ES16.9E2))') NEXP, ',', I, ',',&
+  WRITE (OUTPUT_UNIT,'(I3,A,I11,14(A,ES16.9E2))') NEXP, ',', I, ',',&
        Q(ARE,ETH), ',', Q(MRE,ETH), ',', Q(ARE,ECH), ',', Q(MRE,ECH), ',',&
        Q(ARE,ESH), ',', Q(MRE,ESH), ',', Q(ARE,STH), ',', Q(MRE,STH), ',',&
-       Q(ARE,SCH), ',', Q(MRE,SCH), ',', Q(ARE,SSH), ',', Q(MRE,SSH)
+       Q(ARE,SCH), ',', Q(MRE,SCH), ',', Q(ARE,SSH), ',', Q(MRE,SSH), ',',&
+       Q(ARE,DET), ',', Q(MRE,DET)
 END PROGRAM STH2T
