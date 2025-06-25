@@ -121,6 +121,16 @@ ifdef ANIMATE
 FCFLAGS += -DANIMATE=$(ANIMATE)
 endif # ANIMATE
 
+ifdef STATIC
+LDFLAGS=-rdynamic -static -L. -ljaevd -ljaev2 -L../../libpvn/src -lpvn $(LAPACK)
+ifdef MPFR
+LDFLAGS += -L$(MPFR)/lib -lmpfr
+endif # MPFR
+ifdef GMP
+LDFLAGS += -L$(GMP)/lib -lgmp
+endif # GMP
+LDFLAGS += $(STATIC) -lm
+else # !STATIC
 ifeq ($(findstring MINGW64,$(OS)),MINGW64)
 LDFLAGS=
 else # !MINGW64
@@ -141,6 +151,7 @@ ifneq ($(findstring MINGW64,$(OS)),MINGW64)
 LDFLAGS += -ldl
 endif # !MINGW64
 LDFLAGS += -lm
+endif # ?STATIC
 
 .PHONY: all help clean
 
@@ -157,7 +168,7 @@ $(LIBD): $(OBJD)
 
 help:
 ifeq ($(COMPILER),gfortran)
-	@echo $(MAKE) "[COMPILER=gfortran|ifx|ifort] [COMPILER_PREFIX=...] [COMPILER_SUFFIX=...] [MARCH=...] [ABI=lp64|ilp64] [NDEBUG=g|0|1|2|3|...] [CUTOFF=0.8] [THR=frecursive|fopenmp] [LAPACK=...] [GMP=...] [MPFR=...] [PROFILE=...] [ANIMATE=ppe] [all|help|clean]"
+	@echo $(MAKE) "[COMPILER=gfortran|ifx|ifort] [COMPILER_PREFIX=...] [COMPILER_SUFFIX=...] [MARCH=...] [ABI=lp64|ilp64] [NDEBUG=g|0|1|2|3|...] [CUTOFF=0.8] [THR=frecursive|fopenmp] [LAPACK=...] [GMP=...] [MPFR=...] [PROFILE=...] [ANIMATE=ppe] [STATIC=...] [all|help|clean]"
 else # !gfortran
 	@echo $(MAKE) "[COMPILER=gfortran|ifx|ifort] [COMPILER_PREFIX=...] [COMPILER_SUFFIX=...] [MARCH=...] [ABI=lp64|ilp64] [NDEBUG=0|1|2|3|...] [CUTOFF=0.8] [THR=recursive|qopenmp] [LAPACK=...] [GMP=...] [MPFR=...] [PROFILE=...] [ANIMATE=ppe] [all|help|clean]"
 endif # ?gfortran
