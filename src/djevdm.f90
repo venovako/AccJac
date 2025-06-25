@@ -1,3 +1,4 @@
+! TODO: run with the Intel compilers for now
 !  IN: AS = max sweeps, INFO = 0 or 1 (sin => tan) OR 2 (the modified modulus)
 ! OUT: AS: backscale A by 2**-AS, INFO: #sweeps
 SUBROUTINE DJEVDM(N, A, LDA, V, LDV, JPOS, WRK, AS, ORD, INFO)
