@@ -9,6 +9,7 @@ do
 			let "J=I/2"
 			printf "%4d, %4d," $I $J >> $T-$S.csv
 			cat $S/$T$I-$S.out >> $T-$S.csv
+			cat $S/$T$I-$S.err $S/$T$I-$S.txt > $T$I-$S.txt
 		done
 	done
 done
