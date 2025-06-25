@@ -41,35 +41,23 @@ PROGRAM SJSVDX
        REAL(KIND=c_long_double) :: HYPOTX
      END FUNCTION HYPOTX
   END INTERFACE
-  INTEGER, PARAMETER :: KK = c_long_double
 #else
 #define HYPOTX HYPOT
-  INTEGER, PARAMETER :: KK = REAL128
 #endif
-  REAL(KIND=KK), PARAMETER :: XZERO = 0.0_KK, XONE = 1.0_KK
+  INTEGER, PARAMETER :: K = REAL32
   CHARACTER(LEN=256) :: CLA
-  REAL(KIND=KK) :: Y, Z
   INTEGER(KIND=INT64) :: CLK(3)
-  REAL(KIND=REAL32) :: T
+  REAL(KIND=K) :: T
   INTEGER :: M, N, LDG, LDV, JPOS, GS, INFO, I, J, L
-  REAL(KIND=REAL32), ALLOCATABLE :: G(:,:), V(:,:), WRK(:,:), SV(:), LY(:)
+  REAL(KIND=K), ALLOCATABLE :: G(:,:), V(:,:), WRK(:,:), SV(:), LY(:)
   INTEGER, ALLOCATABLE :: IX(:)
-  REAL(KIND=KK), ALLOCATABLE :: U(:,:), W(:,:)
   EXTERNAL :: BFOPEN, SJSVDF
-  !$OMP DECLARE REDUCTION(HYP:REAL(KK):OMP_OUT=HYPOTX(OMP_OUT,OMP_IN)) INITIALIZER(OMP_PRIV=XZERO)
   ! read the command line arguments
   I = COMMAND_ARGUMENT_COUNT()
   IF (I .NE. 5) STOP 'sjsvdx.exe M N JPOS OPTS FILE'
   CALL GET_COMMAND_ARGUMENT(1, CLA)
   READ (CLA,*) M
-  IF (M .LT. 0) THEN
-     M = -M
-     Z = XONE
-  ELSE IF (M .GT. 0) THEN
-     Z = XZERO
-  ELSE ! M = 0
-     STOP 'M'
-  END IF
+  IF (M .LE. 0) STOP 'M'
   CALL GET_COMMAND_ARGUMENT(2, CLA)
   READ (CLA,*) N
   IF ((N .LE. 0) .OR. (N .GT. M)) STOP 'N'
@@ -110,7 +98,7 @@ PROGRAM SJSVDX
   CLK(3) = CLK(3) / CLK(2)
   T = LY(N)
   CLK(2) = INT(T, INT64)
-  WRITE (OUTPUT_UNIT,'(I11,A,I12,A,I6,A,I8,A,I6.6,A)',ADVANCE='NO') INFO, ',', CLK(2), ',', GS, ',', CLK(1), '.', CLK(3), ','
+  WRITE (OUTPUT_UNIT,'(I11,A,I12,A,I6,A,I8,A,I6.6)') INFO, ',', CLK(2), ',', GS, ',', CLK(1), '.', CLK(3)
   FLUSH(OUTPUT_UNIT)
   IF (INFO .LT. 0) STOP 'SJSVDF'
   CALL BFOPEN(TRIM(CLA)//'.YU', 'WO', I, J)
@@ -156,18 +144,6 @@ PROGRAM SJSVDX
   CLOSE (UNIT=I, IOSTAT=J)
   IF (J .NE. 0) STOP 'CLOSE(ZZ)'
   L = -GS
-  IF (Z .EQ. XZERO) THEN
-     ALLOCATE(U(M,N))
-     !$OMP PARALLEL DO DEFAULT(NONE) PRIVATE(I,J,Y) SHARED(G,U,SV,L,M,N)
-     DO J = 1, N
-        Y = SV(J)
-        Y = SCALE(Y, L)
-        DO I = 1, M
-           U(I,J) = REAL(G(I,J), KK) * Y
-        END DO
-     END DO
-     !$OMP END PARALLEL DO
-  END IF
   DO J = 1, N
      SV(J) = SCALE(SV(J), L)
   END DO
@@ -177,46 +153,6 @@ PROGRAM SJSVDX
   IF (J .NE. 0) STOP 'WRITE(SY)'
   CLOSE (UNIT=I, IOSTAT=J)
   IF (J .NE. 0) STOP 'CLOSE(SY)'
-  Y = XZERO
-  IF (Z .EQ. XZERO) THEN
-     ! read G again
-     CALL BFOPEN(TRIM(CLA)//'.Y', 'RO', I, J)
-     IF (J .NE. 0) STOP 'OPEN(Y)'
-     READ (UNIT=I, IOSTAT=J) G
-     IF (J .NE. 0) STOP 'READ(Y)'
-     CLOSE (UNIT=I, IOSTAT=J)
-     IF (J .NE. 0) STOP 'CLOSE(Y)'
-     ALLOCATE(W(M,N))
-     !$OMP PARALLEL DO DEFAULT(NONE) PRIVATE(I,J) SHARED(G,W,M,N) REDUCTION(HYP:Z)
-     DO J = 1, N
-        DO I = 1, M
-           W(I,J) = G(I,J)
-           Z = HYPOTX(Z, W(I,J))
-        END DO
-     END DO
-     !$OMP END PARALLEL DO
-     !$OMP PARALLEL DO DEFAULT(NONE) PRIVATE(I,J,L) SHARED(U,V,W,M,N)
-     DO J = 1, N
-        DO L = 1, N
-           DO I = 1, M
-              ! W(I,J) = W(I,J) - U(I,L) * REAL(V(L,J), KK)
-              W(I,J) = XFMA(U(I,L), REAL(-V(L,J), KK), W(I,J))
-           END DO
-        END DO
-     END DO
-     !$OMP END PARALLEL DO
-     !$OMP PARALLEL DO DEFAULT(NONE) PRIVATE(I,J) SHARED(W,M,N) REDUCTION(HYP:Y)
-     DO J = 1, N
-        DO I = 1, M
-           Y = HYPOTX(Y, W(I,J))
-        END DO
-     END DO
-     !$OMP END PARALLEL DO
-     Y = Y / Z
-     IF (ALLOCATED(W)) DEALLOCATE(W)
-     IF (ALLOCATED(U)) DEALLOCATE(U)
-  END IF
-  WRITE (OUTPUT_UNIT,'(ES16.9E2)') REAL(Y, REAL32)
   IF (ALLOCATED(IX)) DEALLOCATE(IX)
   IF (ALLOCATED(LY)) DEALLOCATE(LY)
   IF (ALLOCATED(SV)) DEALLOCATE(SV)

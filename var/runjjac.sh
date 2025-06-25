@@ -7,7 +7,7 @@ do
 		do
 			echo $I $T $S
 			cd $S
-			$3/${T}jsvdx.exe $4$I $5$I -1 $S $T$I > $T$I-$S.out 2> $T$I-$S.err &
+			$3/${T}jsvdx.exe $I $4$I -1 $S $T$I > $T$I-$S.out 2> $T$I-$S.err &
 			cd ..
 		done
 	done

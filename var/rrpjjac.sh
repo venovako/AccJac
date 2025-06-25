@@ -10,6 +10,7 @@ do
 			cd $S
 			OMP_NUM_THREADS=$4 $3/${T}jsvrr.exe $I $I $T$I > $T$I-$S.txt 2>> $T$I-$S.err
 			tr '\n' , < $T$I-$S.out > $T$I-$S.tuo
+                        tail -2 $T$I-$S.txt | cut -d',' -f2 | tr '\n' , >> $T$I-$S.tuo
 			OMP_NUM_THREADS=$4 $3/${T}jsvor.exe $I $I $T$I.YU >> $T$I-$S.tuo 2>> $T$I-$S.err
 			tr '\n' , < $T$I-$S.tuo > $T$I-$S.out
 			OMP_NUM_THREADS=$4 $3/${T}jsvor.exe $I -1 $T$I.YV >> $T$I-$S.out 2>> $T$I-$S.err
