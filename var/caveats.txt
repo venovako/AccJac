@@ -3,4 +3,4 @@ The purpose of USE_IEEE_INTRINSICS macro:
 GNU Fortran (gfortran) inlines IEEE_FMA as an FMA instruction when available,
 so it is cheap to use the intrinsic.
 
-Intel Fortran (ifx) does not.
+Intel Fortran (ifx, ifort) does not.
