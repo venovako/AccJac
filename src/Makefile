@@ -9,11 +9,11 @@ MARCH=Host
 NDEBUG=d
 !ENDIF # NDEBUG
 # /DUSE_IEEE_INTRINSIC=IEEE_FMA
-!IFDEF STATIC
-FCFLAGS=/nologo /fpp /recursive $(STATIC) /standard-semantics /traceback /DNDEBUG=$(NDEBUG) /I. /MT /O$(NDEBUG) /Qx$(MARCH) /fp:precise /Qfma /Qftz- /Qprec-div /Qprotect-parens /Qopt-report:3 /Qvec-threshold:0
-!ELSE # !STATIC
+!IF "$(CRT)"=="MD"
 FCFLAGS=/nologo /fpp /Qopenmp /standard-semantics /traceback /DNDEBUG=$(NDEBUG) /I. /MD /O$(NDEBUG) /Qx$(MARCH) /fp:precise /Qfma /Qftz- /Qprec-div /Qprotect-parens /Qopt-report:3 /Qvec-threshold:0
-!ENDIF # ?STATIC
+!ELSE # MT
+FCFLAGS=/nologo /fpp /recursive /standard-semantics /traceback /DNDEBUG=$(NDEBUG) /I. /MT /O$(NDEBUG) /Qx$(MARCH) /fp:precise /Qfma /Qftz- /Qprec-div /Qprotect-parens /Qopt-report:3 /Qvec-threshold:0
+!ENDIF # ?MD
 !IF "$(ABI)"=="ilp64"
 FCFLAGS=$(FCFLAGS) /4I8
 !ENDIF # ilp64
@@ -93,9 +93,9 @@ cjsvrr.exe djsvrr.exe sjsvrr.exe zjsvrr.exe \
 cjsvor.exe djsvor.exe sjsvor.exe zjsvor.exe
 
 all: $(LIBS) $(EXES)
-!IFNDEF STATIC
+!IF "$(CRT)"=="MD"
 	COPY /Y /V ..\..\libpvn\src\*.dll .
-!ENDIF # !STATIC
+!ENDIF # MD
 
 jaev2.lib: $(OBJ2) Makefile
 	$(AR) $(ARFLAGS) /OUT:$@ $(OBJ2)
@@ -104,8 +104,10 @@ jaevd.lib: $(OBJD) Makefile
 	$(AR) $(ARFLAGS) /OUT:$@ $(OBJD)
 
 help:
-	@ECHO "nmake.exe [MARCH=Host|...] [NDEBUG=d|1|2|3|...] [ABI=lp64|ilp64] [CUTOFF=0.8] [LAPACK=/Qmkl:sequential] [STATIC=/Qopenmp-simd] [all|help|clean]"
+	@ECHO "nmake.exe [MARCH=Host|...] [NDEBUG=d|1|2|3|...] [ABI=lp64|ilp64] [CUTOFF=0.8] [LAPACK=/Qmkl:sequential] [CRT=MT|MD] [all|help|clean]"
+!IF "$(CRT)"=="MD"
 	@ECHO "libpvn has to be build beforehand with the CRT=MD build option"
+!ENDIF # MD
 
 .f90.obj:
 	$(FC) $(FCFLAGS) /c $< /Fo$@
