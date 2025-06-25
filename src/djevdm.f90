@@ -1,4 +1,6 @@
-! TODO: run with the Intel compilers for now
+#ifndef __INTEL_COMPILER
+#warning "Please use the Intel compilers for the parallel Jacobi strategies"
+#endif
 !  IN: AS = max sweeps, INFO = 0 or 1 (sin => tan) OR 2 (the modified modulus)
 ! OUT: AS: backscale A by 2**-AS, INFO: #sweeps
 SUBROUTINE DJEVDM(N, A, LDA, V, LDV, JPOS, WRK, AS, ORD, INFO)

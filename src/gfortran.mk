@@ -14,9 +14,6 @@ ifeq ($(ARCH),ppc64le)
 FCFLAGS += -mcpu=$(MARCH) -mpower8-fusion -mtraceback=full
 else # !ppc64le
 FCFLAGS += -march=$(MARCH)
-ifeq ($(findstring 86,$(ARCH)),86)
-FCFLAGS += -DEXTENDED=10
-endif # 86
 endif # ?ppc64le
 FCFLAGS += -fPIC -fexceptions -fasynchronous-unwind-tables -fno-omit-frame-pointer -fvect-cost-model=unlimited -ffp-contract=fast
 ifdef NDEBUG
