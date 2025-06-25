@@ -26,4 +26,4 @@ MOVE /Y d512.csv d512-9.csv
 COPY /Y /V d512-9.err+d512-9.out d512-9.txt
 DEL /F d512-9.err d512-9.out
 REM clean
-DEL /F d512???.txt d512.L d512.V
+DEL /F d512.L d512.V

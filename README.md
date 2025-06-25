@@ -43,6 +43,8 @@ With the [MPFR](https://www.mpfr.org) and [GMP](https://gmplib.org) libraries, a
 
 ## Other
 
+To find incomplete or unstable code, search for the `TODO` markers in the sources.
+
 Additional material is available in the `etc`, `var`, and `alt` subdirectories.
 
 Static, single-threaded Windows executables can be found [here](https://web.math.pmf.unizg.hr/~venovako/venovako.exe) or [here](https://venovako.eu/venovako.exe).
