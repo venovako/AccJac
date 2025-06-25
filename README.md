@@ -43,7 +43,7 @@ With the [MPFR](https://www.mpfr.org) and [GMP](https://gmplib.org) libraries, a
 
 ## Other
 
-To find incomplete or unstable code, search for the `TODO` markers in the sources.
+To find incomplete or unstable code, please search for the `TODO` markers in the sources and pay attention to the compiler warnings.
 
 Additional material is available in the `etc`, `var`, and `alt` subdirectories.
 
