@@ -147,7 +147,7 @@ LDFLAGS += -lm
 all: $(LIB2) $(LIBD) $(EXE2) $(EXED)
 ifeq ($(findstring MINGW64,$(OS)),MINGW64)
 	cp -fuv /ucrt64/bin/libwinpthread-1.dll .
-endif
+endif # MINGW64
 
 $(LIB2): $(OBJ2) $(OBJL)
 	$(AR) $(ARFLAGS) $@ $(OBJ2) $(OBJL)
@@ -156,7 +156,11 @@ $(LIBD): $(OBJD)
 	$(AR) $(ARFLAGS) $@ $(OBJD)
 
 help:
-	@echo $(MAKE) "[COMPILER=gfortran|ifx] [COMPILER_PREFIX=...] [COMPILER_SUFFIX=...] [MARCH=...] [ABI=lp64|ilp64] [NDEBUG=g|0|1|2|3|...] [CUTOFF=0.8] [LAPACK=...] [GMP=...] [MPFR=...] [PROFILE=...] [ANIMATE=ppe] [all|help|clean]"
+ifeq ($(COMPILER),gfortran)
+	@echo $(MAKE) "[COMPILER=gfortran|ifx|ifort] [COMPILER_PREFIX=...] [COMPILER_SUFFIX=...] [MARCH=...] [ABI=lp64|ilp64] [NDEBUG=g|0|1|2|3|...] [CUTOFF=0.8] [THR=frecursive|fopenmp] [LAPACK=...] [GMP=...] [MPFR=...] [PROFILE=...] [ANIMATE=ppe] [all|help|clean]"
+else # !gfortran
+	@echo $(MAKE) "[COMPILER=gfortran|ifx|ifort] [COMPILER_PREFIX=...] [COMPILER_SUFFIX=...] [MARCH=...] [ABI=lp64|ilp64] [NDEBUG=0|1|2|3|...] [CUTOFF=0.8] [THR=recursive|qopenmp] [LAPACK=...] [GMP=...] [MPFR=...] [PROFILE=...] [ANIMATE=ppe] [all|help|clean]"
+endif # ?gfortran
 
 %.o : %.f90 $(MKFS)
 	$(FC) $(FCFLAGS) -c $< -o $@

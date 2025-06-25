@@ -11,8 +11,10 @@ ifndef MARCH
 MARCH=Host
 # common-avx512 for KNLs
 endif # !MARCH
-FCFLAGS += -x$(MARCH) -mprefer-vector-width=512 -fPIC -fexceptions -fasynchronous-unwind-tables -fno-omit-frame-pointer -fp-model=precise -fp-speculation=safe -fimf-precision=high -fma -fprotect-parens -no-ftz -qopenmp -standard-semantics -traceback -vec-threshold0
-# -recursive
+ifndef THR
+THR=recursive
+endif # !THR
+FCFLAGS += -x$(MARCH) -mprefer-vector-width=512 -fPIC -fexceptions -fasynchronous-unwind-tables -fno-omit-frame-pointer -fp-model=precise -fp-speculation=safe -fimf-precision=high -fma -fprotect-parens -no-ftz -$(THR) -standard-semantics -traceback -vec-threshold0
 ifdef NDEBUG
 FCFLAGS += -fno-math-errno -qopt-report=3
 ifndef PROFILE
