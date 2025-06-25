@@ -25,7 +25,7 @@ make [COMPILER=gfortran|ifx|ifort] [COMPILER_PREFIX=...] [COMPILER_SUFFIX=...] [
 
 The `COMPILER` and `NDEBUG` variables have to be compatible with those for building the `libpvn` repository; e.g., if `COMPILER=gcc` for `libpvn`, then `COMPILER=gfortran` here.
 With `gfortran`, `THR=fopenmp` enables the OpenMP parallelization of the error checkers.
-With `ifx` or `ifort`, use `THR=qopenmp` instead.
+With `ifx` or `ifort`, set `THR=qopenmp` instead.
 Other variables should not be set unless their effects are fully understood.
 
 ## Running

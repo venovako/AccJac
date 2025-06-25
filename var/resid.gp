@@ -18,8 +18,8 @@ set multiplot
 plot "z-2.csv" using 1:7 with points title "$\\rho_{\\Lambda}^{\\mathbb{C}}[\\mathtt{rc}]$" pointtype 15 linetype 1, \
      "z-0.csv" using 1:7 with points title "$\\rho_{\\Lambda}^{\\mathbb{C}}[\\mathtt{dR}]$" pointtype 13 linetype 7
 set key top left vertical spacing 1.75 box
-plot "z-2.csv" using 1:11 with points title "$\\rho_{\\sigma}^{\\mathbb{C}}[\\mathtt{rc}]$" pointtype 5 linetype -1, \
-     "z-0.csv" using 1:11 with points title "$\\rho_{\\sigma}^{\\mathbb{C}}[\\mathtt{dR}]$" pointtype 7 linetype 2, \
-     "z-2.csv" using 1:8 with points title "$\\rho_G^{\\mathbb{C}}[\\mathtt{rc}]$" pointtype 11 linetype 4, \
-     "z-0.csv" using 1:8 with points title "$\\rho_G^{\\mathbb{C}}[\\mathtt{dR}]$" pointtype 9 linetype 6
+plot "z-2.csv" using 1:8 with points title "$\\rho_{\\sigma}^{\\mathbb{C}}[\\mathtt{rc}]$" pointtype 5 linetype -1, \
+     "z-0.csv" using 1:8 with points title "$\\rho_{\\sigma}^{\\mathbb{C}}[\\mathtt{dR}]$" pointtype 7 linetype 2, \
+     "z-2.csv" using 1:9 with points title "$\\rho_G^{\\mathbb{C}}[\\mathtt{rc}]$" pointtype 11 linetype 4, \
+     "z-0.csv" using 1:9 with points title "$\\rho_G^{\\mathbb{C}}[\\mathtt{dR}]$" pointtype 9 linetype 6
 unset multiplot
