@@ -12,7 +12,7 @@ PROGRAM XJSVDX
   INTEGER :: M, N, LDG, LDV, JPOS, GS, INFO, I, J, L
   REAL(KIND=K), ALLOCATABLE :: G(:,:), V(:,:), WRK(:,:), SV(:), LY(:)
   INTEGER, ALLOCATABLE :: IX(:)
-  EXTERNAL :: BFOPEN, XJSVDF
+  EXTERNAL :: BFOPEN, XJSVDF, QCLEAR
   ! read the command line arguments
   I = COMMAND_ARGUMENT_COUNT()
   IF (I .NE. 5) STOP 'xjsvdx.exe M N JPOS OPTS FILE'
@@ -33,8 +33,8 @@ PROGRAM XJSVDX
   ! set G
   LDG = M
   ALLOCATE(G(LDG,N))
+  CALL QCLEAR(LDG * N, G)
   CALL BFOPEN(TRIM(CLA)//'.YX', 'RO', I, J)
-  IF (J .NE. 0) CALL BFOPEN(TRIM(CLA)//'.Y', 'RO', I, J)
   IF (J .NE. 0) STOP 'OPEN(YX)'
   READ (UNIT=I, IOSTAT=J) G
   IF (J .NE. 0) STOP 'READ(YX)'
@@ -43,9 +43,13 @@ PROGRAM XJSVDX
   ! allocate the rest
   LDV = N
   ALLOCATE(V(LDV,N))
+  CALL QCLEAR(LDV * N, V)
   ALLOCATE(WRK(M,N))
+  CALL QCLEAR(M * N, WRK)
   ALLOCATE(SV(N))
+  CALL QCLEAR(N, SV)
   ALLOCATE(LY(N))
+  CALL QCLEAR(N, LY)
   ALLOCATE(IX(N))
   ! call XJSVDF
   GS = HUGE(GS)

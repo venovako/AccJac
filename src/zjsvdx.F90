@@ -42,9 +42,8 @@ PROGRAM ZJSVDX
   REAL(KIND=KK) :: X, Y
   COMPLEX(KIND=K) :: T
   REAL(KIND=K) :: R
-  INTEGER(KIND=INT64) :: CLK(3)
   INTEGER :: M, N, LDG, LDV, JPOS, GS, INFO, I, J, L
-  INTEGER(KIND=INT64), ALLOCATABLE :: JV(:)
+  INTEGER(KIND=INT64), ALLOCATABLE :: CLK(:)
   COMPLEX(KIND=K), ALLOCATABLE :: G(:,:), V(:,:), WRK(:,:)
   REAL(KIND=K), ALLOCATABLE :: SV(:), LY(:)
   INTEGER, ALLOCATABLE :: IX(:)
@@ -68,28 +67,29 @@ PROGRAM ZJSVDX
   IF (LEN_TRIM(CLA) .LE. 0) STOP 'FILE'
   ! check J
   IF (JPOS .EQ. -1) THEN
-     ALLOCATE(JV(N))
+     ALLOCATE(CLK(MAX(N,3)))
      CALL BFOPEN(TRIM(CLA)//'.J', 'RO', I, J)
      IF (J .NE. 0) STOP 'OPEN(J)'
-     READ (UNIT=I, IOSTAT=J) JV
+     READ (UNIT=I, IOSTAT=J) CLK
      IF (J .NE. 0) STOP 'READ(J)'
      CLOSE (UNIT=I, IOSTAT=J)
      IF (J .NE. 0) STOP 'CLOSE(J)'
      JPOS = 0
      J = 1
-     DO WHILE (JV(J) .EQ. 1_INT64)
+     DO WHILE (CLK(J) .EQ. 1_INT64)
         JPOS = JPOS + 1
         J = J + 1
         IF (J .GT. N) EXIT
      END DO
      IF (J .LE. N) THEN
-        DO WHILE (JV(J) .EQ. -1_INT64)
+        DO WHILE (CLK(J) .EQ. -1_INT64)
            J = J + 1
            IF (J .GT. N) EXIT
         END DO
         IF (J .LE. N) STOP 'J not [+I,-I]'
      END IF
-     DEALLOCATE(JV)
+  ELSE ! JPOS .NE. -1
+     ALLOCATE(CLK(3))
   END IF
   ! set G
   LDG = M
@@ -262,4 +262,5 @@ PROGRAM ZJSVDX
   IF (ALLOCATED(WRK)) DEALLOCATE(WRK)
   IF (ALLOCATED(V)) DEALLOCATE(V)
   IF (ALLOCATED(G)) DEALLOCATE(G)
+  IF (ALLOCATED(CLK)) DEALLOCATE(CLK)
 END PROGRAM ZJSVDX
