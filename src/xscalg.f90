@@ -1,6 +1,10 @@
 ! the first time this routine is called, let GS = 0 and INFO = 0
 ! otherwise, set INFO > 0 (e.g., to the step number)
+#ifdef _OPENMP
+SUBROUTINE XSCALG(M, N, G, LDG, GX, GS, INFO)
+#else
 PURE SUBROUTINE XSCALG(M, N, G, LDG, GX, GS, INFO)
+#endif
 #ifdef __GFORTRAN__
   USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
 #else

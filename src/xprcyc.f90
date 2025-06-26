@@ -1,4 +1,8 @@
+#ifdef _OPENMP
+SUBROUTINE XPRCYC(M, N, G, LDG, JPOS, SV, IX, WRK, RWRK, INFO)
+#else
 PURE SUBROUTINE XPRCYC(M, N, G, LDG, JPOS, SV, IX, WRK, RWRK, INFO)
+#endif
 #ifdef __GFORTRAN__
   USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
 #else
@@ -6,7 +10,11 @@ PURE SUBROUTINE XPRCYC(M, N, G, LDG, JPOS, SV, IX, WRK, RWRK, INFO)
 #endif
   IMPLICIT NONE
   INTERFACE
+#ifdef _OPENMP
+     SUBROUTINE XCNRMF(M, N, G, LDG, SV, IX, INFO)
+#else
      PURE SUBROUTINE XCNRMF(M, N, G, LDG, SV, IX, INFO)
+#endif
 #ifdef __GFORTRAN__
        USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
 #else
@@ -53,13 +61,11 @@ PURE SUBROUTINE XPRCYC(M, N, G, LDG, JPOS, SV, IX, WRK, RWRK, INFO)
   REAL(KIND=K), INTENT(OUT) :: SV(N), WRK(M,N), RWRK(N)
   INTEGER, INTENT(INOUT) :: IX(N), INFO
   INTEGER :: I, J
-#ifndef NDEBUG
   IF ((JPOS .LT. 0) .OR. (JPOS .GT. N)) INFO = -5
   IF (LDG .LT. M) INFO = -4
   IF (N .LT. 0) INFO = -2
   IF (M .LT. 0) INFO = -1
   IF (INFO .LT. 0) RETURN
-#endif
   RWRK(N) = ZERO
   IF (INFO .NE. 0) THEN
      IF (INFO .EQ. 2) THEN
@@ -71,25 +77,19 @@ PURE SUBROUTINE XPRCYC(M, N, G, LDG, JPOS, SV, IX, WRK, RWRK, INFO)
         DO I = 1, N-1
            RWRK(I) = ONE
         END DO
-#ifndef NDEBUG
      ELSE IF (INFO .NE. 1) THEN
         INFO = -9
         RETURN
-#endif
      END IF
      CALL XCNRMF(M, N, G, LDG, SV, IX, INFO)
-#ifndef NDEBUG
      IF (INFO .NE. 0) THEN
         INFO = -6
         RETURN
      END IF
-#endif
   END IF
   CALL XNSORT(N, JPOS, SV, IX, INFO)
-#ifndef NDEBUG
   IF (INFO .LT. 0) THEN
      INFO = -7
      RETURN
   END IF
-#endif
 END SUBROUTINE XPRCYC

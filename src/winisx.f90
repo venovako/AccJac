@@ -1,4 +1,8 @@
+#ifdef _OPENMP
+SUBROUTINE WINISX(M, N, G, LDG, V, LDV, SV, IX, INFO)
+#else
 PURE SUBROUTINE WINISX(M, N, G, LDG, V, LDV, SV, IX, INFO)
+#endif
 #ifdef __GFORTRAN__
   USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
 #else

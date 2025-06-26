@@ -1,4 +1,8 @@
+#ifdef _OPENMP
+SUBROUTINE WCNRMF(M, N, G, LDG, SV, IX, INFO)
+#else
 PURE SUBROUTINE WCNRMF(M, N, G, LDG, SV, IX, INFO)
+#endif
 #ifdef __GFORTRAN__
   USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
 #else

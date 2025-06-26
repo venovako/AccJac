@@ -1,6 +1,10 @@
 ! the first time this routine is called, let GS = 0 and INFO = 0
 ! otherwise, set INFO > 0 (e.g., to the step number)
+#ifdef _OPENMP
+SUBROUTINE ZSCALG(M, N, G, LDG, GX, GS, INFO)
+#else
 PURE SUBROUTINE ZSCALG(M, N, G, LDG, GX, GS, INFO)
+#endif
   USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL64
   IMPLICIT NONE
   INTERFACE

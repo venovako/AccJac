@@ -50,7 +50,7 @@ FUNCTION WSDP(M, X, Y, MX, MY, INFO)
   IF (.NOT. (MX .GT. ZERO)) INFO = -4
   IF (M .LT. 0) INFO = -1
   IF (INFO .LT. 0) RETURN
-#endif  
+#endif
   WSDP = ZERO
   IF (INFO .EQ. 0) THEN
      DO I = 1, M

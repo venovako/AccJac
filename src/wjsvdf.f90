@@ -1,4 +1,4 @@
-!  IN: GS = max sweeps, INFO = 0 or 1 (SLOW)
+!  IN: GS = max sweeps, IX(1) = 0|1|2|3, INFO = 0 or 1 (SLOW)
 ! OUT: GS: backscale SV by 2**-GS, INFO: #sweeps
 SUBROUTINE WJSVDF(M, N, G, LDG, V, LDV, JPOS, SV, GS, IX, WRK, RWRK, INFO)
 #ifdef __GFORTRAN__
@@ -31,7 +31,11 @@ SUBROUTINE WJSVDF(M, N, G, LDG, V, LDV, JPOS, SV, GS, IX, WRK, RWRK, INFO)
   END INTERFACE
 #endif
   INTERFACE
+#ifdef _OPENMP
+     SUBROUTINE WINISX(M, N, G, LDG, V, LDV, SV, IX, INFO)
+#else
      PURE SUBROUTINE WINISX(M, N, G, LDG, V, LDV, SV, IX, INFO)
+#endif
 #ifdef __GFORTRAN__
        USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
 #else
@@ -53,7 +57,11 @@ SUBROUTINE WJSVDF(M, N, G, LDG, V, LDV, JPOS, SV, GS, IX, WRK, RWRK, INFO)
      END SUBROUTINE WINISX
   END INTERFACE
   INTERFACE
+#ifdef _OPENMP
+     SUBROUTINE WSCALG(M, N, G, LDG, GX, GS, INFO)
+#else
      PURE SUBROUTINE WSCALG(M, N, G, LDG, GX, GS, INFO)
+#endif
 #ifdef __GFORTRAN__
        USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
 #else
@@ -72,7 +80,11 @@ SUBROUTINE WJSVDF(M, N, G, LDG, V, LDV, JPOS, SV, GS, IX, WRK, RWRK, INFO)
      END SUBROUTINE WSCALG
   END INTERFACE
   INTERFACE
+#ifdef _OPENMP
+     SUBROUTINE WPRCYC(M, N, G, LDG, JPOS, SV, IX, WRK, RWRK, INFO)
+#else
      PURE SUBROUTINE WPRCYC(M, N, G, LDG, JPOS, SV, IX, WRK, RWRK, INFO)
+#endif
 #ifdef __GFORTRAN__
        USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
 #else
