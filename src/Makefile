@@ -40,7 +40,7 @@ OBJ2=$(OBJ2) \
 claev2.obj dlaev2.obj slaev2.obj zlaev2.obj
 !ENDIF # ?LAPACK
 
-OBJD=bfopen.obj pascal.obj \
+OBJD=bfopen.obj wbrd1.obj wbwr1.obj xbrd1.obj xbwr1.obj pascal.obj \
 crn.obj wrn.obj zrn.obj \
 cjaevd.obj zjaevd.obj \
 drsafe.obj qrsafe.obj srsafe.obj \
