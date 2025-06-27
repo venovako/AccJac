@@ -38,7 +38,7 @@ OBJ2 += mljau2.o mljav2.o
 EXE2 += sth2t.exe
 endif # MPFR
 
-OBJD=bfopen.o pascal.o \
+OBJD=bfopen.o wbrd1.o wbwr1.o xbrd1.o xbwr1.o pascal.o \
 crn.o wrn.o zrn.o \
 cjaevd.o zjaevd.o \
 drsafe.o qrsafe.o srsafe.o \
