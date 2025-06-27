@@ -4,3 +4,8 @@ GNU Fortran (gfortran) inlines IEEE_FMA as an FMA instruction when available,
 so it is cheap to use the intrinsic.
 
 Intel Fortran (ifx, ifort) does not.
+
+===
+
+For the parallel strategies, please reduce the optimization level
+with the GNU compilers, or switch to the Intel ones.
