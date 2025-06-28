@@ -180,7 +180,7 @@ int cgiMain()
   *fxt = 'r';
   ++fxt;
   *fxt = '\0';
-  (void)fprintf(cgiOut, "200 OK\r\n\Content-Type: application/x-tar\r\nContent-Disposition: attachment; filename=\"%s\"\r\n\r\n", job);
+  (void)fprintf(cgiOut, "200 OK\r\nContent-Type: application/x-tar\r\nContent-Disposition: attachment; filename=\"%s\"\r\n\r\n", job);
   --fxt;
   *fxt = '\0';
   --fxt;
