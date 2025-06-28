@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>J-Jacobi for the hyperbolic SVD</title>
+  </head>
+  <body>
+    <h1>J-Jacobi for the hyperbolic SVD</h1>
+    <p>A successfull submission of the form below should compute the hyperbolic singlular value decomposition (HSVD) of <em>G</em> = <em>U</em><em>&#x3A3;</em><em>V</em><sup>-1</sup> and generate a TAR file containing the following outputs:
+    <ul>
+      <li>Job.U: <em>U</em>, i.e., the matrix of the left singular vectors (<em>m</em> &#xd7; <em>n</em>);</li>
+      <li>Job.V: <em>V</em>, i.e., the matrix of the right singular vectors (<em>n</em> &#xd7; <em>n</em>);</li>
+      <li>Job.S: <em>&#x3A3;</em>, i.e., the singular values (<em>n</em>); and</li>
+      <li>Job.T: some textual statistics, ending with the number of cycles and transformations.</li>
+    </ul>
+    </p>
+    <form action="jsvdt.cgi" method="post" enctype="multipart/form-data" target="_blank">
+      <p>Please give this job a name of at most eight alphanumeric characters.<br>
+        <label for="jobt">Job:</label>
+        <input type="text" id="jobt" name="job" value="01234567" minlength="1" maxlength="8" required />
+      </p>
+      <p>How many rows does the input matrix have (1 &#x2264; <em>m</em> &#x2264; 999)?<br>
+        <label for="mn"><em>m</em>:</label>
+        <input type="number" id="mn" name="m" value="1" min="1" max="999" required />
+      </p>
+      <p>How many columns does the input matrix have (1 &#x2264; <em>n</em> &#x2264; <em>m</em>)?<br>
+        <label for="nn"><em>n</em>:</label>
+        <input type="number" id="nn" name="n" value="1" min="1" max="999" required />
+      </p>
+      <p>With how many positive signs starts the diagonal of <em>J</em> (0 &#x2264; <em>j</em> &#x2264; <em>n</em>)?<br>
+        <label for="jposn"><em>j</em>:</label>
+        <input type="number" id="jposn" name="jpos" value="0" min="0" max="999" required />
+      </p>
+      <p>How many cycles are allowed (0 &#x2264; <em>c</em> &#x2264; 30)?<br>
+        <label for="cyclesn"><em>c</em>:</label>
+        <input type="number" id="cyclesn" name="cycles" value="30" min="0" max="30" required />
+      </p>
+      <fieldset>
+        <legend>Datatype and precision:</legend>
+        <table>
+          <tr>
+            <td><input type="radio" id="complex32r" name="prec" value="complex32" /><label for="complex32r">COMPLEX(4)</label></td>
+            <td><input type="radio" id="real32r" name="prec" value="real32" /><label for="real32r">REAL(4)</label></td>
+          </tr>
+          <tr>
+            <td><input type="radio" id="complex64r" name="prec" value="complex64" checked /><label for="complex64r">COMPLEX(8)</label></td>
+            <td><input type="radio" id="real64r" name="prec" value="real64" /><label for="real64r">REAL(8)</label></td>
+          </tr>
+          <tr>
+            <td><input type="radio" id="complex80r" name="prec" value="complex80" /><label for="complex80r">COMPLEX(10)</label></td>
+            <td><input type="radio" id="real80r" name="prec" value="real80" /><label for="real80r">REAL(10)</label></td>
+          </tr>
+        </table>
+      </fieldset>
+      <fieldset>
+        <legend>Jacobi strategy:</legend>
+        <table>
+          <tr>
+            <td><input type="radio" id="deRijkr" name="strat" value="deRijk" checked /><label for="deRijkr">modified de&#xA0;Rijk</label></td>
+            <td><input type="radio" id="rowcycr" name="strat" value="rowcyc" /><label for="rowcycr">row-cyclic</label></td>
+          </tr>
+        </table>
+      </fieldset>
+      <fieldset>
+        <legend>Updates:</legend>
+        <table>
+          <tr>
+            <td><input type="radio" id="fastr" name="colup" value="fast" checked /><label for="fast">fast</label></td>
+            <td><input type="radio" id="slowr" name="colup" value="slow" /><label for="slowr">slow</label></td>
+            <td><input type="radio" id="rutir" name="colup" value="ruti" /><label for="rutir">delayed</label></td>
+          </tr>
+        </table>
+      </fieldset>
+      <p>Please choose a binary file in the Fortran (i.e., column-major) order, containing the input matrix of the selected size and type.<br>
+        <label for="inpf"><em>G</em>:</label>
+        <input type="file" id="inpf" name="inp" required />
+      </p>
+      <p>Please verify the settings before submitting this form.<br>
+        <input type="submit" />
+      </p>
+    </form>
+    <hr>
+    <p><i>Last modified</i>: <time>2025-06-28</time>.</p>
+  </body>
+</html>
