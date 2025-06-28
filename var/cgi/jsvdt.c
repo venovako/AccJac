@@ -108,13 +108,6 @@ int cgiMain()
     goto err;
   if (o > 2u)
     goto err;
-  int info = 0;
-  switch (o) {
-  case 0u: *ix = c; break;
-  case 1u: *ix = c; info = 1; break;
-  case 2u: *ix = (c | 2u); break;
-  default: goto err;
-  }
 
   cgiFilePtr fp = (cgiFilePtr)NULL;
   if (cgiFormSuccess != cgiFormFileOpen("inp", &fp))
@@ -144,6 +137,13 @@ int cgiMain()
   if (!(rwrk = malloc(n * r)))
     goto err;
 
+  int info = 0;
+  switch (o) {
+  case 0u: *ix = c; break;
+  case 1u: *ix = c; info = 1; break;
+  case 2u: *ix = (c | 2u); break;
+  default: goto err;
+  }
   c = *ix;
   f(&m, &n, G, &m, V, &n, &jpos, sv, &gs, ix, wrk, rwrk, &info);
   if (info < 0)
