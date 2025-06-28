@@ -20,7 +20,7 @@ int cgiMain()
   void *rwrk = NULL;
   int ret = EXIT_FAILURE;
   char buf[40] = { '\0' };
-  char job[13] = { '0', '1', '2', '3', '4', '5', '6', '7', '.', 't', 'a', 'r', '\0' };
+  char job[9] = { '0', '1', '2', '3', '4', '5', '6', '7', '\0' };
   if (cgiFormSuccess != cgiFormStringNoNewlines("job", job, 9))
     goto err;
   char *fxt = job;
@@ -168,41 +168,9 @@ int cgiMain()
   }
   (void)sprintf(buf, "%2u,%11u,%11d,%11u\n", c, gs, info, o);
 
-  const int fd = fileno(cgiOut);
-  if (fd < 0)
-    goto err;
-  *fxt = '.';
-  ++fxt;
-  *fxt = 't';
-  ++fxt;
-  *fxt = 'a';
-  ++fxt;
-  *fxt = 'r';
-  ++fxt;
-  *fxt = '\0';
-  (void)fprintf(cgiOut, "200 OK\r\nContent-Type: application/x-tar\r\nContent-Disposition: attachment; filename=\"%s\"\r\n\r\n", job);
-  --fxt;
-  *fxt = '\0';
-  --fxt;
-  *fxt = '\0';
-  --fxt;
-
-  *fxt = 'U';
-  if (pvn_tar_add_file_(&fd, job, &bG, G) < 0)
-    goto end;
-  *fxt = 'V';
-  if (pvn_tar_add_file_(&fd, job, &bV, V) < 0)
-    goto end;
-  *fxt = 'S';
-  if (pvn_tar_add_file_(&fd, job, &bsv, sv) < 0)
-    goto end;
-  *fxt = 'T';
-  c = 40u;
-  if (pvn_tar_add_file_(&fd, job, &c, buf) < 0)
-    goto end;
-  if (pvn_tar_terminate_(&fd) < 0)
-    goto end;
-
+  cgiHeaderContentType("text/html");
+  (void)fprintf(cgiOut, "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<meta charset=\"UTF-8\">\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n<title>%s</title>\n</head>\n<body>\n<h1>%s</h1><pre>\n%s</pre>\n</body>\n</html>\n", job, job, buf);
+  (void)fflush(cgiOut);
   ret = EXIT_SUCCESS;
   goto end;
 
