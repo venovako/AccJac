@@ -20,7 +20,7 @@ int cgiMain()
   void *rwrk = NULL;
   int ret = EXIT_FAILURE;
   char buf[40] = { '\0' };
-  char job[11] = { '0', '1', '2', '3', '4', '5', '6', '7', '.', '?', '\0' };
+  char job[13] = { '0', '1', '2', '3', '4', '5', '6', '7', '.', 't', 'a', 'r', '\0' };
   if (cgiFormSuccess != cgiFormStringNoNewlines("job", job, 9))
     goto err;
   char *fxt = job;
@@ -144,7 +144,7 @@ int cgiMain()
   case 2u: *ix = (c | 2u); break;
   default: goto err;
   }
-  c = *ix;
+  c = ((*ix << 1u) | (unsigned)info);
   f(&m, &n, G, &m, V, &n, &jpos, sv, &gs, ix, wrk, rwrk, &info);
   if (info < 0)
     goto err;
@@ -168,15 +168,25 @@ int cgiMain()
   }
   (void)sprintf(buf, "%2u,%11u,%11d,%11u\n", c, gs, info, o);
 
-  cgiHeaderContentType("text/html");
-  (void)fprintf(cgiOut, "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<meta charset=\"UTF-8\">\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n<title>J-Jacobi for the hyperbolic SVD</title>\n</head>\n<body>\n<h1>J-Jacobi for the hyperbolic SVD</h1>\n<pre>\n%s</pre>\n</body>\n</html>\n", buf);
-  /*
   const int fd = fileno(cgiOut);
   if (fd < 0)
     goto err;
-  cgiHeaderContentType("application/x-tar");
+  cgiHeaderContentType("application/octet-stream");
   *fxt = '.';
   ++fxt;
+  *fxt = 't';
+  ++fxt;
+  *fxt = 'a';
+  ++fxt;
+  *fxt = 'r';
+  ++fxt;
+  *fxt = '\0';
+  (void)fprintf(cgiOut, "Content-Disposition: attachment; filename=\"%s\"\r\n\r\n", job);
+  --fxt;
+  *fxt = '\0';
+  --fxt;
+  *fxt = '\0';
+  --fxt;
 
   *fxt = 'U';
   if (pvn_tar_add_file_(&fd, job, &bG, G) < 0)
@@ -193,7 +203,7 @@ int cgiMain()
     goto end;
   if (pvn_tar_terminate_(&fd) < 0)
     goto end;
-  */
+
   ret = EXIT_SUCCESS;
   goto end;
 
