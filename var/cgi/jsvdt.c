@@ -168,6 +168,9 @@ int cgiMain()
   }
   (void)sprintf(buf, "%2u,%11u,%11d,%11u\n", c, gs, info, o);
 
+  cgiHeaderContentType("text/html");
+  (void)fprintf(cgiOut, "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<meta charset=\"UTF-8\">\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n<title>J-Jacobi for the hyperbolic SVD</title>\n</head>\n<body>\n<h1>J-Jacobi for the hyperbolic SVD</h1>\n<pre>\n%s</pre>\n</body>\n</html>\n", buf);
+  /*
   const int fd = fileno(cgiOut);
   if (fd < 0)
     goto err;
@@ -190,6 +193,7 @@ int cgiMain()
     goto end;
   if (pvn_tar_terminate_(&fd) < 0)
     goto end;
+  */
   ret = EXIT_SUCCESS;
   goto end;
 
