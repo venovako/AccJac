@@ -18,6 +18,7 @@ int cgiMain(const int u, const int v)
   unsigned *ix = (unsigned*)NULL;
   void *wrk = NULL;
   void *rwrk = NULL;
+  char *buf = (char*)NULL;
   int ret = EXIT_FAILURE;
 
   char job[13] = { '0', '1', '2', '3', '4', '5', '6', '7', '.', 't', 'a', 'r', '\0' };
@@ -210,7 +211,7 @@ int cgiMain(const int u, const int v)
     goto end;
   if (lseek(v, 0, SEEK_SET))
     goto end;
-  char *const buf = (char*)malloc((size_t)(t + 39));
+  buf = (char*)malloc((size_t)(t + 39));
   if (!buf)
     goto end;
   if (t != (int)read(v, buf, (size_t)t))
@@ -230,6 +231,7 @@ int cgiMain(const int u, const int v)
  err:
   cgiHeaderStatus(400, "Bad Request");
  end:
+  free(buf);
   free(rwrk);
   free(wrk);
   free(ix);
