@@ -30,9 +30,9 @@ int cgiMain(const int u)
     goto err;
 
   unsigned m = 0u;
-  if (cgiFormSuccess != cgiFormIntegerBounded("m", (int*)&m, 1, 999, 0))
+  if (cgiFormSuccess != cgiFormIntegerBounded("m", (int*)&m, 1, 1024, 0))
     goto err;
-  if (!m || (m > 999u))
+  if (!m || (m > 1024u))
     goto err;
 
   unsigned n = 0u;
@@ -182,7 +182,8 @@ int cgiMain(const int u)
   *fxt = 'r';
   ++fxt;
   *fxt = '\0';
-  (void)fprintf(cgiOut, "Content-Type: application/x-tar\nContent-Transfer-Encoding: binary\nContent-Disposition: attachment; filename=%s\n\n", job);
+  (void)dprintf(fd, "Content-Type: application/octet-stream\nContent-Transfer-Encoding: binary\nContent-Disposition: attachment; filename=\"%s\"\n\n", job);
+  (void)fsync(fd);
   --fxt;
   *fxt = '\0';
   --fxt;
@@ -207,7 +208,7 @@ int cgiMain(const int u)
     goto end;
   if (pvn_tar_terminate_(&fd))
     goto end;
-  (void)fflush(cgiOut);
+  (void)fsync(fd);
   ret = EXIT_SUCCESS;
   goto end;
 
