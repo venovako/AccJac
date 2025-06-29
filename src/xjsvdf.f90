@@ -1,4 +1,4 @@
-!  IN: GS = max sweeps, IX(1) = 0|1|2|3, INFO = 0 or 1 (SLOW)
+!  IN: GS = max sweeps, IX(1) = trace unit, INFO
 ! OUT: GS: backscale SV by 2**-GS, INFO: #sweeps
 SUBROUTINE XJSVDF(M, N, G, LDG, V, LDV, JPOS, SV, GS, IX, WRK, RWRK, INFO)
 #ifdef __GFORTRAN__
@@ -135,14 +135,14 @@ SUBROUTINE XJSVDF(M, N, G, LDG, V, LDV, JPOS, SV, GS, IX, WRK, RWRK, INFO)
      END SUBROUTINE XTRUTI
   END INTERFACE
   INTERFACE
-     SUBROUTINE XTRACK(N, SV, GX, GS, SWP, NTR)
+     SUBROUTINE XTRACK(N, SV, GX, GS, SWP, NTR, U)
 #ifdef __GFORTRAN__
        USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
 #else
        USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL128
 #endif
        IMPLICIT NONE
-       INTEGER, INTENT(IN) :: N, GS, SWP, NTR
+       INTEGER, INTENT(IN) :: N, GS, SWP, NTR, U
 #ifdef __GFORTRAN__
        REAL(KIND=c_long_double), INTENT(IN) :: SV(N), GX
 #else
@@ -162,8 +162,8 @@ SUBROUTINE XJSVDF(M, N, G, LDG, V, LDV, JPOS, SV, GS, IX, WRK, RWRK, INFO)
   INTEGER, INTENT(INOUT) :: GS, IX(N), INFO
   REAL(KIND=K) :: GX, TOL, X
   INTEGER(KIND=INT64) :: TT
-  INTEGER :: L, O, P, Q, R, S, T, W
-  IF ((INFO .LT. 0) .OR. (INFO .GT. 1)) INFO = -13
+  INTEGER :: L, O, P, Q, R, S, T, U, W
+  IF ((INFO .LT. 0) .OR. (INFO .GT. 7)) INFO = -13
   IF (GS .LT. 0) INFO = -9
   IF ((JPOS .LT. 0) .OR. (JPOS .GT. N)) INFO = -7
   IF (LDV .LT. N) INFO = -6
@@ -178,7 +178,9 @@ SUBROUTINE XJSVDF(M, N, G, LDG, V, LDV, JPOS, SV, GS, IX, WRK, RWRK, INFO)
   S = GS
   GS = 0
   TT = 0_INT64
-  L = IX(1)
+  L = ISHFT(IAND(INFO, 6), -1)
+  INFO = IAND(INFO, 1)
+  U = IX(1)
   O = -1
   CALL XSCALG(M, N, G, LDG, GX, GS, O)
   IF (O .LT. 0) THEN
@@ -191,7 +193,7 @@ SUBROUTINE XJSVDF(M, N, G, LDG, V, LDV, JPOS, SV, GS, IX, WRK, RWRK, INFO)
      INFO = -10
      GOTO 9
   END IF
-  CALL XTRACK(N, SV, GX, GS, R, -S)
+  CALL XTRACK(N, SV, GX, GS, R, -S, U)
   TOL = M
   TOL = XSQRT(TOL) * EPS
   DO R = 1, S
@@ -367,7 +369,7 @@ SUBROUTINE XJSVDF(M, N, G, LDG, V, LDV, JPOS, SV, GS, IX, WRK, RWRK, INFO)
            END DO
         END DO
      END IF
-     CALL XTRACK(N, SV, RWRK(N), GS, R, -T)
+     CALL XTRACK(N, SV, RWRK(N), GS, R, -T, U)
      IF (T .EQ. 0) EXIT
   END DO
   IF (R .LE. S) THEN

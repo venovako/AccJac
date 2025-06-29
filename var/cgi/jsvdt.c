@@ -1,7 +1,7 @@
 #include "pvn.h"
 #include "cgic.h"
 
-extern int cgiMain();
+extern int cgiMain(const int u);
 extern void cjsvdf_(const unsigned *const m, const unsigned *const n, void *const G, const unsigned *const ldG, void *const V, const unsigned *const ldV, const unsigned *const jpos, void *const sv, int *const gs, unsigned *const ix, void *const wrk, void *const rwrk, int *const info);
 extern void sjsvdf_(const unsigned *const m, const unsigned *const n, void *const G, const unsigned *const ldG, void *const V, const unsigned *const ldV, const unsigned *const jpos, void *const sv, int *const gs, unsigned *const ix, void *const wrk, void *const rwrk, int *const info);
 extern void zjsvdf_(const unsigned *const m, const unsigned *const n, void *const G, const unsigned *const ldG, void *const V, const unsigned *const ldV, const unsigned *const jpos, void *const sv, int *const gs, unsigned *const ix, void *const wrk, void *const rwrk, int *const info);
@@ -10,7 +10,7 @@ extern void wjsvdf_(const unsigned *const m, const unsigned *const n, void *cons
 extern void xjsvdf_(const unsigned *const m, const unsigned *const n, void *const G, const unsigned *const ldG, void *const V, const unsigned *const ldV, const unsigned *const jpos, void *const sv, int *const gs, unsigned *const ix, void *const wrk, void *const rwrk, int *const info);
 typedef void (*fptr)(const unsigned *const, const unsigned *const, void *const, const unsigned *const, void *const, const unsigned *const, const unsigned *const, void *const, int *const, unsigned *const, void *const, void *const, int *const);
 
-int cgiMain()
+int cgiMain(const int u)
 {
   void *G = NULL;
   void *V = NULL;
@@ -20,7 +20,7 @@ int cgiMain()
   void *rwrk = NULL;
   int ret = EXIT_FAILURE;
   char buf[40] = { '\0' };
-  char job[9] = { '0', '1', '2', '3', '4', '5', '6', '7', '\0' };
+  char job[13] = { '0', '1', '2', '3', '4', '5', '6', '7', '.', 't', 'a', 'r', '\0' };
   if (cgiFormSuccess != cgiFormStringNoNewlines("job", job, 9))
     goto err;
   char *fxt = job;
@@ -101,6 +101,7 @@ int cgiMain()
     goto err;
   if (c > 1u)
     goto err;
+  c >>= 1u;
 
   char *colup[3] = { "fast", "slow", "ruti" };
   unsigned o = 0u;
@@ -139,12 +140,13 @@ int cgiMain()
 
   int info = 0;
   switch (o) {
-  case 0u: *ix = c; break;
-  case 1u: *ix = c; info = 1; break;
-  case 2u: *ix = (c | 2u); break;
+  case 0u: info = (int)c; break;
+  case 1u: info = (int)(c | 1u);  break;
+  case 2u: info = (int)(c | 4u); break;
   default: goto err;
   }
-  c = ((*ix << 1u) | (unsigned)info);
+  *ix = u;
+  c = (unsigned)info;
   f(&m, &n, G, &m, V, &n, &jpos, sv, &gs, ix, wrk, rwrk, &info);
   if (info < 0)
     goto err;
@@ -168,8 +170,43 @@ int cgiMain()
   }
   (void)sprintf(buf, "%2u,%11u,%11d,%11u\n", c, gs, info, o);
 
-  cgiHeaderContentType("text/html");
-  (void)fprintf(cgiOut, "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<meta charset=\"UTF-8\">\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n<title>%s</title>\n</head>\n<body>\n<h1>%s</h1><pre>\n%s</pre>\n</body>\n</html>\n", job, job, buf);
+  const int fd = fileno(cgiOut);
+  if (fd < 0)
+    goto err;
+  *fxt = '.';
+  ++fxt;
+  *fxt = 't';
+  ++fxt;
+  *fxt = 'a';
+  ++fxt;
+  *fxt = 'r';
+  ++fxt;
+  *fxt = '\0';
+  (void)fprintf(cgiOut, "Content-Type: application/x-tar\nContent-Transfer-Encoding: binary\nContent-Disposition: attachment; filename=%s\n\n", job);
+  --fxt;
+  *fxt = '\0';
+  --fxt;
+  *fxt = '\0';
+  --fxt;
+  c = 40u;
+  *fxt = 'U';
+  if (pvn_tar_add_file_(&fd, job, &bG, G) < 0)
+    goto end;
+  *fxt = 'V';
+  if (pvn_tar_add_file_(&fd, job, &bV, V) < 0)
+    goto end;
+  *fxt = 'S';
+  if (pvn_tar_add_file_(&fd, job, &bsv, sv) < 0)
+    goto end;
+  *fxt = 't';
+  ++fxt;
+  *fxt = 'x';
+  ++fxt;
+  *fxt = 't';
+  if (pvn_tar_add_file_(&fd, job, &c, buf) < 0)
+    goto end;
+  if (pvn_tar_terminate_(&fd))
+    goto end;
   (void)fflush(cgiOut);
   ret = EXIT_SUCCESS;
   goto end;
