@@ -28,7 +28,7 @@
         <label for="nn"><em>n</em>:</label>
         <input type="number" id="nn" name="n" value="1" min="1" max="1024" required />
       </p>
-      <p>With how many positive signs starts the diagonal of <em>J</em> (0 &#x2264; <em>j</em> &#x2264; <em>n</em>)?<br>
+      <p>With how many positive signs does the diagonal of <em>J</em> start (0 &#x2264; <em>j</em> &#x2264; <em>n</em>)?<br>
         <label for="jposn"><em>j</em>:</label>
         <input type="number" id="jposn" name="jpos" value="0" min="0" max="1024" required />
       </p>
@@ -44,8 +44,8 @@
             <td><input type="radio" id="real32r" name="prec" value="real32" /><label for="real32r">REAL(4)</label></td>
           </tr>
           <tr>
-            <td><input type="radio" id="complex64r" name="prec" value="complex64" checked /><label for="complex64r">COMPLEX(8)</label></td>
-            <td><input type="radio" id="real64r" name="prec" value="real64" /><label for="real64r">REAL(8)</label></td>
+            <td><input type="radio" id="complex64r" name="prec" value="complex64" /><label for="complex64r">COMPLEX(8)</label></td>
+            <td><input type="radio" id="real64r" name="prec" value="real64" checked /><label for="real64r">REAL(8)</label></td>
           </tr>
           <tr>
             <td><input type="radio" id="complex80r" name="prec" value="complex80" /><label for="complex80r">COMPLEX(10)</label></td>
@@ -73,6 +73,7 @@
         </table>
       </fieldset>
       <p>Please choose a binary file in the Fortran (i.e., column-major) order, containing the input matrix of the selected size and type.<br>
+        The input can be prepared in, e.g., Matlab, and exported as described <a href="https://www.mathworks.com/help/matlab/import_export/exporting-binary-data-with-low-level-i-o.html">here</a>.<br>
         <label for="inpf"><em>G</em>:</label>
         <input type="file" id="inpf" name="inp" required />
       </p>
