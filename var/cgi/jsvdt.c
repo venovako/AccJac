@@ -1,7 +1,7 @@
 #include "pvn.h"
 #include "cgic.h"
 
-extern int cgiMain(const int u);
+extern int cgiMain(const int u, const int v);
 extern void cjsvdf_(const unsigned *const m, const unsigned *const n, void *const G, const unsigned *const ldG, void *const V, const unsigned *const ldV, const unsigned *const jpos, void *const sv, int *const gs, unsigned *const ix, void *const wrk, void *const rwrk, int *const info);
 extern void sjsvdf_(const unsigned *const m, const unsigned *const n, void *const G, const unsigned *const ldG, void *const V, const unsigned *const ldV, const unsigned *const jpos, void *const sv, int *const gs, unsigned *const ix, void *const wrk, void *const rwrk, int *const info);
 extern void zjsvdf_(const unsigned *const m, const unsigned *const n, void *const G, const unsigned *const ldG, void *const V, const unsigned *const ldV, const unsigned *const jpos, void *const sv, int *const gs, unsigned *const ix, void *const wrk, void *const rwrk, int *const info);
@@ -10,7 +10,7 @@ extern void wjsvdf_(const unsigned *const m, const unsigned *const n, void *cons
 extern void xjsvdf_(const unsigned *const m, const unsigned *const n, void *const G, const unsigned *const ldG, void *const V, const unsigned *const ldV, const unsigned *const jpos, void *const sv, int *const gs, unsigned *const ix, void *const wrk, void *const rwrk, int *const info);
 typedef void (*fptr)(const unsigned *const, const unsigned *const, void *const, const unsigned *const, void *const, const unsigned *const, const unsigned *const, void *const, int *const, unsigned *const, void *const, void *const, int *const);
 
-int cgiMain(const int u)
+int cgiMain(const int u, const int v)
 {
   void *G = NULL;
   void *V = NULL;
@@ -19,7 +19,7 @@ int cgiMain(const int u)
   void *wrk = NULL;
   void *rwrk = NULL;
   int ret = EXIT_FAILURE;
-  char buf[40] = { '\0' };
+
   char job[13] = { '0', '1', '2', '3', '4', '5', '6', '7', '.', 't', 'a', 'r', '\0' };
   if (cgiFormSuccess != cgiFormStringNoNewlines("job", job, 9))
     goto err;
@@ -118,9 +118,10 @@ int cgiMain(const int u)
   const unsigned bG = m * n * s;
   if (!(G = malloc(bG)))
     goto err;
-  if (cgiFormSuccess != cgiFormFileRead(fp, (char*)G, (int)bG, (int*)buf))
+  int t = 0;
+  if (cgiFormSuccess != cgiFormFileRead(fp, (char*)G, (int)bG, &t))
     goto err;
-  if (bG != *(const unsigned*)buf)
+  if (bG != (unsigned)t)
     goto err;
   if (cgiFormSuccess != cgiFormFileClose(fp))
     goto err;
@@ -168,7 +169,6 @@ int cgiMain(const int u)
         ((long double*)sv)[i] = scalbnl(((const long double*)sv)[i], -gs);
     o = (unsigned)(((const long double*)rwrk)[n - 1u]);
   }
-  (void)sprintf(buf, "%2u,%11u,%11d,%11u\n", c, gs, info, o);
 
   const int fd = fileno(cgiOut);
   if (fd < 0)
@@ -182,14 +182,14 @@ int cgiMain(const int u)
   *fxt = 'r';
   ++fxt;
   *fxt = '\0';
-  (void)dprintf(fd, "Content-Type: application/octet-stream\nContent-Transfer-Encoding: binary\nContent-Disposition: attachment; filename=\"%s\"\n\n", job);
+  if (dprintf(fd, "Content-Type: application/octet-stream\nContent-Transfer-Encoding: binary\nContent-Disposition: attachment; filename=\"%s\"\n\n", job) < 0)
+    goto err;
   (void)fsync(fd);
   --fxt;
   *fxt = '\0';
   --fxt;
   *fxt = '\0';
   --fxt;
-  c = 40u;
   *fxt = 'U';
   if (pvn_tar_add_file_(&fd, job, &bG, G) < 0)
     goto end;
@@ -204,6 +204,21 @@ int cgiMain(const int u)
   *fxt = 'x';
   ++fxt;
   *fxt = 't';
+  (void)fsync(v);
+  t = (int)lseek(v, 0, SEEK_CUR);
+  if (t < 0)
+    goto end;
+  if (lseek(v, 0, SEEK_SET))
+    goto end;
+  char *const buf = (char*)malloc((size_t)(t + 39));
+  if (!buf)
+    goto end;
+  if (t != (int)read(v, buf, (size_t)t))
+    goto end;
+  if (sprintf((buf + t), "%2u,%11u,%11d,%11u", c, gs, info, o) < 0)
+    goto end;
+  buf[t += 38] = '\n';
+  c = (unsigned)++t;
   if (pvn_tar_add_file_(&fd, job, &c, buf) < 0)
     goto end;
   if (pvn_tar_terminate_(&fd))
