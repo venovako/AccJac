@@ -128,14 +128,14 @@ int cgiMain(const int u)
   const unsigned bV = n * n * s;
   if (!(V = malloc(bV)))
     goto err;
-  const unsigned bsv = n * s;
+  const unsigned bsv = n * r;
   if (!(sv = malloc(bsv)))
     goto err;
   if (!(ix = malloc(n * sizeof(unsigned))))
     goto err;
   if (!(wrk = malloc(bG)))
     goto err;
-  if (!(rwrk = malloc(n * r)))
+  if (!(rwrk = malloc(bsv)))
     goto err;
 
   int info = 0;
