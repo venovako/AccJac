@@ -7,29 +7,35 @@ PROGRAM CLJV2T
   USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: ERROR_UNIT, OUTPUT_UNIT, REAL32, REAL128
 #endif
   IMPLICIT NONE
-  INTERFACE
-     PURE FUNCTION CR_HYPOT(X, Y) BIND(C,NAME='cr_hypotf')
+  INTERFACE CR_HYPOT
+     PURE FUNCTION CR_HYPOTF(X, Y) BIND(C,NAME='cr_hypotf')
        USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_float
        IMPLICIT NONE
        REAL(KIND=c_float), INTENT(IN), VALUE :: X, Y
-       REAL(KIND=c_float) :: CR_HYPOT
-     END FUNCTION CR_HYPOT
-  END INTERFACE
+       REAL(KIND=c_float) :: CR_HYPOTF
+     END FUNCTION CR_HYPOTF
 #ifdef __GFORTRAN__
-  INTERFACE
-     PURE FUNCTION HYPOTX(X, Y) BIND(C,NAME='cr_hypotl')
+     PURE FUNCTION CR_HYPOTL(X, Y) BIND(C,NAME='cr_hypotl')
        USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
        IMPLICIT NONE
        REAL(KIND=c_long_double), INTENT(IN), VALUE :: X, Y
-       REAL(KIND=c_long_double) :: HYPOTX
-     END FUNCTION HYPOTX
-  END INTERFACE
+       REAL(KIND=c_long_double) :: CR_HYPOTL
+     END FUNCTION CR_HYPOTL
+#else
+     PURE FUNCTION CR_HYPOTQ(X, Y) BIND(C,NAME='cr_hypotq')
+       USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL128
+       IMPLICIT NONE
+       REAL(KIND=REAL128), INTENT(IN), VALUE :: X, Y
+       REAL(KIND=REAL128) :: CR_HYPOTQ
+     END FUNCTION CR_HYPOTQ
+#endif
+  END INTERFACE CR_HYPOT
+  INTEGER, PARAMETER :: K = REAL32
+#ifdef __GFORTRAN__
   INTEGER, PARAMETER :: KK = c_long_double
 #else
-#define HYPOTX HYPOT
   INTEGER, PARAMETER :: KK = REAL128
 #endif
-  INTEGER, PARAMETER :: K = REAL32
   REAL(KIND=KK), PARAMETER :: QZERO = 0.0_KK, QONE = 1.0_KK
   REAL(KIND=K), PARAMETER :: ZERO = 0.0_K, SEPS = EPSILON(ZERO) / 2
   ! DAMP should counterweigh a possible unfavorable rounding when creating the off-diagonal element.
@@ -118,8 +124,8 @@ PROGRAM CLJV2T
      Q(5) = D(5) ! CH
      Q(6) = D(6) ! SHR
      Q(7) = D(7) ! SHI
-     Q(8) = HYPOTX(Q(6), Q(7))
-     Q(8) = HYPOTX(Q(8), QONE)
+     Q(8) = CR_HYPOT(Q(6), Q(7))
+     Q(8) = CR_HYPOT(Q(8), QONE)
      Q(8) = ABS((Q(5) - Q(8)) * (Q(5) + Q(8)))
      Q(1) = MAX(Q(1), Q(8))
      Q(11) = D(1)

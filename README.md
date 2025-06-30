@@ -50,4 +50,6 @@ Additional material is available in the `etc`, `var`, and `alt` subdirectories.
 Static, single-threaded Windows executables can be found [here](https://web.math.pmf.unizg.hr/~venovako/venovako.exe) or [here](https://venovako.eu/venovako.exe).
 For Linux, there are [x86_64](https://venovako.eu/x86_64) and [ppc64le](https://venovako.eu/ppc64le) builds.
 
+A Web application for experimenting with the HSVD is [here](https://venovako.eu/AccJac/jsvdt.html).
+
 This work has been supported in part by Croatian Science Foundation under the project IP-2014-09-3670 ([MFBDA](https://web.math.pmf.unizg.hr/mfbda/)).

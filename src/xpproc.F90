@@ -4,7 +4,14 @@ PROGRAM XPPROC
 #endif
   USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: OUTPUT_UNIT, REAL128
   IMPLICIT NONE
-#define HYPOTX HYPOT
+  INTERFACE
+     PURE FUNCTION CR_HYPOT(X, Y) BIND(C,NAME='cr_hypotq')
+       USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL128
+       IMPLICIT NONE
+       REAL(KIND=REAL128), INTENT(IN), VALUE :: X, Y
+       REAL(KIND=REAL128) :: CR_HYPOT
+     END FUNCTION CR_HYPOT
+  END INTERFACE
   INTEGER, PARAMETER :: KK = REAL128
 #ifdef __GFORTRAN__
   INTEGER, PARAMETER :: K = c_long_double
@@ -96,19 +103,19 @@ PROGRAM XPPROC
      DO J = 1, N
         DO I = 1, N
            Y = REAL(A1(I,J), KK) - REAL(A3(I,J), KK)
-           X = HYPOTX(X, Y)
+           X = CR_HYPOT(X, Y)
         END DO
      END DO
      IF (X .NE. XZERO) THEN
         Y = XZERO
         DO J = 2, N
            DO I = 1, J-1
-              Y = HYPOTX(Y, REAL(A1(I,J), KK))
+              Y = CR_HYPOT(Y, REAL(A1(I,J), KK))
            END DO
         END DO
         Y = Y * SQRT2
         DO J = 1, N
-           Y = HYPOTX(Y, REAL(A1(J,J), KK))
+           Y = CR_HYPOT(Y, REAL(A1(J,J), KK))
         END DO
         X = X / Y
      END IF

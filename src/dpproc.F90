@@ -30,16 +30,23 @@ PROGRAM DPPROC
 #endif
 #ifdef __GFORTRAN__
   INTERFACE
-     PURE FUNCTION HYPOTX(X, Y) BIND(C,NAME='cr_hypotl')
+     PURE FUNCTION CR_HYPOT(X, Y) BIND(C,NAME='cr_hypotl')
        USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
        IMPLICIT NONE
        REAL(KIND=c_long_double), INTENT(IN), VALUE :: X, Y
-       REAL(KIND=c_long_double) :: HYPOTX
-     END FUNCTION HYPOTX
+       REAL(KIND=c_long_double) :: CR_HYPOT
+     END FUNCTION CR_HYPOT
   END INTERFACE
   INTEGER, PARAMETER :: KK = c_long_double
 #else
-#define HYPOTX HYPOT
+  INTERFACE
+     PURE FUNCTION CR_HYPOT(X, Y) BIND(C,NAME='cr_hypotq')
+       USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL128
+       IMPLICIT NONE
+       REAL(KIND=REAL128), INTENT(IN), VALUE :: X, Y
+       REAL(KIND=REAL128) :: CR_HYPOT
+     END FUNCTION CR_HYPOT
+  END INTERFACE
   INTEGER, PARAMETER :: KK = REAL128
 #endif
   INTEGER, PARAMETER :: K = REAL64
@@ -124,19 +131,19 @@ PROGRAM DPPROC
      DO J = 1, N
         DO I = 1, N
            Y = REAL(A1(I,J), KK) - REAL(A3(I,J), KK)
-           X = HYPOTX(X, Y)
+           X = CR_HYPOT(X, Y)
         END DO
      END DO
      IF (X .NE. XZERO) THEN
         Y = XZERO
         DO J = 2, N
            DO I = 1, J-1
-              Y = HYPOTX(Y, REAL(A1(I,J), KK))
+              Y = CR_HYPOT(Y, REAL(A1(I,J), KK))
            END DO
         END DO
         Y = Y * XSQRT(2.0_KK)
         DO J = 1, N
-           Y = HYPOTX(Y, REAL(A1(J,J), KK))
+           Y = CR_HYPOT(Y, REAL(A1(J,J), KK))
         END DO
         X = X / Y
      END IF

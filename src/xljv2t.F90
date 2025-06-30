@@ -6,6 +6,14 @@ PROGRAM XLJV2T
 #endif
   IMPLICIT NONE
 #ifdef __GFORTRAN__
+  INTERFACE
+     PURE FUNCTION CR_HYPOT(X, Y) BIND(C,NAME='cr_hypotq')
+       USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL128
+       IMPLICIT NONE
+       REAL(KIND=REAL128), INTENT(IN), VALUE :: X, Y
+       REAL(KIND=REAL128) :: CR_HYPOT
+     END FUNCTION CR_HYPOT
+  END INTERFACE
   INTEGER, PARAMETER :: K = c_long_double, KK = REAL128
   REAL(KIND=KK), PARAMETER :: QZERO = 0.0_KK, QONE = 1.0_KK
   REAL(KIND=K), PARAMETER :: ZERO = 0.0_K, XEPS = EPSILON(ZERO) / 2
@@ -85,7 +93,7 @@ PROGRAM XLJV2T
      END IF
      Q(4) = D(4) ! CH
      Q(5) = D(5) ! SH
-     Q(6) = HYPOT(Q(5), QONE)
+     Q(6) = CR_HYPOT(Q(5), QONE)
      Q(6) = ABS((Q(4) - Q(6)) * (Q(4) + Q(6)))
      Q(1) = MAX(Q(1), Q(6))
      Q(8) = D(1)

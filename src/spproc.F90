@@ -2,12 +2,12 @@ PROGRAM SPPROC
   USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: OUTPUT_UNIT, REAL32, REAL64
   IMPLICIT NONE
   INTERFACE
-     PURE FUNCTION HYPOTX(X, Y) BIND(C,NAME='cr_hypot')
+     PURE FUNCTION CR_HYPOT(X, Y) BIND(C,NAME='cr_hypot')
        USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_double
        IMPLICIT NONE
        REAL(KIND=c_double), INTENT(IN), VALUE :: X, Y
-       REAL(KIND=c_double) :: HYPOTX
-     END FUNCTION HYPOTX
+       REAL(KIND=c_double) :: CR_HYPOT
+     END FUNCTION CR_HYPOT
   END INTERFACE
   INTEGER, PARAMETER :: KK = REAL64
   INTEGER, PARAMETER :: K = REAL32
@@ -92,19 +92,19 @@ PROGRAM SPPROC
      DO J = 1, N
         DO I = 1, N
            Y = REAL(A1(I,J), KK) - REAL(A3(I,J), KK)
-           X = HYPOTX(X, Y)
+           X = CR_HYPOT(X, Y)
         END DO
      END DO
      IF (X .NE. XZERO) THEN
         Y = XZERO
         DO J = 2, N
            DO I = 1, J-1
-              Y = HYPOTX(Y, REAL(A1(I,J), KK))
+              Y = CR_HYPOT(Y, REAL(A1(I,J), KK))
            END DO
         END DO
         Y = Y * SQRT2
         DO J = 1, N
-           Y = HYPOTX(Y, REAL(A1(J,J), KK))
+           Y = CR_HYPOT(Y, REAL(A1(J,J), KK))
         END DO
         X = X / Y
      END IF

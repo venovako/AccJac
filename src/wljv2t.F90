@@ -6,14 +6,20 @@ PROGRAM WLJV2T
 #endif
   IMPLICIT NONE
 #ifdef __GFORTRAN__
-  INTERFACE
-     PURE FUNCTION CR_HYPOT(X, Y) BIND(C,NAME='cr_hypotl')
+  INTERFACE CR_HYPOT
+     PURE FUNCTION CR_HYPOTL(X, Y) BIND(C,NAME='cr_hypotl')
        USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
        IMPLICIT NONE
        REAL(KIND=c_long_double), INTENT(IN), VALUE :: X, Y
-       REAL(KIND=c_long_double) :: CR_HYPOT
-     END FUNCTION CR_HYPOT
-  END INTERFACE
+       REAL(KIND=c_long_double) :: CR_HYPOTL
+     END FUNCTION CR_HYPOTL
+     PURE FUNCTION CR_HYPOTQ(X, Y) BIND(C,NAME='cr_hypotq')
+       USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL128
+       IMPLICIT NONE
+       REAL(KIND=REAL128), INTENT(IN), VALUE :: X, Y
+       REAL(KIND=REAL128) :: CR_HYPOTQ
+     END FUNCTION CR_HYPOTQ
+  END INTERFACE CR_HYPOT
   INTEGER, PARAMETER :: K = c_long_double, KK = REAL128
   REAL(KIND=KK), PARAMETER :: QZERO = 0.0_KK, QONE = 1.0_KK
   REAL(KIND=K), PARAMETER :: ZERO = 0.0_K, XEPS = EPSILON(ZERO) / 2
@@ -108,8 +114,8 @@ PROGRAM WLJV2T
      Q(5) = D(5) ! CH
      Q(6) = D(6) ! SHR
      Q(7) = D(7) ! SHI
-     Q(8) = HYPOT(Q(6), Q(7))
-     Q(8) = HYPOT(Q(8), QONE)
+     Q(8) = CR_HYPOT(Q(6), Q(7))
+     Q(8) = CR_HYPOT(Q(8), QONE)
      Q(8) = ABS((Q(5) - Q(8)) * (Q(5) + Q(8)))
      Q(1) = MAX(Q(1), Q(8))
      Q(11) = D(1)

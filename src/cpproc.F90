@@ -2,12 +2,12 @@ PROGRAM CPPROC
   USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: OUTPUT_UNIT, REAL32, REAL64
   IMPLICIT NONE
   INTERFACE
-     PURE FUNCTION HYPOTX(X, Y) BIND(C,NAME='cr_hypot')
+     PURE FUNCTION CR_HYPOT(X, Y) BIND(C,NAME='cr_hypot')
        USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_double
        IMPLICIT NONE
        REAL(KIND=c_double), INTENT(IN), VALUE :: X, Y
-       REAL(KIND=c_double) :: HYPOTX
-     END FUNCTION HYPOTX
+       REAL(KIND=c_double) :: CR_HYPOT
+     END FUNCTION CR_HYPOT
   END INTERFACE
   INTEGER, PARAMETER :: KK = REAL64
   INTEGER, PARAMETER :: K = REAL32
@@ -59,7 +59,7 @@ PROGRAM CPPROC
            A1(I,J) = W1(I,J)
            X = REAL(W1(J,I))
            Y = AIMAG(W1(J,I))
-           D = HYPOTX(X, Y)
+           D = CR_HYPOT(X, Y)
            IF (Y .NE. XZERO) Y = Y / X
            W1(I,J) = CMPLX(REAL(D, K), REAL(Y, K), K)
         END DO
@@ -109,7 +109,7 @@ PROGRAM CPPROC
            A3(I,J) = W3(I,J)
            X = REAL(W3(J,I))
            Y = AIMAG(W3(J,I))
-           D = HYPOTX(X, Y)
+           D = CR_HYPOT(X, Y)
            IF (Y .NE. XZERO) Y = Y / X
            W3(I,J) = CMPLX(REAL(D, K), REAL(Y, K), K)
         END DO
@@ -150,8 +150,8 @@ PROGRAM CPPROC
      DO J = 1, N-1
         DO I = J+1, N
            Z = CMPLX(REAL(W1(I,J)), AIMAG(W1(I,J)), KK) - CMPLX(REAL(W3(I,J)), AIMAG(W3(I,J)), KK)
-           Y = HYPOTX(REAL(Z), AIMAG(Z))
-           IF (Y .NE. XZERO) Y = Y / HYPOTX(REAL(REAL(W1(I,J)), KK), REAL(AIMAG(W1(I,J)), KK))
+           Y = CR_HYPOT(REAL(Z), AIMAG(Z))
+           IF (Y .NE. XZERO) Y = Y / CR_HYPOT(REAL(REAL(W1(I,J)), KK), REAL(AIMAG(W1(I,J)), KK))
            IF (Y .GT. X) X = Y
         END DO
      END DO
@@ -181,20 +181,20 @@ PROGRAM CPPROC
      DO J = 1, N
         DO I = 1, N
            Z = CMPLX(REAL(A1(I,J)), AIMAG(A1(I,J)), KK) - CMPLX(REAL(A3(I,J)), AIMAG(A3(I,J)), KK)
-           Y = HYPOTX(REAL(Z), AIMAG(Z))
-           X = HYPOTX(X, Y)
+           Y = CR_HYPOT(REAL(Z), AIMAG(Z))
+           X = CR_HYPOT(X, Y)
         END DO
      END DO
      IF (X .NE. XZERO) THEN
         Y = XZERO
         DO J = 2, N
            DO I = 1, J-1
-              Y = HYPOTX(Y, HYPOTX(REAL(REAL(A1(I,J)), KK), REAL(AIMAG(A1(I,J)), KK)))
+              Y = CR_HYPOT(Y, CR_HYPOT(REAL(REAL(A1(I,J)), KK), REAL(AIMAG(A1(I,J)), KK)))
            END DO
         END DO
         Y = Y * SQRT2
         DO J = 1, N
-           Y = HYPOTX(Y, REAL(REAL(A1(J,J)), KK))
+           Y = CR_HYPOT(Y, REAL(REAL(A1(J,J)), KK))
         END DO
         X = X / Y
      END IF
