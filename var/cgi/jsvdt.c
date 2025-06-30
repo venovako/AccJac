@@ -236,7 +236,7 @@ int cgiMain(const int u, const int v)
     bV *= 10u;
     if (s != r) {
       nB <<= 1u;
-      bG <<= 1u;
+      bV <<= 1u;
     }
     if (pvn_tar_add_file_(&gz, job, &bV, pvn_pack80_(V, &nB)) < 0)
       goto end;
