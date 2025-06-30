@@ -111,30 +111,37 @@ int cgiMain(const int u, const int v)
   if (o > 2u)
     goto err;
 
-  cgiFilePtr fp = (cgiFilePtr)NULL;
-  if (cgiFormSuccess != cgiFormFileOpen("inp", &fp))
-    goto err;
-  if (!fp)
-    goto err;
-  const unsigned bG = m * n * s;
+  unsigned bG = m * n;
+  size_t nB = bG;
+  bG *= s;
   if (!(G = malloc(bG)))
     goto err;
+  cgiFormEntry *const e = cgiFormEntryFindFirst("inp");
+  if (!e)
+    goto err;
+  if (!(e->tFile))
+    goto err;
+  int fd = dup(fileno(e->tFile));
+  if (fd < 0)
+    goto err;
+  off_t off = 0;
   if (r == (unsigned)sizeof(long double)) {
     (void)memset(G, 0, bG);
-    goto err;
+    if (pvn_bread80_(&fd, (long double*)G, &nB, &off) != (ssize_t)(nB * 10u))
+      off = -1;
   }
-  int t = 0;
-  if (cgiFormSuccess != cgiFormFileRead(fp, (char*)G, (int)bG, &t))
-    goto err;
-  if (bG != (unsigned)t)
-    goto err;
-  if (cgiFormSuccess != cgiFormFileClose(fp))
+  else {
+    nB = bG;
+    if (pvn_bread_(&fd, G, &nB, &off) != (ssize_t)nB)
+      off = -1;
+  }
+  if (close(fd) || off)
     goto err;
 
-  const unsigned bV = n * n * s;
+  unsigned bV = n * n * s;
   if (!(V = malloc(bV)))
     goto err;
-  const unsigned bsv = n * r;
+  unsigned bsv = n * r;
   if (!(sv = malloc(bsv)))
     goto err;
   if (!(ix = malloc(n * sizeof(unsigned))))
@@ -180,7 +187,7 @@ int cgiMain(const int u, const int v)
     o = (unsigned)(((const long double*)rwrk)[n - 1u]);
   }
 
-  const int fd = fileno(cgiOut);
+  fd = fileno(cgiOut);
   if (fd < 0)
     goto err;
   *fxt = '.';
@@ -207,13 +214,34 @@ int cgiMain(const int u, const int v)
   if (gz < 0)
     goto end;
   *fxt = 'U';
-  if (pvn_tar_add_file_(&gz, job, &bG, G) < 0)
+  if (r == (unsigned)sizeof(long double)) {
+    bG = m * n;
+    nB = bG;
+    bG *= 10u;
+    if (pvn_tar_add_file_(&gz, job, &bG, pvn_pack80_(G, &nB)) < 0)
+      goto end;
+  }
+  else if (pvn_tar_add_file_(&gz, job, &bG, G) < 0)
     goto end;
   *fxt = 'V';
-  if (pvn_tar_add_file_(&gz, job, &bV, V) < 0)
+  if (r == (unsigned)sizeof(long double)) {
+    bV = n * n;
+    nB = bV;
+    bV *= 10u;
+    if (pvn_tar_add_file_(&gz, job, &bV, pvn_pack80_(V, &nB)) < 0)
+      goto end;
+  }
+  else if (pvn_tar_add_file_(&gz, job, &bV, V) < 0)
     goto end;
   *fxt = 'S';
-  if (pvn_tar_add_file_(&gz, job, &bsv, sv) < 0)
+  if (r == (unsigned)sizeof(long double)) {
+    bsv = n;
+    nB = bsv;
+    bsv *= 10u;
+    if (pvn_tar_add_file_(&gz, job, &bsv, pvn_pack80_(sv, &nB)) < 0)
+      goto end;
+  }
+  else if (pvn_tar_add_file_(&gz, job, &bsv, sv) < 0)
     goto end;
   *fxt = 't';
   ++fxt;
@@ -221,20 +249,20 @@ int cgiMain(const int u, const int v)
   ++fxt;
   *fxt = 't';
   (void)fsync(v);
-  t = (int)lseek(v, 0, SEEK_CUR);
-  if (t < 0)
+  off = lseek(v, 0, SEEK_CUR);
+  if (off < 0)
     goto end;
   if (lseek(v, 0, SEEK_SET))
     goto end;
-  buf = (char*)malloc((size_t)(t + 39));
+  buf = (char*)malloc((size_t)(off + 39));
   if (!buf)
     goto end;
-  if (t != (int)read(v, buf, (size_t)t))
+  if (off != (off_t)read(v, buf, (size_t)off))
     goto end;
-  if (sprintf((buf + t), "%2u,%11u,%11d,%11u", c, gs, info, o) < 0)
+  if (sprintf((buf + off), "%2u,%11u,%11d,%11u", c, gs, info, o) < 0)
     goto end;
-  buf[t += 38] = '\n';
-  c = (unsigned)++t;
+  buf[off += 38] = '\n';
+  c = (unsigned)++off;
   if (pvn_tar_add_file_(&gz, job, &c, buf) < 0)
     goto end;
   if (pvn_tar_terminate_(&gz))

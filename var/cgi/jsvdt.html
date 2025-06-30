@@ -78,7 +78,7 @@
       </fieldset>
       <p>Please choose a binary (little-endian) file in the Fortran (i.e., column-major) order, containing the input matrix \(G\) of the selected size and type.<br>
         Input matrices in double precision can be prepared in, e.g., Scilab, GNU Octave, or Matlab, and in single precision in the latter two, and exported as described <a href="https://www.mathworks.com/help/matlab/import_export/exporting-binary-data-with-low-level-i-o.html">here</a> for Matlab.<br>
-        Extended precision inputs must have elements that are 16-byte wide, of which the first 10 bytes contain an extended precision value, and the remaining ones are recommended to be zeroed out.<br>
+        Extended precision inputs must have elements that are <strong>10</strong>-byte wide.<br>
         Complex numbers are expected to be in the &quot;interleaved&quot; form, i.e., \(z=(\Re{z},\Im{z})\).<br>
         <label for="inpf">\(G\):</label>
         <input type="file" id="inpf" name="inp" required />
