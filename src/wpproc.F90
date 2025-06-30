@@ -8,7 +8,7 @@ PROGRAM WPPROC
 #if (defined(__INTEL_COMPILER) || defined(__GFC_REAL_10__))
      PURE FUNCTION CR_HYPOT(X, Y) BIND(C,NAME='cr_hypotq')
 #else
-     PURE FUNCTION CR_HYPOT(X, Y) BIND(C,NAME='cr_hypotl') ! ppc64le
+     PURE FUNCTION CR_HYPOT(X, Y) BIND(C,NAME='cr_hypotl') ! TODO: fix for ppc64le
 #endif
        USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL128
        IMPLICIT NONE
