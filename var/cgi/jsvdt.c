@@ -224,7 +224,7 @@ int cgiMain(const int u, const int v)
       nB <<= 1u;
       bG <<= 1u;
     }
-    if (pvn_tar_add_file_(&gz, job, &bG, pvn_pack80_(G, &nB)) < 0)
+    if (pvn_tar_add_file_(&gz, job, &bG, pvn_pack80_((long double*)G, &nB)) < 0)
       goto end;
   }
   else if (pvn_tar_add_file_(&gz, job, &bG, G) < 0)
@@ -238,7 +238,7 @@ int cgiMain(const int u, const int v)
       nB <<= 1u;
       bV <<= 1u;
     }
-    if (pvn_tar_add_file_(&gz, job, &bV, pvn_pack80_(V, &nB)) < 0)
+    if (pvn_tar_add_file_(&gz, job, &bV, pvn_pack80_((long double*)V, &nB)) < 0)
       goto end;
   }
   else if (pvn_tar_add_file_(&gz, job, &bV, V) < 0)
@@ -248,7 +248,7 @@ int cgiMain(const int u, const int v)
     bsv = n;
     nB = bsv;
     bsv *= 10u;
-    if (pvn_tar_add_file_(&gz, job, &bsv, pvn_pack80_(sv, &nB)) < 0)
+    if (pvn_tar_add_file_(&gz, job, &bsv, pvn_pack80_((long double*)sv, &nB)) < 0)
       goto end;
   }
   else if (pvn_tar_add_file_(&gz, job, &bsv, sv) < 0)
