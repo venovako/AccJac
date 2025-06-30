@@ -31,9 +31,9 @@ int cgiMain(const int u, const int v)
     goto err;
 
   unsigned m = 0u;
-  if (cgiFormSuccess != cgiFormIntegerBounded("m", (int*)&m, 1, 1024, 0))
+  if (cgiFormSuccess != cgiFormIntegerBounded("m", (int*)&m, 1, 512, 0))
     goto err;
-  if (!m || (m > 1024u))
+  if (!m || (m > 512u))
     goto err;
 
   unsigned n = 0u;
@@ -119,6 +119,10 @@ int cgiMain(const int u, const int v)
   const unsigned bG = m * n * s;
   if (!(G = malloc(bG)))
     goto err;
+  if (r == (unsigned)sizeof(long double)) {
+    (void)memset(G, 0, bG);
+    goto err;
+  }
   int t = 0;
   if (cgiFormSuccess != cgiFormFileRead(fp, (char*)G, (int)bG, &t))
     goto err;
@@ -139,6 +143,11 @@ int cgiMain(const int u, const int v)
     goto err;
   if (!(rwrk = malloc(bsv)))
     goto err;
+
+  if (r == (unsigned)sizeof(long double)) {
+    (void)memset(V, 0, bV);
+    (void)memset(sv, 0, bsv);
+  }
 
   int info = 0;
   switch (o) {

@@ -3,15 +3,16 @@
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="/MathJax/es5/tex-chtml-full.js" id="MathJax-script" async></script>
     <title>J-Jacobi for the hyperbolic SVD</title>
   </head>
   <body>
-    <h1>J-Jacobi for the hyperbolic SVD</h1>
-    <p>A successfull submission of the form below should compute the hyperbolic singlular value decomposition (HSVD) of <em>G</em> as <em>U</em><em>&#x3A3;</em><em>V</em><sup>-1</sup> and (offer to) download the <kbd>Job.tgz</kbd> file containing the following outputs:
+    <h1>\(J\)-Jacobi for the hyperbolic SVD</h1>
+    <p>A successfull submission of the form below should compute the hyperbolic singlular value decomposition (HSVD) of \(G\) as \(U \Sigma V^{-1}\) and (offer to) download the <kbd>Job.tgz</kbd> file containing the following outputs:
       <ul>
-        <li><kbd>Job.U</kbd>: <em>U</em>, i.e., the matrix of the left singular vectors (<em>m</em> &#xd7; <em>n</em>);</li>
-        <li><kbd>Job.V</kbd>: <em>V</em>, i.e., the matrix of the right singular vectors (<em>n</em> &#xd7; <em>n</em>);</li>
-        <li><kbd>Job.S</kbd>: <em>&#x3A3;</em>, i.e., the singular values (<em>n</em>); and</li>
+        <li><kbd>Job.U</kbd>: \(U\), i.e., the matrix of the left singular vectors (\(m \times n\));</li>
+        <li><kbd>Job.V</kbd>: \(V\), i.e., the matrix of the right singular vectors (\(n \times n\));</li>
+        <li><kbd>Job.S</kbd>: \(\mathop{\mathrm{diag}}(\Sigma)\), i.e., the hyperbolic singular values (\(n\)); and</li>
         <li><kbd>Job.txt</kbd>: some statistics, ending with the number of cycles and transformations.</li>
       </ul>
     </p>
@@ -20,34 +21,37 @@
         <label for="jobt"><kbd>Job</kbd>:</label>
         <input type="text" id="jobt" name="job" value="01234567" minlength="1" maxlength="8" required />
       </p>
-      <p>How many rows does the input matrix have (1 &#x2264; <em>m</em> &#x2264; 1024)?<br>
-        <label for="mn"><em>m</em>:</label>
-        <input type="number" id="mn" name="m" value="1" min="1" max="1024" required />
+      <p>How many rows does the input matrix have (\(1 \le m \le 512\))?<br>
+        <label for="mn">\(m\):</label>
+        <input type="number" id="mn" name="m" value="1" min="1" max="512" required />
       </p>
-      <p>How many columns does the input matrix have (1 &#x2264; <em>n</em> &#x2264; <em>m</em>)?<br>
-        <label for="nn"><em>n</em>:</label>
-        <input type="number" id="nn" name="n" value="1" min="1" max="1024" required />
+      <p>How many columns does the input matrix have (\(1 \le n \le m\))?<br>
+        <label for="nn">\(n\):</label>
+        <input type="number" id="nn" name="n" value="1" min="1" max="512" required />
       </p>
-      <p>With how many positive signs does the diagonal of <em>J</em> start (0 &#x2264; <em>j</em> &#x2264; <em>n</em>)?<br>
-        <label for="jposn"><em>j</em>:</label>
-        <input type="number" id="jposn" name="jpos" value="0" min="0" max="1024" required />
+      <p>With how many positive signs does \(\mathop{\mathrm{diag}}(J)\) start (\(0 \le j \le n\))?<br>
+        <label for="jposn">\(j\):</label>
+        <input type="number" id="jposn" name="jpos" value="0" min="0" max="512" required />
       </p>
-      <p>How many cycles are allowed (0 &#x2264; <em>c</em> &#x2264; 30)?<br>
-        <label for="cyclesn"><em>c</em>:</label>
+      <p>How many cycles are allowed (\(0 \le c \le 30\))?<br>
+        <label for="cyclesn">\(c\):</label>
         <input type="number" id="cyclesn" name="cycles" value="30" min="0" max="30" required />
       </p>
       <fieldset>
-        <legend>Datatype and precision:</legend>
+        <legend>Precision and datatype:</legend>
         <table>
           <tr>
+            <td>single</td>
             <td><input type="radio" id="complex32r" name="prec" value="complex32" /><label for="complex32r">COMPLEX(4)</label></td>
             <td><input type="radio" id="real32r" name="prec" value="real32" /><label for="real32r">REAL(4)</label></td>
           </tr>
           <tr>
+            <td>double</td>
             <td><input type="radio" id="complex64r" name="prec" value="complex64" /><label for="complex64r">COMPLEX(8)</label></td>
             <td><input type="radio" id="real64r" name="prec" value="real64" checked /><label for="real64r">REAL(8)</label></td>
           </tr>
           <tr>
+            <td>extended</td>
             <td><input type="radio" id="complex80r" name="prec" value="complex80" /><label for="complex80r">COMPLEX(10)</label></td>
             <td><input type="radio" id="real80r" name="prec" value="real80" /><label for="real80r">REAL(10)</label></td>
           </tr>
@@ -72,12 +76,15 @@
           </tr>
         </table>
       </fieldset>
-      <p>Please choose a binary file in the Fortran (i.e., column-major) order, containing the input matrix of the selected size and type.<br>
-        The input can be prepared in, e.g., Matlab, and exported as described <a href="https://www.mathworks.com/help/matlab/import_export/exporting-binary-data-with-low-level-i-o.html">here</a>.<br>
-        <label for="inpf"><em>G</em>:</label>
+      <p>Please choose a binary (little-endian) file in the Fortran (i.e., column-major) order, containing the input matrix \(G\) of the selected size and type.<br>
+        Input matrices in double precision can be prepared in, e.g., Scilab, GNU Octave, or Matlab, and in single precision in the latter two, and exported as described <a href="https://www.mathworks.com/help/matlab/import_export/exporting-binary-data-with-low-level-i-o.html">here</a> for Matlab.<br>
+        Extended precision inputs must have elements that are 16-byte wide, of which the first 10 bytes contain an extended precision value, and the remaining ones are recommended to be zeroed out.<br>
+        Complex numbers are expected to be in the &quot;interleaved&quot; form, i.e., \(z=(\Re{z},\Im{z})\).<br>
+        <label for="inpf">\(G\):</label>
         <input type="file" id="inpf" name="inp" required />
       </p>
-      <p>Please verify the settings before submitting this form, since no usable error descriptions will be given otherwise.<br>
+      <p>Please verify the settings before submitting this form, since no usable error description will be given otherwise.<br>
+        This software comes with no guarantees of any kind, so please do <strong>not</strong> submit any sensitive data.<br>
         <input type="submit" />
       </p>
     </form>
