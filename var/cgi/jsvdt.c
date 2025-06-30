@@ -178,12 +178,12 @@ int cgiMain(const int u, const int v)
   ++fxt;
   *fxt = 't';
   ++fxt;
-  *fxt = 'a';
+  *fxt = 'g';
   ++fxt;
-  *fxt = 'r';
+  *fxt = 'z';
   ++fxt;
   *fxt = '\0';
-  if (dprintf(fd, "Content-Type: application/octet-stream\nContent-Transfer-Encoding: binary\nContent-Disposition: attachment; filename=\"%s\"\n\n", job) < 0)
+  if (dprintf(fd, "Content-Type: application/x-tar\nContent-Transfer-Encoding: binary\nContent-Disposition: attachment; filename=\"%s\"\n\n", job) < 0)
     goto err;
   (void)fsync(fd);
   --fxt;
@@ -191,14 +191,20 @@ int cgiMain(const int u, const int v)
   --fxt;
   *fxt = '\0';
   --fxt;
+  FILE *const gzf = popen("/usr/bin/gzip -9cq -", "w");
+  if (!gzf)
+    goto end;
+  const int gz = fileno(gzf);
+  if (gz < 0)
+    goto end;
   *fxt = 'U';
-  if (pvn_tar_add_file_(&fd, job, &bG, G) < 0)
+  if (pvn_tar_add_file_(&gz, job, &bG, G) < 0)
     goto end;
   *fxt = 'V';
-  if (pvn_tar_add_file_(&fd, job, &bV, V) < 0)
+  if (pvn_tar_add_file_(&gz, job, &bV, V) < 0)
     goto end;
   *fxt = 'S';
-  if (pvn_tar_add_file_(&fd, job, &bsv, sv) < 0)
+  if (pvn_tar_add_file_(&gz, job, &bsv, sv) < 0)
     goto end;
   *fxt = 't';
   ++fxt;
@@ -220,11 +226,13 @@ int cgiMain(const int u, const int v)
     goto end;
   buf[t += 38] = '\n';
   c = (unsigned)++t;
-  if (pvn_tar_add_file_(&fd, job, &c, buf) < 0)
+  if (pvn_tar_add_file_(&gz, job, &c, buf) < 0)
     goto end;
-  if (pvn_tar_terminate_(&fd))
+  if (pvn_tar_terminate_(&gz))
     goto end;
-  (void)fsync(fd);
+  (void)fsync(gz);
+  if (pclose(gzf) < 0)
+    goto end;
   ret = EXIT_SUCCESS;
   goto end;
 
