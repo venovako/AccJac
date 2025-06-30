@@ -127,6 +127,8 @@ int cgiMain(const int u, const int v)
   off_t off = 0;
   if (r == (unsigned)sizeof(long double)) {
     (void)memset(G, 0, bG);
+    if (s != r)
+      nB <<= 1u;
     if (pvn_bread80_(&fd, (long double*)G, &nB, &off) != (ssize_t)(nB * 10u))
       off = -1;
   }
@@ -218,6 +220,8 @@ int cgiMain(const int u, const int v)
     bG = m * n;
     nB = bG;
     bG *= 10u;
+    if (s != r)
+      nB <<= 1u;
     if (pvn_tar_add_file_(&gz, job, &bG, pvn_pack80_(G, &nB)) < 0)
       goto end;
   }
@@ -228,6 +232,8 @@ int cgiMain(const int u, const int v)
     bV = n * n;
     nB = bV;
     bV *= 10u;
+    if (s != r)
+      nB <<= 1u;
     if (pvn_tar_add_file_(&gz, job, &bV, pvn_pack80_(V, &nB)) < 0)
       goto end;
   }
