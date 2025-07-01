@@ -9,11 +9,7 @@ PROGRAM ZLJV2T
        REAL(KIND=c_double), INTENT(IN), VALUE :: X, Y
        REAL(KIND=c_double) :: CR_HYPOTD
      END FUNCTION CR_HYPOTD
-#if (defined(__INTEL_COMPILER) || defined(__GFC_REAL_10__))
      PURE FUNCTION CR_HYPOTQ(X, Y) BIND(C,NAME='cr_hypotq')
-#else
-     PURE FUNCTION CR_HYPOTQ(X, Y) BIND(C,NAME='cr_hypotl') ! TODO: fix for ppc64le
-#endif
        USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL128
        IMPLICIT NONE
        REAL(KIND=REAL128), INTENT(IN), VALUE :: X, Y
