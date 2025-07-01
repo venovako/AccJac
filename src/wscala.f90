@@ -1,13 +1,10 @@
 ! the first time this routine is called, let GS = 0 and INFO = 0
 ! otherwise, set INFO > 0 (e.g., to the step number)
 PURE SUBROUTINE WSCALA(N, A, LDA, AX, AS, INFO)
-#ifdef __GFORTRAN__
   USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
-#else
   USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL128
-#endif
   IMPLICIT NONE
-#ifdef __GFORTRAN__
+#ifdef __GFC_REAL_10__
   INTERFACE
      PURE FUNCTION CR_HYPOT(X, Y) BIND(C,NAME='cr_hypotl')
        USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double

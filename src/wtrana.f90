@@ -5,14 +5,10 @@
 !     INFO = 2: transf, no downscaling of A
 !     INFO = 3: transf with downscaling of A
 SUBROUTINE WTRANA(N, A, LDA, V, LDV, AX, AS, P, Q, TOL, INFO)
-#ifdef __GFORTRAN__
   USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
-  USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: ERROR_UNIT
-#else
   USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: ERROR_UNIT, REAL128
-#endif
   IMPLICIT NONE
-#ifdef __GFORTRAN__
+#ifdef __GFC_REAL_10__
   INTERFACE
      PURE FUNCTION CR_HYPOT(X, Y) BIND(C,NAME='cr_hypotl')
        USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
