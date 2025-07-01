@@ -12,11 +12,8 @@
 ! Xj = X1 * C2 * *** * Cj + Zj
 !    = X1 * CC + Zj
 SUBROUTINE WTRUTI(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, TOL, IX, WRK, RWRK, INFO)
-#ifdef __GFORTRAN__
   USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
-#else
   USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL128
-#endif
 #ifdef USE_IEEE_INTRINSIC
   USE, INTRINSIC :: IEEE_ARITHMETIC, ONLY: IEEE_FMA
 #endif
@@ -62,7 +59,7 @@ SUBROUTINE WTRUTI(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, TOL, IX, WRK, RWRK, IN
      END FUNCTION XSQRT
   END INTERFACE
 #endif
-#ifdef __GFORTRAN__
+#ifdef __GFC_REAL_10__
   INTERFACE
      PURE FUNCTION CR_HYPOT(X, Y) BIND(C,NAME='cr_hypotl')
        USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double

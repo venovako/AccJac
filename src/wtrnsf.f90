@@ -6,11 +6,8 @@
 !     INFO = 3: transf, big th
 !     ... OR 4: downscaling of G and SV
 SUBROUTINE WTRNSF(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, TOL, IX, WRK, INFO)
-#ifdef __GFORTRAN__
   USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
-#else
   USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL128
-#endif
 #ifdef USE_IEEE_INTRINSIC
   USE, INTRINSIC :: IEEE_ARITHMETIC, ONLY: IEEE_FMA
 #endif
@@ -56,7 +53,7 @@ SUBROUTINE WTRNSF(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, TOL, IX, WRK, INFO)
      END FUNCTION XSQRT
   END INTERFACE
 #endif
-#ifdef __GFORTRAN__
+#ifdef __GFC_REAL_10__
   INTERFACE
      PURE FUNCTION CR_HYPOT(X, Y) BIND(C,NAME='cr_hypotl')
        USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
