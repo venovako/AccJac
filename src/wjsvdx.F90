@@ -135,6 +135,6 @@ PROGRAM WJSVDX
   IF (ALLOCATED(V)) DEALLOCATE(V)
   IF (ALLOCATED(G)) DEALLOCATE(G)
 #else
-  STOP 'wjsvdx.exe must be compiled with GNU Fortran on x64'
+  STOP 'wjsvdx.exe must be compiled with GNU Fortran'
 #endif
 END PROGRAM WJSVDX

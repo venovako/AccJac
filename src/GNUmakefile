@@ -20,7 +20,7 @@ else # !MPFR
 OBJ2=
 endif # ?MPFR
 
-OBJ2 += qclear.o yclear.o \
+OBJ2 += qclear.o yclear.o drsafe.o qrsafe.o srsafe.o \
 cjaev2.o djaev2.o qjaev2.o sjaev2.o yjaev2.o zjaev2.o \
 cjiev2.o djiev2.o qjiev2.o sjiev2.o yjiev2.o zjiev2.o \
 cljtu2.o dljtu2.o sljtu2.o wljtu2.o xljtu2.o zljtu2.o \
@@ -41,7 +41,6 @@ endif # MPFR
 OBJD=bfopen.o wbrd1.o wbwr1.o xbrd1.o xbwr1.o pascal.o \
 crn.o wrn.o zrn.o \
 cjaevd.o zjaevd.o \
-drsafe.o qrsafe.o srsafe.o \
 qre.o qdetm1.o ydetm1.o \
 crth.o drth.o srth.o wrth.o xrth.o zrth.o \
 crtt.o drtt.o srtt.o wrtt.o xrtt.o zrtt.o \
@@ -85,7 +84,7 @@ dxgtg.exe zwghg.exe \
 cevdj.exe zevdj.exe \
 cjevdt.exe djevdt.exe sjevdt.exe wjevdt.exe xjevdt.exe zjevdt.exe \
 cpproc.exe dpproc.exe spproc.exe wpproc.exe xpproc.exe zpproc.exe \
-cjsvdx.exe djsvdx.exe sjsvdx.exe zjsvdx.exe \
+cjsvdx.exe djsvdx.exe sjsvdx.exe wjsvdx.exe xjsvdx.exe zjsvdx.exe \
 cjsvrr.exe djsvrr.exe sjsvrr.exe zjsvrr.exe \
 cjsvor.exe djsvor.exe sjsvor.exe zjsvor.exe
 
@@ -102,14 +101,12 @@ endif # MPFR
 ifeq ($(COMPILER),gfortran)
 ifeq ($(findstring 86,$(ARCH)),86)
 OBJL += wlaev2.o xlaev2.o
-OBJ2 += \
+OBJ2 += xrsafe.o \
 wjaev2.o xjaev2.o \
 wjiev2.o xjiev2.o
 EXE2 += \
 wtest.exe xtest.exe \
 wljv2t.exe xljv2t.exe
-OBJD += xrsafe.o
-EXED += wjsvdx.exe xjsvdx.exe
 endif # x86_64 or i86pc
 endif # gfortran
 

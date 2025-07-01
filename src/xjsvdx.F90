@@ -132,6 +132,6 @@ PROGRAM XJSVDX
   IF (ALLOCATED(V)) DEALLOCATE(V)
   IF (ALLOCATED(G)) DEALLOCATE(G)
 #else
-  STOP 'xjsvdx.exe must be compiled with GNU Fortran on x64'
+  STOP 'xjsvdx.exe must be compiled with GNU Fortran'
 #endif
 END PROGRAM XJSVDX
