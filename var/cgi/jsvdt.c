@@ -116,13 +116,8 @@ int cgiMain(const int u, const int v)
   bG *= s;
   if (!(G = malloc(bG)))
     goto err;
-  cgiFormEntry *const e = cgiFormEntryFindFirst("inp");
-  if (!e)
-    goto err;
-  if (!(e->tFile))
-    goto err;
-  int fd = dup(fileno(e->tFile));
-  if (fd < 0)
+  int fd = -1;
+  if (cgiFormSuccess != cgiFormFileOpenDesc("inp", &fd))
     goto err;
   off_t off = 0;
   if (r == (unsigned)sizeof(long double)) {
