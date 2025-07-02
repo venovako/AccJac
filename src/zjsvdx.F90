@@ -9,28 +9,7 @@ PROGRAM ZJSVDX
   USE, INTRINSIC :: IEEE_ARITHMETIC, ONLY: IEEE_FMA
 #endif
   IMPLICIT NONE
-#ifdef USE_IEEE_INTRINSIC
-#define XFMA IEEE_FMA
-#else
-  INTERFACE
-#ifdef __GFORTRAN__
-     PURE FUNCTION XFMA(A, B, C) BIND(C,NAME='fmal')
-       USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
-#else
-     PURE FUNCTION XFMA(A, B, C) BIND(C,NAME='__fmaq')
-       USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL128
-#endif
-       IMPLICIT NONE
-#ifdef __GFORTRAN__
-       REAL(KIND=c_long_double), INTENT(IN), VALUE :: A, B, C
-       REAL(KIND=c_long_double) :: XFMA
-#else
-       REAL(KIND=REAL128), INTENT(IN), VALUE :: A, B, C
-       REAL(KIND=REAL128) :: XFMA
-#endif
-     END FUNCTION XFMA
-  END INTERFACE
-#endif
+#include "cr.f90"
 #ifdef __GFORTRAN__
   INTEGER, PARAMETER :: KK = c_long_double
 #else

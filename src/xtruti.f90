@@ -21,47 +21,7 @@ SUBROUTINE XTRUTI(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, TOL, IX, WRK, RWRK, IN
   USE, INTRINSIC :: IEEE_ARITHMETIC, ONLY: IEEE_FMA
 #endif
   IMPLICIT NONE
-#ifdef USE_IEEE_INTRINSIC
-#define XFMA IEEE_FMA
-#define XSQRT SQRT
-#else
-  INTERFACE
-#ifdef __GFORTRAN__
-     PURE FUNCTION XFMA(A, B, C) BIND(C,NAME='fmal')
-       USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
-#else
-     PURE FUNCTION XFMA(A, B, C) BIND(C,NAME='__fmaq')
-       USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL128
-#endif
-       IMPLICIT NONE
-#ifdef __GFORTRAN__
-       REAL(KIND=c_long_double), INTENT(IN), VALUE :: A, B, C
-       REAL(KIND=c_long_double) :: XFMA
-#else
-       REAL(KIND=REAL128), INTENT(IN), VALUE :: A, B, C
-       REAL(KIND=REAL128) :: XFMA
-#endif
-     END FUNCTION XFMA
-  END INTERFACE
-  INTERFACE
-#ifdef __GFORTRAN__
-     PURE FUNCTION XSQRT(X) BIND(C,NAME='sqrtl')
-       USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
-#else
-     PURE FUNCTION XSQRT(X) BIND(C,NAME='cr_sqrtq')
-       USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL128
-#endif
-       IMPLICIT NONE
-#ifdef __GFORTRAN__
-       REAL(KIND=c_long_double), INTENT(IN), VALUE :: X
-       REAL(KIND=c_long_double) :: XSQRT
-#else
-       REAL(KIND=REAL128), INTENT(IN), VALUE :: X
-       REAL(KIND=REAL128) :: XSQRT
-#endif
-     END FUNCTION XSQRT
-  END INTERFACE
-#endif
+#include "cr.f90"
   INTERFACE
      FUNCTION XSDP(M, X, Y, MX, MY, INFO)
 #ifdef __GFORTRAN__
@@ -287,10 +247,10 @@ SUBROUTINE XTRUTI(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, TOL, IX, WRK, RWRK, IN
      APP = S * SV(Q)
      AQQ = S * SV(P)
      IF (IAND(INFO, 1) .EQ. 0) AQP = -AQP
-     APP = XSQRT(XFMA(TOL, APP, SV(P)))
-     AQQ = XSQRT(XFMA(AQP, AQQ, SV(Q)))
-     SV(P) = APP * XSQRT(SV(P))
-     SV(Q) = AQQ * XSQRT(SV(Q))
+     APP = CR_SQRT(XFMA(TOL, APP, SV(P)))
+     AQQ = CR_SQRT(XFMA(AQP, AQQ, SV(Q)))
+     SV(P) = APP * CR_SQRT(SV(P))
+     SV(Q) = AQQ * CR_SQRT(SV(Q))
      INFO = I + 1
      IF (QPS .GT. GX) THEN
         GX = QPS

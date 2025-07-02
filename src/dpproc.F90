@@ -1,48 +1,15 @@
 PROGRAM DPPROC
+#ifdef __GFORTRAN__
   USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
+  USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: OUTPUT_UNIT, REAL64
+#else
   USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: OUTPUT_UNIT, REAL64, REAL128
+#endif
   IMPLICIT NONE
-#ifdef USE_IEEE_INTRINSIC
-#define XSQRT SQRT
-#else
-  INTERFACE
+#include "cr.f90"
 #ifdef __GFORTRAN__
-     PURE FUNCTION XSQRT(X) BIND(C,NAME='sqrtl')
-       USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
-#else
-     PURE FUNCTION XSQRT(X) BIND(C,NAME='cr_sqrtq')
-       USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL128
-#endif
-       IMPLICIT NONE
-#ifdef __GFORTRAN__
-       REAL(KIND=c_long_double), INTENT(IN), VALUE :: X
-       REAL(KIND=c_long_double) :: XSQRT
-#else
-       REAL(KIND=REAL128), INTENT(IN), VALUE :: X
-       REAL(KIND=REAL128) :: XSQRT
-#endif
-     END FUNCTION XSQRT
-  END INTERFACE
-#endif
-#ifdef __GFC_REAL_10__
-  INTERFACE
-     PURE FUNCTION CR_HYPOT(X, Y) BIND(C,NAME='cr_hypotl')
-       USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
-       IMPLICIT NONE
-       REAL(KIND=c_long_double), INTENT(IN), VALUE :: X, Y
-       REAL(KIND=c_long_double) :: CR_HYPOT
-     END FUNCTION CR_HYPOT
-  END INTERFACE
   INTEGER, PARAMETER :: KK = c_long_double
 #else
-  INTERFACE
-     PURE FUNCTION CR_HYPOT(X, Y) BIND(C,NAME='cr_hypotq')
-       USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL128
-       IMPLICIT NONE
-       REAL(KIND=REAL128), INTENT(IN), VALUE :: X, Y
-       REAL(KIND=REAL128) :: CR_HYPOT
-     END FUNCTION CR_HYPOT
-  END INTERFACE
   INTEGER, PARAMETER :: KK = REAL128
 #endif
   INTEGER, PARAMETER :: K = REAL64
@@ -137,7 +104,7 @@ PROGRAM DPPROC
               Y = CR_HYPOT(Y, REAL(A1(I,J), KK))
            END DO
         END DO
-        Y = Y * XSQRT(2.0_KK)
+        Y = Y * CR_SQRT(2.0_KK)
         DO J = 1, N
            Y = CR_HYPOT(Y, REAL(A1(J,J), KK))
         END DO

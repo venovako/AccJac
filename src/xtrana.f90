@@ -11,28 +11,7 @@ SUBROUTINE XTRANA(N, A, LDA, V, LDV, AX, AS, P, Q, TOL, INFO)
   USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL128
 #endif
   IMPLICIT NONE
-#ifdef USE_IEEE_INTRINSIC
-#define XSQRT SQRT
-#else
-  INTERFACE
-#ifdef __GFORTRAN__
-     PURE FUNCTION XSQRT(X) BIND(C,NAME='sqrtl')
-       USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
-#else
-     PURE FUNCTION XSQRT(X) BIND(C,NAME='cr_sqrtq')
-       USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL128
-#endif
-       IMPLICIT NONE
-#ifdef __GFORTRAN__
-       REAL(KIND=c_long_double), INTENT(IN), VALUE :: X
-       REAL(KIND=c_long_double) :: XSQRT
-#else
-       REAL(KIND=REAL128), INTENT(IN), VALUE :: X
-       REAL(KIND=REAL128) :: XSQRT
-#endif
-     END FUNCTION XSQRT
-  END INTERFACE
-#endif
+#include "cr.f90"
   INTERFACE
      SUBROUTINE XLJAU2(A11, A22, A21, CS, SN, INFO)
 #ifdef __GFORTRAN__
@@ -229,7 +208,7 @@ SUBROUTINE XTRANA(N, A, LDA, V, LDV, AX, AS, P, Q, TOL, INFO)
   INFO = IAND(INFO, 1)
   A1 = A(P,P)
   A2 = A(Q,Q)
-  T = (XSQRT(ABS(A1)) * XSQRT(ABS(A2))) * TOL
+  T = (CR_SQRT(ABS(A1)) * CR_SQRT(ABS(A2))) * TOL
   TOL = ZERO
   C = ZERO
   S = ZERO

@@ -8,28 +8,7 @@ SUBROUTINE XJSVDF(M, N, G, LDG, V, LDV, JPOS, SV, GS, IX, WRK, RWRK, INFO)
   USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: INT64, REAL128
 #endif
   IMPLICIT NONE
-#ifdef USE_IEEE_INTRINSIC
-#define XSQRT SQRT
-#else
-  INTERFACE
-#ifdef __GFORTRAN__
-     PURE FUNCTION XSQRT(X) BIND(C,NAME='sqrtl')
-       USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
-#else
-     PURE FUNCTION XSQRT(X) BIND(C,NAME='cr_sqrtq')
-       USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL128
-#endif
-       IMPLICIT NONE
-#ifdef __GFORTRAN__
-       REAL(KIND=c_long_double), INTENT(IN), VALUE :: X
-       REAL(KIND=c_long_double) :: XSQRT
-#else
-       REAL(KIND=REAL128), INTENT(IN), VALUE :: X
-       REAL(KIND=REAL128) :: XSQRT
-#endif
-     END FUNCTION XSQRT
-  END INTERFACE
-#endif
+#include "cr.f90"
   INTERFACE
 #ifdef _OPENMP
      SUBROUTINE XINISX(M, N, G, LDG, V, LDV, SV, IX, INFO)
@@ -195,7 +174,7 @@ SUBROUTINE XJSVDF(M, N, G, LDG, V, LDV, JPOS, SV, GS, IX, WRK, RWRK, INFO)
   END IF
   CALL XTRACK(N, SV, GX, GS, R, -S, U)
   TOL = M
-  TOL = XSQRT(TOL) * EPS
+  TOL = CR_SQRT(TOL) * EPS
   DO R = 1, S
      IF (INFO .EQ. 0) THEN
         O = 1

@@ -6,72 +6,16 @@
 !     INFO = 3: transf, big th
 !     ... OR 4: downscaling of G and SV
 SUBROUTINE WTRNSF(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, TOL, IX, WRK, INFO)
+#ifdef __GFORTRAN__
   USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
+#else
   USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL128
+#endif
 #ifdef USE_IEEE_INTRINSIC
   USE, INTRINSIC :: IEEE_ARITHMETIC, ONLY: IEEE_FMA
 #endif
   IMPLICIT NONE
-#ifdef USE_IEEE_INTRINSIC
-#define XFMA IEEE_FMA
-#define XSQRT SQRT
-#else
-  INTERFACE
-#ifdef __GFORTRAN__
-     PURE FUNCTION XFMA(A, B, C) BIND(C,NAME='fmal')
-       USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
-#else
-     PURE FUNCTION XFMA(A, B, C) BIND(C,NAME='__fmaq')
-       USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL128
-#endif
-       IMPLICIT NONE
-#ifdef __GFORTRAN__
-       REAL(KIND=c_long_double), INTENT(IN), VALUE :: A, B, C
-       REAL(KIND=c_long_double) :: XFMA
-#else
-       REAL(KIND=REAL128), INTENT(IN), VALUE :: A, B, C
-       REAL(KIND=REAL128) :: XFMA
-#endif
-     END FUNCTION XFMA
-  END INTERFACE
-  INTERFACE
-#ifdef __GFORTRAN__
-     PURE FUNCTION XSQRT(X) BIND(C,NAME='sqrtl')
-       USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
-#else
-     PURE FUNCTION XSQRT(X) BIND(C,NAME='cr_sqrtq')
-       USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL128
-#endif
-       IMPLICIT NONE
-#ifdef __GFORTRAN__
-       REAL(KIND=c_long_double), INTENT(IN), VALUE :: X
-       REAL(KIND=c_long_double) :: XSQRT
-#else
-       REAL(KIND=REAL128), INTENT(IN), VALUE :: X
-       REAL(KIND=REAL128) :: XSQRT
-#endif
-     END FUNCTION XSQRT
-  END INTERFACE
-#endif
-#ifdef __GFC_REAL_10__
-  INTERFACE
-     PURE FUNCTION CR_HYPOT(X, Y) BIND(C,NAME='cr_hypotl')
-       USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
-       IMPLICIT NONE
-       REAL(KIND=c_long_double), INTENT(IN), VALUE :: X, Y
-       REAL(KIND=c_long_double) :: CR_HYPOT
-     END FUNCTION CR_HYPOT
-  END INTERFACE
-#else
-  INTERFACE
-     PURE FUNCTION CR_HYPOT(X, Y) BIND(C,NAME='cr_hypotq')
-       USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL128
-       IMPLICIT NONE
-       REAL(KIND=REAL128), INTENT(IN), VALUE :: X, Y
-       REAL(KIND=REAL128) :: CR_HYPOT
-     END FUNCTION CR_HYPOT
-  END INTERFACE
-#endif
+#include "cr.f90"
   INTERFACE
      PURE FUNCTION WNRMF(M, X)
 #ifdef __GFORTRAN__
@@ -361,10 +305,10 @@ SUBROUTINE WTRNSF(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, TOL, IX, WRK, INFO)
         ELSE ! hyp
            AQPI =  AQPR
         END IF
-        APP = XSQRT(XFMA(AQPR, APP, SV(P)))
-        AQQ = XSQRT(XFMA(AQPI, AQQ, SV(Q)))
-        SV(P) = APP * XSQRT(SV(P))
-        SV(Q) = AQQ * XSQRT(SV(Q))
+        APP = CR_SQRT(XFMA(AQPR, APP, SV(P)))
+        AQQ = CR_SQRT(XFMA(AQPI, AQQ, SV(Q)))
+        SV(P) = APP * CR_SQRT(SV(P))
+        SV(Q) = AQQ * CR_SQRT(SV(Q))
      ELSE ! SLOW
         SV(P) = WNRMF(M, G(1,IX(P)))
         SV(Q) = WNRMF(M, G(1,IX(Q)))

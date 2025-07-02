@@ -12,72 +12,16 @@
 ! Xj = X1 * C2 * *** * Cj + Zj
 !    = X1 * CC + Zj
 SUBROUTINE WTRUTI(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, TOL, IX, WRK, RWRK, INFO)
+#ifdef __GFORTRAN__
   USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
+#else
   USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL128
+#endif
 #ifdef USE_IEEE_INTRINSIC
   USE, INTRINSIC :: IEEE_ARITHMETIC, ONLY: IEEE_FMA
 #endif
   IMPLICIT NONE
-#ifdef USE_IEEE_INTRINSIC
-#define XFMA IEEE_FMA
-#define XSQRT SQRT
-#else
-  INTERFACE
-#ifdef __GFORTRAN__
-     PURE FUNCTION XFMA(A, B, C) BIND(C,NAME='fmal')
-       USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
-#else
-     PURE FUNCTION XFMA(A, B, C) BIND(C,NAME='__fmaq')
-       USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL128
-#endif
-       IMPLICIT NONE
-#ifdef __GFORTRAN__
-       REAL(KIND=c_long_double), INTENT(IN), VALUE :: A, B, C
-       REAL(KIND=c_long_double) :: XFMA
-#else
-       REAL(KIND=REAL128), INTENT(IN), VALUE :: A, B, C
-       REAL(KIND=REAL128) :: XFMA
-#endif
-     END FUNCTION XFMA
-  END INTERFACE
-  INTERFACE
-#ifdef __GFORTRAN__
-     PURE FUNCTION XSQRT(X) BIND(C,NAME='sqrtl')
-       USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
-#else
-     PURE FUNCTION XSQRT(X) BIND(C,NAME='cr_sqrtq')
-       USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL128
-#endif
-       IMPLICIT NONE
-#ifdef __GFORTRAN__
-       REAL(KIND=c_long_double), INTENT(IN), VALUE :: X
-       REAL(KIND=c_long_double) :: XSQRT
-#else
-       REAL(KIND=REAL128), INTENT(IN), VALUE :: X
-       REAL(KIND=REAL128) :: XSQRT
-#endif
-     END FUNCTION XSQRT
-  END INTERFACE
-#endif
-#ifdef __GFC_REAL_10__
-  INTERFACE
-     PURE FUNCTION CR_HYPOT(X, Y) BIND(C,NAME='cr_hypotl')
-       USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
-       IMPLICIT NONE
-       REAL(KIND=c_long_double), INTENT(IN), VALUE :: X, Y
-       REAL(KIND=c_long_double) :: CR_HYPOT
-     END FUNCTION CR_HYPOT
-  END INTERFACE
-#else
-  INTERFACE
-     PURE FUNCTION CR_HYPOT(X, Y) BIND(C,NAME='cr_hypotq')
-       USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL128
-       IMPLICIT NONE
-       REAL(KIND=REAL128), INTENT(IN), VALUE :: X, Y
-       REAL(KIND=REAL128) :: CR_HYPOT
-     END FUNCTION CR_HYPOT
-  END INTERFACE
-#endif
+#include "cr.f90"
   INTERFACE
      FUNCTION WSDP(M, X, Y, MX, MY, INFO)
 #ifdef __GFORTRAN__
@@ -183,7 +127,6 @@ SUBROUTINE WTRUTI(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, TOL, IX, WRK, RWRK, IN
 #else
   INTEGER, PARAMETER :: K = REAL128
 #endif
-#define WFMA(A,B,C) CMPLX(XFMA(REAL(A),REAL(B),XFMA(-AIMAG(A),AIMAG(B),REAL(C))),XFMA(REAL(A),AIMAG(B),XFMA(AIMAG(A),REAL(B),AIMAG(C))),K)
   REAL(KIND=K), PARAMETER :: ZERO = 0.0_K
   INTEGER, INTENT(IN) :: M, N, LDG, LDV, P, Q, IX(N)
   COMPLEX(KIND=K), INTENT(INOUT) :: G(LDG,N), V(LDV,N), TOL, WRK(M,N)
@@ -333,10 +276,10 @@ SUBROUTINE WTRUTI(M, N, G, LDG, V, LDV, SV, GX, GS, P, Q, TOL, IX, WRK, RWRK, IN
      ELSE ! hyp
         AQPI =  AQPR
      END IF
-     APP = XSQRT(XFMA(AQPR, APP, SV(P)))
-     AQQ = XSQRT(XFMA(AQPI, AQQ, SV(Q)))
-     SV(P) = APP * XSQRT(SV(P))
-     SV(Q) = AQQ * XSQRT(SV(Q))
+     APP = CR_SQRT(XFMA(AQPR, APP, SV(P)))
+     AQQ = CR_SQRT(XFMA(AQPI, AQQ, SV(Q)))
+     SV(P) = APP * CR_SQRT(SV(P))
+     SV(Q) = AQQ * CR_SQRT(SV(Q))
      INFO = I + 1
      IF (T .GT. GX) THEN
         GX = T

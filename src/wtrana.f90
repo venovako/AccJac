@@ -5,50 +5,14 @@
 !     INFO = 2: transf, no downscaling of A
 !     INFO = 3: transf with downscaling of A
 SUBROUTINE WTRANA(N, A, LDA, V, LDV, AX, AS, P, Q, TOL, INFO)
+#ifdef __GFORTRAN__
   USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
+  USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: ERROR_UNIT
+#else
   USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: ERROR_UNIT, REAL128
+#endif
   IMPLICIT NONE
-#ifdef __GFC_REAL_10__
-  INTERFACE
-     PURE FUNCTION CR_HYPOT(X, Y) BIND(C,NAME='cr_hypotl')
-       USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
-       IMPLICIT NONE
-       REAL(KIND=c_long_double), INTENT(IN), VALUE :: X, Y
-       REAL(KIND=c_long_double) :: CR_HYPOT
-     END FUNCTION CR_HYPOT
-  END INTERFACE
-#else
-  INTERFACE
-     PURE FUNCTION CR_HYPOT(X, Y) BIND(C,NAME='cr_hypotq')
-       USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL128
-       IMPLICIT NONE
-       REAL(KIND=REAL128), INTENT(IN), VALUE :: X, Y
-       REAL(KIND=REAL128) :: CR_HYPOT
-     END FUNCTION CR_HYPOT
-  END INTERFACE
-#endif
-#ifdef USE_IEEE_INTRINSIC
-#define XSQRT SQRT
-#else
-  INTERFACE
-#ifdef __GFORTRAN__
-     PURE FUNCTION XSQRT(X) BIND(C,NAME='sqrtl')
-       USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
-#else
-     PURE FUNCTION XSQRT(X) BIND(C,NAME='cr_sqrtq')
-       USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL128
-#endif
-       IMPLICIT NONE
-#ifdef __GFORTRAN__
-       REAL(KIND=c_long_double), INTENT(IN), VALUE :: X
-       REAL(KIND=c_long_double) :: XSQRT
-#else
-       REAL(KIND=REAL128), INTENT(IN), VALUE :: X
-       REAL(KIND=REAL128) :: XSQRT
-#endif
-     END FUNCTION XSQRT
-  END INTERFACE
-#endif
+#include "cr.f90"
   INTERFACE
      SUBROUTINE WLJAU2(A11, A22, A21R, A21I, CS, SNR, SNI, INFO)
 #ifdef __GFORTRAN__
@@ -257,7 +221,7 @@ SUBROUTINE WTRANA(N, A, LDA, V, LDV, AX, AS, P, Q, TOL, INFO)
   INFO = IAND(INFO, 1)
   A1 = REAL(A(P,P))
   A2 = REAL(A(Q,Q))
-  T = (XSQRT(ABS(A1)) * XSQRT(ABS(A2))) * T
+  T = (CR_SQRT(ABS(A1)) * CR_SQRT(ABS(A2))) * T
   TOL = ZERO
 #ifdef CARITH_PVN
   WRITE (ERROR_UNIT,9) P, SCALE(REAL(A(P,P)), -AS), SCALE(REAL(A(Q,P)), -AS), SCALE(REAL(A(4,2)), -AS)
