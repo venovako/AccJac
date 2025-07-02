@@ -12,10 +12,15 @@
       <ul>
         <li><kbd>Job.U</kbd>: \(U\), i.e., the matrix of the left singular vectors (\(m \times n\));</li>
         <li><kbd>Job.V</kbd>: \(V\), i.e., the matrix of the right singular vectors (\(n \times n\));</li>
-        <li><kbd>Job.S</kbd>: \(\mathop{\mathrm{diag}}(\Sigma)\), i.e., the hyperbolic singular values (\(n\)); and</li>
+        <li><kbd>Job.S</kbd>: \(\mathop{\mathrm{diag}}(\Sigma)\), i.e., the non-negative hyperbolic singular values (\(n\)); and</li>
         <li><kbd>Job.txt</kbd>: some statistics, ending with the number of cycles and transformations.</li>
       </ul>
     </p>
+    <p>It is assumed here that the matrices of signs (\(J\)) and hyperbolic singular values (\(\Sigma\)) are partitioned as
+      \[J=\begin{bmatrix}I_j&0\\0&-I_{n-j}\end{bmatrix},\quad\Sigma=\begin{bmatrix}\Sigma_j&0\\0&\Sigma_{n-j}\end{bmatrix},\]
+      and that \(\mathop{\mathrm{diag}}(\Sigma_j)\) and \(\mathop{\mathrm{diag}}(\Sigma_{n-j})\) are sorted non-increasingly.
+    </p>
+    <hr>
     <form action="jsvdt.cgi" method="post" enctype="multipart/form-data" target="_blank">
       <p>Please give this job a name of at most eight alphanumeric characters.<br>
         <label for="jobt"><kbd>Job</kbd>:</label>
@@ -89,6 +94,6 @@
       </p>
     </form>
     <hr>
-    <p><i>Last modified</i>: <time>2025-06-30</time>.</p>
+    <p><i>Last modified</i>: <time>2025-07-02</time>.</p>
   </body>
 </html>
