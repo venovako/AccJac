@@ -42,18 +42,18 @@ Here, `c` stands for `COMPLEX(REAL32)`, `d` for `REAL(REAL64)`, `s` for `REAL(RE
 The executables with other values of `t` are of special purpose and have specific requirements to be built and run.
 With GNU Fortran on Intel-compatible platforms, `t=w` stands for `COMPLEX(10)`, and `t=x` for `REAL(10)` (the 80-bit extended floating-point datatype).
 
-`FILE` is the filename, without the extension `.YU`, containing the input `M`x`N` matrix.
+`FILE` is the filename, without the extension `.Y` (or `.YX` for `t=w,x`), containing the input `M`x`N` matrix.
 If `JPOS=-1` then it is expected that `FILE.J` exists, with the signs in `diag(J)` as 8-byte integers.
 Else, `JPOS` should be between `0` and `N`, inclusively.
 `OPTS` are:
-0. modified deRijk;
-1. modified deRijk, slow updates;
-2. row-cyclic;
-3. row-cyclic, slow updates;
-4. modified deRijk + Rutishauser;
-5. modified deRijk + Rutishauser, slower arithmetic;
-6. row-cyclic + Rutishauser;
-7. row-cyclic + Rutishauser, slower arithmetic.
+* 0: modified deRijk;
+* 1: modified deRijk, slow updates;
+* 2: row-cyclic;
+* 3: row-cyclic, slow updates;
+* 4: modified deRijk + Rutishauser;
+* 5: modified deRijk + Rutishauser, slower arithmetic;
+* 6: row-cyclic + Rutishauser;
+* 7: row-cyclic + Rutishauser, slower arithmetic.
 
 ### The old tests (obsolete)
 
