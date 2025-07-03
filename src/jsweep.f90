@@ -64,20 +64,16 @@ SUBROUTINE JSWEEP(J, N, S, P, O, INFO)
   END IF
 
   IF (JJ .EQ. 4) THEN
-     ALLOCATE(ARR(4,P), STAT=L)
+     ALLOCATE(ARR(4,P))
   ELSE ! JJ .NE. 4
-     ALLOCATE(ARR(2,P), STAT=L)
-  END IF
-  IF (L .NE. 0) THEN
-     INFO = 2
-     RETURN
+     ALLOCATE(ARR(2,P))
   END IF
 
   L = 1
   DO I = 1, S
      M = PVN_CJS_NEXT(JS, ARR)
      IF (M .LE. 0_c_int) THEN
-        INFO = 3
+        INFO = 2
         EXIT
      END IF
      SELECT CASE (JJ)
@@ -98,12 +94,12 @@ SUBROUTINE JSWEEP(J, N, S, P, O, INFO)
            L = L + 1
         END DO
      CASE DEFAULT
-        INFO = 4
+        INFO = 3
         EXIT
      END SELECT
   END DO
 
   DEALLOCATE(ARR)
   M = PVN_CJS_FREE(JS)
-  IF (M .NE. 0_c_int) INFO = 5
+  IF (M .NE. 0_c_int) INFO = 4
 END SUBROUTINE JSWEEP

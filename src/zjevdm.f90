@@ -1,15 +1,12 @@
-#ifndef __INTEL_COMPILER
-#warning "Please use the Intel compilers for the parallel Jacobi strategies"
-#endif
 !  IN: AS = max sweeps, INFO = 0 or 1 (sin => tan) OR 2 (the modified modulus)
 ! OUT: AS: backscale A by 2**-AS, INFO: #sweeps
-SUBROUTINE ZJEVDM(N, A, LDA, V, LDV, JPOS, WRK, AS, ORD, INFO)
+SUBROUTINE ZJEVDM(N, A, LDA, V, LDV, JPOS, WRK, AS, TBL, ORD, INFO)
   USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: INT64, REAL64
   IMPLICIT NONE
   INTERFACE
      PURE SUBROUTINE JSTEP(J, N, S, T, P, O, R, INFO)
        IMPLICIT NONE
-       INTEGER, INTENT(IN) :: J, N, S, T, P, O(*)
+       INTEGER, INTENT(IN) :: J, N, S, T, P, O(2,*)
        INTEGER, INTENT(OUT) :: R(2,P), INFO
      END SUBROUTINE JSTEP
   END INTERFACE
@@ -62,15 +59,16 @@ SUBROUTINE ZJEVDM(N, A, LDA, V, LDV, JPOS, WRK, AS, ORD, INFO)
   END INTERFACE
   INTEGER, PARAMETER :: K = REAL64
   REAL(KIND=K), PARAMETER :: ZERO = 0.0_K, ONE = 1.0_K, EPS = EPSILON(EPS) / 2
-  INTEGER, INTENT(IN) :: N, LDA, LDV, JPOS
+  INTEGER, INTENT(IN) :: N, LDA, LDV, JPOS, TBL(2,*)
   COMPLEX(KIND=K), INTENT(INOUT) :: A(LDA,N), WRK(N,N)
   COMPLEX(KIND=K), INTENT(OUT) :: V(LDV,N)
-  INTEGER, INTENT(INOUT) :: AS, ORD(2,*), INFO
+  INTEGER, INTENT(INOUT) :: AS, INFO
+  INTEGER, INTENT(OUT) :: ORD(2,*)
   REAL(KIND=K) :: AX, TOL
   INTEGER(KIND=INT64) :: TT
   INTEGER :: L, O, P, Q, R, S, T, U, W, X, JJ, JS, ST
   CHARACTER(LEN=11) :: FN
-  IF ((INFO .LT. 0) .OR. (INFO .GT. 7)) INFO = -10
+  IF ((INFO .LT. 0) .OR. (INFO .GT. 7)) INFO = -11
   IF (AS .LT. 0) INFO = -8
   IF ((JPOS .LT. 0) .OR. (JPOS .GT. N)) INFO = -6
   IF (LDV .LT. N) INFO = -5
@@ -130,7 +128,7 @@ SUBROUTINE ZJEVDM(N, A, LDA, V, LDV, JPOS, WRK, AS, ORD, INFO)
      END IF
      P = N / 2
      DO ST = 1, JS
-        CALL JSTEP(JJ, N, JS, ST, P, ORD(1,1+P), ORD, W)
+        CALL JSTEP(JJ, N, JS, ST, P, TBL, ORD, W)
         IF (W .NE. 0) THEN
            INFO = -9
            RETURN
