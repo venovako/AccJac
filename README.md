@@ -32,7 +32,7 @@ Other variables should not be set unless their effects are fully understood.
 
 ### The new tests
 
-The HSVD test programs are to be run as:
+The HSVD (`G = U Σ V^{-1}`) test programs are to be run as:
 ```bash
 ./src/tjsvdx.exe M N JPOS OPTS FILE
 ```
@@ -42,7 +42,7 @@ Here, `c` stands for `COMPLEX(REAL32)`, `d` for `REAL(REAL64)`, `s` for `REAL(RE
 The executables with other values of `t` are of special purpose and have specific requirements to be built and run.
 With GNU Fortran on Intel-compatible platforms, `t=w` stands for `COMPLEX(10)`, and `t=x` for `REAL(10)` (the 80-bit extended floating-point datatype).
 
-`FILE` is the name of a binary file, without the extension `.Y` (or `.YX` for `t=w,x`), containing the input `M`x`N` matrix in the Fortran (i.e., column-major) order.
+`FILE` is the name of a binary file, without the extension `.Y` (or `.YX` for `t=w,x`), containing the input `M`x`N` matrix `G` in the Fortran (i.e., column-major) order.
 If `JPOS=-1` then it is expected that `FILE.J` exists, with the signs in `diag(J)` as 8-byte integers.
 Else, `JPOS` should be between `0` and `N`, inclusively.
 `OPTS` are:
@@ -59,9 +59,11 @@ The binary outputs are:
 * `FILE.YU`: the matrix `U` (`M`x`N`);
 * `FILE.YV`: the matrix `V` (`N`x`N`);
 * `FILE.SS`: the scaled non-negative hyperbolic singular values (always finite, `N`);
-* `FILE.SY`: the hyperbolic singular values (might have underflown or overflown, `N`);
+* `FILE.SY`: the hyperbolic singular values `Σ` (might have underflown or overflown, `N`);
 * `FILE.ZZ`: the matrix `V^{-1}` (`N`x`N`);
 * and possibly several others.
+
+Other test executables are highly experimental, so the source code should be consulted for their usage.
 
 ### The old tests (obsolete)
 
