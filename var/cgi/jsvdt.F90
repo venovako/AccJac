@@ -23,22 +23,21 @@ PROGRAM JSVDT
   TYPE(c_ptr) :: ARGV(1)
   INTEGER :: RET, U, M, N, J
   CHARACTER :: T
-  EXTERNAL :: BFOPEN
+  ALLOCATE(ARGV0)
   U = COMMAND_ARGUMENT_COUNT()
+  IF (U .GE. 0) THEN
+     CALL GET_COMMAND_ARGUMENT(0, ARGV0)
+  ELSE ! should never happen
+     ARGV0 = ''
+  END IF
   IF (U .EQ. 0) THEN
      OPEN(NEWUNIT=U, STATUS='SCRATCH', ACTION='WRITE', ACCESS='SEQUENTIAL', FORM='FORMATTED')
-     ALLOCATE(ARGV0)
-     CALL GET_COMMAND_ARGUMENT(0, ARGV0)
      ARGV0 = TRIM(ARGV0)//c_null_char
      ARGV(1) = C_LOC(ARGV0)
      RET = INT(CGICMAIN(1_c_int, ARGV))
-     DEALLOCATE(ARGV0)
      IF (RET .EQ. 0) RET = INT(CGIMAIN(INT(U,c_int), INT(FNUM(U),c_int)))
      CLOSE(U)
-  ELSE IF (U .GT. 0) THEN
-     ALLOCATE(ARGV0)
-     CALL GET_COMMAND_ARGUMENT(0, ARGV0)
-     IF (U .NE. 6) STOP TRIM(ARGV0)//' T M N J O F'
+  ELSE IF (U .EQ. 6) THEN
      CALL GET_COMMAND_ARGUMENT(1, T)
      CALL GET_COMMAND_ARGUMENT(2, ARGV0)
      READ (ARGV0,*) M
@@ -70,12 +69,10 @@ PROGRAM JSVDT
      CASE DEFAULT
         STOP 'T'
      END SELECT
-     DEALLOCATE(ARGV0)
-     RET = 0
-  ELSE ! U < 0
-     ! should never happen
-     RET = 1
+  ELSE ! U not 0 or 6
+     STOP TRIM(ARGV0)//' [T M N J O F]'
   END IF
+  DEALLOCATE(ARGV0)
 CONTAINS
   SUBROUTINE CEXE(M, N, J, O, F)
     USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: ERROR_UNIT, OUTPUT_UNIT, REAL32
@@ -148,7 +145,7 @@ CONTAINS
           SV(I) = SCALE(SV(I), L)
        END DO
     END IF
-    CALL BFOPEN(TRIM(F)//'.SV', 'WO', I, L)
+    CALL BFOPEN(TRIM(F)//'.SY', 'WO', I, L)
     IF (L .NE. 0) STOP 'SV'
     WRITE (UNIT=I, IOSTAT=L) SV
     IF (L .NE. 0) STOP 'S'
@@ -229,7 +226,7 @@ CONTAINS
           SV(I) = SCALE(SV(I), L)
        END DO
     END IF
-    CALL BFOPEN(TRIM(F)//'.SV', 'WO', I, L)
+    CALL BFOPEN(TRIM(F)//'.SY', 'WO', I, L)
     IF (L .NE. 0) STOP 'SV'
     WRITE (UNIT=I, IOSTAT=L) SV
     IF (L .NE. 0) STOP 'S'
@@ -310,7 +307,7 @@ CONTAINS
           SV(I) = SCALE(SV(I), L)
        END DO
     END IF
-    CALL BFOPEN(TRIM(F)//'.SV', 'WO', I, L)
+    CALL BFOPEN(TRIM(F)//'.SY', 'WO', I, L)
     IF (L .NE. 0) STOP 'SV'
     WRITE (UNIT=I, IOSTAT=L) SV
     IF (L .NE. 0) STOP 'S'
@@ -393,7 +390,7 @@ CONTAINS
           SV(I) = SCALE(SV(I), L)
        END DO
     END IF
-    CALL BFOPEN(TRIM(F)//'.SV', 'WO', I, L)
+    CALL BFOPEN(TRIM(F)//'.SY', 'WO', I, L)
     IF (L .NE. 0) STOP 'SV'
     CALL XBWR1(I, N, SV, L)
     IF (L .NE. 0) STOP 'S'
@@ -474,7 +471,7 @@ CONTAINS
           SV(I) = SCALE(SV(I), L)
        END DO
     END IF
-    CALL BFOPEN(TRIM(F)//'.SV', 'WO', I, L)
+    CALL BFOPEN(TRIM(F)//'.SY', 'WO', I, L)
     IF (L .NE. 0) STOP 'SV'
     CALL XBWR1(I, N, SV, L)
     IF (L .NE. 0) STOP 'S'
@@ -558,7 +555,7 @@ CONTAINS
           SV(I) = SCALE(SV(I), L)
        END DO
     END IF
-    CALL BFOPEN(TRIM(F)//'.SV', 'WO', I, L)
+    CALL BFOPEN(TRIM(F)//'.SY', 'WO', I, L)
     IF (L .NE. 0) STOP 'SV'
     WRITE (UNIT=I, IOSTAT=L) SV
     IF (L .NE. 0) STOP 'S'
