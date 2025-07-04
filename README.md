@@ -53,7 +53,11 @@ Else, `JPOS` should be between `0` and `N`, inclusively.
 * 4: modified deRijk + Rutishauser;
 * 5: modified deRijk + Rutishauser, slower arithmetic;
 * 6: row-cyclic + Rutishauser;
-* 7: row-cyclic + Rutishauser, slower arithmetic.
+* 7: row-cyclic + Rutishauser, slower arithmetic;
+* -1: generalized Matharam-Eberlein;
+* -2: generalized Matharam-Eberlein, slow updates;
+* -3: modified modulus;
+* -4: modified modulus, slow updates.
 
 The binary outputs are:
 * `FILE.YU`: the matrix `U` (`M`x`N`);
