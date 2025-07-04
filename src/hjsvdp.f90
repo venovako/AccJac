@@ -73,11 +73,11 @@
         END IF
         W = 0
         X = ZERO
-        !$OMP PARALLEL DO DEFAULT(NONE) PRIVATE(O,P,Q,Z) SHARED(M,N,G,LDG,V,LDV,JPOS,SV,IX,WRK,RWRK,ORD,INFO,TP,TOL,L,U) REDUCTION(MAX:W,X)
+        !$OMP PARALLEL DO DEFAULT(NONE) PRIVATE(O,P,Q,Z) SHARED(M,N,G,LDG,V,LDV,JPOS,SV,IX,WRK,RWRK,ORD,INFO,TP,TOL,ST,U) REDUCTION(MAX:W,X)
         DO O = 1, TP
            P = ORD(1,O)
            Q = ORD(2,O)
-           Z = CMPLX(TOL, REAL(L, K), K)
+           Z = CMPLX(TOL, REAL(ST, K), K)
            RWRK(O) = REAL(U, K)
            IF ((P .LE. JPOS) .AND. (Q .GT. JPOS)) THEN
               IF (INFO .EQ. 0) THEN

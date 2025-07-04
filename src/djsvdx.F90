@@ -23,7 +23,7 @@ PROGRAM DJSVDX
   INTEGER :: M, N, LDG, LDV, JPOS, GS, INFO, I, J, L
   INTEGER(KIND=INT64), ALLOCATABLE :: CLK(:)
   REAL(KIND=K), ALLOCATABLE :: G(:,:), V(:,:), WRK(:,:), SV(:), LY(:)
-  INTEGER, ALLOCATABLE :: IX(:)
+  INTEGER, ALLOCATABLE :: IX(:), TBL(:,:), ORD(:,:)
   EXTERNAL :: BFOPEN, DJSVDF
   ! read the command line arguments
   I = COMMAND_ARGUMENT_COUNT()
@@ -39,7 +39,6 @@ PROGRAM DJSVDX
   IF ((JPOS .LT. -1) .OR. (JPOS .GT. N)) STOP 'JPOS'
   CALL GET_COMMAND_ARGUMENT(4, CLA)
   READ (CLA,*) L
-  IF (L .LT. 0) STOP 'OPTS'
   CALL GET_COMMAND_ARGUMENT(5, CLA)
   IF (LEN_TRIM(CLA) .LE. 0) STOP 'FILE'
   ! check J
@@ -84,13 +83,42 @@ PROGRAM DJSVDX
   ALLOCATE(SV(N))
   ALLOCATE(LY(N))
   ALLOCATE(IX(N))
-  ! call DJSVDF
   GS = HUGE(GS)
-  INFO = L
   IX(1) = ERROR_UNIT
-  CALL SYSTEM_CLOCK(CLK(1), CLK(2), CLK(3))
-  CALL DJSVDF(M, N, G, LDG, V, LDV, JPOS, SV, GS, IX, WRK, LY, INFO)
-  CALL SYSTEM_CLOCK(CLK(3))
+  IF ((L .LT. 0) .AND. (MOD(N, 2) .EQ. 0)) THEN
+     J = N / 2
+     L = -(L + 1)
+     SELECT CASE (L)
+     CASE (0, 1)
+        I = N - 1
+     CASE (2, 3)
+        I = N
+     CASE DEFAULT
+        STOP 'OPTS'
+     END SELECT
+     ALLOCATE(TBL(2,J*I))
+     ALLOCATE(ORD(2,J))
+     ORD(1,1) = I
+     ORD(2,1) = J
+     INFO = 0
+     CALL JSWEEP(L, N, I, J, TBL, INFO)
+     IF (INFO .NE. 0) STOP 'JSWEEP'
+     INFO = L
+     CALL SYSTEM_CLOCK(CLK(1), CLK(2), CLK(3))
+     CALL DJSVDP(M, N, G, LDG, V, LDV, JPOS, SV, GS, IX, WRK, LY, TBL, ORD, INFO)
+     CALL SYSTEM_CLOCK(CLK(3))
+     DEALLOCATE(ORD)
+     DEALLOCATE(TBL)
+  ELSE ! call DJSVDF
+     IF (L .LT. 0) THEN
+        INFO = -(L + 1)
+     ELSE ! L >= 0
+        INFO = L
+     END IF
+     CALL SYSTEM_CLOCK(CLK(1), CLK(2), CLK(3))
+     CALL DJSVDF(M, N, G, LDG, V, LDV, JPOS, SV, GS, IX, WRK, LY, INFO)
+     CALL SYSTEM_CLOCK(CLK(3))
+  END IF
   CLK(1) = CLK(3) - CLK(1)
   CLK(3) = MOD(CLK(1), CLK(2)) * 1000000_INT64
   CLK(1) = CLK(1) / CLK(2)
