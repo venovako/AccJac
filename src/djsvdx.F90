@@ -39,6 +39,7 @@ PROGRAM DJSVDX
   IF ((JPOS .LT. -1) .OR. (JPOS .GT. N)) STOP 'JPOS'
   CALL GET_COMMAND_ARGUMENT(4, CLA)
   READ (CLA,*) L
+  IF ((L .LT. -4) .OR. ((L .LT. 0) .AND. (MOD(N, 2) .NE. 0)) .OR. (L .GT. 7)) STOP 'OPTS'
   CALL GET_COMMAND_ARGUMENT(5, CLA)
   IF (LEN_TRIM(CLA) .LE. 0) STOP 'FILE'
   ! check J
@@ -84,7 +85,7 @@ PROGRAM DJSVDX
   ALLOCATE(LY(N))
   ALLOCATE(IX(N))
   IX(1) = ERROR_UNIT
-  IF ((L .LT. 0) .AND. (MOD(N, 2) .EQ. 0)) THEN
+  IF (L .LT. 0) THEN
      J = N / 2
      L = -(L + 1)
      SELECT CASE (L)
@@ -97,7 +98,7 @@ PROGRAM DJSVDX
         GS = 7
         !$ GS = 4
      CASE DEFAULT
-        STOP 'OPTS'
+        STOP 'opts'
      END SELECT
      ALLOCATE(TBL(2,J*I))
      ALLOCATE(ORD(2,J))
@@ -115,11 +116,7 @@ PROGRAM DJSVDX
      DEALLOCATE(TBL)
   ELSE ! call DJSVDF
      GS = HUGE(GS)
-     IF (L .LT. 0) THEN
-        INFO = -(L + 1)
-     ELSE ! L >= 0
-        INFO = L
-     END IF
+     INFO = L
      CALL SYSTEM_CLOCK(CLK(1), CLK(2), CLK(3))
      CALL DJSVDF(M, N, G, LDG, V, LDV, JPOS, SV, GS, IX, WRK, LY, INFO)
      CALL SYSTEM_CLOCK(CLK(3))
