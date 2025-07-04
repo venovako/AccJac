@@ -26,7 +26,7 @@ PROGRAM ZJSVDX
   COMPLEX(KIND=K), ALLOCATABLE :: G(:,:), V(:,:), WRK(:,:)
   REAL(KIND=K), ALLOCATABLE :: SV(:), LY(:)
   INTEGER, ALLOCATABLE :: IX(:), TBL(:,:), ORD(:,:)
-  EXTERNAL :: BFOPEN, ZJSVDF
+  EXTERNAL :: BFOPEN, ZJSVDF, ZJSVDP
   ! read the command line arguments
   I = COMMAND_ARGUMENT_COUNT()
   IF (I .NE. 5) STOP 'zjsvdx.exe M N JPOS OPTS FILE'

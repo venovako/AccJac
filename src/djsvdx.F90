@@ -24,7 +24,7 @@ PROGRAM DJSVDX
   INTEGER(KIND=INT64), ALLOCATABLE :: CLK(:)
   REAL(KIND=K), ALLOCATABLE :: G(:,:), V(:,:), WRK(:,:), SV(:), LY(:)
   INTEGER, ALLOCATABLE :: IX(:), TBL(:,:), ORD(:,:)
-  EXTERNAL :: BFOPEN, DJSVDF
+  EXTERNAL :: BFOPEN, DJSVDF, DJSVDP
   ! read the command line arguments
   I = COMMAND_ARGUMENT_COUNT()
   IF (I .NE. 5) STOP 'djsvdx.exe M N JPOS OPTS FILE'
