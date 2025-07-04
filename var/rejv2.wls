@@ -1,5 +1,6 @@
 #!/usr/bin/wolframscript -print all
-If[Length[$ScriptCommandLine]<4,Quit[]];
+(* Wolfram Engine 14.2.1 for Linux *)
+If[Length[$ScriptCommandLine]!=4,Quit[]];
 p=FullSimplify[ToExpression[$ScriptCommandLine[[2]]]];
 n=FullSimplify[ToExpression[$ScriptCommandLine[[3]]]];
 d=FullSimplify[ToExpression[$ScriptCommandLine[[4]]]];
