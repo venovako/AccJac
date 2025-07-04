@@ -6,7 +6,7 @@ d=FullSimplify[ToExpression[$ScriptCommandLine[[4]]]];
 pm=FullSimplify[-p]; (* due to rounding to nearest *)
 ep=FullSimplify[2^pm]; (* \varepsilon *)
 raz[x_]:=Block[{f=Ceiling[x*(10^d)]/(10^d)},If[f<10,"  "<>ToString[N[f,d+1]],If[f<100," "<>ToString[N[f,d+2]],ToString[N[f,d+3]]]]<>ToString[\[Epsilon]]];
-ToString[\[Epsilon]]<>"=2^"<>ToString[pm]<>"; n="<>ToString[n]
+ToString[\[Epsilon]]<>"=2^"<>ToString[pm]<>"; n="<>ToString[n]<>"; d="<>ToString[d]
 d1m[e_]:=If[n<0,1,1-e];
 " "<>ToString[\[Delta]]<>"1-=1-"<>raz[N[FullSimplify[(1-d1m[ep])/ep],Abs[n]]]
 d1p[e_]:=If[n<0,1,1+e];
