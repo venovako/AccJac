@@ -1,0 +1,135 @@
+!  IN: GS = max sweeps, IX(1) = trace unit, INFO
+! OUT: GS: backscale SV by 2**-GS, INFO: #sweeps
+SUBROUTINE XJSVDP(M, N, G, LDG, V, LDV, JPOS, SV, GS, IX, WRK, RWRK, TBL, ORD, INFO)
+#ifdef __GFORTRAN__
+  USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
+  USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: INT64
+#else
+  USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: INT64, REAL128
+#endif
+  IMPLICIT NONE
+#include "cr.f90"
+  INTERFACE
+#ifdef _OPENMP
+     SUBROUTINE XINISX(M, N, G, LDG, V, LDV, SV, IX, INFO)
+#else
+     PURE SUBROUTINE XINISX(M, N, G, LDG, V, LDV, SV, IX, INFO)
+#endif
+#ifdef __GFORTRAN__
+       USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
+#else
+       USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL128
+#endif
+       IMPLICIT NONE
+       INTEGER, INTENT(IN) :: M, N, LDG, LDV
+#ifdef __GFORTRAN__
+       REAL(KIND=c_long_double), INTENT(IN) :: G(LDG,N)
+       REAL(KIND=c_long_double), INTENT(OUT) :: V(LDV,N), SV(N)
+#else
+       REAL(KIND=REAL128), INTENT(IN) :: G(LDG,N)
+       REAL(KIND=REAL128), INTENT(OUT) :: V(LDV,N), SV(N)
+#endif
+       INTEGER, INTENT(OUT) :: IX(N)
+       INTEGER, INTENT(INOUT) :: INFO
+     END SUBROUTINE XINISX
+  END INTERFACE
+  INTERFACE
+#ifdef _OPENMP
+     SUBROUTINE XSCALG(M, N, G, LDG, GX, GS, INFO)
+#else
+     PURE SUBROUTINE XSCALG(M, N, G, LDG, GX, GS, INFO)
+#endif
+#ifdef __GFORTRAN__
+       USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
+#else
+       USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL128
+#endif
+       IMPLICIT NONE
+       INTEGER, INTENT(IN) :: M, N, LDG
+#ifdef __GFORTRAN__
+       REAL(KIND=c_long_double), INTENT(INOUT) :: G(LDG,N), GX
+#else
+       REAL(KIND=REAL128), INTENT(INOUT) :: G(LDG,N), GX
+#endif
+       INTEGER, INTENT(INOUT) :: GS, INFO
+     END SUBROUTINE XSCALG
+  END INTERFACE
+  INTERFACE
+#ifdef _OPENMP
+     SUBROUTINE XPRCYC(M, N, G, LDG, JPOS, SV, IX, WRK, RWRK, INFO)
+#else
+     PURE SUBROUTINE XPRCYC(M, N, G, LDG, JPOS, SV, IX, WRK, RWRK, INFO)
+#endif
+#ifdef __GFORTRAN__
+       USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
+#else
+       USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL128
+#endif
+       IMPLICIT NONE
+       INTEGER, INTENT(IN) :: M, N, LDG, JPOS
+#ifdef __GFORTRAN__
+       REAL(KIND=c_long_double), INTENT(INOUT) :: G(LDG,N)
+       REAL(KIND=c_long_double), INTENT(OUT) :: SV(N), WRK(M,N), RWRK(N)
+#else
+       REAL(KIND=REAL128), INTENT(INOUT) :: G(LDG,N)
+       REAL(KIND=REAL128), INTENT(OUT) :: SV(N), WRK(M,N), RWRK(N)
+#endif
+       INTEGER, INTENT(INOUT) :: IX(N), INFO
+     END SUBROUTINE XPRCYC
+  END INTERFACE
+  INTERFACE
+     SUBROUTINE XTRNSP(M, N, G, LDG, V, LDV, SV, GX, P, Q, TOL, IX, WRK, INFO)
+#ifdef __GFORTRAN__
+       USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
+#else
+       USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL128
+#endif
+       IMPLICIT NONE
+       INTEGER, INTENT(IN) :: M, N, LDG, LDV, P, Q, IX(N)
+#ifdef __GFORTRAN__
+       REAL(KIND=c_long_double), INTENT(INOUT) :: G(LDG,N), V(LDV,N), SV(N), GX, TOL
+       REAL(KIND=c_long_double), INTENT(OUT) :: WRK(M,N)
+#else
+       REAL(KIND=REAL128), INTENT(INOUT) :: G(LDG,N), V(LDV,N), SV(N), GX, TOL
+       REAL(KIND=REAL128), INTENT(OUT) :: WRK(M,N)
+#endif
+       INTEGER, INTENT(INOUT) :: INFO
+     END SUBROUTINE XTRNSP
+  END INTERFACE
+  INTERFACE
+     SUBROUTINE XTRACK(N, SV, GX, GS, SWP, NTR, U)
+#ifdef __GFORTRAN__
+       USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
+#else
+       USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL128
+#endif
+       IMPLICIT NONE
+       INTEGER, INTENT(IN) :: N, GS, SWP, NTR, U
+#ifdef __GFORTRAN__
+       REAL(KIND=c_long_double), INTENT(IN) :: SV(N), GX
+#else
+       REAL(KIND=REAL128), INTENT(IN) :: SV(N), GX
+#endif
+     END SUBROUTINE XTRACK
+  END INTERFACE
+#ifdef __GFORTRAN__
+  INTEGER, PARAMETER :: K = c_long_double
+#else
+  INTEGER, PARAMETER :: K = REAL128
+#endif
+  REAL(KIND=K), PARAMETER :: ZERO = 0.0_K, ONE = 1.0_K, EPS = EPSILON(EPS) / 2
+  INTEGER, INTENT(IN) :: M, N, LDG, LDV, JPOS, TBL(2,*)
+  REAL(KIND=K), INTENT(INOUT) :: G(LDG,N)
+  REAL(KIND=K), INTENT(OUT) :: V(LDV,N), SV(N), WRK(M,N), RWRK(N)
+  INTEGER, INTENT(INOUT) :: GS, IX(N), ORD(2,*), INFO
+  REAL(KIND=K) :: GX, TOL, X, Y
+  INTEGER(KIND=INT64) :: TT
+  INTEGER :: L, O, P, Q, R, S, T, U, W, ST, TP, TS
+#define GINISX XINISX
+#define GSCALG XSCALG
+#define GPRCYC XPRCYC
+#define GTRNSP XTRNSP
+#define GTRACK XTRACK
+#define GSQRT CR_SQRT
+#include "gjsvdp.f90"
+END SUBROUTINE XJSVDP

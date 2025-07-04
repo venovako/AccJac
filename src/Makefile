@@ -66,6 +66,7 @@ dnsort.obj snsort.obj xnsort.obj \
 cprcyc.obj dprcyc.obj sprcyc.obj wprcyc.obj xprcyc.obj zprcyc.obj \
 ctrana.obj dtrana.obj strana.obj wtrana.obj xtrana.obj ztrana.obj \
 ctrnsf.obj dtrnsf.obj strnsf.obj wtrnsf.obj xtrnsf.obj ztrnsf.obj \
+ctrnsp.obj dtrnsp.obj strnsp.obj wtrnsp.obj xtrnsp.obj ztrnsp.obj \
 ctruti.obj dtruti.obj struti.obj wtruti.obj xtruti.obj ztruti.obj \
 dtrack.obj strack.obj xtrack.obj \
 ctrace.obj dtrace.obj strace.obj wtrace.obj xtrace.obj ztrace.obj \
@@ -74,6 +75,7 @@ ctrcoa.obj dtrcoa.obj strcoa.obj wtrcoa.obj xtrcoa.obj ztrcoa.obj \
 dmmmsq.obj jmmmsq.obj qmmmsq.obj wmmmsq.obj xmmmsq.obj ymmmsq.obj zmmmsq.obj \
 cdsort.obj ddsort.obj sdsort.obj wdsort.obj xdsort.obj zdsort.obj \
 cjsvdf.obj djsvdf.obj sjsvdf.obj wjsvdf.obj xjsvdf.obj zjsvdf.obj \
+cjsvdp.obj djsvdp.obj sjsvdp.obj wjsvdp.obj xjsvdp.obj zjsvdp.obj \
 cjevdc.obj djevdc.obj sjevdc.obj wjevdc.obj xjevdc.obj zjevdc.obj \
 cjevdr.obj djevdr.obj sjevdr.obj wjevdr.obj xjevdr.obj zjevdr.obj \
 jstep.obj jsweep.obj djevdm.obj zjevdm.obj

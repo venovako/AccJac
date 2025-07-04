@@ -64,6 +64,7 @@ dnsort.o snsort.o xnsort.o \
 cprcyc.o dprcyc.o sprcyc.o wprcyc.o xprcyc.o zprcyc.o \
 ctrana.o dtrana.o strana.o wtrana.o xtrana.o ztrana.o \
 ctrnsf.o dtrnsf.o strnsf.o wtrnsf.o xtrnsf.o ztrnsf.o \
+ctrnsp.o dtrnsp.o strnsp.o wtrnsp.o xtrnsp.o ztrnsp.o \
 ctruti.o dtruti.o struti.o wtruti.o xtruti.o ztruti.o \
 dtrack.o strack.o xtrack.o \
 ctrace.o dtrace.o strace.o wtrace.o xtrace.o ztrace.o \
@@ -72,6 +73,7 @@ ctrcoa.o dtrcoa.o strcoa.o wtrcoa.o xtrcoa.o ztrcoa.o \
 dmmmsq.o jmmmsq.o qmmmsq.o wmmmsq.o xmmmsq.o ymmmsq.o zmmmsq.o \
 cdsort.o ddsort.o sdsort.o wdsort.o xdsort.o zdsort.o \
 cjsvdf.o djsvdf.o sjsvdf.o wjsvdf.o xjsvdf.o zjsvdf.o \
+cjsvdp.o djsvdp.o sjsvdp.o wjsvdp.o xjsvdp.o zjsvdp.o \
 cjevdc.o djevdc.o sjevdc.o wjevdc.o xjevdc.o zjevdc.o \
 cjevdr.o djevdr.o sjevdr.o wjevdr.o xjevdr.o zjevdr.o \
 jstep.o jsweep.o djevdm.o zjevdm.o

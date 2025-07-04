@@ -1,0 +1,180 @@
+! IN: INFO & 1: hyp
+!     INFO & 2: SLOW
+!OUT: INFO = 0: notransf due to tol
+!     INFO = 1: notransf due to identity transf
+!     INFO = 2: transf
+!     INFO = 3: transf, big th
+SUBROUTINE WTRNSP(M, N, G, LDG, V, LDV, SV, GX, P, Q, TOL, IX, WRK, INFO)
+#ifdef __GFORTRAN__
+  USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
+  USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: INPUT_UNIT
+#else
+  USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: INPUT_UNIT, REAL128
+#endif
+#ifdef USE_IEEE_INTRINSIC
+  USE, INTRINSIC :: IEEE_ARITHMETIC, ONLY: IEEE_FMA
+#endif
+  IMPLICIT NONE
+#include "cr.f90"
+  INTERFACE
+     PURE FUNCTION WNRMF(M, X)
+#ifdef __GFORTRAN__
+       USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
+#else
+       USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL128
+#endif
+       IMPLICIT NONE
+       INTEGER, INTENT(IN) :: M
+#ifdef __GFORTRAN__
+       COMPLEX(KIND=c_long_double), INTENT(IN) :: X(M)
+       REAL(KIND=c_long_double) :: WNRMF
+#else
+       COMPLEX(KIND=REAL128), INTENT(IN) :: X(M)
+       REAL(KIND=REAL128) :: WNRMF
+#endif
+     END FUNCTION WNRMF
+  END INTERFACE
+  INTERFACE
+     FUNCTION WSDP(M, X, Y, MX, MY, INFO)
+#ifdef __GFORTRAN__
+       USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
+#else
+       USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL128
+#endif
+       IMPLICIT NONE
+       INTEGER, INTENT(IN) :: M
+       INTEGER, INTENT(INOUT) :: INFO
+#ifdef __GFORTRAN__
+       COMPLEX(KIND=c_long_double), INTENT(IN) :: X(M), Y(M)
+       REAL(KIND=c_long_double), INTENT(IN) :: MX, MY
+       COMPLEX(KIND=c_long_double) :: WSDP
+#else
+       COMPLEX(KIND=REAL128), INTENT(IN) :: X(M), Y(M)
+       REAL(KIND=REAL128), INTENT(IN) :: MX, MY
+       COMPLEX(KIND=REAL128) :: WSDP
+#endif
+     END FUNCTION WSDP
+  END INTERFACE
+  INTERFACE
+     PURE SUBROUTINE WGRAM(PNF, QNF, QPS, APP, AQQ, AQPR, AQPI, INFO)
+#ifdef __GFORTRAN__
+       USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
+#else
+       USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL128
+#endif
+       IMPLICIT NONE
+#ifdef __GFORTRAN__
+       REAL(KIND=c_long_double), INTENT(IN) :: PNF, QNF
+       COMPLEX(KIND=c_long_double), INTENT(IN) :: QPS
+       REAL(KIND=c_long_double), INTENT(OUT) :: APP, AQQ, AQPR, AQPI
+#else
+       REAL(KIND=REAL128), INTENT(IN) :: PNF, QNF
+       COMPLEX(KIND=REAL128), INTENT(IN) :: QPS
+       REAL(KIND=REAL128), INTENT(OUT) :: APP, AQQ, AQPR, AQPI
+#endif
+       INTEGER, INTENT(OUT) :: INFO
+     END SUBROUTINE WGRAM
+  END INTERFACE
+  INTERFACE
+     SUBROUTINE WLJTU2(A11, A22, A21R, A21I, CS, TNR, TNI, INFO)
+#ifdef __GFORTRAN__
+       USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
+#else
+       USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL128
+#endif
+       IMPLICIT NONE
+#ifdef __GFORTRAN__
+       REAL(KIND=c_long_double), INTENT(INOUT) :: A11, A22, A21R, A21I
+       REAL(KIND=c_long_double), INTENT(OUT) :: CS, TNR, TNI
+#else
+       REAL(KIND=REAL128), INTENT(INOUT) :: A11, A22, A21R, A21I
+       REAL(KIND=REAL128), INTENT(OUT) :: CS, TNR, TNI
+#endif
+       INTEGER, INTENT(INOUT) :: INFO
+     END SUBROUTINE WLJTU2
+  END INTERFACE
+  INTERFACE
+     SUBROUTINE WLJTV2(A11, A22, A21R, A21I, CH, THR, THI, INFO)
+#ifdef __GFORTRAN__
+       USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
+#else
+       USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL128
+#endif
+       IMPLICIT NONE
+#ifdef __GFORTRAN__
+       REAL(KIND=c_long_double), INTENT(INOUT) :: A11, A22, A21R, A21I, CH
+       REAL(KIND=c_long_double), INTENT(OUT) :: THR, THI
+#else
+       REAL(KIND=REAL128), INTENT(INOUT) :: A11, A22, A21R, A21I, CH
+       REAL(KIND=REAL128), INTENT(OUT) :: THR, THI
+#endif
+       INTEGER, INTENT(INOUT) :: INFO
+     END SUBROUTINE WLJTV2
+  END INTERFACE
+  INTERFACE
+     PURE SUBROUTINE WRTT(M, X, Y, CS, TNR, TNI, GX, INFO)
+#ifdef __GFORTRAN__
+       USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
+#else
+       USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL128
+#endif
+       IMPLICIT NONE
+       INTEGER, INTENT(IN) :: M
+#ifdef __GFORTRAN__
+       COMPLEX(KIND=c_long_double), INTENT(INOUT) :: X(M), Y(M)
+       REAL(KIND=c_long_double), INTENT(IN) :: CS, TNR, TNI
+       REAL(KIND=c_long_double), INTENT(INOUT) :: GX
+#else
+       COMPLEX(KIND=REAL128), INTENT(INOUT) :: X(M), Y(M)
+       REAL(KIND=REAL128), INTENT(IN) :: CS, TNR, TNI
+       REAL(KIND=REAL128), INTENT(INOUT) :: GX
+#endif
+       INTEGER, INTENT(INOUT) :: INFO
+     END SUBROUTINE WRTT
+  END INTERFACE
+  INTERFACE
+     PURE SUBROUTINE WRTH(M, X, Y, CH, THR, THI, GX, INFO)
+#ifdef __GFORTRAN__
+       USE, INTRINSIC :: ISO_C_BINDING, ONLY: c_long_double
+#else
+       USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: REAL128
+#endif
+       IMPLICIT NONE
+       INTEGER, INTENT(IN) :: M
+#ifdef __GFORTRAN__
+       COMPLEX(KIND=c_long_double), INTENT(INOUT) :: X(M), Y(M)
+       REAL(KIND=c_long_double), INTENT(IN) :: CH, THR, THI
+       REAL(KIND=c_long_double), INTENT(INOUT) :: GX
+#else
+       COMPLEX(KIND=REAL128), INTENT(INOUT) :: X(M), Y(M)
+       REAL(KIND=REAL128), INTENT(IN) :: CH, THR, THI
+       REAL(KIND=REAL128), INTENT(INOUT) :: GX
+#endif
+       INTEGER, INTENT(INOUT) :: INFO
+     END SUBROUTINE WRTH
+  END INTERFACE
+#ifdef __GFORTRAN__
+  INTEGER, PARAMETER :: K = c_long_double
+#else
+  INTEGER, PARAMETER :: K = REAL128
+#endif
+  REAL(KIND=K), PARAMETER :: ZERO = 0.0_K, ONE = 1.0_K
+  INTEGER, INTENT(IN) :: M, N, LDG, LDV, P, Q, IX(N)
+  COMPLEX(KIND=K), INTENT(INOUT) :: G(LDG,N), V(LDV,N), TOL
+  COMPLEX(KIND=K), INTENT(OUT) :: WRK(M,N)
+  REAL(KIND=K), INTENT(INOUT) :: SV(N), GX
+  INTEGER, INTENT(INOUT) :: INFO
+  COMPLEX(KIND=K) :: QPS
+  REAL(KIND=K) :: APP, AQQ, AQPR, AQPI, C, S, TR, TI
+  INTEGER :: I, J, L, O, E
+#define HNRMF WNRMF
+#define HSDP WSDP
+#define HGRAM WGRAM
+#define HLJTU2 WLJTU2
+#define HLJTV2 WLJTV2
+#define HRTT WRTT
+#define HRTH WRTH
+#define GSQRT CR_SQRT
+#define GFMA XFMA
+#include "htrnsp.f90"
+END SUBROUTINE WTRNSP

@@ -89,16 +89,16 @@ SUBROUTINE SJSVDF(M, N, G, LDG, V, LDV, JPOS, SV, GS, IX, WRK, RWRK, INFO)
   IF (N .LT. 0) INFO = -2
   IF (M .LT. N) INFO = -1
   IF (INFO .LT. 0) RETURN
+  S = GS
+  GS = 0
   IF (N .EQ. 0) THEN
      INFO = 0
      RETURN
   END IF
-  S = GS
-  GS = 0
-  TT = 0_INT64
   L = ISHFT(IAND(INFO, 6), -1)
   INFO = IAND(INFO, 1)
   U = IX(1)
+  TT = 0_INT64
   O = -1
   CALL SSCALG(M, N, G, LDG, GX, GS, O)
   IF (O .LT. 0) THEN
