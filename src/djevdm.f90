@@ -1,6 +1,9 @@
 !  IN: AS = max sweeps, INFO = 0 or 1 (sin => tan) OR 2 (the modified modulus)
 ! OUT: AS: backscale A by 2**-AS, INFO: #sweeps
 SUBROUTINE DJEVDM(N, A, LDA, V, LDV, JPOS, WRK, AS, TBL, ORD, INFO)
+#ifdef ANIMATE
+  USE, INTRINSIC :: ISO_C_BINDING
+#endif
   USE, INTRINSIC :: ISO_FORTRAN_ENV, ONLY: INT64, REAL64
   IMPLICIT NONE
   INTERFACE
@@ -65,6 +68,14 @@ SUBROUTINE DJEVDM(N, A, LDA, V, LDV, JPOS, WRK, AS, TBL, ORD, INFO)
   INTEGER(KIND=INT64) :: TT
   INTEGER :: L, O, P, Q, R, S, T, U, W, X, JJ, JS, ST
   CHARACTER(LEN=11) :: FN
+#ifdef ANIMATE
+  CHARACTER(LEN=256), POINTER :: CP
+  INTEGER(KIND=c_size_t) :: LDW
+  TYPE(c_ptr) :: CTX
+  TYPE(c_ptr), EXTERNAL :: PVN_RVIS_START
+  INTEGER(KIND=c_int), EXTERNAL :: PVN_RVIS_FRAME, PVN_RVIS_STOP
+  CP => NULL()
+#endif
   IF ((INFO .LT. 0) .OR. (INFO .GT. 7)) INFO = -11
   IF (AS .LT. 0) INFO = -8
   IF ((JPOS .LT. 0) .OR. (JPOS .GT. N)) INFO = -6
@@ -114,6 +125,16 @@ SUBROUTINE DJEVDM(N, A, LDA, V, LDV, JPOS, WRK, AS, TBL, ORD, INFO)
      JJ = 7
      JS = N
   END IF
+#ifdef ANIMATE
+  CTX = TRANSFER(WRK(1,2), CTX)
+  CALL C_F_POINTER(CTX, CP)
+  FN = TRIM(CP(1:8))//'lg'//c_null_char
+  LDW = TRANSFER(WRK(2,1), LDW)
+  W = INT(LDW)
+  CTX = PVN_RVIS_START(N, N, W, FN)
+  IF (.NOT. C_ASSOCIATED(CTX)) STOP 'PVN_RVIS_START'
+  LDW = TRANSFER(WRK(2,2), LDW)
+#endif
   ! main loop
   DO R = 1, S
      T = 0
@@ -123,6 +144,29 @@ SUBROUTINE DJEVDM(N, A, LDA, V, LDV, JPOS, WRK, AS, TBL, ORD, INFO)
         INFO = -7
         RETURN
      END IF
+#ifdef ANIMATE
+     X = -AS
+     IF (X .NE. 0) THEN
+        DO Q = 1, N
+           DO P = 1, Q-1
+              WRK(P,Q) = SCALE(A(Q,P), X)
+           END DO
+           DO P = Q, N
+              WRK(P,Q) = SCALE(A(P,Q), X)
+           END DO
+        END DO
+     ELSE ! X = 0
+        DO Q = 1, N
+           DO P = 1, Q-1
+              WRK(P,Q) = A(Q,P)
+           END DO
+           DO P = Q, N
+              WRK(P,Q) = A(P,Q)
+           END DO
+        END DO
+     END IF
+     IF (PVN_RVIS_FRAME(CTX, WRK, LDW) .NE. 0_c_int) STOP 'PVN_RVIS_FRAME'
+#endif
      P = N / 2
      DO ST = 1, JS
         CALL JSTEP(JJ, N, JS, ST, P, TBL, ORD, W)
@@ -186,9 +230,41 @@ SUBROUTINE DJEVDM(N, A, LDA, V, LDV, JPOS, WRK, AS, TBL, ORD, INFO)
         END IF
         CLOSE(UNIT=W, IOSTAT=X)
      END IF
-     IF (T .EQ. 0) EXIT
+     IF (T .EQ. 0) THEN
+#ifdef ANIMATE
+        X = -AS
+        IF (X .NE. 0) THEN
+           DO Q = 1, N
+              DO P = 1, Q-1
+                 WRK(P,Q) = SCALE(A(Q,P), X)
+              END DO
+              DO P = Q, N
+                 WRK(P,Q) = SCALE(A(P,Q), X)
+              END DO
+           END DO
+        ELSE ! X = 0
+           DO Q = 1, N
+              DO P = 1, Q-1
+                 WRK(P,Q) = A(Q,P)
+              END DO
+              DO P = Q, N
+                 WRK(P,Q) = A(P,Q)
+              END DO
+           END DO
+        END IF
+        IF (PVN_RVIS_FRAME(CTX, WRK, LDW) .NE. 0_c_int) STOP 'PVN_RVIS_FRAME'
+#endif
+        EXIT
+     END IF
   END DO
   IF (IAND(INFO, 4) .NE. 0) CALL DTRCOA(N, A, LDA, AS, -1, O, U)
+#ifdef ANIMATE
+  W = ANIMATE
+  T = ANIMATE
+  X = 8
+  FN = TRIM(CP(1:8))//'lg'//c_null_char
+  IF (PVN_RVIS_STOP(CTX, W, T, X, FN) .NE. 0_c_int) STOP 'PVN_RVIS_STOP'
+#endif
   INFO = R
   WRK(1,1) = REAL(TT, K)
 END SUBROUTINE DJEVDM
