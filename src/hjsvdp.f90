@@ -65,6 +65,7 @@
         GOTO 9
      END IF
      T = 0
+     Y = ZERO
      DO ST = 1, TS
         CALL JSTEP(L, N, TS, ST, TP, TBL, ORD, O)
         IF (O .NE. 0) THEN
@@ -73,19 +74,21 @@
         END IF
         W = 0
         X = ZERO
-        !$OMP PARALLEL DO DEFAULT(NONE) PRIVATE(O,P,Q,Z) SHARED(M,N,G,LDG,V,LDV,JPOS,SV,IX,WRK,RWRK,ORD,INFO,TP,TOL,ST,U) REDUCTION(MAX:W,X)
+        !$OMP PARALLEL DO DEFAULT(NONE) PRIVATE(O,P,Q,Z) SHARED(M,N,G,LDG,V,LDV,JPOS,SV,IX,WRK,RWRK,ORD,INFO,TP,TOL,ST,U) REDUCTION(MAX:W,X,Y)
         DO O = 1, TP
            P = ORD(1,O)
            Q = ORD(2,O)
            Z = CMPLX(TOL, REAL(ST, K), K)
            RWRK(O) = REAL(U, K)
            IF ((P .LE. JPOS) .AND. (Q .GT. JPOS)) THEN
+              ORD(1,O) = 1
               IF (INFO .EQ. 0) THEN
                  ORD(2,O) = 1
               ELSE ! SLOW
                  ORD(2,O) = 3
               END IF
            ELSE ! trig
+              ORD(1,O) = 0
               IF (INFO .EQ. 0) THEN
                  ORD(2,O) = 0
               ELSE ! SLOW
@@ -93,6 +96,8 @@
               END IF
            END IF
            CALL HTRNSP(M, N, G, LDG, V, LDV, SV, RWRK(O), P, Q, Z, IX, WRK, ORD(2,O))
+           RWRK(O+TP) = ABS(REAL(Z))
+           IF (ORD(1,O) .EQ. 1) Y = MAX(Y, RWRK(O+TP))
            SELECT CASE (ORD(2,O))
            CASE (0,1)
               ORD(1,O) = 0
@@ -101,7 +106,6 @@
            CASE DEFAULT
               ORD(1,O) = O
            END SELECT
-           RWRK(O+TP) = ABS(AIMAG(Z))
            W = MAX(W, ORD(1,O))
            X = MAX(X, RWRK(O))
         END DO
@@ -137,51 +141,67 @@
            END IF
         END IF
      END DO
-     CALL GTRACK(N, SV, GX, GS, R, -T, U)
+     CALL GTRACK(N, SV, Y, GS, R, -T, U)
      IF (T .EQ. 0) EXIT
   END DO
   IF (R .LE. S) THEN
      ! permute V
+     !$OMP PARALLEL DO DEFAULT(NONE) PRIVATE(O,P,Q) SHARED(N,V,WRK,IX)
      DO Q = 1, N
+        O = IX(Q)
         DO P = 1, N
-           WRK(P,Q) = V(P,IX(Q))
+           WRK(P,Q) = V(P,O)
         END DO
      END DO
+     !$OMP END PARALLEL DO
+     !$OMP PARALLEL DO DEFAULT(NONE) PRIVATE(P,Q) SHARED(N,V,WRK)
      DO Q = 1, N
         DO P = 1, N
            V(P,Q) = WRK(P,Q)
         END DO
      END DO
+     !$OMP END PARALLEL DO
      ! permute and rescale U
+     W = 0
+     !$OMP PARALLEL DO DEFAULT(NONE) PRIVATE(O,P,Q,X,Z) SHARED(M,N,G,SV,WRK,IX,INFO) REDUCTION(MAX:W)
      DO Q = 1, N
         IF (.NOT. (SV(Q) .GT. ZERO)) THEN
-           INFO = -11
-           GOTO 9
-        END IF
-        IF (SV(Q) .NE. ONE) THEN
+           W = MAX(W, Q)
+        ELSE IF (SV(Q) .NE. ONE) THEN
            IF (INFO .EQ. 0) THEN
               X = ONE / SV(Q)
+              O = IX(Q)
               DO P = 1, M
-                 Z = G(P,IX(Q))
+                 Z = G(P,O)
                  WRK(P,Q) = CMPLX(REAL(Z) * X, AIMAG(Z) * X, K)
               END DO
            ELSE ! SLOW
+              X = SV(Q)
+              O = IX(Q)
               DO P = 1, M
-                 Z = G(P,IX(Q))
-                 WRK(P,Q) = CMPLX(REAL(Z) / SV(Q), AIMAG(Z) / SV(Q), K)
+                 Z = G(P,O)
+                 WRK(P,Q) = CMPLX(REAL(Z) / X, AIMAG(Z) / X, K)
               END DO
            END IF
         ELSE ! no division
+           O = IX(Q)
            DO P = 1, M
-              WRK(P,Q) = G(P,IX(Q))
+              WRK(P,Q) = G(P,O)
            END DO
         END IF
      END DO
+     !$OMP END PARALLEL DO
+     IF (W .NE. 0) THEN
+        INFO = -11
+        GOTO 9
+     END IF
+     !$OMP PARALLEL DO DEFAULT(NONE) PRIVATE(P,Q) SHARED(M,N,G,WRK)
      DO Q = 1, N
         DO P = 1, M
            G(P,Q) = WRK(P,Q)
         END DO
      END DO
+     !$OMP END PARALLEL DO
   END IF
   INFO = R
 9 RWRK(N) = REAL(TT, K)
