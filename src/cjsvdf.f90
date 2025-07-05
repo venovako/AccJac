@@ -85,7 +85,7 @@ SUBROUTINE CJSVDF(M, N, G, LDG, V, LDV, JPOS, SV, GS, IX, WRK, RWRK, INFO)
   REAL(KIND=K), INTENT(OUT) :: SV(N), RWRK(N)
   INTEGER, INTENT(INOUT) :: GS, IX(N), INFO
   COMPLEX(KIND=K) :: Z
-  REAL(KIND=K) :: GX, TOL, X
+  REAL(KIND=K) :: GX, TOL, X, Y
   INTEGER(KIND=INT64) :: TT
   INTEGER :: L, O, P, Q, R, S, T, U, W
   IF ((INFO .LT. 0) .OR. (INFO .GT. 7)) INFO = -13
@@ -134,6 +134,7 @@ SUBROUTINE CJSVDF(M, N, G, LDG, V, LDV, JPOS, SV, GS, IX, WRK, RWRK, INFO)
         GOTO 9
      END IF
      T = 0
+     Y = ZERO
      IF (IAND(L, 1) .EQ. 0) THEN
         ! the first diagonal block
         DO P = 1, JPOS-1
@@ -208,7 +209,7 @@ SUBROUTINE CJSVDF(M, N, G, LDG, V, LDV, JPOS, SV, GS, IX, WRK, RWRK, INFO)
                  INFO = -5
                  GOTO 9
               END SELECT
-              RWRK(N) = MAX(RWRK(N), ABS(REAL(Z)))
+              Y = MAX(Y, ABS(REAL(Z)))
            END DO
         END DO
         ! the second diagonal block
@@ -290,11 +291,11 @@ SUBROUTINE CJSVDF(M, N, G, LDG, V, LDV, JPOS, SV, GS, IX, WRK, RWRK, INFO)
                  INFO = -5
                  GOTO 9
               END SELECT
-              IF ((P .LE. JPOS) .AND. (Q .GT. JPOS)) RWRK(N) = MAX(RWRK(N), ABS(REAL(Z)))
+              IF ((P .LE. JPOS) .AND. (Q .GT. JPOS)) Y = MAX(Y, ABS(REAL(Z)))
            END DO
         END DO
      END IF
-     CALL STRACK(N, SV, RWRK(N), GS, R, -T, U)
+     CALL STRACK(N, SV, Y, GS, R, -T, U)
      IF (T .EQ. 0) EXIT
   END DO
   IF (R .LE. S) THEN

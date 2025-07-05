@@ -142,46 +142,62 @@
   END DO
   IF (R .LE. S) THEN
      ! permute V
+     !$OMP PARALLEL DO DEFAULT(NONE) PRIVATE(O,P,Q) SHARED(N,V,WRK,IX)
      DO Q = 1, N
+        O = IX(Q)
         DO P = 1, N
-           WRK(P,Q) = V(P,IX(Q))
+           WRK(P,Q) = V(P,O)
         END DO
      END DO
+     !$OMP END PARALLEL DO
+     !$OMP PARALLEL DO DEFAULT(NONE) PRIVATE(P,Q) SHARED(N,V,WRK)
      DO Q = 1, N
         DO P = 1, N
            V(P,Q) = WRK(P,Q)
         END DO
      END DO
+     !$OMP END PARALLEL DO
      ! permute and rescale U
+     W = 0
+     !$OMP PARALLEL DO DEFAULT(NONE) PRIVATE(O,P,Q,X,Z) SHARED(M,N,G,SV,WRK,IX,INFO) REDUCTION(MAX:W)
      DO Q = 1, N
         IF (.NOT. (SV(Q) .GT. ZERO)) THEN
-           INFO = -11
-           GOTO 9
-        END IF
-        IF (SV(Q) .NE. ONE) THEN
+           W = MAX(W, Q)
+        ELSE IF (SV(Q) .NE. ONE) THEN
            IF (INFO .EQ. 0) THEN
               X = ONE / SV(Q)
+              O = IX(Q)
               DO P = 1, M
-                 Z = G(P,IX(Q))
+                 Z = G(P,O)
                  WRK(P,Q) = CMPLX(REAL(Z) * X, AIMAG(Z) * X, K)
               END DO
            ELSE ! SLOW
+              X = SV(Q)
+              O = IX(Q)
               DO P = 1, M
-                 Z = G(P,IX(Q))
-                 WRK(P,Q) = CMPLX(REAL(Z) / SV(Q), AIMAG(Z) / SV(Q), K)
+                 Z = G(P,O)
+                 WRK(P,Q) = CMPLX(REAL(Z) / X, AIMAG(Z) / X, K)
               END DO
            END IF
         ELSE ! no division
+           O = IX(Q)
            DO P = 1, M
-              WRK(P,Q) = G(P,IX(Q))
+              WRK(P,Q) = G(P,O)
            END DO
         END IF
      END DO
+     !$OMP END PARALLEL DO
+     IF (W .NE. 0) THEN
+        INFO = -11
+        GOTO 9
+     END IF
+     !$OMP PARALLEL DO DEFAULT(NONE) PRIVATE(P,Q) SHARED(M,N,G,WRK)
      DO Q = 1, N
         DO P = 1, M
            G(P,Q) = WRK(P,Q)
         END DO
      END DO
+     !$OMP END PARALLEL DO
   END IF
   INFO = R
 9 RWRK(N) = REAL(TT, K)
