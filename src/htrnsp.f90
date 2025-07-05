@@ -12,6 +12,7 @@
   L = IAND(INFO, 1)
   O = IAND(INFO, 2)
   E = INT(GX)
+  F = INT(AIMAG(TOL))
   IF (O .EQ. 0) THEN
      I = 1
   ELSE ! SLOW
@@ -19,13 +20,13 @@
   END IF
   QPS = HSDP(M, G(1,IX(Q)), G(1,IX(P)), SV(Q), SV(P), I)
   IF (I .LT. 0) THEN
-     IF (E .NE. INPUT_UNIT) WRITE (E,9) 'SDP:', INT(AIMAG(TOL)), ',', P, ',', Q, ',', I
+     IF (E .NE. INPUT_UNIT) WRITE (E,9) 'SDP:', F, ',', P, ',', Q, ',', I
      INFO = -3
      RETURN
   END IF
   S = CR_HYPOT(REAL(QPS), AIMAG(QPS))
   IF (.NOT. (S .LE. HUGE(S))) THEN
-     IF (E .NE. INPUT_UNIT) WRITE (E,9) 'SDP!', INT(AIMAG(TOL)), ',', P, ',', Q, ',', I
+     IF (E .NE. INPUT_UNIT) WRITE (E,9) 'SDP!', F, ',', P, ',', Q, ',', I
      INFO = -12
      RETURN
   END IF
@@ -41,7 +42,7 @@
   J = 0
   CALL HGRAM(SV(P), SV(Q), QPS, APP, AQQ, AQPR, AQPI, J)
   IF (J .LE. -HUGE(J)) THEN
-     IF (E .NE. INPUT_UNIT) WRITE (E,9) 'GRAM:', INT(AIMAG(TOL)), ',', P, ',', Q, ',', J
+     IF (E .NE. INPUT_UNIT) WRITE (E,9) 'GRAM:', F, ',', P, ',', Q, ',', J
      INFO = -7
      RETURN
   END IF
@@ -52,14 +53,14 @@
         J = 0
         CALL HRTT(N, V(1,IX(P)), V(1,IX(Q)), C, TR, TI, GX, J)
         IF (J .LT. 0) THEN
-           IF (E .NE. INPUT_UNIT) WRITE (E,9) 'RTT(V):', INT(AIMAG(TOL)), ',', P, ',', Q, ',', J
+           IF (E .NE. INPUT_UNIT) WRITE (E,9) 'RTT(V):', F, ',', P, ',', Q, ',', J
            INFO = -5
            RETURN
         END IF
         J = 1
         CALL HRTT(M, G(1,IX(P)), G(1,IX(Q)), C, TR, TI, GX, J)
         IF (J .LT. 0) THEN
-           IF (E .NE. INPUT_UNIT) WRITE (E,9) 'RTT(G):', INT(AIMAG(TOL)), ',', P, ',', Q, ',', J
+           IF (E .NE. INPUT_UNIT) WRITE (E,9) 'RTT(G):', F, ',', P, ',', Q, ',', J
            INFO = -13
            RETURN
         END IF
@@ -71,14 +72,14 @@
         J = 0
         CALL HRTH(N, V(1,IX(P)), V(1,IX(Q)), C, TR, TI, GX, J)
         IF (J .LT. 0) THEN
-           IF (E .NE. INPUT_UNIT) WRITE (E,9) 'RTH(V):', INT(AIMAG(TOL)), ',', P, ',', Q, ',', J
+           IF (E .NE. INPUT_UNIT) WRITE (E,9) 'RTH(V):', F, ',', P, ',', Q, ',', J
            INFO = -5
            RETURN
         END IF
         J = 1
         CALL HRTH(M, G(1,IX(P)), G(1,IX(Q)), C, TR, TI, GX, J)
         IF (J .LT. 0) THEN
-           IF (E .NE. INPUT_UNIT) WRITE (E,9) 'RTH(G):', INT(AIMAG(TOL)), ',', P, ',', Q, ',', J
+           IF (E .NE. INPUT_UNIT) WRITE (E,9) 'RTH(G):', F, ',', P, ',', Q, ',', J
            INFO = -13
            RETURN
         END IF
@@ -90,9 +91,9 @@
   ELSE IF (I .LT. 0) THEN
      IF (E .NE. INPUT_UNIT) THEN
         IF (L .EQ. 0) THEN
-           WRITE (E,9) 'LJTU2:', INT(AIMAG(TOL)), ',', P, ',', Q, ',', I
+           WRITE (E,9) 'LJTU2:', F, ',', P, ',', Q, ',', I
         ELSE ! hyp
-           WRITE (E,9) 'LJTV2:', INT(AIMAG(TOL)), ',', P, ',', Q, ',', I
+           WRITE (E,9) 'LJTV2:', F, ',', P, ',', Q, ',', I
         END IF
      END IF
      INFO = -8
