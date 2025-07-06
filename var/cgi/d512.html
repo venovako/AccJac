@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <script src="/MathJax/es5/tex-chtml-full.js" id="MathJax-script" async></script>
+    <title>512x512 random double precision</title>
+  </head>
+  <body>
+    <h1>\(512\times 512\) random double precision with sorting</h1>
+    <p>The input matrix is a random <a href="d512.A">d512.A</a>.</p>
+    <p>The final image before convergence is actually the state at the end of the previous (i.e., last) cycle.<br>
+      The other images show the state at the beginning of cycles.</p>
+    <p>For each element \(a_{ij}\ne 0\) the corresponding pixel is colored according to \(\lg|a_{ij}|\), while the zeros are colored separately.</p>
+    <p>For each strategy the images share the colormap, but it varies slightly between strategies.<br>
+      The purpose of this example is to give insight into the structure of the iteration matrix, and not to show its actual elements.</p>
+    <table>
+      <thead>
+        <th>cycle</th>
+        <th>modified de&#xA0;Rijk</th>
+        <th>row-cyclic</th>
+        <th>Mantharam-Eberlein</th>
+      </thead>
+      <tr>
+        <td>1</td>
+        <td><img src="d512-7_00.png" alt="d512-7_00.png" width="512" height="512"></td>
+        <td><img src="d512-1_00.png" alt="d512-1_00.png" width="512" height="512"></td>
+        <td><img src="d512-9_00.png" alt="d512-9_00.png" width="512" height="512"></td>
+      </tr>
+      <tr>
+        <td>2</td>
+        <td><img src="d512-7_01.png" alt="d512-7_01.png" width="512" height="512"></td>
+        <td><img src="d512-1_01.png" alt="d512-1_01.png" width="512" height="512"></td>
+        <td><img src="d512-9_01.png" alt="d512-9_01.png" width="512" height="512"></td>
+      </tr>
+      <tr>
+        <td>3</td>
+        <td><img src="d512-7_02.png" alt="d512-7_02.png" width="512" height="512"></td>
+        <td><img src="d512-1_02.png" alt="d512-1_02.png" width="512" height="512"></td>
+        <td><img src="d512-9_02.png" alt="d512-9_02.png" width="512" height="512"></td>
+      </tr>
+      <tr>
+        <td>4</td>
+        <td><img src="d512-7_03.png" alt="d512-7_03.png" width="512" height="512"></td>
+        <td><img src="d512-1_03.png" alt="d512-1_03.png" width="512" height="512"></td>
+        <td><img src="d512-9_03.png" alt="d512-9_03.png" width="512" height="512"></td>
+      </tr>
+      <tr>
+        <td>5</td>
+        <td><img src="d512-7_04.png" alt="d512-7_04.png" width="512" height="512"></td>
+        <td><img src="d512-1_04.png" alt="d512-1_04.png" width="512" height="512"></td>
+        <td><img src="d512-9_04.png" alt="d512-9_04.png" width="512" height="512"></td>
+      </tr>
+      <tr>
+        <td>6</td>
+        <td><img src="d512-7_05.png" alt="d512-7_05.png" width="512" height="512"></td>
+        <td><img src="d512-1_05.png" alt="d512-1_05.png" width="512" height="512"></td>
+        <td><img src="d512-9_05.png" alt="d512-9_05.png" width="512" height="512"></td>
+      </tr>
+      <tr>
+        <td>7</td>
+        <td><img src="d512-7_06.png" alt="d512-7_06.png" width="512" height="512"></td>
+        <td><img src="d512-1_06.png" alt="d512-1_06.png" width="512" height="512"></td>
+        <td><img src="d512-9_06.png" alt="d512-9_06.png" width="512" height="512"></td>
+      </tr>
+      <tr>
+        <td>8</td>
+        <td><img src="d512-7_07.png" alt="d512-7_07.png" width="512" height="512"></td>
+        <td><img src="d512-1_07.png" alt="d512-1_07.png" width="512" height="512"></td>
+        <td><img src="d512-9_07.png" alt="d512-9_07.png" width="512" height="512"></td>
+      </tr>
+      <tr>
+        <td>9</td>
+        <td><img src="d512-7_08.png" alt="d512-7_08.png" width="512" height="512"></td>
+        <td><img src="d512-1_08.png" alt="d512-1_08.png" width="512" height="512"></td>
+        <td><img src="d512-9_08.png" alt="d512-9_08.png" width="512" height="512"></td>
+      </tr>
+      <tr>
+        <td>10</td>
+        <td><img src="d512-7_09.png" alt="d512-7_09.png" width="512" height="512"></td>
+        <td><img src="d512-1_09.png" alt="d512-1_09.png" width="512" height="512"></td>
+        <td><img src="d512-9_09.png" alt="d512-9_09.png" width="512" height="512"></td>
+      </tr>
+      <tr>
+        <td>11</td>
+        <td><img src="d512-7_10.png" alt="d512-7_10.png" width="512" height="512"></td>
+        <td><img src="d512-1_10.png" alt="d512-1_10.png" width="512" height="512"></td>
+        <td><img src="d512-9_10.png" alt="d512-9_10.png" width="512" height="512"></td>
+      </tr>
+      <tr>
+        <td>12</td>
+        <td>converged</td>
+        <td><img src="d512-1_11.png" alt="d512-1_11.png" width="512" height="512"></td>
+        <td><img src="d512-9_11.png" alt="d512-9_11.png" width="512" height="512"></td>
+      </tr>
+      <tr>
+        <td>13</td>
+        <td>converged</td>
+        <td>converged</td>
+        <td><img src="d512-9_12.png" alt="d512-9_12.png" width="512" height="512"></td>
+      </tr>
+    </table>
+    <hr>
+    <p><i>Last modified</i>: <time>2025-07-06</time>.</p>
+  </body>
+</html>
