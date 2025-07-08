@@ -3,15 +3,15 @@
   <head>
     <meta charset="UTF-8">
     <script src="/MathJax/es5/tex-chtml-full.js" id="MathJax-script" async></script>
-    <title>512x512 random double precision</title>
+    <title>J-EVD 512x512 random double precision with sorting</title>
   </head>
   <body>
-    <h1>\(512\times 512\) random double precision with sorting</h1>
+    <h1>\(J\)-EVD \(512\times 512\) random double precision with sorting</h1>
     <p>The input matrix is a random <a href="d512.A">d512.A</a>.</p>
     <p>The final image before convergence is actually the state at the end of the previous (i.e., last) cycle.<br>
       The other images show the state at the beginning of cycles.</p>
     <p>For each element \(a_{ij}\ne 0\) the corresponding pixel is colored according to \(\lg|a_{ij}|\), while the zeros are colored separately.</p>
-    <p>For each strategy the images share the colormap, but it varies slightly between strategies.<br>
+    <p>For each strategy the images share the colormap (in the bottom row), but it varies slightly between strategies.<br>
       The purpose of this example is to give insight into the structure of the iteration matrix, and not to show its actual elements.</p>
     <table>
       <thead>
@@ -106,6 +106,6 @@
       </tr>
     </table>
     <hr>
-    <p><i>Last modified</i>: <time>2025-07-06</time>.</p>
+    <p><i>Last modified</i>: <time>2025-07-08</time>.</p>
   </body>
 </html>
