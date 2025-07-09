@@ -40,6 +40,7 @@ PROGRAM DXSVRR
   IF (O .NE. 0) STOP 'CLOSE(SY)'
   Z = 0.0_KK
   O = 0
+  WRITE (OUTPUT_UNIT,'(A)') '"j", "ReΣj"'
   DO I = 1, N
      X(I) = ABS(X(I) - S(I)) / X(I)
      S(I) = REAL(X(I), K)
@@ -47,10 +48,10 @@ PROGRAM DXSVRR
         Z = X(I)
         O = I
      END IF
-     WRITE (OUTPUT_UNIT,9) I, S(I)
+     WRITE (OUTPUT_UNIT,9) I, ',', S(I)
   END DO
-  WRITE (OUTPUT_UNIT,9) -O, REAL(Z, K)
+  WRITE (OUTPUT_UNIT,9) -O, ',', REAL(Z, K)
   DEALLOCATE(S)
   DEALLOCATE(X)
-9 FORMAT(I11,ES25.17E3)
+9 FORMAT(I11,A,ES25.17E3)
 END PROGRAM DXSVRR
