@@ -122,7 +122,7 @@ FCFLAGS += -DANIMATE=$(ANIMATE)
 endif # ANIMATE
 
 ifdef STATIC
-LDFLAGS=-rdynamic -static -L. -ljaevd -ljaev2 -L../../libpvn/src -lpvn $(LAPACK)
+LDFLAGS=-rdynamic -static -s -L. -ljaevd -ljaev2 -L../../libpvn/src -lpvn $(LAPACK)
 ifdef MPFR
 LDFLAGS += -L$(MPFR)/lib -lmpfr
 endif # MPFR
