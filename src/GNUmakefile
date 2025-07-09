@@ -89,7 +89,7 @@ cpproc.exe dpproc.exe spproc.exe wpproc.exe xpproc.exe zpproc.exe \
 cjsvdx.exe djsvdx.exe sjsvdx.exe wjsvdx.exe xjsvdx.exe zjsvdx.exe \
 cjsvrr.exe djsvrr.exe sjsvrr.exe zjsvrr.exe \
 cjsvor.exe djsvor.exe sjsvor.exe zjsvor.exe \
-dxresc.exe
+dxresc.exe zwresc.exe dxsvrr.exe
 
 ifdef MPFR
 OBJD += \
