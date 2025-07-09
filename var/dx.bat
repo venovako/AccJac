@@ -1,8 +1,8 @@
-..\src\dxresc.exe 128 128 64 -33 1 d128
-..\src\xjsvdx.exe 128 128 64 0 d128
-MOVE /Y d128.SY d128.SX
-MOVE /Y d128.X d128.Y
-..\src\djsvdx.exe 128 128 64 0 d128
-..\src\dxsvrr.exe 128 d128 > dx-0.txt
-..\src\djsvdx.exe 128 128 64 2 d128
-..\src\dxsvrr.exe 128 d128 > dx-2.txt
+..\src\dxresc.exe 256 256 128 -64 1 d256
+..\src\xjsvdx.exe 256 256 128 0 d256
+MOVE /Y d256.SY d256.SX
+MOVE /Y d256.X d256.Y
+..\src\djsvdx.exe 256 256 128 0 d256
+..\src\dxsvrr.exe 256 d256 > dx-0.txt 2>&1
+..\src\djsvdx.exe 256 256 128 2 d256
+..\src\dxsvrr.exe 256 d256 > dx-2.txt 2>&1
