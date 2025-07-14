@@ -23,7 +23,7 @@
      INFO = 0
   CASE (3)
      L = 4
-     INFO = 0
+     INFO = 1
   CASE DEFAULT
      INFO = -15
      RETURN

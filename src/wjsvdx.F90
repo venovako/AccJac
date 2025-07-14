@@ -66,12 +66,10 @@ PROGRAM WJSVDX
      SELECT CASE (L)
      CASE (0, 1)
         I = N - 1
-        GS = 5
-        !$ GS = 2
+        GS = 2
      CASE (2, 3)
         I = N
-        GS = 7
-        !$ GS = 4
+        GS = 4
      CASE DEFAULT
         STOP 'opts'
      END SELECT

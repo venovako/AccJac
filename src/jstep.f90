@@ -16,11 +16,6 @@ PURE SUBROUTINE JSTEP(J, N, S, T, P, O, R, INFO)
   IF (P .EQ. 0) RETURN
 
   M = MOD(T - 1, S) + 1
-  IF (J .LE. 4) THEN
-     JJ = J
-  ELSE ! a sequential-parallel ordering
-     JJ = J - 3
-  END IF
 
   SELECT CASE (JJ)
   CASE (0, 1)

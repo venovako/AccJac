@@ -21,12 +21,6 @@ SUBROUTINE JSWEEP(J, N, S, P, O, INFO)
   IF (INFO .NE. 0) RETURN
   IF (N .LE. 1) RETURN
 
-  IF (J .LE. 4) THEN
-     JJ = J
-  ELSE ! a sequential-parallel ordering
-     JJ = J - 3
-  END IF
-
   SELECT CASE (JJ)
   CASE (0, 1)
      P = 1
