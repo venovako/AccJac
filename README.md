@@ -85,7 +85,7 @@ To find incomplete or unstable code, please search for the `TODO` markers in the
 
 Additional material is available in the `etc`, `var`, and `alt` subdirectories.
 
-Static, single-threaded Windows executables can be found [here](https://venovako.eu/venovako.exe).
+Static, single-threaded Windows executables can be found [here](https://venovako.eu/win64/venovako.exe).
 For Linux, there are [x86_64](https://venovako.eu/x86_64) and [ppc64le](https://venovako.eu/ppc64le) builds.
 
 A Web application for experimenting with the HSVD is [here](https://venovako.eu/AccJac/jsvdt.html).
