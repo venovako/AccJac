@@ -14,3 +14,4 @@ then
 	unset OMP_PROC_BIND
 fi
 export OMP_PROC_BIND=SPREAD
+# enlarge OMP_STACKSIZE if necessary
