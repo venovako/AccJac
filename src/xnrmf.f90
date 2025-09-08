@@ -14,7 +14,7 @@ PURE RECURSIVE FUNCTION XNRMF(M, X) RESULT(F)
   REAL(KIND=K), PARAMETER :: ZERO = 0.0_K, MZERO = -0.0_K
   INTEGER, INTENT(IN) :: M
   REAL(KIND=K), INTENT(IN) :: X(M)
-  REAL(KIND=K) :: F
+  REAL(KIND=K) :: F, L, R
   INTEGER :: I
   IF (M .LT. 0) THEN
      F = MZERO
@@ -23,9 +23,13 @@ PURE RECURSIVE FUNCTION XNRMF(M, X) RESULT(F)
   ELSE IF (M .EQ. 1) THEN
      F = ABS(X(1))
   ELSE IF (M .EQ. 2) THEN
-     F = CR_HYPOT(X(1), X(2))
+     L = X(1)
+     R = X(2)
+     F = CR_HYPOT(L, R)
   ELSE ! M > 2
      I = ISHFT(M, -1) + IAND(M, 1)
-     F = CR_HYPOT(XNRMF(I, X), XNRMF(M-I, X(I+1)))
+     L = XNRMF(I, X)
+     R = XNRMF(M-I, X(I+1))
+     F = CR_HYPOT(L, R)
   END IF
 END FUNCTION XNRMF

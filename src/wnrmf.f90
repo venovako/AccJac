@@ -14,16 +14,20 @@ PURE RECURSIVE FUNCTION WNRMF(M, X) RESULT(F)
   REAL(KIND=K), PARAMETER :: ZERO = 0.0_K, MZERO = -0.0_K
   INTEGER, INTENT(IN) :: M
   COMPLEX(KIND=K), INTENT(IN) :: X(M)
-  REAL(KIND=K) :: F
+  REAL(KIND=K) :: F, L, R
   INTEGER :: I
   IF (M .LT. 0) THEN
      F = MZERO
   ELSE IF (M .EQ. 0) THEN
      F = ZERO
   ELSE IF (M .EQ. 1) THEN
-     F = CR_HYPOT(REAL(X(1)), AIMAG(X(1)))
+     L = REAL(X(1))
+     R = AIMAG(X(1))
+     F = CR_HYPOT(L, R)
   ELSE ! M >= 2
      I = ISHFT(M, -1) + IAND(M, 1)
-     F = CR_HYPOT(WNRMF(I, X), WNRMF(M-I, X(I+1)))
+     L = WNRMF(I, X)
+     R = WNRMF(M-I, X(I+1))
+     F = CR_HYPOT(L, R)
   END IF
 END FUNCTION WNRMF
