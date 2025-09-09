@@ -49,7 +49,7 @@ PROGRAM ZJSVDX
      ALLOCATE(CLK(MAX(N,3)))
      CALL BFOPEN(TRIM(CLA)//'.J', 'RO', I, J)
      IF (J .NE. 0) STOP 'OPEN(J)'
-     READ (UNIT=I, IOSTAT=J) CLK
+     READ (UNIT=I, IOSTAT=J) CLK(1:N)
      IF (J .NE. 0) STOP 'READ(J)'
      CLOSE (UNIT=I, IOSTAT=J)
      IF (J .NE. 0) STOP 'CLOSE(J)'
