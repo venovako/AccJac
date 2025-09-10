@@ -1,5 +1,11 @@
 Intel(R) Xeon Phi(TM) 7210 CPU @ 1.30 GHz
 
+=== NEW ===
+
+custom built GCC 13.4.1 20250908
+
+=== OLD ===
+
 Intel(R) oneAPI DPC++/C++ Compiler 2025.2.0 (2025.2.0.20250605)
 ifx (IFX) 2025.2.0 20250605
 
