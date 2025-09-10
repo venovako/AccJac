@@ -1,13 +1,12 @@
 Intel(R) Xeon Phi(TM) 7210 CPU @ 1.30 GHz
+Intel(R) Core(TM) i7-4770K CPU @ 3.50 GHz
 
 === NEW ===
 
 custom built GCC 13.4.1 20250908
+GCC (SUSE Linux) 15.2.0
 
 === OLD ===
 
-Intel(R) oneAPI DPC++/C++ Compiler 2025.2.0 (2025.2.0.20250605)
-ifx (IFX) 2025.2.0 20250605
-
-gcc (GCC) 14.2.1 20250110 (Red Hat 14.2.1-7)
-GNU Fortran (GCC) 14.2.1 20250110 (Red Hat 14.2.1-7)
+Intel oneAPI 2025.2.0.20250605
+GCC 14.2.1 20250110 (Red Hat 14.2.1-7)
