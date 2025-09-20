@@ -10,7 +10,7 @@ i.e., arXiv:[2308.14222](https://arxiv.org/abs/2308.14222 "Accurate complex Jaco
 ## Prerequisites
 
 A recent machine with Linux, macOS, or Windows is needed.
-The GNU (`gcc` 13+) or Intel (`icx` or `icc`) C compiler, and the GNU (`gfortran` 13+) or Intel (`ifx` or `ifort`) Fortran compiler are required.
+The GNU (`gcc` 13+) or Intel (`icx`) C compiler, and the GNU (`gfortran` 13+) or Intel (`ifx`) Fortran compiler are required.
 
 First, clone [libpvn](https://github.com/venovako/libpvn) repository, with the same parent directory as this one has (e.g., `venovako/libpvn` and `venovako/AccJac`), and build it, with the `COMPILER` make option set to a C compiler from the same vendor and with the same (no-)debug mode as it is meant to be used here.
 Please, read the repository's notes carefully!
@@ -20,12 +20,12 @@ The correctly-rounded `cr_hypot[flq]` and `cr_rsqrt[flq]` functions are assumed 
 
 In the `src` subdirectory, run
 ```bash
-make [COMPILER=gfortran|ifx|ifort] [COMPILER_PREFIX=...] [COMPILER_SUFFIX=...] [MARCH=...] [ABI=lp64|ilp64] [NDEBUG=g|0|1|2|3|...] [CUTOFF=0.8] [THR=frecursive|fopenmp] [LAPACK=...] [LIB64=lib|lib64] [GMP=...] [MPFR=...] [PROFILE=...] [ANIMATE=ppe] [STATIC=...] [all|help|clean]
+make [COMPILER=gfortran|ifx] [COMPILER_PREFIX=...] [COMPILER_SUFFIX=...] [MARCH=...] [ABI=lp64|ilp64] [NDEBUG=g|0|1|2|3|...] [CUTOFF=0.8] [THR=frecursive|fopenmp] [LAPACK=...] [LIB64=lib|lib64] [GMP=...] [MPFR=...] [PROFILE=...] [ANIMATE=ppe] [STATIC=...] [all|help|clean]
 ```
 
 The `COMPILER` and `NDEBUG` variables have to be compatible with those for building the `libpvn` repository; e.g., if `COMPILER=gcc` for `libpvn`, then `COMPILER=gfortran` here.
 With `gfortran`, `THR=fopenmp` enables the OpenMP parallelization of the error checkers and certain other routines.
-With `ifx` or `ifort`, set `THR=qopenmp` instead.
+With `ifx`, set `THR=qopenmp` instead.
 Other variables should not be set unless their effects are fully understood.
 
 ## Running

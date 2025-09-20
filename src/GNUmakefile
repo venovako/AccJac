@@ -143,14 +143,6 @@ LDFLAGS=
 else # !MINGW64
 LDFLAGS=-rdynamic
 endif # ?MINGW64
-ifeq ($(OS),Darwin)
-LDFLAGS += -static-libgcc
-endif # Darwin
-ifeq ($(COMPILER),gfortran)
-ifeq ($(OS),Darwin)
-LDFLAGS += -static-libgfortran -static-libquadmath
-endif # Darwin
-endif # gfortran
 LDFLAGS += -L. -ljaevd -ljaev2 -L../../libpvn/src
 ifneq ($(OS),Darwin)
 LDFLAGS += -Wl,-rpath=../../libpvn/src
@@ -173,6 +165,13 @@ LDFLAGS += -Wl,-rpath=$(MPFR)/$(LIB64)
 endif # !Darwin
 LDFLAGS += -lgmp
 endif # GMP
+ifeq ($(COMPILER),gfortran)
+ifeq ($(OS),Darwin)
+LDFLAGS += -static-libgcc -static-libgfortran -static-libquadmath
+endif # Darwin
+else # !gfortran
+LDFLAGS += -lquadmath -lgcc_s
+endif # ?gfortran
 ifneq ($(findstring MINGW64,$(OS)),MINGW64)
 LDFLAGS += -ldl
 endif # !MINGW64
@@ -193,11 +192,7 @@ $(LIBD): $(OBJD)
 	$(AR) $(ARFLAGS) $@ $(OBJD)
 
 help:
-ifeq ($(COMPILER),gfortran)
-	@echo $(MAKE) "[COMPILER=gfortran|ifx|ifort] [COMPILER_PREFIX=...] [COMPILER_SUFFIX=...] [MARCH=...] [ABI=lp64|ilp64] [NDEBUG=g|0|1|2|3|...] [CUTOFF=0.8] [THR=frecursive|fopenmp] [LAPACK=...] [LIB64=lib|lib64] [GMP=...] [MPFR=...] [PROFILE=...] [ANIMATE=ppe] [STATIC=...] [all|help|clean]"
-else # !gfortran
-	@echo $(MAKE) "[COMPILER=gfortran|ifx|ifort] [COMPILER_PREFIX=...] [COMPILER_SUFFIX=...] [MARCH=...] [ABI=lp64|ilp64] [NDEBUG=0|1|2|3|...] [CUTOFF=0.8] [THR=recursive|qopenmp] [LAPACK=...] [LIB64=lib|lib64] [GMP=...] [MPFR=...] [PROFILE=...] [ANIMATE=ppe] [all|help|clean]"
-endif # ?gfortran
+	@echo $(MAKE) "[COMPILER=gfortran|ifx|ifort] [COMPILER_PREFIX=...] [COMPILER_SUFFIX=...] [MARCH=...] [ABI=lp64|ilp64] [NDEBUG=0|1|2|3|...|g] [CUTOFF=0.8] [THR=frecursive|fopenmp] [LAPACK=...] [LIB64=lib|lib64] [GMP=...] [MPFR=...] [PROFILE=...] [ANIMATE=ppe] [STATIC=...] [all|help|clean]"
 
 %.o : %.f90 $(MKFS)
 	$(FC) $(FCFLAGS) -c $< -o $@
