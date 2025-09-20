@@ -121,15 +121,19 @@ ifdef ANIMATE
 FCFLAGS += -DANIMATE=$(ANIMATE)
 endif # ANIMATE
 
+ifndef LIB64
+LIB64=lib
+endif # !LIB64
+
 ifdef STATIC
-LDFLAGS=-rdynamic -static -s -L. -ljaevd -ljaev2 -L../../libpvn/src -lpvn $(LAPACK)
+LDFLAGS=-rdynamic -static -L. -ljaevd -ljaev2 -L../../libpvn/src -lpvn $(LAPACK)
 ifdef MPFR
-LDFLAGS += -L$(MPFR)/lib -lmpfr
+LDFLAGS += -L$(MPFR)/$(LIB64) -lmpfr
 endif # MPFR
 ifdef GMP
-LDFLAGS += -L$(GMP)/lib -lgmp
+LDFLAGS += -L$(GMP)/$(LIB64) -lgmp
 endif # GMP
-LDFLAGS += $(STATIC) -lm
+LDFLAGS += -lm $(STATIC)
 else # !STATIC
 ifeq ($(findstring MINGW64,$(OS)),MINGW64)
 LDFLAGS=
@@ -137,15 +141,15 @@ else # !MINGW64
 LDFLAGS=-rdynamic
 endif # ?MINGW64
 LDFLAGS += -static-libgcc
-ifeq ($(COMPILER),gfortran)
-LDFLAGS += -static-libgfortran -static-libquadmath
-endif # gfortran
-LDFLAGS += -L. -ljaevd -ljaev2 -L../../libpvn/src -lpvn $(LAPACK)
+# ifeq ($(COMPILER),gfortran)
+# LDFLAGS += -static-libgfortran -static-libquadmath
+# endif # gfortran
+LDFLAGS += -L. -ljaevd -ljaev2 -L../../libpvn/src -Wl,-rpath=../../libpvn/src -lpvn $(LAPACK)
 ifdef MPFR
-LDFLAGS += -L$(MPFR)/lib -lmpfr
+LDFLAGS += -L$(MPFR)/lib -Wl,-rpath=$(MPFR)/$(LIB64) -lmpfr
 endif # MPFR
 ifdef GMP
-LDFLAGS += -L$(GMP)/lib -lgmp
+LDFLAGS += -L$(GMP)/lib -Wl,-rpath=$(MPFR)/$(LIB64) -lgmp
 endif # GMP
 ifneq ($(findstring MINGW64,$(OS)),MINGW64)
 LDFLAGS += -ldl
@@ -168,9 +172,9 @@ $(LIBD): $(OBJD)
 
 help:
 ifeq ($(COMPILER),gfortran)
-	@echo $(MAKE) "[COMPILER=gfortran|ifx|ifort] [COMPILER_PREFIX=...] [COMPILER_SUFFIX=...] [MARCH=...] [ABI=lp64|ilp64] [NDEBUG=g|0|1|2|3|...] [CUTOFF=0.8] [THR=frecursive|fopenmp] [LAPACK=...] [GMP=...] [MPFR=...] [PROFILE=...] [ANIMATE=ppe] [STATIC=...] [all|help|clean]"
+	@echo $(MAKE) "[COMPILER=gfortran|ifx|ifort] [COMPILER_PREFIX=...] [COMPILER_SUFFIX=...] [MARCH=...] [ABI=lp64|ilp64] [NDEBUG=g|0|1|2|3|...] [CUTOFF=0.8] [THR=frecursive|fopenmp] [LAPACK=...] [LIB64=lib|lib64] [GMP=...] [MPFR=...] [PROFILE=...] [ANIMATE=ppe] [STATIC=...] [all|help|clean]"
 else # !gfortran
-	@echo $(MAKE) "[COMPILER=gfortran|ifx|ifort] [COMPILER_PREFIX=...] [COMPILER_SUFFIX=...] [MARCH=...] [ABI=lp64|ilp64] [NDEBUG=0|1|2|3|...] [CUTOFF=0.8] [THR=recursive|qopenmp] [LAPACK=...] [GMP=...] [MPFR=...] [PROFILE=...] [ANIMATE=ppe] [all|help|clean]"
+	@echo $(MAKE) "[COMPILER=gfortran|ifx|ifort] [COMPILER_PREFIX=...] [COMPILER_SUFFIX=...] [MARCH=...] [ABI=lp64|ilp64] [NDEBUG=0|1|2|3|...] [CUTOFF=0.8] [THR=recursive|qopenmp] [LAPACK=...] [LIB64=lib|lib64] [GMP=...] [MPFR=...] [PROFILE=...] [ANIMATE=ppe] [all|help|clean]"
 endif # ?gfortran
 
 %.o : %.f90 $(MKFS)
