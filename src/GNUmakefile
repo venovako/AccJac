@@ -126,7 +126,7 @@ LIB64=lib
 endif # !LIB64
 
 ifdef STATIC
-LDFLAGS=-rdynamic -static -L. -ljaevd -ljaev2 -L../../libpvn/src -lpvn $(LAPACK)
+LDFLAGS=-rdynamic -static -L. -ljaevd -ljaev2 -L../../libpvn/src -lpvn -L$(LAPACK) -llapack -lrefblas
 ifdef MPFR
 LDFLAGS += -L$(MPFR)/$(LIB64) -lmpfr
 endif # MPFR
@@ -144,7 +144,11 @@ LDFLAGS += -static-libgcc
 # ifeq ($(COMPILER),gfortran)
 # LDFLAGS += -static-libgfortran -static-libquadmath
 # endif # gfortran
-LDFLAGS += -L. -ljaevd -ljaev2 -L../../libpvn/src -Wl,-rpath=../../libpvn/src -lpvn $(LAPACK)
+LDFLAGS += -L. -ljaevd -ljaev2 -L../../libpvn/src
+ifneq ($(OS),Darwin)
+LDFLAGS += -Wl,-rpath=../../libpvn/src
+endif # !Darwin
+LDFLAGS += -lpvn -L$(LAPACK) -llapack -lrefblas
 ifdef MPFR
 LDFLAGS += -L$(MPFR)/lib -Wl,-rpath=$(MPFR)/$(LIB64) -lmpfr
 endif # MPFR
