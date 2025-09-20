@@ -126,7 +126,10 @@ LIB64=lib
 endif # !LIB64
 
 ifdef STATIC
-LDFLAGS=-rdynamic -static -L. -ljaevd -ljaev2 -L../../libpvn/src -lpvn -L$(LAPACK) -llapack -lrefblas
+LDFLAGS=-rdynamic -static -L. -ljaevd -ljaev2 -L../../libpvn/src -lpvn
+ifdef LAPACK
+LDFLAGS += -L$(LAPACK) -llapack -lrefblas
+endif # LAPACK
 ifdef MPFR
 LDFLAGS += -L$(MPFR)/$(LIB64) -lmpfr
 endif # MPFR
@@ -150,7 +153,10 @@ LDFLAGS += -L. -ljaevd -ljaev2 -L../../libpvn/src
 ifneq ($(OS),Darwin)
 LDFLAGS += -Wl,-rpath=../../libpvn/src
 endif # !Darwin
-LDFLAGS += -lpvn -L$(LAPACK) -llapack -lrefblas
+LDFLAGS += -lpvn
+ifdef LAPACK
+LDFLAGS += -L$(LAPACK) -llapack -lrefblas
+endif # LAPACK
 ifdef MPFR
 LDFLAGS += -L$(MPFR)/lib
 ifneq ($(OS),Darwin)
