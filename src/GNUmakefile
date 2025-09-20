@@ -141,19 +141,29 @@ else # !MINGW64
 LDFLAGS=-rdynamic
 endif # ?MINGW64
 LDFLAGS += -static-libgcc
-# ifeq ($(COMPILER),gfortran)
-# LDFLAGS += -static-libgfortran -static-libquadmath
-# endif # gfortran
+ifeq ($(COMPILER),gfortran)
+ifeq ($(OS),Darwin)
+LDFLAGS += -static-libgfortran -static-libquadmath
+endif # Darwin
+endif # gfortran
 LDFLAGS += -L. -ljaevd -ljaev2 -L../../libpvn/src
 ifneq ($(OS),Darwin)
 LDFLAGS += -Wl,-rpath=../../libpvn/src
 endif # !Darwin
 LDFLAGS += -lpvn -L$(LAPACK) -llapack -lrefblas
 ifdef MPFR
-LDFLAGS += -L$(MPFR)/lib -Wl,-rpath=$(MPFR)/$(LIB64) -lmpfr
+LDFLAGS += -L$(MPFR)/lib
+ifneq ($(OS),Darwin)
+LDFLAGS += -Wl,-rpath=$(MPFR)/$(LIB64)
+endif # !Darwin
+LDFLAGS += -lmpfr
 endif # MPFR
 ifdef GMP
-LDFLAGS += -L$(GMP)/lib -Wl,-rpath=$(MPFR)/$(LIB64) -lgmp
+LDFLAGS += -L$(GMP)/lib
+ifneq ($(OS),Darwin)
+LDFLAGS += -Wl,-rpath=$(MPFR)/$(LIB64)
+endif # !Darwin
+LDFLAGS += -lgmp
 endif # GMP
 ifneq ($(findstring MINGW64,$(OS)),MINGW64)
 LDFLAGS += -ldl
