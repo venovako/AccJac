@@ -143,7 +143,9 @@ LDFLAGS=
 else # !MINGW64
 LDFLAGS=-rdynamic
 endif # ?MINGW64
+ifeq ($(OS),Darwin)
 LDFLAGS += -static-libgcc
+endif # Darwin
 ifeq ($(COMPILER),gfortran)
 ifeq ($(OS),Darwin)
 LDFLAGS += -static-libgfortran -static-libquadmath
