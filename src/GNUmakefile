@@ -190,10 +190,10 @@ ifeq ($(findstring MINGW64,$(OS)),MINGW64)
 	cp -fuv /ucrt64/bin/libwinpthread-1.dll .
 endif # MINGW64
 
-$(LIB2): $(OBJ2) $(OBJL)
+$(LIB2): $(OBJ2) $(OBJL) $(MKFS)
 	$(AR) $(ARFLAGS) $@ $(OBJ2) $(OBJL)
 
-$(LIBD): $(OBJD)
+$(LIBD): $(OBJD) $(MKFS)
 	$(AR) $(ARFLAGS) $@ $(OBJD)
 
 help:
@@ -202,12 +202,13 @@ help:
 %.o : %.f90 $(MKFS)
 	$(FC) $(FCFLAGS) -c $< -o $@
 
-%.exe : %.F90 $(MKFS) $(LIB2) $(LIBD)
+%.exe : %.F90 $(LIB2) $(LIBD) $(MKFS)
 	$(FC) $(FCFLAGS) $< -o $@ $(LDFLAGS)
 
 clean:
 	-$(DEL) *.o
 	-$(DEL) *.a
+	-$(DEL) *.dll
 	-$(DEL) *.exe
 	-$(DEL) *.mod
 	-$(DEL) *.dSYM
