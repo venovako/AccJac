@@ -125,7 +125,9 @@ ifndef LIB64
 LIB64=lib
 endif # !LIB64
 
+ifndef LIBPVN
 LIBPVN=$(realpath ../../libpvn)
+endif # !LIBPVN
 ifdef STATIC
 LDFLAGS=-rdynamic -static -L. -ljaevd -ljaev2 -L$(LIBPVN)/src -lpvn
 ifdef LAPACK
