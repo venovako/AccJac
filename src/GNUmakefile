@@ -125,8 +125,9 @@ ifndef LIB64
 LIB64=lib
 endif # !LIB64
 
+LIBPVN=$(realpath ../../libpvn)
 ifdef STATIC
-LDFLAGS=-rdynamic -static -L. -ljaevd -ljaev2 -L../../libpvn/src -lpvn
+LDFLAGS=-rdynamic -static -L. -ljaevd -ljaev2 -L$(LIBPVN)/src -lpvn
 ifdef LAPACK
 LDFLAGS += -L$(LAPACK) -llapack -lrefblas
 endif # LAPACK
@@ -143,11 +144,11 @@ LDFLAGS=
 else # !MINGW64
 LDFLAGS=-rdynamic
 endif # ?MINGW64
-LDFLAGS += -L. -ljaevd -ljaev2 -L../../libpvn/src
+LDFLAGS += -L. -ljaevd -ljaev2 -L$(LIBPVN)/src
 ifeq ($(OS),Darwin)
-LDFLAGS += -Wl,-rpath,../../libpvn/src
+LDFLAGS += -Wl,-rpath,$(LIBPVN)/src
 else # !Darwin
-LDFLAGS += -Wl,-rpath=../../libpvn/src
+LDFLAGS += -Wl,-rpath=$(LIBPVN)/src
 endif # ?Darwin
 LDFLAGS += -lpvn
 ifdef LAPACK
