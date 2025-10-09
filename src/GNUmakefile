@@ -197,7 +197,7 @@ $(LIBD): $(OBJD)
 	$(AR) $(ARFLAGS) $@ $(OBJD)
 
 help:
-	@echo $(MAKE) "[COMPILER=gfortran|ifx] [COMPILER_PREFIX=...] [COMPILER_SUFFIX=...] [MARCH=...] [ABI=lp64|ilp64] [NDEBUG=0|1|2|3|...|g] [CUTOFF=0.8] [THR=frecursive|fopenmp] [LAPACK=...] [LIB64=lib|lib64] [GMP=...] [MPFR=...] [PROFILE=...] [ANIMATE=ppe] [STATIC=...] [all|help|clean]"
+	@echo $(MAKE) "[COMPILER=gfortran|ifx] [COMPILER_PREFIX=...] [COMPILER_SUFFIX=...] [MARCH=...] [ABI=lp64|ilp64] [NDEBUG=0|1|2|3|...|g] [CUTOFF=0.8] [THR=frecursive|fopenmp] [LAPACK=...] [LIBPVN=../../libpvn] [LIB64=lib|lib64] [GMP=...] [MPFR=...] [PROFILE=...] [ANIMATE=ppe] [STATIC=...] [all|help|clean]"
 
 %.o : %.f90 $(MKFS)
 	$(FC) $(FCFLAGS) -c $< -o $@
