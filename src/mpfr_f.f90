@@ -2,7 +2,7 @@
 ! https://github.com/tkoenig1/FMPFR
 ! but without any allocatable components.  *** DOES NOT WORK ON WINDOWS ***
 ! It is expected that all MPFR variables are explicitly cleared after the last use,
-! and that the arithmetic is done by calling the C functions directly, instead of
+! and that the arithmetic is done by calling the wrapped C functions, instead of
 ! having overloaded arithmetic operators (except for assignments and comparisons).
 MODULE MPFR_F
   USE, INTRINSIC :: IEEE_ARITHMETIC
@@ -871,6 +871,35 @@ CONTAINS
     END IF
     IF (PRESENT(I)) I = INT(INFO)
   END SUBROUTINE MPFR_MUL_F
+  PURE SUBROUTINE MPFR_POW_F(ROP, OP1, OP2, RND, I)
+    IMPLICIT NONE
+    INTERFACE
+       PURE FUNCTION MPFR_POW(ROP, OP1, OP2, RND) BIND(C)
+         IMPORT
+         IMPLICIT NONE
+         TYPE(c_ptr), INTENT(IN), VALUE :: ROP, OP1, OP2
+         INTEGER(KIND=MPFR_RND_KIND), INTENT(IN), VALUE :: RND
+         INTEGER(KIND=c_int) :: MPFR_POW
+       END FUNCTION MPFR_POW
+    END INTERFACE
+    TYPE(MPFR_T), INTENT(INOUT), TARGET :: ROP
+    TYPE(MPFR_T), INTENT(IN), TARGET :: OP1, OP2
+    INTEGER(KIND=MPFR_RND_KIND), INTENT(IN), OPTIONAL :: RND
+    INTEGER, INTENT(OUT), OPTIONAL :: I
+    INTEGER(KIND=c_int) :: INFO
+    INFO = 0_c_int
+    IF (OP2%TAG .EQ. TAG_NULL) INFO = -4_c_int
+    IF (OP1%TAG .EQ. TAG_NULL) INFO = -3_c_int
+    IF (ROP%TAG .EQ. TAG_NULL) INFO = -2_c_int
+    IF (INFO .EQ. 0_c_int) THEN
+       IF (PRESENT(RND)) THEN
+          INFO = MPFR_POW(C_LOC(ROP), C_LOC(OP1), C_LOC(OP2), RND)
+       ELSE ! default rounding
+          INFO = MPFR_POW(C_LOC(ROP), C_LOC(OP1), C_LOC(OP2), MPFR_RND_DEFAULT)
+       END IF
+    END IF
+    IF (PRESENT(I)) I = INT(INFO)
+  END SUBROUTINE MPFR_POW_F
   PURE SUBROUTINE MPFR_SUB_F(ROP, OP1, OP2, RND, I)
     IMPLICIT NONE
     INTERFACE

@@ -30,7 +30,7 @@ do
     echo "    IF (PRESENT(I)) I = INT(INFO)"
     echo "  END SUBROUTINE MPFR_${I}_F"
 done
-for I in ADD DIV HYPOT MUL SUB
+for I in ADD DIV HYPOT MUL POW SUB
 do
     echo "  PURE SUBROUTINE MPFR_${I}_F(ROP, OP1, OP2, RND, I)"
     echo "    IMPLICIT NONE"
