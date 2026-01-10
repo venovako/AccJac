@@ -1,23 +1,19 @@
+!IFNDEF ABI
+ABI=lp64
+!ENDIF # !ABI
 RM=DEL /F
 AR=lib.exe
 ARFLAGS=/NOLOGO /VERBOSE
-FC=ifx.exe
-!IFNDEF MARCH
-MARCH=Host
-!ENDIF # !MARCH
-!IFNDEF NDEBUG
-NDEBUG=d
-!ENDIF # NDEBUG
+!IFNDEF LIBPVN
+LIBPVN=..\..\libpvn
+!ENDIF # !LIBPVN
+!INCLUDE $(LIBPVN)\src\pvn.mk
+FC=$(PVN_FC)
 # /DUSE_IEEE_INTRINSIC=IEEE_FMA
-!IF "$(CRT)"=="MD"
-FCFLAGS=/nologo /fpp /Qopenmp /standard-semantics /traceback /DNDEBUG=$(NDEBUG) /I. /MD /O$(NDEBUG) /Qx$(MARCH) /fp:precise /Qfma /Qftz- /Qprec-div /Qprotect-parens /Qopt-report:3 /Qvec-threshold:0
-!ELSE # MT
-FCFLAGS=/nologo /fpp /recursive /standard-semantics /traceback /DNDEBUG=$(NDEBUG) /I. /MT /O$(NDEBUG) /Qx$(MARCH) /fp:precise /Qfma /Qftz- /Qprec-div /Qprotect-parens /Qopt-report:3 /Qvec-threshold:0
-!ENDIF # ?MD
 !IF "$(ABI)"=="ilp64"
 FCFLAGS=$(FCFLAGS) /4I8
 !ENDIF # ilp64
-LDFLAGS=/link /RELEASE /LIBPATH:. jaevd.lib jaev2.lib /LIBPATH:..\..\libpvn\src pvn.lib
+LDFLAGS=$(PVN_LDFLAGS) /LIBPATH:. jaevd.lib jaev2.lib $(PVN_LIBS)
 
 OBJ2=qclear.obj yclear.obj drsafe.obj qrsafe.obj srsafe.obj \
 cjaev2.obj djaev2.obj qjaev2.obj sjaev2.obj yjaev2.obj zjaev2.obj \
@@ -95,9 +91,7 @@ cjsvor.exe djsvor.exe sjsvor.exe zjsvor.exe \
 dxresc.exe zwresc.exe dxsvrr.exe
 
 all: $(LIBS) $(EXES)
-!IF "$(CRT)"=="MD"
 	COPY /Y /V ..\..\libpvn\src\*.dll .
-!ENDIF # MD
 
 jaev2.lib: $(OBJ2) Makefile
 	$(AR) $(ARFLAGS) /OUT:$@ $(OBJ2)
@@ -106,10 +100,7 @@ jaevd.lib: $(OBJD) Makefile
 	$(AR) $(ARFLAGS) /OUT:$@ $(OBJD)
 
 help:
-	@ECHO "nmake.exe [MARCH=Host|...] [NDEBUG=d|1|2|3|...] [ABI=lp64|ilp64] [CUTOFF=0.8] [LAPACK=/Qmkl:sequential] [CRT=MT|MD] [all|help|clean]"
-!IF "$(CRT)"=="MD"
-	@ECHO "libpvn has to be build beforehand with the CRT=MD build option"
-!ENDIF # MD
+	@ECHO "nmake.exe [ABI=lp64|ilp64] [CUTOFF=0.8] [LAPACK=/Qmkl:sequential] [all|help|clean]"
 
 .f90.obj:
 	$(FC) $(FCFLAGS) /c $< /Fo$@
