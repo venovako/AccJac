@@ -11,7 +11,9 @@ LIBPVN=..\..\libpvn
 FC=$(PVN_FC)
 # /DUSE_IEEE_INTRINSIC=IEEE_FMA
 !IF "$(ABI)"=="ilp64"
-FCFLAGS=$(FCFLAGS) /4I8
+FCFLAGS=$(PVN_FCFLAGS) /4I8
+!ELSE # lp64
+FCFLAGS=$(PVN_FCFLAGS)
 !ENDIF # ilp64
 LDFLAGS=$(PVN_LDFLAGS) /LIBPATH:. jaevd.lib jaev2.lib $(PVN_LIBS)
 
@@ -91,7 +93,7 @@ cjsvor.exe djsvor.exe sjsvor.exe zjsvor.exe \
 dxresc.exe zwresc.exe dxsvrr.exe
 
 all: $(LIBS) $(EXES)
-	COPY /Y /V ..\..\libpvn\src\*.dll .
+	-COPY /Y /V ..\..\libpvn\src\*.dll .
 
 jaev2.lib: $(OBJ2) Makefile
 	$(AR) $(ARFLAGS) /OUT:$@ $(OBJ2)
