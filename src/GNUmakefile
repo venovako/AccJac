@@ -1,24 +1,30 @@
 include system.mk
-include $(COMPILER).mk
-include debug.mk
-ifneq ($(ABI),lp64)
+AR=ar
+ARFLAGS=rsv
+ifndef LIBPVN
+LIBPVN=$(realpath ../../libpvn)
+endif # !LIBPVN
+include $(LIBPVN)/src/pvn.mk
+FC=$(PVN_FC)
+ifeq ($(findstring ifx,$(FC)),ifx)
+COMPILER=intel
+CPPFLAGS= #-DUSE_IEEE_INTRINSIC=IEEE_FMA
+else # gfortran
+COMPILER=gf
+CPPFLAGS=-DUSE_IEEE_INTRINSIC=IEEE_FMA
+endif # ifx
+MKFS=GNUmakefile system.mk $(LIBPVN)/src/pvn.mk
+ifeq ($(ABI),lp64)
+FCFLAGS=
+else # ilp64
 include $(ABI).mk
-endif # !lp64
-MKFS=GNUmakefile system.mk $(COMPILER).mk debug.mk
-ifneq ($(ABI),lp64)
 MKFS += $(ABI).mk
-endif # !lp64
+endif # ?lp64
 
 OBJL=qlaev2.o ylaev2.o
 ifndef LAPACK
 OBJL += claev2.o dlaev2.o slaev2.o zlaev2.o
 endif # !LAPACK
-
-ifdef MPFR
-OBJ2=mpfr_f.o
-else # !MPFR
-OBJ2=
-endif # ?MPFR
 
 OBJ2 += qclear.o yclear.o drsafe.o qrsafe.o srsafe.o \
 cjaev2.o djaev2.o qjaev2.o sjaev2.o yjaev2.o zjaev2.o \
@@ -32,11 +38,6 @@ LIB2=libjaev2.a
 
 EXE2=ctest.exe dtest.exe qtest.exe stest.exe ytest.exe ztest.exe \
 cljv2t.exe dljv2t.exe sljv2t.exe zljv2t.exe
-
-ifdef MPFR
-OBJ2 += mljau2.o mljav2.o
-EXE2 += sth2t.exe
-endif # MPFR
 
 OBJD=bfopen.o wbrd1.o wbwr1.o xbrd1.o xbwr1.o pascal.o \
 crn.o wrn.o zrn.o \
@@ -91,17 +92,7 @@ cjsvrr.exe djsvrr.exe sjsvrr.exe zjsvrr.exe \
 cjsvor.exe djsvor.exe sjsvor.exe zjsvor.exe \
 dxresc.exe zwresc.exe dxsvrr.exe
 
-ifdef MPFR
-OBJD += \
-mrtvh.o mrtvt.o \
-mrtlt.o mrtrt.o mrtlh.o mrtrh.o \
-mswpc.o mswpr.o mswpxd.o \
-mtrana.o mtrace.o \
-mdsort.o mjevdr.o
-EXED += mjevdt.exe
-endif # MPFR
-
-ifeq ($(COMPILER),gfortran)
+ifeq ($(COMPILER),gf)
 ifeq ($(findstring 86,$(ARCH)),86)
 OBJL += wlaev2.o xlaev2.o
 OBJ2 += xrsafe.o \
@@ -113,75 +104,43 @@ wljv2t.exe xljv2t.exe
 endif # x86_64 or i86pc
 endif # gfortran
 
+ifeq ($(findstring -DPVN_MPFR,$(PVN_CPPFLAGS)),-DPVN_MPFR)
+CPPFLAGS += -DMPFR=1 -DGMP=1
+OBJ0=mpfr_f.o
+OBJ2 += mljau2.o mljav2.o
+OBJD += mrtvh.o mrtvt.o mrtlt.o mrtrt.o mrtlh.o mrtrh.o mswpc.o mswpr.o mswpxd.o mtrana.o mtrace.o mdsort.o mjevdr.o
+EXE2 += sth2t.exe
+EXED += mjevdt.exe
+else # !MPFR
+OBJ0=
+endif # ?MPFR
+
 ifndef CUTOFF
 CUTOFF=0.8
 endif # !CUTOFF
-FCFLAGS += -DCUTOFF=$(CUTOFF)_K
+CPPFLAGS += -DCUTOFF=$(CUTOFF)_K
 ifdef ANIMATE
-FCFLAGS += -DANIMATE=$(ANIMATE)
+CPPFLAGS += -DANIMATE=$(ANIMATE)
 endif # ANIMATE
 
-ifndef LIB64
-LIB64=lib
-endif # !LIB64
+ifdef CGIC
+CC=$(PVN_CC)
+CPPFLAGS += -I$(CGIC)
+EXED += jsvdt.cgi
+endif # CGIC
 
-ifndef LIBPVN
-LIBPVN=$(realpath ../../libpvn)
-endif # !LIBPVN
-ifdef STATIC
-LDFLAGS=-rdynamic -static -L. -ljaevd -ljaev2 -L$(LIBPVN)/src -lpvn
+CPPFLAGS += $(PVN_CPPFLAGS)
+FCFLAGS += $(PVN_FCFLAGS) $(CPPFLAGS)
+FLFLAGS=$(subst PIC,PIE,$(FCFLAGS))
+LDFLAGS=$(PVN_LDFLAGS) -L. -ljaevd -ljaev2
 ifdef LAPACK
 LDFLAGS += -L$(LAPACK) -llapack -lrefblas
 endif # LAPACK
-ifdef MPFR
-LDFLAGS += -L$(MPFR)/$(LIB64) -lmpfr
-endif # MPFR
-ifdef GMP
-LDFLAGS += -L$(GMP)/$(LIB64) -lgmp
-endif # GMP
-LDFLAGS += -lm $(STATIC)
-else # !STATIC
-ifeq ($(findstring MINGW64,$(OS)),MINGW64)
-LDFLAGS=
-else # !MINGW64
-LDFLAGS=-rdynamic
-endif # ?MINGW64
-LDFLAGS += -L. -ljaevd -ljaev2 -L$(LIBPVN)/src
-ifeq ($(OS),Darwin)
-LDFLAGS += -Wl,-rpath,$(LIBPVN)/src
-else # !Darwin
-LDFLAGS += -Wl,-rpath=$(LIBPVN)/src
-endif # ?Darwin
-LDFLAGS += -lpvn
-ifdef LAPACK
-LDFLAGS += -L$(LAPACK) -llapack -lrefblas
-endif # LAPACK
-ifdef MPFR
-LDFLAGS += -L$(MPFR)/lib
-ifeq ($(OS),Darwin)
-LDFLAGS += -Wl,-rpath,$(MPFR)/$(LIB64)
-else # !Darwin
-LDFLAGS += -Wl,-rpath=$(MPFR)/$(LIB64)
-endif # ?Darwin
-LDFLAGS += -lmpfr
-endif # MPFR
-ifdef GMP
-LDFLAGS += -L$(GMP)/lib
-ifeq ($(OS),Darwin)
-LDFLAGS += -Wl,-rpath,$(GMP)/$(LIB64)
-else # !Darwin
-LDFLAGS += -Wl,-rpath=$(GMP)/$(LIB64)
-endif # ?Darwin
-LDFLAGS += -lgmp
-endif # GMP
-ifneq ($(COMPILER),gfortran)
-LDFLAGS += -lquadmath -lgcc_s
-endif # !gfortran
-ifneq ($(findstring MINGW64,$(OS)),MINGW64)
-LDFLAGS += -ldl
-endif # !MINGW64
-LDFLAGS += -lm
-endif # ?STATIC
+ifdef CGIC
+CFLAGS=$(PVN_CFLAGS) $(CPPFLAGS)
+LDFLAGS += -L$(CGIC) -lcgic
+endif # CGIC
+LDFLAGS += $(PVN_LIBS)
 
 .PHONY: all help clean
 
@@ -190,25 +149,30 @@ ifeq ($(findstring MINGW64,$(OS)),MINGW64)
 	cp -fuv /ucrt64/bin/libwinpthread-1.dll .
 endif # MINGW64
 
-$(LIB2): $(OBJ2) $(OBJL) $(MKFS)
-	$(AR) $(ARFLAGS) $@ $(OBJ2) $(OBJL)
+$(LIB2): $(OBJ0) $(OBJ2) $(OBJL) $(MKFS)
+	$(AR) $(ARFLAGS) $@ $(OBJ0) $(OBJ2) $(OBJL)
 
 $(LIBD): $(OBJD) $(MKFS)
 	$(AR) $(ARFLAGS) $@ $(OBJD)
 
 help:
-	@echo $(MAKE) "[COMPILER=gfortran|ifx] [COMPILER_PREFIX=...] [COMPILER_SUFFIX=...] [MARCH=...] [ABI=lp64|ilp64] [NDEBUG=0|1|2|3|...|g] [CUTOFF=0.8] [THR=frecursive|fopenmp] [LAPACK=...] [LIBPVN=../../libpvn] [LIB64=lib|lib64] [GMP=...] [MPFR=...] [PROFILE=...] [ANIMATE=ppe] [STATIC=...] [all|help|clean]"
+	@echo $(MAKE) "[ABI=lp64|ilp64] [CUTOFF=0.8] [LAPACK=...] [LIBPVN=../../libpvn] [CGIC=../../cgic] [ANIMATE=ppe] [all|help|clean]"
 
 %.o : %.f90 $(MKFS)
 	$(FC) $(FCFLAGS) -c $< -o $@
 
 %.exe : %.F90 $(LIB2) $(LIBD) $(MKFS)
-	$(FC) $(FCFLAGS) $< -o $@ $(LDFLAGS)
+	$(FC) $(FLFLAGS) $< -o $@ $(LDFLAGS)
+
+jsvdt.cgi: jsvdt.F90 jsvdt.c $(LIB2) $(LIBD) $(MKFS)
+	$(CC) $(CFLAGS) -c jsvdt.c
+	$(FC) $(FLFLAGS) jsvdt.F90 jsvdt.o -o $@ $(LDFLAGS)
 
 clean:
 	-$(DEL) *.o
 	-$(DEL) *.a
 	-$(DEL) *.dll
+	-$(DEL) *.cgi
 	-$(DEL) *.exe
 	-$(DEL) *.mod
 	-$(DEL) *.dSYM

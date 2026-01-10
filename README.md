@@ -20,13 +20,10 @@ The correctly-rounded `cr_hypot[flq]` and `cr_rsqrt[flq]` functions are assumed 
 
 In the `src` subdirectory, run
 ```bash
-make [COMPILER=gfortran|ifx] [COMPILER_PREFIX=...] [COMPILER_SUFFIX=...] [MARCH=...] [ABI=lp64|ilp64] [NDEBUG=g|0|1|2|3|...] [CUTOFF=0.8] [THR=frecursive|fopenmp] [LAPACK=...] [LIBPVN=../../libpvn] [LIB64=lib|lib64] [GMP=...] [MPFR=...] [PROFILE=...] [ANIMATE=ppe] [STATIC=...] [all|help|clean]
+make [ABI=lp64|ilp64] [CUTOFF=0.8] [LAPACK=...] [LIBPVN=../../libpvn] [CGIC=../../cgic] [ANIMATE=ppe] [all|help|clean]
 ```
 
-The `COMPILER` and `NDEBUG` variables have to be compatible with those for building the `libpvn` repository; e.g., if `COMPILER=gcc` for `libpvn`, then `COMPILER=gfortran` here.
-With `gfortran`, `THR=fopenmp` enables the OpenMP parallelization of the error checkers and certain other routines.
-With `ifx`, set `THR=qopenmp` instead.
-Other variables should not be set unless their effects are fully understood.
+Please see the examples in `etc/build_gf.sh` and `etc/build_ifx.sh`.
 
 ## Running
 
