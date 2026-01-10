@@ -202,7 +202,7 @@ SUBROUTINE ZJAEVD(JOB, N, A, LDA, U, LDU, S, INFO)
   LDF = INT(LDA,c_size_t)
   NF = INT(N,c_int)
   CTX = PVN_CVIS_START(NF, NF, ACT, GNAME, FNAME)
-  IF (CTX .EQ. 0_c_intptr_t) ERROR STOP 'PVN_CVIS_START'
+  IF (CTX .EQ. 0_c_intptr_t) STOP 'PVN_CVIS_START'
 #endif
   DO WHILE (.TRUE.)
 #ifdef ANIMATE
@@ -213,7 +213,7 @@ SUBROUTINE ZJAEVD(JOB, N, A, LDA, U, LDU, S, INFO)
         END DO
      END DO
      NF = PVN_CVIS_FRAME(CTX, A, LDF)
-     IF (NF .NE. 0_c_int) ERROR STOP 'PVN_CVIS_FRAME'
+     IF (NF .NE. 0_c_int) STOP 'PVN_CVIS_FRAME'
 #endif
      IF (MAXSTP .GT. 0) THEN
         IF (K .LT. MAXSTP) THEN
@@ -473,7 +473,7 @@ SUBROUTINE ZJAEVD(JOB, N, A, LDA, U, LDU, S, INFO)
   END DO
 #ifdef ANIMATE
   NF = PVN_CVIS_STOP(CTX, SX, SY, BPP, GNAME, BPP, FNAME)
-  IF (NF .NE. 0_c_int) ERROR STOP 'PVN_CVIS_STOP'
+  IF (NF .NE. 0_c_int) STOP 'PVN_CVIS_STOP'
   CTX = 0_c_intptr_t
 #endif
   INFO = K

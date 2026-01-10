@@ -202,7 +202,7 @@ SUBROUTINE CJAEVD(JOB, N, A, LDA, U, LDU, S, INFO)
   LDF = INT(LDA,c_size_t)
   NF = INT(N,c_int)
   CTX = PVN_CVIS_START_F(NF, NF, ACT, GNAME, FNAME)
-  IF (CTX .EQ. 0_c_intptr_t) ERROR STOP 'PVN_CVIS_START_F'
+  IF (CTX .EQ. 0_c_intptr_t) STOP 'PVN_CVIS_START_F'
 #endif
   DO WHILE (.TRUE.)
 #ifdef ANIMATE
@@ -213,7 +213,7 @@ SUBROUTINE CJAEVD(JOB, N, A, LDA, U, LDU, S, INFO)
         END DO
      END DO
      NF = PVN_CVIS_FRAME_F(CTX, A, LDF)
-     IF (NF .NE. 0_c_int) ERROR STOP 'PVN_CVIS_FRAME_F'
+     IF (NF .NE. 0_c_int) STOP 'PVN_CVIS_FRAME_F'
 #endif
      IF (MAXSTP .GT. 0) THEN
         IF (K .LT. MAXSTP) THEN
@@ -473,7 +473,7 @@ SUBROUTINE CJAEVD(JOB, N, A, LDA, U, LDU, S, INFO)
   END DO
 #ifdef ANIMATE
   NF = PVN_CVIS_STOP_F(CTX, SX, SY, BPP, GNAME, BPP, FNAME)
-  IF (NF .NE. 0_c_int) ERROR STOP 'PVN_CVIS_STOP_F'
+  IF (NF .NE. 0_c_int) STOP 'PVN_CVIS_STOP_F'
   CTX = 0_c_intptr_t
 #endif
   INFO = K
