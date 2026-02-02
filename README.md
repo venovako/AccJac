@@ -2,7 +2,7 @@
 J-Jacobi method with accurate complex Jacobi rotations
 
 This software is a supplementary material for the papers:
-- doi:[10.1016/j.cam.2024.116003](https://doi.org/10.1016/j.cam.2024.116003 "Accurate complex Jacobi rotations"), with the preprint doi:[10.48550/arXiv.2308.14222](https://doi.org/10.48550/arXiv.2308.14222 "Accurate complex Jacobi rotations"), i.e., arXiv:[2308.14222](https://arxiv.org/abs/2308.14222 "Accurate complex Jacobi rotations") \[math.NA\],
+- doi:[10.1016/j.cam.2024.116003](https://doi.org/10.1016/j.cam.2024.116003 "Accurate complex Jacobi rotations") (_preprint_ doi:[10.48550/arXiv.2308.14222](https://doi.org/10.48550/arXiv.2308.14222 "arXiv:2308.14222 [math.NA]")),
 - doi:[10.1553/etna_vol65s26](https://doi.org/10.1553/etna_vol65s26 "On convergence and accuracy of the J-Jacobi method under the de Rijk pivot strategy").
 
 ## Prerequisites
