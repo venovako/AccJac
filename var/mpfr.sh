@@ -1,6 +1,6 @@
 #!/bin/bash
-make distclean
+#make distclean
 ./autogen.sh
-#CC=gcc-15
+#CC=gcc-16
 ./configure --prefix=/opt/mpfr --enable-gmp-internals --enable-dependency-tracking --with-pic --with-gmp-build=$HOME/Downloads/gmp
 make -j && make -j check

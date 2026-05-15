@@ -1,6 +1,6 @@
 #!/bin/bash
-make distclean
+#make distclean
 ./.bootstrap
-#CC=gcc-15 CXX=g++-15
-./configure --prefix=/opt/gmp --enable-cxx --with-pic
+#CC=gcc-16 CXX=g++-16
+./configure --enable-maintainer-mode --prefix=/opt/gmp --enable-cxx --with-pic
 make -j && make -j check

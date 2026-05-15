@@ -1,6 +1,6 @@
 #!/bin/bash
-make distclean
+#make distclean
 ./autogen.sh
-#CC=gcc-15
+#CC=gcc-16
 ./configure --prefix=/opt/cloog --enable-dependency-tracking --enable-pic --enable-portable-binary --with-isl-builddir=$HOME/Downloads/isl --with-gmp-builddir=$HOME/Downloads/gmp --with-osl-builddir=$HOME/Downloads/openscop
 make -j && make -j check

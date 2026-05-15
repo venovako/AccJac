@@ -1,6 +1,6 @@
 #!/bin/bash
-make distclean
+#make distclean
 ./autogen.sh
-#CC=gcc-15 CXX=g++-15 PYTHON=/usr/bin/python3
+#CC=gcc-16 CXX=g++-16 PYTHON=/usr/bin/python3
 ./configure --prefix=/opt/isl --enable-dependency-tracking --enable-portable-binary --enable-pic --with-gmp-builddir=$HOME/Downloads/gmp
 make -j && make -j check
