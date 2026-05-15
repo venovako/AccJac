@@ -54,9 +54,19 @@ int cgiMain(const int u, const int v)
   if (gs < 0)
     goto err;
 
+#ifdef __x86_64__
   char *prec[6] = { "complex32", "real32", "complex64", "real64", "complex80", "real80" };
+#else /* !__x86_64__ */
+  char *prec[4] = { "complex32", "real32", "complex64", "real64" };
+#endif /* ?__x86_64__ */
   unsigned s = 0u, r = 0u;
-  if (cgiFormSuccess != cgiFormRadio("prec", prec, 6, (int*)&s, 2))
+  if (cgiFormSuccess != cgiFormRadio("prec", prec,
+#ifdef __x86_64__
+                                     6,
+#else /* !__x86_64__ */
+                                     4,
+#endif /* ?__x86_64__ */
+                                     (int*)&s, 2))
     goto err;
   fptr f = (fptr)NULL;
   switch (s) {
@@ -80,6 +90,7 @@ int cgiMain(const int u, const int v)
     r = s;
     f = djsvdf_;
     break;
+#ifdef __x86_64__
   case 4u:
     s = (unsigned)sizeof(long double _Complex);
     r = (unsigned)sizeof(long double);
@@ -90,6 +101,7 @@ int cgiMain(const int u, const int v)
     r = s;
     f = xjsvdf_;
     break;
+#endif /* __x86_64__ */
   default:
     s = 0u;
   }
@@ -120,6 +132,7 @@ int cgiMain(const int u, const int v)
   if (cgiFormSuccess != cgiFormFileOpenDesc("inp", &fd))
     goto err;
   off_t off = 0;
+#ifdef __x86_64__
   if (r == (unsigned)sizeof(long double)) {
     (void)memset(G, 0, bG);
     if (s != r)
@@ -128,10 +141,13 @@ int cgiMain(const int u, const int v)
       off = -1;
   }
   else {
+#endif /* __x86_64__ */
     nB = bG;
     if (pvn_bread_(&fd, G, &nB, &off) != (ssize_t)nB)
       off = -1;
+#ifdef __x86_64__
   }
+#endif /* __x86_64__ */
   if (close(fd) || off)
     goto err;
 
@@ -148,10 +164,12 @@ int cgiMain(const int u, const int v)
   if (!(rwrk = malloc(bsv)))
     goto err;
 
+#ifdef __x86_64__
   if (r == (unsigned)sizeof(long double)) {
     (void)memset(V, 0, bV);
     (void)memset(sv, 0, bsv);
   }
+#endif /* __x86_64__ */
 
   int info = 0;
   switch (o) {
@@ -177,12 +195,14 @@ int cgiMain(const int u, const int v)
         ((double*)sv)[i] = scalbn(((const double*)sv)[i], -gs);
     o = (unsigned)(((const double*)rwrk)[n - 1u]);
   }
+#ifdef __x86_64__
   else {
     if (gs)
       for (unsigned i = 0u; i < n; ++i)
         ((long double*)sv)[i] = scalbnl(((const long double*)sv)[i], -gs);
     o = (unsigned)(((const long double*)rwrk)[n - 1u]);
   }
+#endif /* __x86_64__ */
 
   fd = fileno(cgiOut);
   if (fd < 0)
@@ -211,6 +231,7 @@ int cgiMain(const int u, const int v)
   if (gz < 0)
     goto end;
   *fxt = 'U';
+#ifdef __x86_64__
   if (r == (unsigned)sizeof(long double)) {
     bG = m * n;
     nB = bG;
@@ -222,9 +243,12 @@ int cgiMain(const int u, const int v)
     if (pvn_tar_add_file_(&gz, job, &bG, pvn_pack80_((long double*)G, &nB)) < 0)
       goto end;
   }
-  else if (pvn_tar_add_file_(&gz, job, &bG, G) < 0)
+  else
+#endif /* __x86_64__ */
+  if (pvn_tar_add_file_(&gz, job, &bG, G) < 0)
     goto end;
   *fxt = 'V';
+#ifdef __x86_64__
   if (r == (unsigned)sizeof(long double)) {
     bV = n * n;
     nB = bV;
@@ -236,9 +260,12 @@ int cgiMain(const int u, const int v)
     if (pvn_tar_add_file_(&gz, job, &bV, pvn_pack80_((long double*)V, &nB)) < 0)
       goto end;
   }
-  else if (pvn_tar_add_file_(&gz, job, &bV, V) < 0)
+  else
+#endif /* __x86_64__ */
+  if (pvn_tar_add_file_(&gz, job, &bV, V) < 0)
     goto end;
   *fxt = 'S';
+#ifdef __x86_64__
   if (r == (unsigned)sizeof(long double)) {
     bsv = n;
     nB = bsv;
@@ -246,7 +273,9 @@ int cgiMain(const int u, const int v)
     if (pvn_tar_add_file_(&gz, job, &bsv, pvn_pack80_((long double*)sv, &nB)) < 0)
       goto end;
   }
-  else if (pvn_tar_add_file_(&gz, job, &bsv, sv) < 0)
+  else
+#endif /* __x86_64__ */
+  if (pvn_tar_add_file_(&gz, job, &bsv, sv) < 0)
     goto end;
   *fxt = 't';
   ++fxt;
