@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="/MathJax/tex-chtml.js" id="MathJax-script" defer></script>
+    <title>J-Jacobi for the hyperbolic SVD</title>
+  </head>
+  <body>
+    <h1>\(J\)-Jacobi for the hyperbolic SVD</h1>
+    <p>A successfull submission of the form below should compute the hyperbolic singlular value decomposition (HSVD) of \(G\) as \(U \Sigma V^{-1}\) and (offer to) download the <kbd>Job.tgz</kbd> file containing the following outputs:
+      <ul>
+        <li><kbd>Job.U</kbd>: \(U\), i.e., the matrix of the left singular vectors (\(m \times n\));</li>
+        <li><kbd>Job.V</kbd>: \(V\), i.e., the matrix of the right singular vectors (\(n \times n\));</li>
+        <li><kbd>Job.S</kbd>: \(\mathop{\mathrm{diag}}(\Sigma)\), i.e., the non-negative hyperbolic singular values (\(n\)); and</li>
+        <li><kbd>Job.txt</kbd>: some statistics, ending with the number of cycles and transformations.</li>
+      </ul>
+    </p>
+    <p>It is assumed here that the matrices of signs (\(J\)) and hyperbolic singular values (\(\Sigma\)) are partitioned as
+      \[J=\begin{bmatrix}I_j&0\\0&-I_{n-j}\end{bmatrix},\quad\Sigma=\begin{bmatrix}\Sigma_j&0\\0&\Sigma_{n-j}\end{bmatrix},\]
+      and that \(\mathop{\mathrm{diag}}(\Sigma_j)\) and \(\mathop{\mathrm{diag}}(\Sigma_{n-j})\) are sorted non-increasingly.
+    </p>
+    <hr>
+    <form action="jsvdt.cgi" method="post" enctype="multipart/form-data" target="_blank">
+      <p>Please give this job a name of at most eight alphanumeric characters.<br>
+        <label for="jobt"><kbd>Job</kbd>:</label>
+        <input type="text" id="jobt" name="job" value="01234567" minlength="1" maxlength="8" required />
+      </p>
+      <p>How many rows does the input matrix have (\(1 \le m \le 512\))?<br>
+        <label for="mn">\(m\):</label>
+        <input type="number" id="mn" name="m" value="1" min="1" max="512" required />
+      </p>
+      <p>How many columns does the input matrix have (\(1 \le n \le m\))?<br>
+        <label for="nn">\(n\):</label>
+        <input type="number" id="nn" name="n" value="1" min="1" max="512" required />
+      </p>
+      <p>With how many positive signs does \(\mathop{\mathrm{diag}}(J)\) start (\(0 \le j \le n\))?<br>
+        <label for="jposn">\(j\):</label>
+        <input type="number" id="jposn" name="jpos" value="0" min="0" max="512" required />
+      </p>
+      <p>How many cycles are allowed (\(0 \le c \le 30\))?<br>
+        <label for="cyclesn">\(c\):</label>
+        <input type="number" id="cyclesn" name="cycles" value="30" min="0" max="30" required />
+      </p>
+      <fieldset>
+        <legend>Precision and datatype:</legend>
+        <table>
+          <tr>
+            <td>single</td>
+            <td><input type="radio" id="complex32r" name="prec" value="complex32" /><label for="complex32r">COMPLEX(4)</label></td>
+            <td><input type="radio" id="real32r" name="prec" value="real32" /><label for="real32r">REAL(4)</label></td>
+          </tr>
+          <tr>
+            <td>double</td>
+            <td><input type="radio" id="complex64r" name="prec" value="complex64" /><label for="complex64r">COMPLEX(8)</label></td>
+            <td><input type="radio" id="real64r" name="prec" value="real64" checked /><label for="real64r">REAL(8)</label></td>
+          </tr>
+        </table>
+      </fieldset>
+      <fieldset>
+        <legend>Jacobi strategy:</legend>
+        <table>
+          <tr>
+            <td><input type="radio" id="deRijkr" name="strat" value="deRijk" checked /><label for="deRijkr">modified de&#xA0;Rijk</label></td>
+            <td><input type="radio" id="rowcycr" name="strat" value="rowcyc" /><label for="rowcycr">row-cyclic</label></td>
+          </tr>
+        </table>
+      </fieldset>
+      <fieldset>
+        <legend>Updates:</legend>
+        <table>
+          <tr>
+            <td><input type="radio" id="fastr" name="colup" value="fast" checked /><label for="fast">fast</label></td>
+            <td><input type="radio" id="slowr" name="colup" value="slow" /><label for="slowr">slow</label></td>
+            <td><input type="radio" id="rutir" name="colup" value="ruti" /><label for="rutir">delayed</label></td>
+          </tr>
+        </table>
+      </fieldset>
+      <p>Please choose a binary (little-endian) file in the Fortran (i.e., column-major) order, containing the input matrix \(G\) of the selected size and type.<br>
+        Input matrices in double precision can be prepared in, e.g., Scilab, GNU Octave, or Matlab, and in single precision in the latter two, and exported as described <a href="https://www.mathworks.com/help/matlab/import_export/exporting-binary-data-with-low-level-i-o.html">here</a> for Matlab.<br>
+        Complex numbers are expected to be in the &quot;interleaved&quot; form, i.e., \(z=(\Re{z},\Im{z})\).<br>
+        <label for="inpf">\(G\):</label>
+        <input type="file" id="inpf" name="inp" required />
+      </p>
+      <p>Please verify the settings before submitting this form, since no usable error description will be given otherwise.<br>
+        This software comes with no guarantees of any kind, so please do <strong>not</strong> submit any sensitive data.<br>
+        <input type="submit" />
+      </p>
+    </form>
+    <hr>
+    <p><i>Last modified</i>: <time>2026-05-17</time>.</p>
+  </body>
+</html>
