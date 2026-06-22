@@ -4,7 +4,7 @@ if [ -z "${GNU}" ]
 then
 	cd ../../libpvn/src
 	make COMPILER=gcc NDEBUG=3 SAFE=DET,SV2,NRM GMP=/opt/gmp MPFR=/opt/mpfr STATIC=-s clean
-	make COMPILER=gcc NDEBUG=3 SAFE=DET,SV2,NRM GMP=/opt/gmp MPFR=/opt/mpfr STATIC=-s -j all
+	make COMPILER=gcc NDEBUG=3 SAFE=DET,SV2,NRM GMP=/opt/gmp MPFR=/opt/mpfr STATIC=-s -j
 	cd ../../cgic
 	make -f Makefile.pvn clean all
 	cd ../AccJac/src
@@ -13,7 +13,7 @@ then
 else
 	cd ../../libpvn/src
 	make COMPILER=gcc COMPILER_SUFFIX=${GNU} NDEBUG=3 SAFE=DET,SV2,NRM GMP=/opt/gmp MPFR=/opt/mpfr STATIC=-s clean
-	make COMPILER=gcc COMPILER_SUFFIX=${GNU} NDEBUG=3 SAFE=DET,SV2,NRM GMP=/opt/gmp MPFR=/opt/mpfr STATIC=-s -j all
+	make COMPILER=gcc COMPILER_SUFFIX=${GNU} NDEBUG=3 SAFE=DET,SV2,NRM GMP=/opt/gmp MPFR=/opt/mpfr STATIC=-s -j
 	cd ../../cgic
 	make -f Makefile.pvn clean all
 	cd ../AccJac/src

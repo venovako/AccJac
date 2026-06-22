@@ -4,14 +4,14 @@ if [ -z "${TGT}" ]
 then
 	cd ../../libpvn/src
 	make COMPILER=icx NDEBUG=3 SAFE=DET,SV2,NRM GMP=/opt/gmp MPFR=/opt/mpfr clean
-	make COMPILER=icx NDEBUG=3 SAFE=DET,SV2,NRM GMP=/opt/gmp MPFR=/opt/mpfr -j all
+	make COMPILER=icx NDEBUG=3 SAFE=DET,SV2,NRM GMP=/opt/gmp MPFR=/opt/mpfr -j
 	cd ../../AccJac/src
 	make clean all
 	cd ../etc
 else
 	cd ../../libpvn/src
-	make COMPILER=icx MARCH=${TGT} NDEBUG=3 SAFE=DET,SV2,NRM GMP=/opt/gmp MPFR=/opt/mpfr clean
-	make COMPILER=icx MARCH=${TGT} NDEBUG=3 SAFE=DET,SV2,NRM GMP=/opt/gmp MPFR=/opt/mpfr -j all
+	make COMPILER=icx NATIVE=haswell MARCH=${TGT} NDEBUG=3 SAFE=DET,SV2,NRM GMP=/opt/gmp MPFR=/opt/mpfr clean
+	make COMPILER=icx NATIVE=haswell MARCH=${TGT} NDEBUG=3 SAFE=DET,SV2,NRM GMP=/opt/gmp MPFR=/opt/mpfr -j
 	cd ../../AccJac/src
 	make clean all
 	cd ../etc
