@@ -36,20 +36,20 @@ PROGRAM MJEVDT
   ALLOCATE(A(N,N))
   DO J = 1, N
      DO I = 1, N
-        CALL MPFR_INIT_M(A(I,J))
+        CALL MPFR_INIT_F(A(I,J))
         A(I,J) = X(I,J)
      END DO
   END DO
   ALLOCATE(V(N,N))
   DO J = 1, N
      DO I = 1, N
-        CALL MPFR_INIT_M(V(I,J))
+        CALL MPFR_INIT_F(V(I,J))
      END DO
   END DO
   ALLOCATE(WRK(N,N))
   DO J = 1, N
      DO I = 1, N
-        CALL MPFR_INIT_M(WRK(I,J))
+        CALL MPFR_INIT_F(WRK(I,J))
      END DO
   END DO
   IF (JPOS .LT. 0) THEN
@@ -74,19 +74,19 @@ PROGRAM MJEVDT
   IF (J .NE. 0) STOP 'CLOSE(L)'
   DO J = N, 1, -1
      DO I = N, 1, -1
-        CALL MPFR_CLEAR_M(WRK(I,J))
+        CALL MPFR_CLEAR_F(WRK(I,J))
      END DO
   END DO
   DEALLOCATE(WRK)
   DO J = N, 1, -1
      DO I = N, 1, -1
-        CALL MPFR_CLEAR_M(V(I,J))
+        CALL MPFR_CLEAR_F(V(I,J))
      END DO
   END DO
   DEALLOCATE(V)
   DO J = N, 1, -1
      DO I = N, 1, -1
-        CALL MPFR_CLEAR_M(A(I,J))
+        CALL MPFR_CLEAR_F(A(I,J))
      END DO
   END DO
   DEALLOCATE(A)

@@ -61,7 +61,7 @@ SUBROUTINE MJEVDR(N, A, LDA, V, LDV, JPOS, WRK, INFO)
   IF (N .EQ. 0) RETURN
   TT = WRK(1,1)
   L = INT(TT)
-  CALL MPFR_INIT_M(TOL)
+  CALL MPFR_INIT_F(TOL)
   S = HUGE(S)
   ! prescale G
   R = 0
@@ -111,7 +111,7 @@ SUBROUTINE MJEVDR(N, A, LDA, V, LDV, JPOS, WRK, INFO)
            DO Q = P+1, N
               W = IAND(INFO, 1)
               IF ((P .LE. JPOS) .AND. (Q .GT. JPOS)) W = IOR(W, 2)
-              CALL MPFR_SET_M(WRK(Q,P), TOL)
+              CALL MPFR_SET_F(WRK(Q,P), TOL)
               CALL MTRANA(N, A, LDA, V, LDV, P, Q, WRK(Q,P), W)
               SELECT CASE (W)
               CASE (0)
@@ -137,7 +137,7 @@ SUBROUTINE MJEVDR(N, A, LDA, V, LDV, JPOS, WRK, INFO)
            END IF
            DO Q = P+1, JPOS
               W = IAND(INFO, 1)
-              CALL MPFR_SET_M(WRK(Q,P), TOL)
+              CALL MPFR_SET_F(WRK(Q,P), TOL)
               CALL MTRANA(N, A, LDA, V, LDV, P, Q, WRK(Q,P), W)
               SELECT CASE (W)
               CASE (0)
@@ -157,7 +157,7 @@ SUBROUTINE MJEVDR(N, A, LDA, V, LDV, JPOS, WRK, INFO)
         DO P = 1, JPOS
            DO Q = JPOS+1, N
               W = IOR(IAND(INFO, 1), 2)
-              CALL MPFR_SET_M(WRK(Q,P), TOL)
+              CALL MPFR_SET_F(WRK(Q,P), TOL)
               CALL MTRANA(N, A, LDA, V, LDV, P, Q, WRK(Q,P), W)
               SELECT CASE (W)
               CASE (0)
@@ -182,7 +182,7 @@ SUBROUTINE MJEVDR(N, A, LDA, V, LDV, JPOS, WRK, INFO)
            END IF
            DO Q = P+1, N
               W = IAND(INFO, 1)
-              CALL MPFR_SET_M(WRK(Q,P), TOL)
+              CALL MPFR_SET_F(WRK(Q,P), TOL)
               CALL MTRANA(N, A, LDA, V, LDV, P, Q, WRK(Q,P), W)
               SELECT CASE (W)
               CASE (0)
@@ -207,9 +207,9 @@ SUBROUTINE MJEVDR(N, A, LDA, V, LDV, JPOS, WRK, INFO)
      IF (N .LT. 1000) THEN
         DO Q = 1, N
            DO P = 1, Q-1
-              CALL MPFR_SET_M(WRK(P,Q), A(Q,P))
+              CALL MPFR_SET_F(WRK(P,Q), A(Q,P))
            END DO
-           CALL MPFR_SET_M(WRK(Q,Q),A(Q,Q))
+           CALL MPFR_SET_F(WRK(Q,Q),A(Q,Q))
         END DO
         IF (IAND(INFO, 2) .EQ. 0) THEN
            WRITE (FN,'(A,I3.3,A,I2.2,A)') 'd', N, '_', R, '.txt'
@@ -241,7 +241,7 @@ SUBROUTINE MJEVDR(N, A, LDA, V, LDV, JPOS, WRK, INFO)
   END DO
   INFO = R
   WRK(1,1) = TT
-  CALL MPFR_CLEAR_M(TOL)
+  CALL MPFR_CLEAR_F(TOL)
 #ifdef __GFORTRAN__
 8 FORMAT(ES30.21E4)
 9 FORMAT(ES31.21E4)
