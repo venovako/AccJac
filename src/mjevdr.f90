@@ -68,11 +68,11 @@ SUBROUTINE MJEVDR(N, A, LDA, V, LDV, JPOS, WRK, INFO)
   ! init V
   DO Q = 1, N
      DO P = 1, Q-1
-        CALL MPFR_SET_ZERO(V(P,Q), V(P,Q)%TAG)
+        CALL MPFR_SET_ZERO(V(P,Q), 0_c_int)
      END DO
      V(Q,Q) = ONE
      DO P = Q+1, N
-        CALL MPFR_SET_ZERO(V(P,Q), V(P,Q)%TAG)
+        CALL MPFR_SET_ZERO(V(P,Q), 0_c_int)
      END DO
   END DO
   ! init TOL
