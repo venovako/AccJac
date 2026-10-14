@@ -1,16 +1,16 @@
 include system.mk
-AR=ar
-ARFLAGS=rsv
+AR:=ar
+ARFLAGS:=rsv
 ifndef LIBPVN
-LIBPVN=$(realpath ../../libpvn)
+LIBPVN:=$(realpath ../../libpvn)
 endif # !LIBPVN
 include $(LIBPVN)/src/pvn.mk
-FC=$(PVN_FC)
+FC:=$(PVN_FC)
 ifeq ($(findstring ifx,$(FC)),ifx)
-COMPILER=intel
+COMPILER:=intel
 CPPFLAGS= #-DUSE_IEEE_INTRINSIC=IEEE_FMA
 else # gfortran
-COMPILER=gf
+COMPILER:=gf
 CPPFLAGS=-DUSE_IEEE_INTRINSIC=IEEE_FMA
 endif # ifx
 MKFS=GNUmakefile system.mk $(LIBPVN)/src/pvn.mk
@@ -34,7 +34,7 @@ cljtv2.o dljtv2.o sljtv2.o wljtv2.o xljtv2.o zljtv2.o \
 cljau2.o dljau2.o sljau2.o wljau2.o xljau2.o zljau2.o \
 cljav2.o dljav2.o sljav2.o wljav2.o xljav2.o zljav2.o
 
-LIB2=libjaev2.a
+LIB2:=libjaev2.a
 
 EXE2=ctest.exe dtest.exe qtest.exe stest.exe ytest.exe ztest.exe \
 cljv2t.exe dljv2t.exe sljv2t.exe zljv2t.exe
@@ -79,7 +79,7 @@ cjevdc.o djevdc.o sjevdc.o wjevdc.o xjevdc.o zjevdc.o \
 cjevdr.o djevdr.o sjevdr.o wjevdr.o xjevdr.o zjevdr.o \
 jstep.o jsweep.o djevdm.o zjevdm.o
 
-LIBD=libjaevd.a
+LIBD:=libjaevd.a
 
 EXED=past.exe \
 crnher.exe drnsym.exe srnsym.exe wrnher.exe xrnsym.exe zrnher.exe \
@@ -116,7 +116,7 @@ OBJ0=
 endif # ?MPFR
 
 ifndef CUTOFF
-CUTOFF=0.8
+CUTOFF:=0.8
 endif # !CUTOFF
 CPPFLAGS += -DCUTOFF=$(CUTOFF)_K
 ifdef ANIMATE
@@ -124,20 +124,20 @@ CPPFLAGS += -DANIMATE=$(ANIMATE)
 endif # ANIMATE
 
 ifdef CGIC
-CC=$(PVN_CC)
+CC:=$(PVN_CC)
 CPPFLAGS += -I$(CGIC)
 EXED += jsvdt.cgi
 endif # CGIC
 
 CPPFLAGS += $(PVN_CPPFLAGS)
 FCFLAGS += $(PVN_FCFLAGS) $(CPPFLAGS)
-FLFLAGS=$(subst PIC,PIE,$(FCFLAGS))
+FLFLAGS:=$(subst PIC,PIE,$(FCFLAGS))
 LDFLAGS=$(PVN_LDFLAGS) -L. -ljaevd -ljaev2
 ifdef LAPACK
 LDFLAGS += -L$(LAPACK) -llapack -lrefblas
 endif # LAPACK
 ifdef CGIC
-CFLAGS=$(PVN_CFLAGS) $(CPPFLAGS)
+CFLAGS:=$(PVN_CFLAGS) $(CPPFLAGS)
 LDFLAGS += -L$(CGIC) -lcgic
 endif # CGIC
 LDFLAGS += $(PVN_LIBS)

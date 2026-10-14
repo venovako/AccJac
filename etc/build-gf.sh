@@ -3,8 +3,8 @@
 if [ -z "${GNU}" ]
 then
 	cd ../../libpvn/src
-	make COMPILER=gcc NDEBUG=3 SAFE=SV2,NRM OPENMP=0 GMP=$HOME/gnu MPFR=$HOME/gnu clean
-	make COMPILER=gcc NDEBUG=3 SAFE=SV2,NRM OPENMP=0 GMP=$HOME/gnu MPFR=$HOME/gnu -j
+	make COMPILER=gcc NDEBUG=3 SAFE=SV2,NRM OPENMP=0 GMP=$HOME/gnu/lib MPFR=$HOME/gnu/lib clean
+	make COMPILER=gcc NDEBUG=3 SAFE=SV2,NRM OPENMP=0 GMP=$HOME/gnu/lib MPFR=$HOME/gnu/lib -j
 	cd ../../cgic
 	make -f Makefile.pvn clean all
 	cd ../AccJac/src
@@ -12,8 +12,8 @@ then
 	cd ../etc
 else
 	cd ../../libpvn/src
-	make COMPILER=gcc COMPILER_SUFFIX=${GNU} NDEBUG=3 SAFE=SV2,NRM OPENMP=0 GMP=$HOME/gnu MPFR=$HOME/gnu clean
-	make COMPILER=gcc COMPILER_SUFFIX=${GNU} NDEBUG=3 SAFE=SV2,NRM OPENMP=0 GMP=$HOME/gnu MPFR=$HOME/gnu -j
+	make COMPILER=gcc COMPILER_SUFFIX=${GNU} NDEBUG=3 SAFE=SV2,NRM OPENMP=0 GMP=$HOME/gnu/lib MPFR=$HOME/gnu/lib clean
+	make COMPILER=gcc COMPILER_SUFFIX=${GNU} NDEBUG=3 SAFE=SV2,NRM OPENMP=0 GMP=$HOME/gnu/lib MPFR=$HOME/gnu/lib -j
 	cd ../../cgic
 	make -f Makefile.pvn clean all
 	cd ../AccJac/src
